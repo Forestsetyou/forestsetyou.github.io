@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="keywords" content="ctf, solution, note, blog">
+    
+    <meta name="author" content="Forestsetyou">
+    <!-- preconnect -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    
+    <!--- Seo Part-->
+    
+    <link rel="canonical" href="http://forestsetyou.github.io/2022/04/21/development/algorithm/数据结构学习（三）队列/"/>
+    <meta name="robots" content="index,follow">
+    <meta name="googlebot" content="index,follow">
+    <meta name="revisit-after" content="1 days">
+    
+        <meta name="description" content="false">
+<meta property="og:type" content="article">
+<meta property="og:title" content="数据结构学习（三）队列">
+<meta property="og:url" content="http://forestsetyou.github.io/2022/04/21/Development/Algorithm/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E5%AD%A6%E4%B9%A0%EF%BC%88%E4%B8%89%EF%BC%89%E9%98%9F%E5%88%97/index.html">
+<meta property="og:site_name" content="Festu&#39;s Blog">
+<meta property="og:description" content="false">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2022-04-21T06:02:00.000Z">
+<meta property="article:modified_time" content="2023-08-03T10:07:00.000Z">
+<meta property="article:author" content="Forestsetyou">
+<meta property="article:tag" content="Schoolwork">
+<meta name="twitter:card" content="summary">
+    
+    
+    <!--- Icon Part-->
+    <link rel="icon" type="image/png" href="/hide_imgs/smiling_face.png" sizes="192x192">
+    <link rel="apple-touch-icon" sizes="180x180" href="/hide_imgs/smiling_face.png">
+    <meta name="theme-color" content="#A31F34">
+    <link rel="shortcut icon" href="/hide_imgs/smiling_face.png">
+    <!--- Page Info-->
+    
+    <title>
+        
+            数据结构学习（三）队列 -
+        
+        Festu&#39;s Blog
+    </title><meta name="robots" content="noindex">
+
+    
+<link rel="stylesheet" href="/fonts/Chillax/chillax.css">
+
+
+    <!--- Inject Part-->
+    
+
+    
+        <style>
+    :root {
+        --preloader-background-color: #fff;
+        --preloader-text-color: #000;
+    }
+
+    @media (prefers-color-scheme: dark) {
+        :root {
+            --preloader-background-color: #202124;
+            --preloader-text-color: #fff;
+        }
+    }
+
+    @media (prefers-color-scheme: light) {
+        :root {
+            --preloader-background-color: #fff;
+            --preloader-text-color: #000;
+        }
+    }
+
+    @media (max-width: 600px) {
+        .ml13 {
+            font-size: 2.6rem !important; /* Adjust this value as needed */
+        }
+    }
+
+    .preloader {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem; /* Tailwind 'gap-4' is 1rem */
+        align-items: center;
+        justify-content: center;
+        position: fixed;
+        padding: 12px;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh; /* 'h-screen' is 100% of the viewport height */
+        background-color: var(--preloader-background-color);
+        z-index: 1100; /* 'z-[1100]' sets the z-index */
+        transition: opacity 0.2s ease-in-out;
+    }
+
+    .ml13 {
+        font-size: 3.2rem;
+        /* text-transform: uppercase; */
+        color: var(--preloader-text-color);
+        letter-spacing: -1px;
+        font-weight: 500;
+        font-family: 'Chillax-Variable', sans-serif;
+        text-align: center;
+    }
+
+    .ml13 .word {
+        display: inline-flex;
+        flex-wrap: wrap;
+        white-space: nowrap;
+    }
+
+    .ml13 .letter {
+        display: inline-block;
+        line-height: 1em;
+    }
+</style>
+
+<div class="preloader">
+    
+<script src="/js/libs/anime.min.js"></script>
+
+    <h1 class="ml13">
+        Festu&#39;s Blog
+    </h1>
+    <script>
+        var textWrapper = document.querySelector('.ml13');
+        // Split text into words
+        var words = textWrapper.textContent.trim().split(' ');
+
+        // Clear the existing content
+        textWrapper.innerHTML = '';
+
+        // Wrap each word and its letters in spans
+        words.forEach(function(word) {
+            var wordSpan = document.createElement('span');
+            wordSpan.classList.add('word');
+            wordSpan.innerHTML = word.replace(/\S/g, "<span class='letter'>$&</span>");
+            textWrapper.appendChild(wordSpan);
+            textWrapper.appendChild(document.createTextNode(' ')); // Add space between words
+        });
+
+
+        anime.timeline({loop: true})
+            .add({
+                targets: '.ml13 .letter',
+                translateY: [100,0],
+                translateZ: 0,
+                opacity: [0,1],
+                easing: "easeOutExpo",
+                duration: 1400,
+                delay: (el, i) => 300 + 30 * i
+            }).add({
+            targets: '.ml13 .letter',
+            translateY: [0,-100],
+            opacity: [1,0],
+            easing: "easeInExpo",
+            duration: 1200,
+            delay: (el, i) => 100 + 30 * i
+        });
+
+        let themeStatus = JSON.parse(localStorage.getItem('REDEFINE-THEME-STATUS'))?.isDark;
+
+        // If the theme status is not found in local storage, check the preferred color scheme
+        if (themeStatus === undefined || themeStatus === null) {
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                themeStatus = 'dark';
+            } else {
+                themeStatus = 'light';
+            }
+        }
+
+        // Now you can use the themeStatus variable in your code
+        if (themeStatus) {
+            document.documentElement.style.setProperty('--preloader-background-color', '#202124');
+            document.documentElement.style.setProperty('--preloader-text-color', '#fff');
+        } else {
+            document.documentElement.style.setProperty('--preloader-background-color', '#fff');
+            document.documentElement.style.setProperty('--preloader-text-color', '#000');
+        }
+
+        window.addEventListener('load', function () {
+            hidePreloaderAfterTimeout(1000); // Hide after 1000 milliseconds once the window has loaded
+        });
+
+        // Backup failsafe: Hide preloader after a maximum of 5000 milliseconds, regardless of the window load event
+        hidePreloaderAfterTimeout(5000);
+
+        function hidePreloaderAfterTimeout(delay) {
+            setTimeout(function () {
+                var preloader = document.querySelector('.preloader');
+                preloader.style.opacity = '0';
+                setTimeout(function () {
+                    preloader.style.display = 'none';
+                }, 200);
+            }, delay);
+        }
+    </script>
+</div>
+    
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+
+    
+        
+<link rel="stylesheet" href="/assets/build/styles.css">
+
+    
+
+    
+<link rel="stylesheet" href="/fonts/fonts.css">
+
+    
+<link rel="stylesheet" href="/fonts/Satoshi/satoshi.css">
+
+    <!--- Font Part-->
+    
+    
+    
+    
+
+
+    <script id="hexo-configurations">
+    window.config = {"hostname":"forestsetyou.github.io","root":"/","language":"en","path":"search.xml"};
+    window.theme = {"articles":{"style":{"font_size":"16px","line_height":1.5,"image_border_radius":"14px","image_alignment":"center","image_caption":false,"link_icon":true,"title_alignment":"left","headings_top_spacing":{"h1":"5rem","h2":"4rem","h3":"2.8rem","h4":"2.5rem","h5":"2.2rem","h6":"2rem"}},"word_count":{"enable":false,"count":true,"min2read":true},"author_label":{"enable":false,"auto":false,"list":[]},"code_block":{"copy":true,"style":"simple","font":{"enable":false,"family":null,"url":null}},"toc":{"enable":true,"max_depth":3,"number":false,"expand":true,"init_open":true},"copyright":{"enable":true,"default":"cc_by_nc_sa"},"lazyload":true,"recommendation":{"enable":false,"title":"推荐阅读","limit":3,"mobile_limit":2,"placeholder":"/images/wallhaven-wqery6-light.webp","skip_dirs":[]}},"colors":{"primary":"#A31F34","secondary":null,"default_mode":"light"},"global":{"fonts":{"chinese":{"enable":false,"family":null,"url":null},"english":{"enable":false,"family":null,"url":null}},"content_max_width":"1000px","sidebar_width":"210px","hover":{"shadow":true,"scale":false},"scroll_progress":{"bar":false,"percentage":true},"website_counter":{"url":"https://cn.vercount.one/js","enable":false,"site_pv":true,"site_uv":true,"post_pv":true},"single_page":true,"preloader":true,"open_graph":true,"google_analytics":{"enable":false,"id":null}},"home_banner":{"enable":true,"style":"fixed","image":{"light":"/hide_imgs/light_banner-5.png","dark":"/hide_imgs/dark_banner.png"},"title":"Festu's Blog","subtitle":{"text":["Life Goes On."],"hitokoto":{"enable":false,"api":"https://v1.hitokoto.cn"},"typing_speed":100,"backing_speed":80,"starting_delay":500,"backing_delay":1500,"loop":false,"smart_backspace":false},"text_color":{"light":"#fff","dark":"#d1d1b6"},"text_style":{"title_size":"2.8rem","subtitle_size":"1.5rem","line_height":1.2},"custom_font":{"enable":false,"family":null,"url":null},"social_links":{"enable":true,"style":"default","links":{"github":"https://github.com/Forestsetyou","instagram":null,"zhihu":null,"twitter":null,"email":null},"qrs":{"weixin":null}}},"plugins":{"feed":{"enable":false},"aplayer":{"enable":false,"type":"fixed","audios":[{"name":null,"artist":null,"url":null,"cover":null,"lrc":null}]},"mermaid":{"enable":false,"version":"9.3.0"}},"version":"2.6.1","navbar":{"auto_hide":false,"color":{"left":"#f78736","right":"#367df7","transparency":35},"width":{"home":"1200px","pages":"1000px"},"links":{"Home":{"path":"/","icon":"fa-regular fa-house"},"Archives":{"path":"/archives","icon":"fa-regular fa-archive"},"categories":{"path":"/categories","icon":"fa-regular fa-folder"},"tags":{"path":"/tags","icon":"fa-regular fa-tags"}},"search":{"enable":true,"preload":true}},"page_templates":{"friends_column":2,"tags_style":"blur"},"home":{"sidebar":{"enable":true,"position":"left","first_item":"menu","announcement":null,"show_on_mobile":true,"links":null},"article_date_format":"auto","categories":{"enable":true,"limit":3},"tags":{"enable":true,"limit":3}},"footerStart":"2024/03/11 03:27:59"};
+    window.lang_ago = {"second":"%s seconds ago","minute":"%s minutes ago","hour":"%s hours ago","day":"%s days ago","week":"%s weeks ago","month":"%s months ago","year":"%s years ago"};
+    window.data = {"masonry":false};
+  </script>
+    
+    <!--- Fontawesome Part-->
+    
+<link rel="stylesheet" href="/fontawesome/fontawesome.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/brands.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/solid.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/regular.min.css">
+
+    
+    
+    
+    
+<meta name="generator" content="Hexo 7.1.1"></head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+
+    
+        <span class="pjax-progress-bar"></span>
+<!--        <span class="swup-progress-icon">-->
+<!--            <i class="fa-solid fa-circle-notch fa-spin"></i>-->
+<!--        </span>-->
+    
+</div>
+
+
+<main class="page-container" id="swup">
+
+    
+
+    <div class="main-content-container">
+
+
+        <div class="main-content-header">
+            <header class="navbar-container px-6 md:px-12">
+
+    <div class="navbar-content ">
+        <div class="left">
+            
+                <a class="logo-image" href="/">
+                    <img src="/hide_imgs/smiling_face.png">
+                </a>
+            
+            <a class="logo-title" href="/">
+                
+                Festu&#39;s Blog
+                
+            </a>
+        </div>
+
+        <div class="right">
+            <!-- PC -->
+            <div class="desktop">
+                <ul class="navbar-list">
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/"
+                                        >
+                                    <i class="fa-regular fa-house fa-fw"></i>
+                                    HOME
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/archives"
+                                        >
+                                    <i class="fa-regular fa-archive fa-fw"></i>
+                                    ARCHIVES
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/categories"
+                                        >
+                                    <i class="fa-regular fa-folder fa-fw"></i>
+                                    CATEGORIES
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/tags"
+                                        >
+                                    <i class="fa-regular fa-tags fa-fw"></i>
+                                    TAGS
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                    
+                        <li class="navbar-item search search-popup-trigger">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </li>
+                    
+                </ul>
+            </div>
+            <!-- Mobile -->
+            <div class="mobile">
+                
+                    <div class="icon-item search search-popup-trigger"><i class="fa-solid fa-magnifying-glass"></i>
+                    </div>
+                
+                <div class="icon-item navbar-bar">
+                    <div class="navbar-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile sheet -->
+    <div class="navbar-drawer h-screen w-full absolute top-0 left-0 bg-background-color flex flex-col justify-between">
+        <ul class="drawer-navbar-list flex flex-col px-4 justify-center items-start">
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/"
+                        >
+                            <span>
+                                HOME
+                            </span>
+                            
+                                <i class="fa-regular fa-house fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/archives"
+                        >
+                            <span>
+                                ARCHIVES
+                            </span>
+                            
+                                <i class="fa-regular fa-archive fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/categories"
+                        >
+                            <span>
+                                CATEGORIES
+                            </span>
+                            
+                                <i class="fa-regular fa-folder fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/tags"
+                        >
+                            <span>
+                                TAGS
+                            </span>
+                            
+                                <i class="fa-regular fa-tags fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+
+            
+            
+        </ul>
+
+        <div class="statistics flex justify-around my-2.5">
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/tags">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">1</div>
+        <div class="label text-third-text-color text-sm">Tags</div>
+    </a>
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/categories">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">10</div>
+        <div class="label text-third-text-color text-sm">Categories</div>
+    </a>
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/archives">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">14</div>
+        <div class="label text-third-text-color text-sm">Posts</div>
+    </a>
+</div>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="main-content-body">
+
+            
+
+            <div class="main-content">
+
+                
+                    <div class="post-page-container flex relative justify-between box-border w-full h-full">
+    <div class="article-content-container">
+
+        <div class="article-title relative w-full">
+            
+                
+                
+                <img src="/hide_imgs/post_thumbnail.png" alt="数据结构学习（三）队列" class="w-full h-60 sm:h-72 md:h-80 object-cover sm:rounded-t-large dark:brightness-75"/>
+                
+                <div class="w-full flex items-center absolute bottom-0 justify-start">
+                    <h1 class="article-title-cover text-center mx-6 my-6 text-second-text-color bg-background-color-transparent px-4 py-3 text-3xl sm:text-4xl md:text-5xl font-bold backdrop-blur-lg rounded-xl border border-border-color ">数据结构学习（三）队列</h1>
+                </div>
+            
+            </div>
+
+        
+            <div class="article-header flex flex-row gap-2 items-center px-2 sm:px-6 md:px-8">
+                <div class="avatar w-[46px] h-[46px] flex-shrink-0 rounded-medium border border-border-color p-[1px]">
+                    <img src="/hide_imgs/avatar.png">
+                </div>
+                <div class="info flex flex-col justify-between">
+                    <div class="author flex items-center">
+                        <span class="name text-default-text-color text-lg font-semibold">Forestsetyou</span>
+                        
+                    </div>
+                    <div class="meta-info">
+                        <div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fa-regular fa-pen-fancy"></i>&nbsp;
+        <span class="desktop">2022-04-21 14:02</span>
+        <span class="mobile">2022-04-21 14:02</span>
+        <span class="hover-info">Created</span>
+    </span>
+    
+        <span class="article-date article-meta-item">
+            <i class="fa-regular fa-wrench"></i>&nbsp;
+            <span class="desktop">2023-08-03 18:07</span>
+            <span class="mobile">2023-08-03 18:07</span>
+            <span class="hover-info">Updated</span>
+        </span>
+    
+
+    
+        <span class="article-categories article-meta-item">
+            <i class="fa-regular fa-folders"></i>&nbsp;
+            <ul>
+                
+                
+                    
+                        
+                        <li>
+                            <a href="/categories/Development/">Development</a>&nbsp;
+                        </li>
+                    
+                    
+                
+                    
+                        
+                            <li>></li>
+                        
+                        <li>
+                            <a href="/categories/Development/Algorithm/">Algorithm</a>&nbsp;
+                        </li>
+                    
+                    
+                
+            </ul>
+        </span>
+    
+    
+        <span class="article-tags article-meta-item">
+            <i class="fa-regular fa-tags"></i>&nbsp;
+            <ul>
+                
+                    <li>
+                        <a href="/tags/Schoolwork/">Schoolwork</a>&nbsp;
+                    </li>
+                
+            </ul>
+        </span>
+    
+
+    
+    
+    
+    
+</div>
+
+                    </div>
+                </div>
+            </div>
+        
+
+        
+
+
+        <div class="article-content markdown-body px-2 sm:px-6 md:px-8 pb-8">
+            <h1 id="队列"><a href="#队列" class="headerlink" title="队列"></a>队列</h1><h2 id="ADT"><a href="#ADT" class="headerlink" title="ADT"></a>ADT</h2><h3 id="顺序队列（循环队列）"><a href="#顺序队列（循环队列）" class="headerlink" title="顺序队列（循环队列）"></a>顺序队列（循环队列）</h3><div class="highlight-container" data-rel="C++"><figure class="iseeu highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">class</span> <span class="title class_">ElemType</span>&gt;    <span class="comment">//顺序队列ADT</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">SqQueue</span>&#123;  </span><br><span class="line">   <span class="keyword">private</span>:</span><br><span class="line">      ElemType *elem;   <span class="comment">// 存储空间基址</span></span><br><span class="line">      <span class="type">int</span> front;   <span class="comment">// 队头指针</span></span><br><span class="line">      <span class="type">int</span> rear;   <span class="comment">// 队尾指针</span></span><br><span class="line">      <span class="type">int</span> maxSize;        <span class="comment">// 允许的最大存储容量(以sizeof(ElemType)为单位</span></span><br><span class="line">   <span class="keyword">public</span>:</span><br><span class="line">      <span class="comment">//初始化顺序队列</span></span><br><span class="line">      <span class="built_in">SqQueue</span>(<span class="type">int</span> ms = <span class="number">20</span>)&#123;</span><br><span class="line">        elem=<span class="keyword">new</span> ElemType[ms];  &lt;!<span class="number">-1</span></span><br><span class="line">          maxSize=ms;</span><br><span class="line">          front=rear=<span class="number">0</span>;</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="comment">//删除顺序队列</span></span><br><span class="line">      ~<span class="built_in">SqQueue</span>()&#123;</span><br><span class="line">          <span class="built_in">QueueDestroy</span>();</span><br><span class="line">        <span class="comment">//   cout&lt;&lt;&quot;what happend?&quot;;</span></span><br><span class="line">      &#125;</span><br><span class="line">      <span class="comment">//将顺序队列置为空</span></span><br><span class="line">      <span class="function"><span class="type">bool</span> <span class="title">QueueClear</span><span class="params">( )</span></span>&#123;</span><br><span class="line">          front=rear;</span><br><span class="line">          <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="comment">//设置顺序栈的长度</span></span><br><span class="line">      <span class="comment">//bool SetListLength(int len);</span></span><br><span class="line">      <span class="comment">//判断顺序队列是否为空</span></span><br><span class="line">      <span class="function"><span class="type">bool</span> <span class="title">QueueisEmpty</span><span class="params">()</span> <span class="type">const</span></span>&#123; <span class="keyword">return</span> front == rear; &#125;</span><br><span class="line">      <span class="comment">//判断顺序队列是否为满</span></span><br><span class="line">      <span class="function"><span class="type">bool</span> <span class="title">QueueFull</span><span class="params">()</span> <span class="type">const</span></span>&#123; <span class="keyword">return</span> front == (rear+<span class="number">1</span>)%maxSize; &#125;</span><br><span class="line">      <span class="comment">//用e返回队头元素</span></span><br><span class="line">      <span class="function"><span class="type">bool</span> <span class="title">GetFront</span><span class="params">(ElemType &amp;e)</span></span>&#123;</span><br><span class="line">          <span class="keyword">if</span>(front==rear)   <span class="comment">//队列为空</span></span><br><span class="line">            <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">          e=*(elem+front);</span><br><span class="line">          <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="comment">//返回队列长度</span></span><br><span class="line">      <span class="function"><span class="type">int</span> <span class="title">GetLen</span><span class="params">()</span><span class="type">const</span></span>&#123; <span class="keyword">return</span> (rear+maxSize-front)%maxSize; &#125;</span><br><span class="line">      <span class="comment">//入队</span></span><br><span class="line">      <span class="function"><span class="type">bool</span> <span class="title">enQueue</span><span class="params">(<span class="type">const</span> ElemType &amp;e)</span></span>&#123;</span><br><span class="line">          <span class="keyword">if</span>(<span class="built_in">QueueFull</span>())</span><br><span class="line">            <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">          *(elem+rear)=e;</span><br><span class="line">        <span class="comment">//   cout&lt;&lt;&quot;!enQueue:&quot;&lt;&lt;elem[rear]&lt;&lt;&quot; &quot;;</span></span><br><span class="line">          rear=(rear+<span class="number">1</span>)%maxSize;</span><br><span class="line">          <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="comment">//出队</span></span><br><span class="line">      <span class="function"><span class="type">bool</span> <span class="title">deQueue</span><span class="params">(ElemType &amp;e)</span></span>&#123;</span><br><span class="line">          <span class="keyword">if</span>(<span class="built_in">QueueisEmpty</span>())</span><br><span class="line">            <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">          e=*(elem+front);</span><br><span class="line">        <span class="comment">//   cout&lt;&lt;&quot;!deQueue:&quot;&lt;&lt;elem[front]&lt;&lt;&quot; &quot;;</span></span><br><span class="line">          front=(front+<span class="number">1</span>)%maxSize;</span><br><span class="line">          <span class="keyword">return</span> <span class="number">1</span>;  </span><br><span class="line">      &#125;</span><br><span class="line">      <span class="comment">//销毁顺序队列</span></span><br><span class="line">      <span class="function"><span class="type">bool</span> <span class="title">QueueDestroy</span><span class="params">()</span></span>&#123;</span><br><span class="line">          <span class="keyword">if</span>(!elem)</span><br><span class="line">            <span class="keyword">return</span> <span class="number">0</span>;   <span class="comment">//指针为空，删除失败</span></span><br><span class="line">          <span class="keyword">delete</span> []elem;    <span class="comment">//删除new出来的数组</span></span><br><span class="line">        <span class="comment">//   cout&lt;&lt;&quot;why?&quot;;</span></span><br><span class="line">          <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">      &#125; </span><br><span class="line">      <span class="comment">//顺序队列最大存储空间加倍</span></span><br><span class="line">    <span class="comment">//   bool DoubleSpace();</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></div>
+
+<ul>
+<li><code>&lt;!-1</code> 语句 <code>new ElemType[ms]</code> 如果写成 <code>new ElemType(ms)</code> 会出现程序结束但不退出的情况，若使用delete语句并直接单步跳出（VScode）会报错：”Unknown stopping event”。</li>
+</ul>
+<h3 id="链队列（带头结点）"><a href="#链队列（带头结点）" class="headerlink" title="链队列（带头结点）"></a>链队列（带头结点）</h3><div class="highlight-container" data-rel="C++"><figure class="iseeu highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 链队列结点</span></span><br><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">class</span> <span class="title class_">ElemType</span>&gt;</span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">LinkQueueNode</span></span><br><span class="line">&#123;</span><br><span class="line">    ElemType data;</span><br><span class="line">    LinkQueueNode&lt;ElemType&gt; *next;</span><br><span class="line">    <span class="built_in">LinkQueueNode</span>(LinkQueueNode&lt;ElemType&gt; *ptr = <span class="literal">NULL</span>)&#123;next = ptr;&#125; <span class="comment">//构造函数1，用于构造头结点</span></span><br><span class="line">    <span class="built_in">LinkQueueNode</span>(<span class="type">const</span> ElemType &amp;item, LinkQueueNode&lt;ElemType&gt; *ptr = <span class="literal">NULL</span>) <span class="comment">//构造函数2，用于构造其他结点   </span></span><br><span class="line">    <span class="comment">//函数参数表中的形参允许有默认值，但是带默认值的参数需要放后面</span></span><br><span class="line">    &#123;</span><br><span class="line">        next = ptr;</span><br><span class="line">        data = item;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function">ElemType <span class="title">getData</span><span class="params">()</span></span>&#123; <span class="keyword">return</span> data;&#125;  <span class="comment">//取得结点中的数据</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">SetLink</span><span class="params">( LinkQueueNode&lt;ElemType&gt; *link )</span></span>&#123; next = link; &#125;  <span class="comment">//修改结点的next域 </span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">SetData</span><span class="params">( ElemType value )</span></span>&#123; data = value; &#125;   <span class="comment">//修改结点的data域</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">//带头结点的链队列 </span></span><br><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">class</span> <span class="title class_">ElemType</span>&gt;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">LinkQueue</span>&#123;</span><br><span class="line">   <span class="keyword">private</span>:</span><br><span class="line">      LinkQueueNode&lt;ElemType&gt; *front;   <span class="comment">// 队头指针</span></span><br><span class="line">      LinkQueueNode&lt;ElemType&gt; *rear;   <span class="comment">// 队尾指针</span></span><br><span class="line">      <span class="type">int</span> length;   <span class="comment">//队列当前元素个数 </span></span><br><span class="line"></span><br><span class="line">   <span class="keyword">public</span>:</span><br><span class="line">      <span class="comment">//无参数的构造函数</span></span><br><span class="line">      <span class="built_in">LinkQueue</span>()&#123;</span><br><span class="line">          front=rear=<span class="keyword">new</span> <span class="built_in">LinkQueueNode</span>&lt;ElemType&gt;();</span><br><span class="line">          length=<span class="number">0</span>;</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="comment">//析构函数</span></span><br><span class="line">      ~<span class="built_in">LinkQueue</span>()&#123;<span class="built_in">LinkQueueDestroy</span>();&#125;</span><br><span class="line">      <span class="comment">//销毁链队列 </span></span><br><span class="line">      <span class="function"><span class="type">bool</span> <span class="title">LinkQueueDestroy</span><span class="params">()</span></span>&#123;</span><br><span class="line">          LinkQueueNode&lt;ElemType&gt; *p=front,*p1;</span><br><span class="line">          <span class="keyword">while</span>(p)&#123;</span><br><span class="line">              p1=p;</span><br><span class="line">              p=p-&gt;next;</span><br><span class="line">              <span class="keyword">delete</span> p1;</span><br><span class="line">          &#125;</span><br><span class="line">          front=rear=<span class="literal">NULL</span>;</span><br><span class="line">          <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="comment">//清空链表，只留下头结点</span></span><br><span class="line">      <span class="function"><span class="type">bool</span> <span class="title">LinkQueueClear</span><span class="params">()</span></span>&#123;</span><br><span class="line">          LinkQueueNode&lt;ElemType&gt; *p=front-&gt;next,*p1;</span><br><span class="line">          length=<span class="number">0</span>;</span><br><span class="line">          front-&gt;<span class="built_in">SetLink</span>(<span class="literal">NULL</span>);</span><br><span class="line">          rear=front;</span><br><span class="line">          <span class="keyword">while</span>(p)&#123;</span><br><span class="line">              p1=p;</span><br><span class="line">              p=p-&gt;next;</span><br><span class="line">              <span class="keyword">delete</span> p1;</span><br><span class="line">          &#125;</span><br><span class="line">          <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line">      <span class="comment">//返回链队列的长度</span></span><br><span class="line">      <span class="function"><span class="type">int</span> <span class="title">QueueLength</span><span class="params">()</span> <span class="type">const</span></span>&#123; <span class="keyword">return</span> length;&#125;</span><br><span class="line">      <span class="comment">//判断链队列是否为空队列</span></span><br><span class="line">      <span class="function"><span class="type">bool</span> <span class="title">QueueisEmpty</span><span class="params">()</span> <span class="type">const</span></span>&#123; <span class="keyword">return</span> front==rear; &#125;</span><br><span class="line"></span><br><span class="line">      <span class="comment">//出队</span></span><br><span class="line">      <span class="function"><span class="type">bool</span> <span class="title">deQueue</span><span class="params">( ElemType &amp;e )</span></span>&#123;</span><br><span class="line">          <span class="keyword">if</span>(<span class="built_in">QueueisEmpty</span>()) <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">          LinkQueueNode&lt;ElemType&gt; *p=front-&gt;next;</span><br><span class="line">          e=p-&gt;<span class="built_in">getData</span>();</span><br><span class="line">          front-&gt;<span class="built_in">SetLink</span>(p-&gt;next);</span><br><span class="line">          length--;</span><br><span class="line">          <span class="keyword">if</span>(rear==p) rear=front;     <span class="comment">//队列为空时头尾指针都在头结点上</span></span><br><span class="line">          <span class="keyword">delete</span> p;</span><br><span class="line">          <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="comment">//入队</span></span><br><span class="line">      <span class="function"><span class="type">bool</span> <span class="title">enQueue</span><span class="params">( ElemType e )</span></span>&#123;</span><br><span class="line">          LinkQueueNode&lt;ElemType&gt; *p=<span class="keyword">new</span> <span class="built_in">LinkQueueNode</span>&lt;ElemType&gt;(e);</span><br><span class="line">          rear-&gt;<span class="built_in">SetLink</span>(p);</span><br><span class="line">          rear=p;</span><br><span class="line">          length++;</span><br><span class="line">          <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="function"><span class="type">void</span> <span class="title">upLength</span><span class="params">()</span></span>&#123;	<span class="comment">//长度加一</span></span><br><span class="line">          length++;</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="function"><span class="type">void</span> <span class="title">downLength</span><span class="params">()</span></span>&#123;</span><br><span class="line">          length--;</span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line">      <span class="comment">//获取链队列头结点指针 </span></span><br><span class="line">      <span class="function">LinkQueueNode&lt;ElemType&gt;* <span class="title">GetFront</span><span class="params">()</span><span class="type">const</span></span>&#123; <span class="keyword">return</span> front;&#125;</span><br><span class="line">      <span class="comment">//获取队头元素</span></span><br><span class="line">      <span class="function">ElemType <span class="title">GetFrontData</span><span class="params">()</span><span class="type">const</span></span>&#123; <span class="keyword">if</span>(front-&gt;next) <span class="keyword">return</span> front-&gt;next-&gt;data;&#125;      </span><br><span class="line">      <span class="comment">//获取链队列队尾指针</span></span><br><span class="line">      <span class="function">LinkQueueNode&lt;ElemType&gt;* <span class="title">GetRear</span><span class="params">()</span><span class="type">const</span></span>&#123; <span class="keyword">return</span> rear;&#125;</span><br><span class="line"></span><br><span class="line">      <span class="comment">//遍历链队列 </span></span><br><span class="line">      <span class="function"><span class="type">bool</span> <span class="title">QueueTraverse</span><span class="params">(<span class="type">char</span> ch)</span> <span class="type">const</span></span>&#123;    <span class="comment">//传入连接符号,不带换行</span></span><br><span class="line">          <span class="keyword">if</span>(<span class="built_in">QueueisEmpty</span>()) <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">          LinkQueueNode&lt;ElemType&gt; *p=front-&gt;next;</span><br><span class="line">          <span class="type">int</span> c=<span class="number">0</span>;</span><br><span class="line">          <span class="keyword">while</span>(p)&#123;</span><br><span class="line">              <span class="keyword">if</span>(c) cout&lt;&lt;ch;</span><br><span class="line">              cout&lt;&lt;p-&gt;<span class="built_in">getData</span>();</span><br><span class="line">              p=p-&gt;next;</span><br><span class="line">              c++;</span><br><span class="line">          &#125;</span><br><span class="line">          <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="function"><span class="type">void</span> <span class="title">queueReverse</span><span class="params">()</span></span>&#123;		<span class="comment">//逆置队列</span></span><br><span class="line">          <span class="keyword">if</span>(length&lt;=<span class="number">1</span>) <span class="keyword">return</span>;</span><br><span class="line">          LinkQueueNode&lt;ElemType&gt; *p=front-&gt;next,*p1,*p2;</span><br><span class="line">          front-&gt;<span class="built_in">SetLink</span>(rear);</span><br><span class="line">          p1=p-&gt;next;</span><br><span class="line">          p-&gt;<span class="built_in">SetLink</span>(<span class="literal">NULL</span>);</span><br><span class="line">          rear=p;</span><br><span class="line">          p2=p;</span><br><span class="line">          p=p1;</span><br><span class="line">          <span class="keyword">while</span>(p)&#123;</span><br><span class="line">              p1=p-&gt;next;</span><br><span class="line">              p-&gt;<span class="built_in">SetLink</span>(p2);</span><br><span class="line">              p2=p;</span><br><span class="line">              p=p1;</span><br><span class="line">          &#125;</span><br><span class="line">          <span class="keyword">return</span> ;</span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></div>
+
+
+
+<h2 id="函数（顺序队列）"><a href="#函数（顺序队列）" class="headerlink" title="函数（顺序队列）"></a>函数（顺序队列）</h2><h3 id="杨辉三角"><a href="#杨辉三角" class="headerlink" title="杨辉三角"></a>杨辉三角</h3><div class="highlight-container" data-rel="C++"><figure class="iseeu highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"><span class="comment">//ADT</span></span><br><span class="line"><span class="function"><span class="keyword">template</span>&lt;<span class="keyword">class</span> ElemType&gt;</span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">YangHuiTriangle</span><span class="params">(SqQueue&lt;ElemType&gt; &amp;Q, <span class="type">int</span> N)</span></span>&#123;</span><br><span class="line">    <span class="type">int</span> c=<span class="number">0</span>,a,b;</span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;N;i++)&#123;</span><br><span class="line">        <span class="keyword">if</span>(i) cout&lt;&lt;endl;</span><br><span class="line">        c=<span class="number">0</span>;</span><br><span class="line">        <span class="keyword">if</span>(!Q.<span class="built_in">QueueisEmpty</span>())&#123;</span><br><span class="line">            Q.<span class="built_in">deQueue</span>(a);</span><br><span class="line">            <span class="comment">// cout&lt;&lt;&quot; lenth=&quot;&lt;&lt;Q.GetLen();</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> j=<span class="number">0</span>;j&lt;i+<span class="number">1</span>;j++)&#123;</span><br><span class="line">            <span class="keyword">if</span>(!j || j%i==<span class="number">0</span>)&#123;	<span class="comment">//&lt;!-1</span></span><br><span class="line">                Q.<span class="built_in">enQueue</span>(<span class="number">1</span>);</span><br><span class="line">                <span class="keyword">if</span>(c) cout&lt;&lt;<span class="string">&quot; &quot;</span>;</span><br><span class="line">                cout&lt;&lt;<span class="number">1</span>;</span><br><span class="line">                <span class="comment">// cout&lt;&lt;&quot;!lenth=&quot;&lt;&lt;Q.GetLen()&lt;&lt;&quot; &quot;;</span></span><br><span class="line">                c++;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span> &#123;</span><br><span class="line">                Q.<span class="built_in">deQueue</span>(b);</span><br><span class="line">                Q.<span class="built_in">enQueue</span>(a+b);</span><br><span class="line">                <span class="keyword">if</span>(c) cout&lt;&lt;<span class="string">&quot; &quot;</span>;</span><br><span class="line">                cout&lt;&lt;a+b;</span><br><span class="line">                c++;</span><br><span class="line">                a=b;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> ;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="type">int</span> n;</span><br><span class="line">    cin&gt;&gt;n;</span><br><span class="line">    SqQueue&lt;<span class="type">int</span>&gt; q;</span><br><span class="line">    <span class="built_in">YangHuiTriangle</span>(q,n);</span><br><span class="line">    <span class="comment">// cout&lt;&lt;endl&lt;&lt;&quot;end?&quot;;</span></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+
+<p>思路是逐层将数字推入队列，碰到非端点则从队列中取出数字进行相加，一边输出一边用队列记录数字，从而代替数组。若上一层数量为 <code>n(n!=1)</code> ，则下一层正好要做 <code>n-1</code> 次相加，刚好将上一层队列推出，以此达到逐层计算的目的。</p>
+<ul>
+<li><code>&lt;!-1</code> 如果括号内条件写成 <code>j%i==0</code> 会出现报错：”Arithmetic exception”。意为除数为零。</li>
+</ul>
+<h3 id="解码"><a href="#解码" class="headerlink" title="解码"></a>解码</h3><div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">应用：假设某国特工收到一串事先经过加密处理的密码数字（每位数字的范围为0-9），要求按照预先设定的规则将其解码，恢复到原始的状态，方可使用。解码规则如下：首先将第1位数删除，紧接着将第2位数放到这串数的末尾，再将第3位数删除，再将第4位数放到这串数的末尾，再将第5位数删除……直到剩下最后一位数，将最后一位数也删除。最后，按照刚才删除的顺序，把所有这些删除的数，按照删除的顺序重新连在一起就是原始的密码数字。</span><br><span class="line">例如：给定的一串数字是“631758924”， 经过解码处理后，得到原始的密码数字为“615947283”。接收到的数字串内如存在空格，空格不计入位数。</span><br></pre></td></tr></table></figure></div>
+
+<div class="highlight-container" data-rel="C++"><figure class="iseeu highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">template</span>&lt;<span class="keyword">class</span> ElemType&gt;</span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">decode</span><span class="params">(SqQueue&lt;ElemType&gt; &amp;S, string &amp;code)</span></span>&#123;</span><br><span class="line">    string s;</span><br><span class="line">    s=code;</span><br><span class="line">    <span class="type">int</span> c=<span class="number">0</span>;</span><br><span class="line">    <span class="keyword">while</span>(<span class="number">1</span>)&#123;</span><br><span class="line">        <span class="keyword">while</span>(!S.<span class="built_in">QueueisEmpty</span>())&#123;</span><br><span class="line">            <span class="type">char</span> c;</span><br><span class="line">            S.<span class="built_in">deQueue</span>(c);</span><br><span class="line">            s=s+c;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="type">int</span> k=s.<span class="built_in">length</span>();</span><br><span class="line">        <span class="keyword">if</span>(k==<span class="number">1</span>)&#123;</span><br><span class="line">            cout&lt;&lt;s[<span class="number">0</span>];</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;k;i++)&#123;</span><br><span class="line">            <span class="keyword">if</span>(c%<span class="number">2</span>)&#123;	<span class="comment">//&lt;!-1</span></span><br><span class="line">                S.<span class="built_in">enQueue</span>(s[i]);</span><br><span class="line">                c++;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span>&#123;</span><br><span class="line">                cout&lt;&lt;s[i];</span><br><span class="line">                c++;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        s=<span class="string">&quot;&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> ;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    string str,s,tmp;</span><br><span class="line">    <span class="built_in">getline</span>(cin,str);</span><br><span class="line">    <span class="function">stringstream <span class="title">ss</span><span class="params">(str)</span></span>;</span><br><span class="line">    <span class="keyword">while</span>(ss&gt;&gt;tmp)&#123;     <span class="comment">//去除空格</span></span><br><span class="line">        s=s+tmp;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// cout&lt;&lt;s;</span></span><br><span class="line">    SqQueue&lt;<span class="type">char</span>&gt; q;</span><br><span class="line">    <span class="built_in">decode</span>(q,s);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+
+<ul>
+<li><code>&lt;!-1</code> 将数字接入字串末尾时奇偶计数是不重置的，所以不选用会重置的 <code>i</code> 作为判断变量，而是另外设置一个 <code>c</code> 全局不重置作为判断变量。</li>
+</ul>
+<h3 id="农夫过河"><a href="#农夫过河" class="headerlink" title="农夫过河"></a>农夫过河</h3><p>农夫、狼、白菜、羊要搭船去对岸，农夫驾船只能载其中一个，狼会吃羊，羊吃白菜，所以不能单独留在一岸；请求出一种合理的过河方式，使得全员到对岸，逆序输出驾船路径：</p>
+<div class="highlight-container" data-rel="C++"><figure class="iseeu highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> route[<span class="number">16</span>]=&#123;<span class="number">0</span>&#125;;  <span class="comment">//只用于标记有无涉及过</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">sta</span>&#123;     <span class="comment">//定义状态</span></span><br><span class="line">    <span class="type">int</span> farmer;     <span class="comment">//0在南岸，1在北岸</span></span><br><span class="line">    <span class="type">int</span> wolf;</span><br><span class="line">    <span class="type">int</span> cabbage;</span><br><span class="line">    <span class="type">int</span> goat;</span><br><span class="line">    <span class="comment">// int lasthash;   //默认为-1，也就是无前一结点</span></span><br><span class="line">    <span class="built_in">sta</span>()&#123;&#125;;</span><br><span class="line">    <span class="built_in">sta</span>(<span class="type">int</span> a,<span class="type">int</span> b,<span class="type">int</span> c,<span class="type">int</span> d):<span class="built_in">farmer</span>(a),<span class="built_in">wolf</span>(b),<span class="built_in">cabbage</span>(c),<span class="built_in">goat</span>(d)&#123;&#125;</span><br><span class="line">    <span class="built_in">sta</span>(<span class="type">int</span> hash)&#123;      <span class="comment">//根据哈希值生成</span></span><br><span class="line">        goat=hash%<span class="number">2</span>;</span><br><span class="line">        hash/=<span class="number">2</span>;</span><br><span class="line">        cabbage=hash%<span class="number">2</span>;</span><br><span class="line">        hash/=<span class="number">2</span>;</span><br><span class="line">        wolf=hash%<span class="number">2</span>;</span><br><span class="line">        hash/=<span class="number">2</span>;</span><br><span class="line">        farmer=hash%<span class="number">2</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="type">bool</span> <span class="title">isSafe</span><span class="params">()</span></span>&#123;  <span class="comment">//状态是否安全</span></span><br><span class="line">        <span class="keyword">if</span>(goat==wolf &amp;&amp; goat!=farmer) <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">if</span>(goat==cabbage &amp;&amp; goat!=farmer) <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">output</span><span class="params">()</span></span>&#123;  <span class="comment">//输出状态</span></span><br><span class="line">        cout&lt;&lt;farmer&lt;&lt;wolf&lt;&lt;cabbage&lt;&lt;goat;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">getHash</span><span class="params">()</span></span>&#123;  <span class="comment">//哈希</span></span><br><span class="line">        <span class="type">int</span> n=<span class="number">0</span>;</span><br><span class="line">        n+=goat*<span class="number">1</span>;</span><br><span class="line">        n+=cabbage*<span class="number">2</span>;</span><br><span class="line">        n+=wolf*<span class="number">4</span>;</span><br><span class="line">        n+=farmer*<span class="number">8</span>;</span><br><span class="line">        <span class="keyword">return</span> n;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">template</span>&lt;<span class="keyword">class</span> ElemType&gt;</span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">farmerProblem</span><span class="params">(SqQueue&lt;ElemType&gt; &amp;S)</span></span>&#123;</span><br><span class="line">    <span class="keyword">while</span>(!S.<span class="built_in">QueueisEmpty</span>())&#123;</span><br><span class="line">        sta s;</span><br><span class="line">        S.<span class="built_in">deQueue</span>(s);</span><br><span class="line">        <span class="type">int</span> n[<span class="number">4</span>]=&#123;s.farmer,s.wolf,s.cabbage,s.goat&#125;;</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">3</span>;i&gt;<span class="number">0</span>;i--)&#123;</span><br><span class="line">            <span class="keyword">if</span>(n[i]==n[<span class="number">0</span>])&#123;</span><br><span class="line">                n[i]=<span class="number">1</span>-n[i];    <span class="comment">//状态转移</span></span><br><span class="line">                n[<span class="number">0</span>]=<span class="number">1</span>-n[<span class="number">0</span>];</span><br><span class="line">                <span class="comment">// cout&lt;&lt;&quot;n=&quot;&lt;&lt;n[i]&lt;&lt;endl;</span></span><br><span class="line">                <span class="function">sta <span class="title">tmp</span><span class="params">(n[<span class="number">0</span>],n[<span class="number">1</span>],n[<span class="number">2</span>],n[<span class="number">3</span>])</span></span>;   <span class="comment">//生成状态</span></span><br><span class="line">                n[i]=<span class="number">1</span>-n[i];    <span class="comment">//状态回退</span></span><br><span class="line">                n[<span class="number">0</span>]=<span class="number">1</span>-n[<span class="number">0</span>];</span><br><span class="line">                <span class="keyword">if</span>(tmp.<span class="built_in">isSafe</span>() &amp;&amp; route[tmp.<span class="built_in">getHash</span>()]==<span class="number">-1</span>)&#123;  <span class="comment">//未被访问且状态安全</span></span><br><span class="line">                    route[tmp.<span class="built_in">getHash</span>()]=s.<span class="built_in">getHash</span>();</span><br><span class="line">                    S.<span class="built_in">enQueue</span>(tmp);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        n[<span class="number">0</span>]=<span class="number">1</span>-n[<span class="number">0</span>];    <span class="comment">//考虑农夫独自过河,注意语句块与循环的位置关系啊..	&lt;!-1</span></span><br><span class="line">        <span class="function">sta <span class="title">tmp</span><span class="params">(n[<span class="number">0</span>],n[<span class="number">1</span>],n[<span class="number">2</span>],n[<span class="number">3</span>])</span></span>;</span><br><span class="line">        <span class="keyword">if</span>(tmp.<span class="built_in">isSafe</span>() &amp;&amp; route[tmp.<span class="built_in">getHash</span>()]==<span class="number">-1</span>)&#123;</span><br><span class="line">            route[tmp.<span class="built_in">getHash</span>()]=s.<span class="built_in">getHash</span>();</span><br><span class="line">            S.<span class="built_in">enQueue</span>(tmp);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="type">int</span> a=<span class="number">15</span>;</span><br><span class="line">    <span class="keyword">while</span>(a!=<span class="number">-2</span>)&#123;</span><br><span class="line">        <span class="type">int</span> ss;</span><br><span class="line">        <span class="function">sta <span class="title">tmp</span><span class="params">(a)</span></span>;</span><br><span class="line">        tmp.<span class="built_in">output</span>();</span><br><span class="line">        cout&lt;&lt;endl;</span><br><span class="line">        a=route[a];</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="function">sta <span class="title">node</span><span class="params">(<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>)</span></span>;</span><br><span class="line">    SqQueue&lt;sta&gt; q;</span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;<span class="number">16</span>;i++)&#123;</span><br><span class="line">        route[i]=<span class="number">-1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    route[node.<span class="built_in">getHash</span>()]=<span class="number">-2</span>;   <span class="comment">//标记起点</span></span><br><span class="line">    q.<span class="built_in">enQueue</span>(node);</span><br><span class="line">    <span class="built_in">farmerProblem</span>(q);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+
+<p>这题目真是给我恶心坏了…往队列里塞广搜，最重要的是它有两种解，OJ只判一种AC，我还以为是自己的顺序出问题，程序有BUG，整了半天，是真的吐了。</p>
+<p>说说大体思路：用四位数组标记状态，0表示在南岸，1表示在北岸，不同位表示不同角色，利用进制转换将状态哈希后，用route数组保存到达该状态的前一状态，以此达到存储路径的目的，但在我看来广搜就不太适合保存路径…至少比深搜麻烦。这里我新建了结构体用于保存状态，方便推入队列和功能函数的封装，连带哈希、输出、安全性检查一起做进去相当省事，但是角色顺序因为题目没仔细看整了好久，弄得我头疼。随后通过广搜遍历<strong>安全且未访问</strong>的结点，遍历完后从终点开始回溯路径即可。需要注意的是我尝试用结构体保存路径，但是发现这样的操作类似于构造一条结构链，也就是保存上一结点信息来达到存储路径的效果，但是队列的推入很难保证地址不变，无法保存地址也就构造不了链表，该操作的实现就相当的复杂和困难（应该可以实现，但要用到指针的指针，可能相当麻烦）。所以最后仍然选择用全局数组取状态的哈希来保存路径并记录访问情况。</p>
+<ul>
+<li><code>&lt;!-1</code> 这里我将该语句块放到了上方的循环中，导致农夫的状态量反复横跳出现了各种奇怪的状态变化，这个BUG解决的还算快，但确实恶心到我了，希望下次注意下次注意下次注意！</li>
+</ul>
+<h2 id="函数（链队列）"><a href="#函数（链队列）" class="headerlink" title="函数（链队列）"></a>函数（链队列）</h2><h3 id="士兵队列训练"><a href="#士兵队列训练" class="headerlink" title="士兵队列训练"></a>士兵队列训练</h3><p>问题描述：先输入数据组数，每组数据输入士兵的人数n（默认从1到n给士兵编号），然后从前往后进行一、二报数，报到二的出列；剩下的人顺序不变，再进行一到三的报数，报到三的出列；剩下的人又一到二报数…重复以上过程，直到最后剩下的人数不超过三。（注意要在报数过程结束后再统计人数是否超过三）最后输出剩下的士兵编号：</p>
+<div class="highlight-container" data-rel="C++"><figure class="iseeu highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">const</span> <span class="type">int</span> newsol[<span class="number">2</span>]=&#123;<span class="number">2</span>,<span class="number">3</span>&#125;;  <span class="comment">//士兵出列报数</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">template</span>&lt;<span class="keyword">class</span> ElemType&gt;</span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">queuetraining</span><span class="params">(LinkQueue&lt;ElemType&gt; &amp;S, <span class="type">int</span> T)</span></span>&#123; 	<span class="comment">//T为测试数据的组数</span></span><br><span class="line">    <span class="keyword">while</span>(T--)&#123;</span><br><span class="line">        <span class="type">int</span> n;</span><br><span class="line">        cin&gt;&gt;n;</span><br><span class="line">        S.<span class="built_in">LinkQueueClear</span>();</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;n;i++)&#123;</span><br><span class="line">            S.<span class="built_in">enQueue</span>(i+<span class="number">1</span>);     <span class="comment">//士兵从1开始编号</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="type">int</span> f=<span class="number">0</span>,c=<span class="number">0</span>;    <span class="comment">//切换报数</span></span><br><span class="line">        LinkQueueNode&lt;ElemType&gt; *p=S.<span class="built_in">GetFront</span>()-&gt;next,*p1=S.<span class="built_in">GetFront</span>();</span><br><span class="line">        <span class="keyword">while</span>(<span class="number">1</span>)&#123;</span><br><span class="line">            c++;</span><br><span class="line">           <span class="comment">// cout&lt;&lt;c&lt;&lt;endl;</span></span><br><span class="line">            <span class="keyword">if</span>(c%newsol[f]==<span class="number">0</span>)&#123;</span><br><span class="line">                p1-&gt;<span class="built_in">SetLink</span>(p-&gt;next);</span><br><span class="line">                <span class="comment">// cout&lt;&lt;&quot; x_&quot;&lt;&lt;p-&gt;getData();</span></span><br><span class="line">                <span class="keyword">delete</span> p;</span><br><span class="line">                p=p1-&gt;next;</span><br><span class="line">                S.<span class="built_in">downLength</span>();     <span class="comment">//维护必要的长度</span></span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                p1=p;</span><br><span class="line">                p=p-&gt;next;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span>(!p)&#123;</span><br><span class="line">                <span class="keyword">if</span>(S.<span class="built_in">QueueLength</span>()&lt;=<span class="number">3</span>) <span class="keyword">break</span>;</span><br><span class="line">                p1=S.<span class="built_in">GetFront</span>();</span><br><span class="line">                p=p1-&gt;next;</span><br><span class="line">                c=<span class="number">0</span>;</span><br><span class="line">                f=(f+<span class="number">1</span>)%<span class="number">2</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        S.<span class="built_in">QueueTraverse</span>(<span class="string">&#x27;,&#x27;</span>);</span><br><span class="line">        cout&lt;&lt;endl;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> ;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="type">int</span> n;</span><br><span class="line">    cin&gt;&gt;n;</span><br><span class="line">    LinkQueue&lt;<span class="type">int</span>&gt; S;</span><br><span class="line">    <span class="built_in">queuetraining</span>(S,n);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+
+<p>因为把链队列的内部结构拆开使用了（所以链队列封装的意义何在..），有许多参数维护起来很麻烦，就偷懒没有维护尾指针，长度由于题目需要是必须维护的（一开始偷懒也没维护然后出错了233）；这题有个注意的点是 <code>S.QueueLength()&lt;=3</code> 判断语句要在每次报数结束后执行，而不能放到大的while循环中，否则人数一旦小于等于三就立刻退出了。</p>
+<p>以上写法很不好，因为没有利用链队列的性质，拆封了结构，有更好的解决办法利用链队列的性质结构，简单阐述一下思路（懒得写了）：每次报数时依次出列每一个士兵，未报到二或三的士兵再重新推入队列，这样未退出的士兵就会在上一轮报数的队列清空后按原有顺序添加在队尾，达到筛选的目的。这样也不用单独将链表结构拆出来使用。</p>
+<h3 id="猴子选大王（无头结点）"><a href="#猴子选大王（无头结点）" class="headerlink" title="猴子选大王（无头结点）"></a>猴子选大王（无头结点）</h3><p>要求链队列无头结点，问题是约瑟夫环的猴王版，给定总数与淘汰数，输出最后剩下的：</p>
+<div class="highlight-container" data-rel="C++"><figure class="iseeu highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;string&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 链队列结点</span></span><br><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">class</span> <span class="title class_">ElemType</span>&gt;</span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">LinkQueueNode</span></span><br><span class="line">&#123;</span><br><span class="line">    ElemType data;</span><br><span class="line">    LinkQueueNode&lt;ElemType&gt; *next;</span><br><span class="line">    <span class="built_in">LinkQueueNode</span>(LinkQueueNode&lt;ElemType&gt; *ptr = <span class="literal">NULL</span>)&#123;next = ptr;&#125; <span class="comment">//构造函数1，用于构造头结点</span></span><br><span class="line">    <span class="built_in">LinkQueueNode</span>(<span class="type">const</span> ElemType &amp;item, LinkQueueNode&lt;ElemType&gt; *ptr = <span class="literal">NULL</span>) <span class="comment">//构造函数2，用于构造其他结点   </span></span><br><span class="line">    <span class="comment">//函数参数表中的形参允许有默认值，但是带默认值的参数需要放后面</span></span><br><span class="line">    &#123;</span><br><span class="line">        next = ptr;</span><br><span class="line">        data = item;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function">ElemType <span class="title">getData</span><span class="params">()</span></span>&#123; <span class="keyword">return</span> data;&#125;  <span class="comment">//取得结点中的数据</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">SetLink</span><span class="params">( LinkQueueNode&lt;ElemType&gt; *link )</span></span>&#123; next = link; &#125;  <span class="comment">//修改结点的next域 </span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">SetData</span><span class="params">( ElemType value )</span></span>&#123; data = value; &#125;   <span class="comment">//修改结点的data域</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">//不带头结点的链队列 </span></span><br><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">class</span> <span class="title class_">ElemType</span>&gt;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">LinkQueue</span>&#123;</span><br><span class="line">   <span class="keyword">private</span>:</span><br><span class="line">      LinkQueueNode&lt;ElemType&gt; *front;   <span class="comment">// 队头指针</span></span><br><span class="line">      LinkQueueNode&lt;ElemType&gt; *rear;   <span class="comment">// 队尾指针</span></span><br><span class="line">      <span class="type">int</span> length;   <span class="comment">//队列当前元素个数 </span></span><br><span class="line"></span><br><span class="line">   <span class="keyword">public</span>:</span><br><span class="line">      <span class="comment">//无参数的构造函数</span></span><br><span class="line">      <span class="built_in">LinkQueue</span>()&#123;</span><br><span class="line">          front=rear=<span class="keyword">new</span> LinkQueueNode&lt;ElemType&gt;;</span><br><span class="line">          length=<span class="number">0</span>;</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="comment">//析构函数</span></span><br><span class="line">      ~<span class="built_in">LinkQueue</span>()&#123;<span class="built_in">LinkQueueDestroy</span>();&#125;</span><br><span class="line">      <span class="comment">//销毁链队列 </span></span><br><span class="line">      <span class="function"><span class="type">bool</span> <span class="title">LinkQueueDestroy</span><span class="params">()</span></span>&#123;</span><br><span class="line">          LinkQueueNode&lt;ElemType&gt; *p=front,*p1;</span><br><span class="line">        <span class="comment">//   cout&lt;&lt;endl&lt;&lt;length&lt;&lt;&quot; &quot;;</span></span><br><span class="line">          <span class="keyword">while</span>(p)&#123;</span><br><span class="line">            <span class="comment">//   cout&lt;&lt;p-&gt;getData()&lt;&lt;&quot; &quot;;</span></span><br><span class="line">              p1=p;</span><br><span class="line">              p=p-&gt;next;</span><br><span class="line">              <span class="keyword">delete</span> p1;</span><br><span class="line">          &#125;</span><br><span class="line">          front=rear=<span class="literal">NULL</span>;</span><br><span class="line">          <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="comment">//返回链队列的长度</span></span><br><span class="line">      <span class="function"><span class="type">int</span> <span class="title">QueueLength</span><span class="params">()</span> <span class="type">const</span></span>&#123; <span class="keyword">return</span> length;&#125;</span><br><span class="line">      <span class="comment">//判断链队列是否为空队列,无头结点只能用长度判定</span></span><br><span class="line">      <span class="function"><span class="type">bool</span> <span class="title">QueueisEmpty</span><span class="params">()</span> <span class="type">const</span></span>&#123; <span class="keyword">return</span> length==<span class="number">0</span>; &#125;</span><br><span class="line"></span><br><span class="line">      <span class="comment">//出队</span></span><br><span class="line">      <span class="function"><span class="type">bool</span> <span class="title">deQueue</span><span class="params">( ElemType &amp;e )</span></span>&#123;</span><br><span class="line">          <span class="keyword">if</span>(<span class="built_in">QueueisEmpty</span>()) <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">          LinkQueueNode&lt;ElemType&gt; *p=front;</span><br><span class="line">          <span class="keyword">if</span>(length==<span class="number">1</span>)&#123;</span><br><span class="line">              e=p-&gt;<span class="built_in">getData</span>();</span><br><span class="line">              length=<span class="number">0</span>;</span><br><span class="line">          &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">              front=p-&gt;next;</span><br><span class="line">              length--;</span><br><span class="line">              e=p-&gt;<span class="built_in">getData</span>();</span><br><span class="line">              <span class="keyword">delete</span> p;</span><br><span class="line">          &#125;</span><br><span class="line">          <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="comment">//入队</span></span><br><span class="line">      <span class="function"><span class="type">bool</span> <span class="title">enQueue</span><span class="params">( ElemType e )</span></span>&#123;</span><br><span class="line">          <span class="keyword">if</span>(length==<span class="number">0</span>)&#123;</span><br><span class="line">              front-&gt;<span class="built_in">SetData</span>(e);</span><br><span class="line">              length++;</span><br><span class="line">              <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">          &#125;</span><br><span class="line">          LinkQueueNode&lt;ElemType&gt; *p=<span class="keyword">new</span> <span class="built_in">LinkQueueNode</span>&lt;ElemType&gt;(e);</span><br><span class="line">          rear-&gt;<span class="built_in">SetLink</span>(p);</span><br><span class="line">          rear=p;</span><br><span class="line">          length++;</span><br><span class="line">          <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="function"><span class="type">void</span> <span class="title">upLength</span><span class="params">()</span></span>&#123;</span><br><span class="line">          length++;</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="function"><span class="type">void</span> <span class="title">downLength</span><span class="params">()</span></span>&#123;</span><br><span class="line">          length--;</span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line">      <span class="comment">//获取链队列s首指针 </span></span><br><span class="line">      <span class="function">LinkQueueNode&lt;ElemType&gt;* <span class="title">GetFront</span><span class="params">()</span><span class="type">const</span></span>&#123; <span class="keyword">return</span> front;&#125;</span><br><span class="line">      <span class="comment">//获取队头元素</span></span><br><span class="line">      <span class="function">ElemType <span class="title">GetFrontData</span><span class="params">()</span><span class="type">const</span></span>&#123; <span class="keyword">if</span>(length) <span class="keyword">return</span> front-&gt;data;&#125;      </span><br><span class="line">      <span class="comment">//获取链队列队尾指针</span></span><br><span class="line">      <span class="function">LinkQueueNode&lt;ElemType&gt;* <span class="title">GetRear</span><span class="params">()</span><span class="type">const</span></span>&#123; <span class="keyword">return</span> rear;&#125;</span><br><span class="line"></span><br><span class="line">      <span class="comment">//遍历链队列 </span></span><br><span class="line">      <span class="function"><span class="type">bool</span> <span class="title">QueueTraverse</span><span class="params">(<span class="type">char</span> ch)</span> <span class="type">const</span></span>&#123;    <span class="comment">//传入连接符号,不带换行</span></span><br><span class="line">          <span class="keyword">if</span>(<span class="built_in">QueueisEmpty</span>()) <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">          LinkQueueNode&lt;ElemType&gt; *p=front;</span><br><span class="line">          <span class="type">int</span> c=<span class="number">0</span>;</span><br><span class="line">          <span class="keyword">while</span>(p)&#123;</span><br><span class="line">              <span class="keyword">if</span>(c) cout&lt;&lt;ch;</span><br><span class="line">              cout&lt;&lt;p-&gt;<span class="built_in">getData</span>();</span><br><span class="line">              p=p-&gt;next;</span><br><span class="line">              c++;</span><br><span class="line">          &#125;</span><br><span class="line">          <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">template</span>&lt;<span class="keyword">class</span> ElemType&gt;</span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">monkey_king</span><span class="params">( LinkQueue&lt;ElemType&gt; &amp;S, <span class="type">int</span> n, <span class="type">int</span> m )</span></span>&#123;	<span class="comment">//&lt;!-1</span></span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;n;i++)&#123;</span><br><span class="line">        S.<span class="built_in">enQueue</span>(i+<span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="type">int</span> c=<span class="number">0</span>;    <span class="comment">//记录报数</span></span><br><span class="line">    ElemType t;</span><br><span class="line">    <span class="keyword">while</span>(S.<span class="built_in">QueueLength</span>()&gt;<span class="number">1</span>)&#123;</span><br><span class="line">        c++;</span><br><span class="line">        S.<span class="built_in">deQueue</span>(t);</span><br><span class="line">        <span class="keyword">if</span>(c!=m)&#123;</span><br><span class="line">            S.<span class="built_in">enQueue</span>(t);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="comment">// cout&lt;&lt;t&lt;&lt;&quot; &quot;&lt;&lt;S.QueueLength()&lt;&lt;&quot; &quot;;</span></span><br><span class="line">            c=<span class="number">0</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    S.<span class="built_in">QueueTraverse</span>(<span class="string">&#x27;,&#x27;</span>);</span><br><span class="line">    cout&lt;&lt;<span class="string">&quot; &quot;</span>;</span><br><span class="line">    <span class="keyword">return</span> ;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="type">int</span> n,m;</span><br><span class="line">    cin&gt;&gt;n&gt;&gt;m;</span><br><span class="line">    LinkQueue&lt;<span class="type">int</span>&gt; S;</span><br><span class="line">    <span class="built_in">monkey_king</span>(S,n,m);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+
+<p>我不知道这个链队列有没有头结点对求解有什么影响，但我知道没有头结点这个链队列维护起来真的很麻烦。由于只是为了应付OJ，ADT只是敷衍了一下，别细究合理性。</p>
+<ul>
+<li><code>&lt;!-1</code> 由于ADT没有特殊编写复制构造函数，这里如果参数不采用引用 <code>&amp;S</code> 会出现链队列中的地址被删除两遍的问题，这是因为传参时新建了一个链队列，复制了一样的地址，函数结束后调用析构函数把地址全部情况，主函数结束后再清空一遍就出问题了，会报错”Unknown signal”。<br>经过测试，哪怕在析构函数前判断头指针是否为空 <code>if(!front) return 0;</code> 也无法解决问题。</li>
+</ul>
+<h3 id="长整数加法计算"><a href="#长整数加法计算" class="headerlink" title="长整数加法计算"></a>长整数加法计算</h3><p>如其名，是之前链表题目的队列版，虽然我觉得挺多余的：</p>
+<div class="highlight-container" data-rel="C++"><figure class="iseeu highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span><span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span><span class="string">&lt;sstream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span><span class="string">&lt;string&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span><span class="string">&lt;string.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span><span class="string">&lt;iomanip&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"></span><br><span class="line"><span class="comment">//链队列ADT</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">string2int</span><span class="params">(string s)</span></span>&#123;  <span class="comment">//字符串转数字</span></span><br><span class="line">    <span class="type">int</span> k1=s.<span class="built_in">length</span>();</span><br><span class="line">    <span class="type">int</span> c=<span class="number">0</span>,f=<span class="number">1</span>;</span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;k1;i++)&#123;</span><br><span class="line">       c+=f*(s[k1<span class="number">-1</span>-i]<span class="number">-48</span>);</span><br><span class="line">       f*=<span class="number">10</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> c;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function">string <span class="title">Int_String</span><span class="params">( <span class="type">int</span> result )</span></span>&#123;  <span class="comment">//数字转字符串,由于锁死四位，不足要往左补0</span></span><br><span class="line">    string s;</span><br><span class="line">    <span class="keyword">while</span>(result)&#123;</span><br><span class="line">        s=<span class="built_in">char</span>(result%<span class="number">10</span>+<span class="number">48</span>)+s;</span><br><span class="line">        result/=<span class="number">10</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="type">int</span> k1=s.<span class="built_in">length</span>();</span><br><span class="line">    <span class="keyword">while</span>(k1&lt;<span class="number">4</span>)&#123;</span><br><span class="line">        s=<span class="string">&#x27;0&#x27;</span>+s;</span><br><span class="line">        k1++;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> s;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">template</span>&lt;<span class="keyword">class</span> ElemType&gt;</span></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">Two_LongNum_Compare</span><span class="params">( LinkQueue&lt;ElemType&gt; &amp;A, LinkQueue&lt;ElemType&gt; &amp;B, <span class="type">const</span> <span class="type">int</span> &amp;len_A, <span class="type">const</span> <span class="type">int</span> &amp;len_B )</span></span>&#123;  <span class="comment">//绝对值比较</span></span><br><span class="line">    <span class="keyword">if</span>(len_A&gt;len_B) <span class="keyword">return</span> <span class="number">1</span>;  <span class="comment">//长度比较</span></span><br><span class="line">    <span class="keyword">if</span>(len_B&gt;len_A) <span class="keyword">return</span> <span class="number">2</span>;</span><br><span class="line">    LinkQueueNode&lt;ElemType&gt; *p1=A.<span class="built_in">GetFront</span>()-&gt;next,*p2=B.<span class="built_in">GetFront</span>()-&gt;next;</span><br><span class="line">    <span class="keyword">while</span>(p1!=<span class="literal">NULL</span>)&#123;</span><br><span class="line">        <span class="keyword">if</span>(p1-&gt;data&gt;p2-&gt;data) <span class="keyword">return</span> <span class="number">1</span>;  <span class="comment">//同步高位比大小</span></span><br><span class="line">        <span class="keyword">if</span>(p1-&gt;data&lt;p2-&gt;data) <span class="keyword">return</span> <span class="number">2</span>;</span><br><span class="line">        p1=p1-&gt;next;</span><br><span class="line">        p2=p2-&gt;next;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">template</span>&lt;<span class="keyword">class</span> ElemType&gt; </span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">Input_Int_Division</span><span class="params">( LinkQueue&lt;ElemType&gt; &amp;L, string &amp;str, <span class="type">int</span> &amp;length )</span></span>&#123;  <span class="comment">//分成四位一组</span></span><br><span class="line">    <span class="type">int</span> k1=str.<span class="built_in">length</span>();  <span class="comment">//取出长度</span></span><br><span class="line">    <span class="keyword">if</span>(str[<span class="number">0</span>]==<span class="string">&#x27;-&#x27;</span>)&#123;  <span class="comment">//判断正负</span></span><br><span class="line">        k1--;  <span class="comment">//减去负号的长度</span></span><br><span class="line">        L.<span class="built_in">GetFront</span>()-&gt;<span class="built_in">SetData</span>(<span class="number">-1</span>);</span><br><span class="line">        <span class="type">int</span> cnt=<span class="number">1</span>,res=k1%<span class="number">4</span>;</span><br><span class="line">        <span class="keyword">if</span>(res) <span class="comment">//如果为0就不要加项</span></span><br><span class="line">        L.<span class="built_in">enQueue</span>(<span class="built_in">string2int</span>(str.<span class="built_in">substr</span>(<span class="number">1</span>,res)));</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;(k1-res)/<span class="number">4</span>;i++)&#123;</span><br><span class="line">            cnt++;</span><br><span class="line">            L.<span class="built_in">enQueue</span>(<span class="built_in">string2int</span>(str.<span class="built_in">substr</span>(res+<span class="number">1</span>+<span class="number">4</span>*i,<span class="number">4</span>)));  <span class="comment">//substr(string,pos,lenth)</span></span><br><span class="line">        &#125;</span><br><span class="line">        length=cnt;  <span class="comment">//块的数量</span></span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        L.<span class="built_in">GetFront</span>()-&gt;<span class="built_in">SetData</span>(<span class="number">1</span>);</span><br><span class="line">        <span class="type">int</span> cnt=<span class="number">1</span>,res=k1%<span class="number">4</span>;</span><br><span class="line">        <span class="keyword">if</span>(res) <span class="comment">//如果为0就不要加项</span></span><br><span class="line">            L.<span class="built_in">enQueue</span>(<span class="built_in">string2int</span>(str.<span class="built_in">substr</span>(<span class="number">0</span>,res)));  <span class="comment">//前面非四个整的部分</span></span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;(k1-res)/<span class="number">4</span>;i++)&#123;</span><br><span class="line">            cnt++;</span><br><span class="line">            L.<span class="built_in">enQueue</span>(<span class="built_in">string2int</span>(str.<span class="built_in">substr</span>(res+<span class="number">4</span>*i,<span class="number">4</span>)));</span><br><span class="line">        &#125;</span><br><span class="line">        length=cnt;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function">string <span class="title">noZero</span><span class="params">(string s)</span></span></span><br><span class="line"><span class="function"></span>&#123; <span class="comment">//去除开头的0</span></span><br><span class="line">    <span class="type">int</span> i = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">while</span> (s[i] == <span class="number">0</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        i++;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> s.<span class="built_in">erase</span>(<span class="number">0</span>, i - <span class="number">1</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">template</span>&lt;<span class="keyword">class</span> ElemType&gt;</span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">Long_Int_enQueue</span><span class="params">( LinkQueue&lt;ElemType&gt; &amp;A, LinkQueue&lt;ElemType&gt; &amp;B, LinkQueue&lt;ElemType&gt; &amp;C, <span class="type">const</span> <span class="type">int</span> &amp;len_A, <span class="type">const</span> <span class="type">int</span> &amp;len_B )</span></span>&#123;  <span class="comment">//长整型相加</span></span><br><span class="line">    <span class="keyword">if</span>(!(A.<span class="built_in">GetFront</span>()-&gt;data+B.<span class="built_in">GetFront</span>()-&gt;data))&#123;  <span class="comment">//异号减法</span></span><br><span class="line">        <span class="type">int</span> tmp=<span class="built_in">Two_LongNum_Compare</span>(A,B,len_A,len_B);</span><br><span class="line">        A.<span class="built_in">queueReverse</span>();</span><br><span class="line">        B.<span class="built_in">queueReverse</span>();</span><br><span class="line">        LinkQueueNode&lt;ElemType&gt; *p1=A.<span class="built_in">GetFront</span>()-&gt;next,*p2=B.<span class="built_in">GetFront</span>()-&gt;next;</span><br><span class="line">        <span class="keyword">if</span>(tmp==<span class="number">1</span>)&#123;  <span class="comment">//A&gt;B</span></span><br><span class="line">            <span class="type">int</span> f=<span class="number">0</span>;  </span><br><span class="line">            <span class="keyword">while</span>(p1!=<span class="literal">NULL</span> &amp;&amp; p2!=<span class="literal">NULL</span>)&#123; </span><br><span class="line">                <span class="type">int</span> c=p1-&gt;data-p2-&gt;data+f;  <span class="comment">//减法</span></span><br><span class="line">                f=<span class="number">0</span>;</span><br><span class="line">                <span class="keyword">if</span>(c&lt;<span class="number">0</span>)&#123;  <span class="comment">//借位</span></span><br><span class="line">                    c+=<span class="number">10000</span>;  </span><br><span class="line">                    f=<span class="number">-1</span>;  </span><br><span class="line">                &#125;</span><br><span class="line">                C.<span class="built_in">enQueue</span>(c);  <span class="comment">//连接字符串</span></span><br><span class="line">                p1=p1-&gt;next;  <span class="comment">//迭代</span></span><br><span class="line">                p2=p2-&gt;next;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">while</span>(p1!=<span class="literal">NULL</span>)&#123;</span><br><span class="line">                <span class="type">int</span> c=p1-&gt;data+f;  <span class="comment">//上一个f可能为-1</span></span><br><span class="line">                f=<span class="number">0</span>;</span><br><span class="line">                C.<span class="built_in">enQueue</span>(c);  <span class="comment">//直接推入链表中，enQueue为从尾巴添加，最后结果需要逆置</span></span><br><span class="line">                p1=p1-&gt;next;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span>(A.<span class="built_in">GetFront</span>()-&gt;data==<span class="number">-1</span>) C.<span class="built_in">GetFront</span>()-&gt;<span class="built_in">SetData</span>(<span class="number">-1</span>);</span><br><span class="line">            <span class="keyword">else</span> C.<span class="built_in">GetFront</span>()-&gt;<span class="built_in">SetData</span>(<span class="number">1</span>);  <span class="comment">//设置符号位</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span>(tmp==<span class="number">2</span>)&#123;  <span class="comment">//B&gt;A</span></span><br><span class="line">            <span class="type">int</span> f=<span class="number">0</span>;</span><br><span class="line">            <span class="keyword">while</span>(p1!=<span class="literal">NULL</span> &amp;&amp; p2!=<span class="literal">NULL</span>)&#123;  <span class="comment">//同步</span></span><br><span class="line">                <span class="type">int</span> c=p2-&gt;data-p1-&gt;data+f;</span><br><span class="line">              <span class="comment">//  cout&lt;&lt;p2-&gt;data&lt;&lt;&quot; - &quot;&lt;&lt;p1-&gt;data&lt;&lt;&quot; = &quot;&lt;&lt;c&lt;&lt;endl;  //检测中间过程</span></span><br><span class="line">                f=<span class="number">0</span>;</span><br><span class="line">                <span class="keyword">if</span>(c&lt;<span class="number">0</span>)&#123;</span><br><span class="line">                    c+=<span class="number">10000</span>;</span><br><span class="line">                    f=<span class="number">-1</span>;  <span class="comment">//借位</span></span><br><span class="line">                &#125;</span><br><span class="line">                C.<span class="built_in">enQueue</span>(c);  <span class="comment">//添入链表</span></span><br><span class="line">              <span class="comment">//  cout&lt;&lt;result&lt;&lt;endl;</span></span><br><span class="line">                p1=p1-&gt;next;</span><br><span class="line">                p2=p2-&gt;next;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">while</span>(p2!=<span class="literal">NULL</span>)&#123;  <span class="comment">//长出来的部分</span></span><br><span class="line">                <span class="type">int</span> c=p1-&gt;data+f;  <span class="comment">//之前还留有的借位</span></span><br><span class="line">                f=<span class="number">0</span>;</span><br><span class="line">                C.<span class="built_in">enQueue</span>(c);</span><br><span class="line">                p2=p2-&gt;next;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span>(B.<span class="built_in">GetFront</span>()-&gt;data==<span class="number">-1</span>) C.<span class="built_in">GetFront</span>()-&gt;<span class="built_in">SetData</span>(<span class="number">-1</span>);</span><br><span class="line">            <span class="keyword">else</span> C.<span class="built_in">GetFront</span>()-&gt;<span class="built_in">SetData</span>(<span class="number">1</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span>(<span class="built_in">Two_LongNum_Compare</span>(A,B,len_A,len_B)==<span class="number">0</span>)&#123;  <span class="comment">//B=A</span></span><br><span class="line">             C.<span class="built_in">enQueue</span>(<span class="number">0</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        C.<span class="built_in">queueReverse</span>();</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;  <span class="comment">//同号</span></span><br><span class="line">        A.<span class="built_in">queueReverse</span>();  <span class="comment">//反转</span></span><br><span class="line">        B.<span class="built_in">queueReverse</span>();</span><br><span class="line">        LinkQueueNode&lt;ElemType&gt; *p1=A.<span class="built_in">GetFront</span>()-&gt;next,*p2=B.<span class="built_in">GetFront</span>()-&gt;next;  <span class="comment">//反转后才能取首结点，表示从低位开始运算</span></span><br><span class="line">        <span class="type">int</span> f=<span class="number">0</span>;</span><br><span class="line">        <span class="keyword">while</span>(p1!=<span class="literal">NULL</span> &amp;&amp; p2!=<span class="literal">NULL</span>)&#123;</span><br><span class="line">            <span class="type">int</span> c=p2-&gt;data+p1-&gt;data+f;</span><br><span class="line">            f=c/<span class="number">10000</span>;  <span class="comment">//进位</span></span><br><span class="line">            c%=<span class="number">10000</span>;</span><br><span class="line">            C.<span class="built_in">enQueue</span>(c);  <span class="comment">//连接字符串</span></span><br><span class="line">            p1=p1-&gt;next;  <span class="comment">//迭代</span></span><br><span class="line">            p2=p2-&gt;next;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">while</span>(p1!=<span class="literal">NULL</span>)&#123;  <span class="comment">//如果A更长</span></span><br><span class="line">            <span class="type">int</span> c=p1-&gt;data+f;  </span><br><span class="line">            f=<span class="number">0</span>;</span><br><span class="line">            C.<span class="built_in">enQueue</span>(c);</span><br><span class="line">            p1=p1-&gt;next;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">while</span>(p2!=<span class="literal">NULL</span>)&#123;  <span class="comment">//如果B更长</span></span><br><span class="line">            <span class="type">int</span> c=p2-&gt;data+f;</span><br><span class="line">            f=<span class="number">0</span>;</span><br><span class="line">            C.<span class="built_in">enQueue</span>(c);</span><br><span class="line">            p2=p2-&gt;next;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span>(f)&#123;  <span class="comment">//如果一样长但进位了</span></span><br><span class="line">            C.<span class="built_in">enQueue</span>(f);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span>(B.<span class="built_in">GetFront</span>()-&gt;data==<span class="number">-1</span>) C.<span class="built_in">GetFront</span>()-&gt;<span class="built_in">SetData</span>(<span class="number">-1</span>);  <span class="comment">//如果为负</span></span><br><span class="line">        <span class="keyword">else</span> C.<span class="built_in">GetFront</span>()-&gt;<span class="built_in">SetData</span>(<span class="number">1</span>);  </span><br><span class="line">        C.<span class="built_in">queueReverse</span>();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">template</span>&lt;<span class="keyword">class</span> ElemType&gt;</span></span><br><span class="line"><span class="function"><span class="type">bool</span> <span class="title">ListTraverse</span><span class="params">(LinkQueue&lt;ElemType&gt; &amp;LInt)</span></span>&#123;  <span class="comment">//格式化遍历输出，注意除了第一节，后面的不足四位要往左边补0</span></span><br><span class="line">    LinkQueueNode&lt;ElemType&gt; *p1=LInt.<span class="built_in">GetFront</span>();</span><br><span class="line">    <span class="keyword">if</span>(p1-&gt;data==<span class="number">-1</span>) cout&lt;&lt;<span class="string">&quot;-&quot;</span>;</span><br><span class="line">    p1=p1-&gt;next;</span><br><span class="line">    <span class="type">int</span> c=<span class="number">0</span>;</span><br><span class="line">    <span class="keyword">while</span>(p1!=<span class="literal">NULL</span>)&#123;  <span class="comment">//cout补0是真的麻烦啊,所以可以利用Int_string转化补0,不需要补0的直接输出数字即可</span></span><br><span class="line">        <span class="keyword">if</span>(c) cout&lt;&lt;<span class="string">&quot;,&quot;</span>;</span><br><span class="line">        <span class="keyword">if</span>(!c)</span><br><span class="line">        cout &lt;&lt; p1-&gt;data;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        cout &lt;&lt; <span class="built_in">Int_String</span>(p1-&gt;data);</span><br><span class="line">        p1=p1-&gt;next;</span><br><span class="line">        c++;</span><br><span class="line">    &#125;</span><br><span class="line">    cout&lt;&lt;endl;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    string s,s_,sum;</span><br><span class="line">    LinkQueue&lt;<span class="type">int</span>&gt; L1,L2,L3;</span><br><span class="line">    <span class="type">int</span> l1,l2,l3;</span><br><span class="line">    <span class="built_in">getline</span>(cin,s);</span><br><span class="line">    <span class="built_in">getline</span>(cin,s_);</span><br><span class="line">    <span class="built_in">Input_Int_Division</span>(L1,s,l1);</span><br><span class="line">    <span class="built_in">ListTraverse</span>(L1);</span><br><span class="line">    <span class="built_in">Input_Int_Division</span>(L2,s_,l2);</span><br><span class="line">    <span class="built_in">ListTraverse</span>(L2);</span><br><span class="line">    <span class="built_in">Long_Int_enQueue</span>(L1,L2,L3,l1,l2);</span><br><span class="line">    cout&lt;&lt;endl;</span><br><span class="line">    <span class="built_in">ListTraverse</span>(L3);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+
+<p>直接在之前链表的程序上换了个皮，ADT换一换，函数名称换一换，除了逆置函数重新编写了一遍，其他功能名字一换就搞定了&#x3D; &#x3D;，方便快捷，毕竟说到底就是个链表模型，当初实现的时候采用的就是链尾添加，需要出列的地方直接采用指针遍历效果也是一样的，所以修改起来相当方便。</p>
+<!-- flag of hidden posts -->
+        </div>
+
+        
+            <div class="post-copyright-info w-full my-8 px-2 sm:px-6 md:px-8">
+                <div class="article-copyright-info-container">
+    <ul>
+        <li><strong>Title:</strong> 数据结构学习（三）队列</li>
+        <li><strong>Author:</strong> Forestsetyou</li>
+        <li><strong>Created at
+                :</strong> 2022-04-21 14:02:00</li>
+        
+            <li>
+                <strong>Updated at
+                    :</strong> 2023-08-03 18:07:00
+            </li>
+        
+        <li>
+            <strong>Link:</strong> https://forestsetyou.github.io/2022/04/21/Development/Algorithm/数据结构学习（三）队列/
+        </li>
+        <li>
+            <strong>
+                License:
+            </strong>
+            
+
+            
+                This work is licensed under <a class="license" target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0">CC BY-NC-SA 4.0</a>.
+            
+        </li>
+    </ul>
+</div>
+
+            </div>
+        
+
+        
+            <ul class="post-tags-box text-lg mt-1.5 flex-wrap justify-center flex md:hidden">
+                
+                    <li class="tag-item mx-0.5">
+                        <a href="/tags/Schoolwork/">#Schoolwork</a>&nbsp;
+                    </li>
+                
+            </ul>
+        
+
+        
+
+        
+
+
+        
+    </div>
+
+    
+        <div class="toc-content-container">
+            <div class="post-toc-wrap">
+    <div class="post-toc">
+        <div class="toc-title">On this page</div>
+        <div class="page-title">数据结构学习（三）队列</div>
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%98%9F%E5%88%97"><span class="nav-text">队列</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#ADT"><span class="nav-text">ADT</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%A1%BA%E5%BA%8F%E9%98%9F%E5%88%97%EF%BC%88%E5%BE%AA%E7%8E%AF%E9%98%9F%E5%88%97%EF%BC%89"><span class="nav-text">顺序队列（循环队列）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%93%BE%E9%98%9F%E5%88%97%EF%BC%88%E5%B8%A6%E5%A4%B4%E7%BB%93%E7%82%B9%EF%BC%89"><span class="nav-text">链队列（带头结点）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%87%BD%E6%95%B0%EF%BC%88%E9%A1%BA%E5%BA%8F%E9%98%9F%E5%88%97%EF%BC%89"><span class="nav-text">函数（顺序队列）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9D%A8%E8%BE%89%E4%B8%89%E8%A7%92"><span class="nav-text">杨辉三角</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A7%A3%E7%A0%81"><span class="nav-text">解码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%86%9C%E5%A4%AB%E8%BF%87%E6%B2%B3"><span class="nav-text">农夫过河</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%87%BD%E6%95%B0%EF%BC%88%E9%93%BE%E9%98%9F%E5%88%97%EF%BC%89"><span class="nav-text">函数（链队列）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A3%AB%E5%85%B5%E9%98%9F%E5%88%97%E8%AE%AD%E7%BB%83"><span class="nav-text">士兵队列训练</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%8C%B4%E5%AD%90%E9%80%89%E5%A4%A7%E7%8E%8B%EF%BC%88%E6%97%A0%E5%A4%B4%E7%BB%93%E7%82%B9%EF%BC%89"><span class="nav-text">猴子选大王（无头结点）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%95%BF%E6%95%B4%E6%95%B0%E5%8A%A0%E6%B3%95%E8%AE%A1%E7%AE%97"><span class="nav-text">长整数加法计算</span></a></li></ol></li></ol></li></ol>
+
+    </div>
+</div>
+        </div>
+    
+</div>
+
+
+
+                
+
+            </div>
+
+            
+
+        </div>
+
+        <div class="main-content-footer">
+            <footer class="footer mt-5 py-5 h-auto text-base text-third-text-color relative border-t-2 border-t-border-color">
+    <div class="info-container py-3 text-center">
+        
+        <div class="text-center">
+            &copy;
+            
+              <span>2024</span>
+              -
+            
+            2024&nbsp;&nbsp;<i class="fa-solid fa-heart fa-beat" style="--fa-animation-duration: 0.5s; color: #f54545"></i>&nbsp;&nbsp;<a href="/">Forestsetyou</a>
+            
+        </div>
+        
+        <div class="relative text-center lg:absolute lg:left-[20px] lg:top-1/2 lg:-translate-y-1/2 lg:text-left">
+            <span class="lg:block text-sm">POWERED BY <?xml version="1.0" encoding="utf-8"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg class="relative top-[2px] inline-block align-baseline" version="1.1" id="圖層_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="1rem" height="1rem" viewBox="0 0 512 512" enable-background="new 0 0 512 512" xml:space="preserve"><path fill="#0E83CD" d="M256.4,25.8l-200,115.5L56,371.5l199.6,114.7l200-115.5l0.4-230.2L256.4,25.8z M349,354.6l-18.4,10.7l-18.6-11V275H200v79.6l-18.4,10.7l-18.6-11v-197l18.5-10.6l18.5,10.8V237h112v-79.6l18.5-10.6l18.5,10.8V354.6z"/></svg><a target="_blank" class="text-base" href="https://hexo.io">Hexo</a></span>
+            <span class="text-sm lg:block">THEME&nbsp;<a class="text-base" target="_blank" href="https://github.com/EvanNotFound/hexo-theme-redefine">Redefine v2.6.1</a></span>
+        </div>
+        
+        
+        
+        
+        
+    </div>  
+</footer>
+        </div>
+    </div>
+
+    
+        <div class="post-tools">
+            <div class="post-tools-container">
+    <ul class="article-tools-list">
+        <!-- TOC aside toggle -->
+        
+            <li class="right-bottom-tools page-aside-toggle">
+                <i class="fa-regular fa-outdent"></i>
+            </li>
+        
+
+        <!-- go comment -->
+        
+    </ul>
+</div>
+
+        </div>
+    
+
+    <div class="right-side-tools-container">
+        <div class="side-tools-container">
+    <ul class="hidden-tools-list">
+        <li class="right-bottom-tools tool-font-adjust-plus flex justify-center items-center">
+            <i class="fa-regular fa-magnifying-glass-plus"></i>
+        </li>
+
+        <li class="right-bottom-tools tool-font-adjust-minus flex justify-center items-center">
+            <i class="fa-regular fa-magnifying-glass-minus"></i>
+        </li>
+
+        <li class="right-bottom-tools tool-dark-light-toggle flex justify-center items-center">
+            <i class="fa-regular fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        
+
+        <li class="right-bottom-tools tool-scroll-to-bottom flex justify-center items-center">
+            <i class="fa-regular fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="visible-tools-list">
+        <li class="right-bottom-tools toggle-tools-list flex justify-center items-center">
+            <i class="fa-regular fa-cog fa-spin"></i>
+        </li>
+        
+            <li class="right-bottom-tools tool-scroll-to-top flex justify-center items-center">
+                <i class="arrow-up fas fa-arrow-up"></i>
+                <span class="percent"></span>
+            </li>
+        
+        
+    </ul>
+</div>
+
+    </div>
+
+    <div class="image-viewer-container">
+    <img src="">
+</div>
+
+
+    
+        <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-input-field-pre">
+            <i class="fa-solid fa-keyboard"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="Search..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="popup-btn-close">
+                <i class="fa-solid fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fa-solid fa-spinner fa-spin-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+
+</main>
+
+
+    
+<script src="/js/libs/Swup.min.js"></script>
+
+<script src="/js/libs/SwupSlideTheme.min.js"></script>
+
+<script src="/js/libs/SwupScriptsPlugin.min.js"></script>
+
+<script src="/js/libs/SwupProgressPlugin.min.js"></script>
+
+<script src="/js/libs/SwupScrollPlugin.min.js"></script>
+
+<script src="/js/libs/SwupPreloadPlugin.min.js"></script>
+
+<script>
+    const swup = new Swup({
+        plugins: [
+            new SwupScriptsPlugin({
+                optin: true,
+            }),
+            new SwupProgressPlugin(),
+            new SwupScrollPlugin({
+                offset: 80,
+            }),
+            new SwupSlideTheme({
+                mainElement: ".main-content-body",
+            }),
+            new SwupPreloadPlugin(),
+        ],
+        containers: ["#swup"],
+    });
+</script>
+
+
+
+
+
+
+
+<script src="/js/tools/imageViewer.js" type="module"></script>
+
+<script src="/js/utils.js" type="module"></script>
+
+<script src="/js/main.js" type="module"></script>
+
+<script src="/js/layouts/navbarShrink.js" type="module"></script>
+
+<script src="/js/tools/scrollTopBottom.js" type="module"></script>
+
+<script src="/js/tools/lightDarkSwitch.js" type="module"></script>
+
+<script src="/js/layouts/categoryList.js" type="module"></script>
+
+
+
+    
+<script src="/js/tools/localSearch.js" type="module"></script>
+
+
+
+
+    
+<script src="/js/tools/codeBlock.js" type="module"></script>
+
+
+
+
+    
+<script src="/js/layouts/lazyload.js" type="module"></script>
+
+
+
+
+
+
+  
+<script src="/js/libs/Typed.min.js"></script>
+
+  
+<script src="/js/plugins/typed.js" type="module"></script>
+
+
+
+
+
+
+
+
+
+<div class="post-scripts" data-swup-reload-script>
+    
+        
+<script src="/js/tools/tocToggle.js" type="module"></script>
+
+<script src="/js/layouts/toc.js" type="module"></script>
+
+<script src="/js/plugins/tabs.js" type="module"></script>
+
+    
+</div>
+
+
+</body>
+</html>

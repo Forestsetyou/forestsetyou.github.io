@@ -1,0 +1,1225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="keywords" content="ctf, solution, note, blog">
+    
+    <meta name="author" content="Forestsetyou">
+    <!-- preconnect -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    
+    <!--- Seo Part-->
+    
+    <link rel="canonical" href="http://forestsetyou.github.io/2023/02/24/development/project/travel recommendation/"/>
+    <meta name="robots" content="index,follow">
+    <meta name="googlebot" content="index,follow">
+    <meta name="revisit-after" content="1 days">
+    
+        <meta name="description" content="false">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Travel Recommendation">
+<meta property="og:url" content="http://forestsetyou.github.io/2023/02/24/Development/Project/Travel%20Recommendation/index.html">
+<meta property="og:site_name" content="Festu&#39;s Blog">
+<meta property="og:description" content="false">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://picturebed-1310517892.file.myqcloud.com/image-20230407132750448.png">
+<meta property="og:image" content="https://picturebed-1310517892.file.myqcloud.com/227695992-7d0bd0ed-a777-4406-815b-f5f712212034.jpg">
+<meta property="article:published_time" content="2023-02-24T11:14:00.000Z">
+<meta property="article:modified_time" content="2023-09-24T09:21:00.000Z">
+<meta property="article:author" content="Forestsetyou">
+<meta property="article:tag" content="ctf, solution, note, blog">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://picturebed-1310517892.file.myqcloud.com/image-20230407132750448.png">
+    
+    
+    <!--- Icon Part-->
+    <link rel="icon" type="image/png" href="/hide_imgs/smiling_face.png" sizes="192x192">
+    <link rel="apple-touch-icon" sizes="180x180" href="/hide_imgs/smiling_face.png">
+    <meta name="theme-color" content="#A31F34">
+    <link rel="shortcut icon" href="/hide_imgs/smiling_face.png">
+    <!--- Page Info-->
+    
+    <title>
+        
+            Travel Recommendation -
+        
+        Festu&#39;s Blog
+    </title><meta name="robots" content="noindex">
+
+    
+<link rel="stylesheet" href="/fonts/Chillax/chillax.css">
+
+
+    <!--- Inject Part-->
+    
+
+    
+        <style>
+    :root {
+        --preloader-background-color: #fff;
+        --preloader-text-color: #000;
+    }
+
+    @media (prefers-color-scheme: dark) {
+        :root {
+            --preloader-background-color: #202124;
+            --preloader-text-color: #fff;
+        }
+    }
+
+    @media (prefers-color-scheme: light) {
+        :root {
+            --preloader-background-color: #fff;
+            --preloader-text-color: #000;
+        }
+    }
+
+    @media (max-width: 600px) {
+        .ml13 {
+            font-size: 2.6rem !important; /* Adjust this value as needed */
+        }
+    }
+
+    .preloader {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem; /* Tailwind 'gap-4' is 1rem */
+        align-items: center;
+        justify-content: center;
+        position: fixed;
+        padding: 12px;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh; /* 'h-screen' is 100% of the viewport height */
+        background-color: var(--preloader-background-color);
+        z-index: 1100; /* 'z-[1100]' sets the z-index */
+        transition: opacity 0.2s ease-in-out;
+    }
+
+    .ml13 {
+        font-size: 3.2rem;
+        /* text-transform: uppercase; */
+        color: var(--preloader-text-color);
+        letter-spacing: -1px;
+        font-weight: 500;
+        font-family: 'Chillax-Variable', sans-serif;
+        text-align: center;
+    }
+
+    .ml13 .word {
+        display: inline-flex;
+        flex-wrap: wrap;
+        white-space: nowrap;
+    }
+
+    .ml13 .letter {
+        display: inline-block;
+        line-height: 1em;
+    }
+</style>
+
+<div class="preloader">
+    
+<script src="/js/libs/anime.min.js"></script>
+
+    <h1 class="ml13">
+        Festu&#39;s Blog
+    </h1>
+    <script>
+        var textWrapper = document.querySelector('.ml13');
+        // Split text into words
+        var words = textWrapper.textContent.trim().split(' ');
+
+        // Clear the existing content
+        textWrapper.innerHTML = '';
+
+        // Wrap each word and its letters in spans
+        words.forEach(function(word) {
+            var wordSpan = document.createElement('span');
+            wordSpan.classList.add('word');
+            wordSpan.innerHTML = word.replace(/\S/g, "<span class='letter'>$&</span>");
+            textWrapper.appendChild(wordSpan);
+            textWrapper.appendChild(document.createTextNode(' ')); // Add space between words
+        });
+
+
+        anime.timeline({loop: true})
+            .add({
+                targets: '.ml13 .letter',
+                translateY: [100,0],
+                translateZ: 0,
+                opacity: [0,1],
+                easing: "easeOutExpo",
+                duration: 1400,
+                delay: (el, i) => 300 + 30 * i
+            }).add({
+            targets: '.ml13 .letter',
+            translateY: [0,-100],
+            opacity: [1,0],
+            easing: "easeInExpo",
+            duration: 1200,
+            delay: (el, i) => 100 + 30 * i
+        });
+
+        let themeStatus = JSON.parse(localStorage.getItem('REDEFINE-THEME-STATUS'))?.isDark;
+
+        // If the theme status is not found in local storage, check the preferred color scheme
+        if (themeStatus === undefined || themeStatus === null) {
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                themeStatus = 'dark';
+            } else {
+                themeStatus = 'light';
+            }
+        }
+
+        // Now you can use the themeStatus variable in your code
+        if (themeStatus) {
+            document.documentElement.style.setProperty('--preloader-background-color', '#202124');
+            document.documentElement.style.setProperty('--preloader-text-color', '#fff');
+        } else {
+            document.documentElement.style.setProperty('--preloader-background-color', '#fff');
+            document.documentElement.style.setProperty('--preloader-text-color', '#000');
+        }
+
+        window.addEventListener('load', function () {
+            hidePreloaderAfterTimeout(1000); // Hide after 1000 milliseconds once the window has loaded
+        });
+
+        // Backup failsafe: Hide preloader after a maximum of 5000 milliseconds, regardless of the window load event
+        hidePreloaderAfterTimeout(5000);
+
+        function hidePreloaderAfterTimeout(delay) {
+            setTimeout(function () {
+                var preloader = document.querySelector('.preloader');
+                preloader.style.opacity = '0';
+                setTimeout(function () {
+                    preloader.style.display = 'none';
+                }, 200);
+            }, delay);
+        }
+    </script>
+</div>
+    
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+
+    
+        
+<link rel="stylesheet" href="/assets/build/styles.css">
+
+    
+
+    
+<link rel="stylesheet" href="/fonts/fonts.css">
+
+    
+<link rel="stylesheet" href="/fonts/Satoshi/satoshi.css">
+
+    <!--- Font Part-->
+    
+    
+    
+    
+
+
+    <script id="hexo-configurations">
+    window.config = {"hostname":"forestsetyou.github.io","root":"/","language":"en","path":"search.xml"};
+    window.theme = {"articles":{"style":{"font_size":"16px","line_height":1.5,"image_border_radius":"14px","image_alignment":"center","image_caption":false,"link_icon":true,"title_alignment":"left","headings_top_spacing":{"h1":"5rem","h2":"4rem","h3":"2.8rem","h4":"2.5rem","h5":"2.2rem","h6":"2rem"}},"word_count":{"enable":false,"count":true,"min2read":true},"author_label":{"enable":false,"auto":false,"list":[]},"code_block":{"copy":true,"style":"simple","font":{"enable":false,"family":null,"url":null}},"toc":{"enable":true,"max_depth":3,"number":false,"expand":true,"init_open":true},"copyright":{"enable":true,"default":"cc_by_nc_sa"},"lazyload":true,"recommendation":{"enable":false,"title":"推荐阅读","limit":3,"mobile_limit":2,"placeholder":"/images/wallhaven-wqery6-light.webp","skip_dirs":[]}},"colors":{"primary":"#A31F34","secondary":null,"default_mode":"light"},"global":{"fonts":{"chinese":{"enable":false,"family":null,"url":null},"english":{"enable":false,"family":null,"url":null}},"content_max_width":"1000px","sidebar_width":"210px","hover":{"shadow":true,"scale":false},"scroll_progress":{"bar":false,"percentage":true},"website_counter":{"url":"https://cn.vercount.one/js","enable":false,"site_pv":true,"site_uv":true,"post_pv":true},"single_page":true,"preloader":true,"open_graph":true,"google_analytics":{"enable":false,"id":null}},"home_banner":{"enable":true,"style":"fixed","image":{"light":"/hide_imgs/light_banner-5.png","dark":"/hide_imgs/dark_banner.png"},"title":"Festu's Blog","subtitle":{"text":["Life Goes On."],"hitokoto":{"enable":false,"api":"https://v1.hitokoto.cn"},"typing_speed":100,"backing_speed":80,"starting_delay":500,"backing_delay":1500,"loop":false,"smart_backspace":false},"text_color":{"light":"#fff","dark":"#d1d1b6"},"text_style":{"title_size":"2.8rem","subtitle_size":"1.5rem","line_height":1.2},"custom_font":{"enable":false,"family":null,"url":null},"social_links":{"enable":true,"style":"default","links":{"github":"https://github.com/Forestsetyou","instagram":null,"zhihu":null,"twitter":null,"email":null},"qrs":{"weixin":null}}},"plugins":{"feed":{"enable":false},"aplayer":{"enable":false,"type":"fixed","audios":[{"name":null,"artist":null,"url":null,"cover":null,"lrc":null}]},"mermaid":{"enable":false,"version":"9.3.0"}},"version":"2.6.1","navbar":{"auto_hide":false,"color":{"left":"#f78736","right":"#367df7","transparency":35},"width":{"home":"1200px","pages":"1000px"},"links":{"Home":{"path":"/","icon":"fa-regular fa-house"},"Archives":{"path":"/archives","icon":"fa-regular fa-archive"},"categories":{"path":"/categories","icon":"fa-regular fa-folder"},"tags":{"path":"/tags","icon":"fa-regular fa-tags"}},"search":{"enable":true,"preload":true}},"page_templates":{"friends_column":2,"tags_style":"blur"},"home":{"sidebar":{"enable":true,"position":"left","first_item":"menu","announcement":null,"show_on_mobile":true,"links":null},"article_date_format":"auto","categories":{"enable":true,"limit":3},"tags":{"enable":true,"limit":3}},"footerStart":"2024/03/11 03:27:59"};
+    window.lang_ago = {"second":"%s seconds ago","minute":"%s minutes ago","hour":"%s hours ago","day":"%s days ago","week":"%s weeks ago","month":"%s months ago","year":"%s years ago"};
+    window.data = {"masonry":false};
+  </script>
+    
+    <!--- Fontawesome Part-->
+    
+<link rel="stylesheet" href="/fontawesome/fontawesome.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/brands.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/solid.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/regular.min.css">
+
+    
+    
+    
+    
+<meta name="generator" content="Hexo 7.1.1"></head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+
+    
+        <span class="pjax-progress-bar"></span>
+<!--        <span class="swup-progress-icon">-->
+<!--            <i class="fa-solid fa-circle-notch fa-spin"></i>-->
+<!--        </span>-->
+    
+</div>
+
+
+<main class="page-container" id="swup">
+
+    
+
+    <div class="main-content-container">
+
+
+        <div class="main-content-header">
+            <header class="navbar-container px-6 md:px-12">
+
+    <div class="navbar-content ">
+        <div class="left">
+            
+                <a class="logo-image" href="/">
+                    <img src="/hide_imgs/smiling_face.png">
+                </a>
+            
+            <a class="logo-title" href="/">
+                
+                Festu&#39;s Blog
+                
+            </a>
+        </div>
+
+        <div class="right">
+            <!-- PC -->
+            <div class="desktop">
+                <ul class="navbar-list">
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/"
+                                        >
+                                    <i class="fa-regular fa-house fa-fw"></i>
+                                    HOME
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/archives"
+                                        >
+                                    <i class="fa-regular fa-archive fa-fw"></i>
+                                    ARCHIVES
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/categories"
+                                        >
+                                    <i class="fa-regular fa-folder fa-fw"></i>
+                                    CATEGORIES
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/tags"
+                                        >
+                                    <i class="fa-regular fa-tags fa-fw"></i>
+                                    TAGS
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                    
+                        <li class="navbar-item search search-popup-trigger">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </li>
+                    
+                </ul>
+            </div>
+            <!-- Mobile -->
+            <div class="mobile">
+                
+                    <div class="icon-item search search-popup-trigger"><i class="fa-solid fa-magnifying-glass"></i>
+                    </div>
+                
+                <div class="icon-item navbar-bar">
+                    <div class="navbar-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile sheet -->
+    <div class="navbar-drawer h-screen w-full absolute top-0 left-0 bg-background-color flex flex-col justify-between">
+        <ul class="drawer-navbar-list flex flex-col px-4 justify-center items-start">
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/"
+                        >
+                            <span>
+                                HOME
+                            </span>
+                            
+                                <i class="fa-regular fa-house fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/archives"
+                        >
+                            <span>
+                                ARCHIVES
+                            </span>
+                            
+                                <i class="fa-regular fa-archive fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/categories"
+                        >
+                            <span>
+                                CATEGORIES
+                            </span>
+                            
+                                <i class="fa-regular fa-folder fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/tags"
+                        >
+                            <span>
+                                TAGS
+                            </span>
+                            
+                                <i class="fa-regular fa-tags fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+
+            
+            
+        </ul>
+
+        <div class="statistics flex justify-around my-2.5">
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/tags">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">1</div>
+        <div class="label text-third-text-color text-sm">Tags</div>
+    </a>
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/categories">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">10</div>
+        <div class="label text-third-text-color text-sm">Categories</div>
+    </a>
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/archives">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">14</div>
+        <div class="label text-third-text-color text-sm">Posts</div>
+    </a>
+</div>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="main-content-body">
+
+            
+
+            <div class="main-content">
+
+                
+                    <div class="post-page-container flex relative justify-between box-border w-full h-full">
+    <div class="article-content-container">
+
+        <div class="article-title relative w-full">
+            
+                
+                
+                <img src="/hide_imgs/post_thumbnail.png" alt="Travel Recommendation" class="w-full h-60 sm:h-72 md:h-80 object-cover sm:rounded-t-large dark:brightness-75"/>
+                
+                <div class="w-full flex items-center absolute bottom-0 justify-start">
+                    <h1 class="article-title-cover text-center mx-6 my-6 text-second-text-color bg-background-color-transparent px-4 py-3 text-3xl sm:text-4xl md:text-5xl font-bold backdrop-blur-lg rounded-xl border border-border-color ">Travel Recommendation</h1>
+                </div>
+            
+            </div>
+
+        
+            <div class="article-header flex flex-row gap-2 items-center px-2 sm:px-6 md:px-8">
+                <div class="avatar w-[46px] h-[46px] flex-shrink-0 rounded-medium border border-border-color p-[1px]">
+                    <img src="/hide_imgs/avatar.png">
+                </div>
+                <div class="info flex flex-col justify-between">
+                    <div class="author flex items-center">
+                        <span class="name text-default-text-color text-lg font-semibold">Forestsetyou</span>
+                        
+                    </div>
+                    <div class="meta-info">
+                        <div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fa-regular fa-pen-fancy"></i>&nbsp;
+        <span class="desktop">2023-02-24 19:14</span>
+        <span class="mobile">2023-02-24 19:14</span>
+        <span class="hover-info">Created</span>
+    </span>
+    
+        <span class="article-date article-meta-item">
+            <i class="fa-regular fa-wrench"></i>&nbsp;
+            <span class="desktop">2023-09-24 17:21</span>
+            <span class="mobile">2023-09-24 17:21</span>
+            <span class="hover-info">Updated</span>
+        </span>
+    
+
+    
+        <span class="article-categories article-meta-item">
+            <i class="fa-regular fa-folders"></i>&nbsp;
+            <ul>
+                
+                
+                    
+                        
+                        <li>
+                            <a href="/categories/Development/">Development</a>&nbsp;
+                        </li>
+                    
+                    
+                
+                    
+                        
+                            <li>></li>
+                        
+                        <li>
+                            <a href="/categories/Development/Project/">Project</a>&nbsp;
+                        </li>
+                    
+                    
+                
+            </ul>
+        </span>
+    
+    
+
+    
+    
+    
+    
+</div>
+
+                    </div>
+                </div>
+            </div>
+        
+
+        
+
+
+        <div class="article-content markdown-body px-2 sm:px-6 md:px-8 pb-8">
+            <h1 id="旅游推荐系统"><a href="#旅游推荐系统" class="headerlink" title="旅游推荐系统"></a>旅游推荐系统</h1><h2 id="旅游推荐算法"><a href="#旅游推荐算法" class="headerlink" title="旅游推荐算法"></a>旅游推荐算法</h2><p>“getPath.js”-Src：</p>
+<h3 id="算法细节"><a href="#算法细节" class="headerlink" title="算法细节"></a>算法细节</h3><p>设定游玩天数为T，数据库中所有的景点组成的集合为S。</p>
+<ol>
+<li><p>构建方案之前，用户会传入：</p>
+<ol>
+<li>必去景点集合S<del>1</del>（例如 <code>[ &quot;上海迪士尼乐园&quot; ]</code>）</li>
+<li>不去景点集合S<del>2</del>（例如 <code>[ &quot;外滩&quot; ]</code>）</li>
+<li>景点的类型偏向集合Tags（例如 <code>[ &quot;红色文化&quot;, &quot;亲子时光&quot; ]</code>）</li>
+<li>为了更明确算法的主题，暂时不考虑旅游起点对景点安排的影响</li>
+</ol>
+</li>
+<li><p>设方案的集合为Group，一共为用户提供三套方案Group<del>1-3</del>，每套方案都要考虑T天，因此需要3T组小方案（Gp<del>3T</del>），每T组方案对应T天的游玩内容，组成一套方案。</p>
+<p>假设T为3，则：</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Day 1</th>
+<th>Day 2</th>
+<th>Day3</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>方案一（Group<del>1</del>）</strong></td>
+<td>Gp<del>1</del>：景点1-&gt;景点2-&gt;景点3 | t<del>1</del></td>
+<td>Gp<del>4</del>：景点3-&gt;景点4-&gt;景点5 | t<del>2</del></td>
+<td>Gp<del>7</del>：景点6 | t<del>3</del></td>
+</tr>
+<tr>
+<td><strong>方案二（Group<del>2</del>）</strong></td>
+<td>Gp<del>2</del></td>
+<td>Gp<del>5</del></td>
+<td>Gp<del>8</del></td>
+</tr>
+<tr>
+<td><strong>方案三（Group<del>3</del>）</strong></td>
+<td>Gp<del>3</del></td>
+<td>Gp<del>6</del></td>
+<td>Gp<del>9</del></td>
+</tr>
+</tbody></table>
+</li>
+<li><p>对于必去景点，安排每天消化一个必去景点（一个必去景点能保证总游玩时长合适），因此最多能处理T个必去景点。<strong>每套方案</strong>都遵守这个原则。将至多T个必去景点分配至每天的游玩方案中的第一个游玩景点。</p>
+</li>
+<li><p>对于游玩时长，假定游玩总时长在10到12小时之间较为合理，则当景点数量与游玩时长落在该区间上时认为某个方案已经饱和，有饱和区间：<code>[10, 12]</code>；<br>迪士尼的推荐游玩时长为”1-2天”，考虑将其处理为12小时的游玩时长，单独占据一组方案</p>
+<p>由于要考虑游客的用餐时间，为其午餐与晚餐各分配1小时，午餐的时间段安排在 <code>[11, 13]</code> 之间，晚餐时间安排在 <code>[17, 19]</code>。</p>
+<p>若某个景点安排结束刚好落在用餐区间内，则跳过一小时以供用户用餐；若某个景点的时间段跨过了用餐时间区间，则将其截断在最早的用餐时间，中间插入一小时用餐，完毕后再继续考虑该景点的游玩时间段。</p>
+<p>例如外滩游玩时长为6小时，原本开始于9点结束于15点，即：<code>[9, 15]</code> . 则在11点处将其截断，午餐时间为 <code>[11, 12]</code> ，外滩的游玩时间段变为：<code>[9, 11], [12, 16]</code> .</p>
+</li>
+<li><p>需要将不同的方案差异化，提供给用户足够的差异信息，帮助其进行简单轻松的选择，减轻用户负担，目前考虑的因素：</p>
+<ul>
+<li>游玩时间短，悠闲惬意</li>
+<li>游玩的景点风格明确</li>
+<li>通勤距离较短，通勤负担较小</li>
+<li>适合特定人群</li>
+</ul>
+<p>差异化三套方案：</p>
+<ol>
+<li>安排松散，通勤轻松，悠闲惬意（9-18）：游玩时长一般为8小时，开始于9点，通勤距离、时间尽可能短；<ul>
+<li>起始时间：9点；</li>
+<li>时长限制：<code>[6, 8]</code> ；</li>
+<li>提高通勤的权重；</li>
+<li>缩短游玩总时长；</li>
+</ul>
+</li>
+<li>景点紧凑优质，丰富充实（7-20）：游玩时长预期12小时，开始于8点，种类尽可能丰富；<ul>
+<li>起始时间：8点；</li>
+<li>时长限制：<code>[10, 12]</code> ；</li>
+<li>降低Tag的权重；</li>
+<li>提高评分的权重；</li>
+</ul>
+</li>
+<li>景点风格突出，满足您的偏好（8-19）：偏向于安排用户喜爱类型的景点，游玩时长适中；<ul>
+<li>起始时间：9点；</li>
+<li>时长限制：<code>[8, 10]</code> ；</li>
+<li>提高Tag的权重；</li>
+<li>读取用户的收藏特性，多安排相似的景点；</li>
+</ul>
+</li>
+</ol>
+<p>考虑到各组方案的首个景点一般为必去景点，差异化只体现在非首个景点的安排上。</p>
+</li>
+<li><p>目标思路：</p>
+<p>先从所有景点中筛选出含有Tags中标签的景点，并按照评分从高到低对这些景点排序，获得一个景点的集合S<del>3</del>，要求集合S<del>3</del>的大小至少为3T；而S<del>3</del>在S中的补集为S<del>4</del>。若Tags为空或选出的景点数量少于3T，则从集合S<del>4</del>中按评分从高到低选出数个景点来补足集合S<del>3</del>。</p>
+<p>首先分配必去景点。</p>
+<p>遍历集合S<del>3</del>，按评分从高到低，为每个没有必去景点的方案选出<strong>首个游玩</strong>的景点X<del>0</del>。至此每组方案都已经分配一个景点。将S<del>3</del>中剩余的部分与S<del>4</del>合并，得到新的可选景点集合S<del>5</del>。</p>
+<p>接着依次遍历每组方案，以X<del>0</del>为<strong>出发点X</strong>，对于S<del>5</del>中的每个景点P<del>i</del>计算一个综合评分E<del>Pi</del>：<br>$$<br>E_Pi &#x3D; W_1T_{Pi}+W_2G_{Pi}+W_3R_{Pi}+W_4A_{Pi}+W_5H_{Pi}<br>$$</p>
+<p>T<del>Pi</del>表示X与P<del>i</del>的通勤时间；<br>G<del>Pi</del>表示景点P<del>i</del>是否含有Tags中的标签，有：$G_{Pi} &#x3D; \begin{cases}<br>1  &amp; \text{ in }\text{ tags } \<br>0  &amp; \text{ not }\text{ in }\text{ tags }<br>\end{cases}$<br>R<del>Pi</del>表示景点P<del>i</del>属性中的评分；<br>A<del>Pi</del>表示景点P<del>i</del>是否被收藏，有：$A_{Pi} &#x3D; \begin{cases}<br>1  &amp; \text{ stared } \<br>0  &amp; \text{ not }\text{ stared }<br>\end{cases}$<br>H<del>Pi</del>表示景点Pi相对于用户偏好的评估，通过探索用户的浏览记录与收藏景点来探索<br>上述五个因素各占1分，总分为5分。</p>
+<p>W<del>1</del>, W<del>2</del>, W<del>3</del>, W<del>4</del> 分别表示前四个属性的权重，在不同方案中有不同取值，W<del>5</del>表示是否进行用户偏好评估，有：$W_5 &#x3D; \begin{cases} 0 &amp; \text{scheme-1} \ 0 &amp; \text{scheme-2} \ 1 &amp; \text{scheme-3} \end{cases}$  . 只有方案三考虑偏好评估。</p>
+<p>为各因素得分加权后相加，得到该景点的最终评分，依据评分从高到低为该组方案选择下一个游玩景点为X<del>1</del>，将X<del>1</del>从集合S5中移出，并将X<del>1</del>设置为新的X重复上述步骤选出下一个游玩景点，直至该组方案饱和；以同样的方式处理下一组方案直至所有方案都饱和。</p>
+<p>该算法按顺序选出每组景点，因此在不考虑出行方式等因素的情况下，无需对分组好的结点重新排序。</p>
+<p>同时考虑到差异化的目标，不同方案的各项因素权重也有所不同</p>
+</li>
+<li><p><strong>补充：</strong>鉴于JS的时间性能不佳，以及云函数服务器对运行内存的限制，获取两地通勤时间时无法考虑所有景点，而是尽可能选择提取通勤时间在60分钟内的景点，并从这些景点中择优选取。</p>
+</li>
+<li><p>待考虑因素：</p>
+<ul>
+<li><input disabled="" type="checkbox"> 景点营业时间-限制因素</li>
+<li><input disabled="" type="checkbox"> 大景点细分为小的游玩项目-迪士尼-内部项目细分</li>
+<li><input disabled="" type="checkbox"> 预算</li>
+<li><input checked="" disabled="" type="checkbox"> 出行方式-调用腾讯出行API-通勤时间<br>解决：一律考虑行车出行</li>
+</ul>
+</li>
+</ol>
+<h3 id="智能提取算法"><a href="#智能提取算法" class="headerlink" title="智能提取算法"></a>智能提取算法</h3><p>解决方案一：用语言模型GPT智能处理问题</p>
+<p>参考：<a class="link"   target="_blank" rel="noopener" href="https://github.com/easychen/openai-gpt-dev-notes-for-cn-developer" >GPT接口开发指引 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a><br>使用第三方代理的GPT接口：<a class="link"   target="_blank" rel="noopener" href="https://api2d.com/" >api2d <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a><br>System：</p>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">假设你是一个信息转化器，输入是用户给出的旅游需求描述，输出是一个Json格式的内容，要求以下Json格式的输出：</span><br><span class="line">&#123;</span><br><span class="line">	&quot;开始日期&quot;: beg,</span><br><span class="line">	&quot;结束日期&quot;: end,</span><br><span class="line">	&quot;必去景点&quot;: [mt1, mt2...],</span><br><span class="line">	&quot;不去景点&quot;: [no1, no2...],</span><br><span class="line">	&quot;行程特色&quot;: [&quot;红色文化&quot;, &quot;网红时尚&quot;...]</span><br><span class="line">&#125;</span><br><span class="line">你需要从用户的旅游需求描述中提取出对应Json键的内容并按要求填入其中。</span><br><span class="line">&quot;开始日期&quot;表示旅行开始的日期时间，&quot;结束日期&quot;表示旅行返程的日期时间，上述两个日期的值类型为字符串，格式类似&quot;2023-3-25&quot;表示2023年3月25日。必去景点是一个数组，包含了用户直接表明想要去游玩的景点名称，如用户明示自己想去名为&quot;外滩&quot;、&quot;迪士尼乐园&quot;的景点游玩，则该项的值为[&quot;外滩&quot;，&quot;迪士尼乐园&quot;]，该数组的长度不宜超过游玩的天数，例如我从&quot;2023-3-25&quot;开始旅行，&quot;2023-3-27&quot;结束旅行，则游玩时间为3天，则&quot;必去景点&quot;数组的长度应最多为3，多的景点将无法有效被安排进行程当中，若用户没有直接提供想去的景点，则该数组可以为空;&quot;不去景点&quot;包含了用户直接表明不想去的景点，没有长度限制，其他格式要求与&quot;必去景点&quot;项目一致。</span><br><span class="line">行程特色是一个数组，它包含了用户表明想去的景点的类型名称，景点有固定的给出的类型：</span><br><span class="line">[&quot;红色文化&quot;,&quot;网红时尚&quot;,&quot;宗教文化&quot;,&quot;购物中心&quot;,&quot;自然风光&quot;,&quot;游乐中心&quot;,&quot;当地公园&quot;,&quot;当地名校&quot;,&quot;康乐休闲&quot;,&quot;亲子时光&quot;,&quot;小资文艺&quot;,&quot;科研学习&quot;,&quot;名人故居&quot;,&quot;特色古镇&quot;]</span><br><span class="line">你需要概括用户对行程类型需求并转化为上述类型中的一个或数个，如用户想去&quot;红色文化氛围浓厚的网红地点&quot;，则&quot;行程特色&quot;的值为：[&quot;红色文化&quot;,&quot;网红文化&quot;]，数组长度不宜超过3，特别需要注意的是，你不需要根据用户倾向的&quot;必去景点&quot;的类型信息去分析用户对景点游玩类型的需求，而是只从用户对游玩类型的直接需求描述中提取分析，若用户没有提供任何直接的关于景点类型的需求，则该数组可为空。</span><br><span class="line">若用户没有直接的给出旅程开始日期，则将其设置为东八时区的当前日期时间；若用户没有直接的给出旅程的结束日期，则先提取出&quot;必去景点&quot;的值，根据其数组长度计算结束日期，若数组长度为l，当前日期为n，则结束日期为n+(l-1)。</span><br><span class="line">你只需要返回最终的Json内容，而不必输出其他任何内容。</span><br></pre></td></tr></table></figure></div>
+
+<p>message:</p>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">我想要在2023年5月3日出发，想去迪士尼和外滩玩，但是不想去东方明珠塔。我希望能多玩一些时尚并且适合亲子同游的景点。</span><br></pre></td></tr></table></figure></div>
+
+<p>效果：</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://picturebed-1310517892.file.myqcloud.com/image-20230407132750448.png"
+                      alt="image-20230407132750448"
+                ></p>
+<p>chatGpt3能有效提取，但总是会输出多余的内容。另一个问题是有人已经发现vx小程序调试时使用GPT没有问题，但上线审核时可能会ban掉gpt的代码，因此在上线小程序时是有风险的：</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://picturebed-1310517892.file.myqcloud.com/227695992-7d0bd0ed-a777-4406-815b-f5f712212034.jpg"
+                      alt="f0f31cd396f0e09d0111eda090c9155"
+                ></p>
+<p>暂不清楚审核时的细节，交流群中有人表示这与小程序的表现内容有关，审核会从程序表现入手，如果能将功能封装到无法发现利用到了GPT倒也不会被卡审核。</p>
+<p>其他有效的AI有<a class="link"   target="_blank" rel="noopener" href="http://itutorials.online/" >Sage <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a>（找不到API），Dragonfly（需要用邮件单独申请），Claude+（还在申请资格），文心一言（内测资格已发放完），因此使用聊天机器人解决暂时行不通。</p>
+<p>解决方案二：用NLP接口自己实现关键信息提取</p>
+<p>需要机器学习+NLP，如果简单地去实现，效果会很差，可能对输入格式有固定的要求；如果对效果有较高的要求会需要很长时间的学习与调试。</p>
+<h3 id="JavaScript"><a href="#JavaScript" class="headerlink" title="JavaScript"></a>JavaScript</h3><ul>
+<li><p>利用 <code>array.at(-1)</code> 快速访问数组的最后一个元素，该语法较新，部分服务器可能不支持</p>
+</li>
+<li><p><code>key in obj</code> 检测对象obj中是否有键key，包括继承而来的内容；<code>obj.hasOwnProperty(key)</code> 检测对象obj是否含有某个非继承属性（键）。</p>
+</li>
+<li><p><code>array.indexOf(value)</code> 返回value在数组中的位置，若未找到返回-1；利用此特性可检测值是否在数组中。<br><strong>注意：</strong><code>elm in array</code> 不能检测元素elm是否在数组array中！</p>
+</li>
+<li><p><code>delete obj[key]</code> 可删除对象中的键值对</p>
+</li>
+<li><p><code>Object.values(obj)</code> 返回由对象obj中的值组成的数组</p>
+</li>
+<li><p><code>Array.sort((a, b) =&gt; a-b)</code> 实现将Array中的元素从小到大排（返回正数则交换）</p>
+</li>
+<li><p><code>+&quot;1&quot;</code> 可以快速将字符串的”1”转换为数字的1，加号可以转换所有可被转换为数字类型的元素。</p>
+</li>
+<li><p>在函数中填充数组时可能会用到：<code>arr=arr.concat(num)</code> ，其中arr是传入的希望往里填充num的数组；但实际上该做法是不可行的，外部的arr并不会更新。<br>原因是传入数组时arr接收到外部数组的引用地址，通过更新该地址的内容来同步，但由于concat并非在原数组上修改，此处的更新语句是通过更换地址来实现的，因此外部的数组并不会同步</p>
+</li>
+<li><p>使用类似 <code>for(var _key of Array)</code> 的语法时，由于常用”_key”来做临时变量，因此上下文可能多次出现。此时必须带上var来申请临时变量，否则”_key”的值会被保存到下文，如下例：</p>
+<div class="highlight-container" data-rel="Javascript"><figure class="iseeu highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span>(_key <span class="keyword">of</span> <span class="variable constant_">A1</span>)&#123;</span><br><span class="line">	a = _key</span><br><span class="line">	<span class="keyword">for</span>(_key <span class="keyword">of</span> <span class="variable constant_">A2</span>)&#123;</span><br><span class="line">		<span class="comment">// ...</span></span><br><span class="line">	&#125;</span><br><span class="line">	b = _key</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+
+<p>b由于受到上文的影响将不等于a。</p>
+</li>
+<li><p>有：</p>
+<div class="highlight-container" data-rel="Javascript"><figure class="iseeu highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">a = &#123;&#125;</span><br><span class="line">a[<span class="string">&#x27;1&#x27;</span>] = <span class="number">1</span></span><br><span class="line">a[<span class="number">1</span>] = <span class="number">2</span></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(a[<span class="string">&#x27;1&#x27;</span>]) 	<span class="comment">// 输出 2</span></span><br></pre></td></tr></table></figure></div>
+
+<p>对象默认将所有键处理成字符串，因此数字与数字字符是等价的</p>
+</li>
+<li><p>小程序的请求接口 <code>wx.request</code> 本身不支持Promise风格调用，只能为它设置回调函数：<a class="link"   target="_blank" rel="noopener" href="https://developers.weixin.qq.com/miniprogram/dev/api/network/request/wx.request.html" >文档 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+<div class="highlight-container" data-rel="Javascript"><figure class="iseeu highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 常规调用</span></span><br><span class="line">wx.<span class="title function_">request</span>(&#123;</span><br><span class="line">	exampel,</span><br><span class="line">	<span class="attr">success</span>: <span class="function">(<span class="params">res</span>) =&gt;</span> &#123;</span><br><span class="line">		<span class="comment">// ...</span></span><br><span class="line">		<span class="keyword">return</span> ...</span><br><span class="line">	&#125;,</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure></div>
+
+<p>不能使用 <code>await, .then()</code> ，在处理不定长任务如循环时会非常麻烦，为了更好地异步处理，将其打包进Promise中：</p>
+<div class="highlight-container" data-rel="Javascript"><figure class="iseeu highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">async</span> <span class="keyword">function</span> <span class="title function_">myRequest</span>(<span class="params">parm</span>)&#123;</span><br><span class="line">	<span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">Promise</span>(<span class="function">(<span class="params">resolve, reject</span>) =&gt;</span> &#123;</span><br><span class="line">		parm[<span class="string">&#x27;success&#x27;</span>] = <span class="function">(<span class="params">res</span>) =&gt;</span> &#123;</span><br><span class="line">            <span class="title function_">resolve</span>(res)</span><br><span class="line">        &#125;</span><br><span class="line">	&#125;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">await</span> <span class="title function_">myRequest</span>(&#123;</span><br><span class="line">    example,</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;).<span class="title function_">then</span>(...)</span><br></pre></td></tr></table></figure></div>
+
+<p>当request请求结束，回调函数才会被调用，promise才会被resolve释放，<code>myRequest</code> 才会返回，而该函数允许使用await与then，因此就做到了更好地异步。</p>
+</li>
+<li><p><code>“1”.padStart(2, &quot;0&quot;)</code> 表示将字符串填充至长度为2，用”0”填充</p>
+</li>
+</ul>
+<h2 id="旅游资源数据"><a href="#旅游资源数据" class="headerlink" title="旅游资源数据"></a>旅游资源数据</h2><h3 id="POI数据常用分类"><a href="#POI数据常用分类" class="headerlink" title="POI数据常用分类"></a>POI数据常用分类</h3><table>
+<thead>
+<tr>
+<th><strong>大类</strong></th>
+<th><strong>中类</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>餐饮美食</td>
+<td>中国菜、外国菜、小吃快餐、咖啡、蛋糕甜品店、茶座、其他</td>
+</tr>
+<tr>
+<td>购物消费</td>
+<td>购物中心、百货商场、市场、超市、便利店、花鸟鱼虫、家电数码、家居建材、免税店、商业街、文体用品、其他</td>
+</tr>
+<tr>
+<td>商务住宅</td>
+<td>住宅区、别墅、商住两用楼宇、宿舍、社区中心、写字楼、工业大厦、产业园区、其他</td>
+</tr>
+<tr>
+<td>休闲娱乐</td>
+<td>电影院、游乐场、剧院、酒吧、棋牌室、网吧、度假疗养场所、农家乐、KTV、游戏场所、其他</td>
+</tr>
+<tr>
+<td>医疗保健</td>
+<td>综合医院、专科医院、诊所、急救中心、疾病预防机构、医药保健销售、动物医疗、其他</td>
+</tr>
+<tr>
+<td>运动健身</td>
+<td>足球场、篮球场馆、健身中心、高尔夫、游泳馆、保龄球馆、综合体育馆、壁球场、橄榄球场、水上运动、户外健身场所、冰雪运动、马术&amp;赛马、乒乓球馆、台球厅、跆拳道场馆、网球场、羽毛球场、露营地、其他</td>
+</tr>
+<tr>
+<td>科教文化</td>
+<td>高等院校、成人教育、职业技术学校、中学、小学、幼儿园、驾校、培训机构、图书馆、博物馆、科技馆、新闻出版、广播电视、档案馆、会展展览、科研机构、美术馆、天文馆、文化宫、文艺团体、其他</td>
+</tr>
+<tr>
+<td>旅游景点</td>
+<td>景点、植物园、公园、红色旅游、动物园、纪念馆、世界遗产、宗教、广场、水族馆、其他</td>
+</tr>
+<tr>
+<td>酒店住宿</td>
+<td>五星级宾馆、四星级宾馆、三星级宾馆、经济型连锁酒店、宾馆酒店、奢华酒店、旅馆招待所、青年旅舍、其他</td>
+</tr>
+<tr>
+<td>生活服务</td>
+<td>公共厕所、邮局、公用电话、紧急避难场所、搬家公司、彩票销售点、通讯营业厅、共享设备、旅行社、美容美发、人才市场、殡葬服务、摄影冲印、事务所、售票处、维修点、物流公司、洗衣店、洗浴推拿、信息咨询中心、婴儿服务场所、报刊亭、中介机构、公用事业、其他</td>
+</tr>
+<tr>
+<td>公司企业</td>
+<td>公司、工厂、农林牧渔、其他</td>
+</tr>
+<tr>
+<td>交通设施</td>
+<td>公交车站、停车场、服务区、路灯、路标、收费站、道路、桥梁、出租车、地铁站、港口码头、过境口岸、火车站、飞机场、轮渡、索道、长途汽车站、其他</td>
+</tr>
+<tr>
+<td>金融机构</td>
+<td>银行、ATM、投资理财、保险、其他</td>
+</tr>
+<tr>
+<td>汽车相关</td>
+<td>汽车销售、汽车维修、汽车养护、洗车、汽车配件、汽车租赁、二手车交易、充电站、加气站、加油站、其他能源站、其他</td>
+</tr>
+<tr>
+<td>行政地标</td>
+<td>省、城市、区县、乡镇&amp;街道、村庄、其他</td>
+</tr>
+<tr>
+<td>政府机构</td>
+<td>政府机关、工商税务机构、公检法机构、交通车辆管理、民主党派、社会团体、外国机构、政府机关、其他</td>
+</tr>
+<tr>
+<td>自然地物</td>
+<td>岛屿、水系、山峰、其他</td>
+</tr>
+</tbody></table>
+<h3 id="公共数据集"><a href="#公共数据集" class="headerlink" title="公共数据集"></a>公共数据集</h3><h4 id="上海旅游局"><a href="#上海旅游局" class="headerlink" title="上海旅游局"></a>上海旅游局</h4><p>依据上海旅游局提供的官方数据，可以获取的数据信息字段只有：序号：单位名称：景区地址。分为5A、4A、3A三等级</p>
+<p>数据集分享：[</p>
+<p><a class="link"   target="_blank" rel="noopener" href="https://cn.bing.com/?mkt=zh-CN" >2022数据集分享-知乎 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a>，</p>
+<p><a class="link"   target="_blank" rel="noopener" href="https://whlyj.sh.gov.cn/ajjq/index.html" >上海旅游数据 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a>，</p>
+<p>]</p>
+<hr>
+<h4 id="全国POI信息数据库"><a href="#全国POI信息数据库" class="headerlink" title="全国POI信息数据库"></a>全国POI信息数据库</h4><p>网址：<a class="link"   target="_blank" rel="noopener" href="http://www.poilist.cn/cities-list/%E9%85%92%E5%BA%97" >全国POI信息数据库 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+<p>可免费获取1000条大类数据，如酒店、美食、景点</p>
+<hr>
+<h4 id="POI搜索工具"><a href="#POI搜索工具" class="headerlink" title="POI搜索工具"></a>POI搜索工具</h4><p>POI搜索工具：<a class="link"   target="_blank" rel="noopener" href="http://guihuayun.com/poi/" >网址 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a><br>坐标转换：<a class="link"   target="_blank" rel="noopener" href="https://www.lddgo.net/convert/coordinate" >网址 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+<p>国内的坐标系有三类：WGS84坐标系、GCJ02坐标系、BD09坐标系；不同的坐标系需要相互转换，保证在同一坐标系下才能精确计算相对位置</p>
+<table>
+<thead>
+<tr>
+<th align="left">API</th>
+<th align="left">坐标系</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">百度地图API</td>
+<td align="left">百度坐标</td>
+</tr>
+<tr>
+<td align="left">腾讯搜搜地图API</td>
+<td align="left">火星坐标</td>
+</tr>
+<tr>
+<td align="left">搜狐搜狗地图API</td>
+<td align="left">搜狗坐标*</td>
+</tr>
+<tr>
+<td align="left">阿里云地图API</td>
+<td align="left">火星坐标</td>
+</tr>
+<tr>
+<td align="left">图吧MapBar地图API</td>
+<td align="left">图吧坐标</td>
+</tr>
+<tr>
+<td align="left">高德MapABC地图API</td>
+<td align="left">火星坐标</td>
+</tr>
+<tr>
+<td align="left">灵图51ditu地图API</td>
+<td align="left">火星坐标</td>
+</tr>
+</tbody></table>
+<p>经过测试，POI搜索工具得到的坐标系为”BD09坐标系”，也是<strong>百度地图</strong>所用的”百度坐标系”；携程网餐馆所爬取的经纬度坐标系为”GCJ02坐标系”，又称为”火星坐标系”。<br>转换算法参考：<a class="link"   target="_blank" rel="noopener" href="https://blog.csdn.net/jssongwei/article/details/52185698" >BD09&lt;-&gt;GCJ02 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a>，<a class="link"   target="_blank" rel="noopener" href="https://www.cnblogs.com/sddai/p/12202276.html" >WGS84、GCJ02、BD09 坐标系之间的转换算法 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"></span><br></pre></td></tr></table></figure></div>
+
+<hr>
+<p>经纬度定位精度问题：<a class="link"   target="_blank" rel="noopener" href="https://blog.csdn.net/qq_39805362/article/details/117329099" >经纬度保留到不同小数位对应的精度 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a> </p>
+<h3 id="爬虫"><a href="#爬虫" class="headerlink" title="爬虫"></a>爬虫</h3><h4 id="BeautifulSoup"><a href="#BeautifulSoup" class="headerlink" title="BeautifulSoup"></a>BeautifulSoup</h4><ul>
+<li><code>find_all(&#39;div&#39;)</code>  递归搜索所有div标签，<code>tag.div</code> 获取该tag下第一个div标签</li>
+<li>传入方法作为 <code>soup.find_all()</code> 的参数时，<code>Tag[&#39;attrs&#39;]</code> 返回的是列表，默认每个Tag属性都被视为多值属性，class内若有空格，则隔开的两个字符串作为属性的两个值</li>
+<li><code>get_text()</code> 获取tag下的所有文本</li>
+<li><code>sp.find_all(True)</code> 会返回一个包含sp中所有tag（迭代）的列表，这些tag结点中不包含文本类型的结点，是 <code>tag.descendants</code> 的升级版</li>
+<li><code>sp.strings</code> 返回一个包含sp中所有文本结点的列表，包括空行；<code>sp.stripped_strings</code> 类似，但会去除空行</li>
+</ul>
+<h4 id="Python"><a href="#Python" class="headerlink" title="Python"></a>Python</h4><ul>
+<li><p>在函数内部若想改变全局变量，需要先用 <code>global x</code> 声明</p>
+</li>
+<li><p>使用 <code>json.dumps</code> 转换中文时需要指定 <code>ensure_ascii*=*False</code> ，否则会出现类似”unicode_escape”的乱码；</p>
+</li>
+<li><pre><code class="python">json.dumps(obj, sort_keys=True, indent=4, separators=(&#39;,&#39;, &#39;: &#39;))
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">  带缩进的格式化转换，indent表示每一级缩进的空格个数</span><br><span class="line"></span><br><span class="line">* Windows文件命名规则中，不能出现 `|` 或多个 `.` 或 `:` 或 `|` ，出现 `/` 则会导致混乱歧义，因此需要用到 `str.replace` 来替换目标字符</span><br><span class="line"></span><br><span class="line">* 使用try捕捉 `Exception` 即所有异常时，可以借助 &quot;traceback&quot; 模块中的 `traceback.format_exc()` 来回显异常的内容</span><br><span class="line"></span><br><span class="line">* `winsound` 模块提供了蜂鸣器，`winsound.Beep(freq, dur)` </span><br><span class="line"></span><br><span class="line">* `&#x27;key&#x27; in obj.keys()` 检查obj有无key这个键；`dir(obj)` 返回一个存有obj所有(内置)属性的列表，`hasattr(obj, attr)` 检查obj有无&quot;attr&quot;这个属性（非键）</span><br><span class="line"></span><br><span class="line">* &quot;pandas&quot;将dataFrame转化为json时中文乱码：[Pandas to_json() 中文乱码,转化为json数组](https://blog.csdn.net/FontThrone/article/details/75212825) </span><br><span class="line"></span><br><span class="line">* `r&quot;\string&quot;` 表示python原生字符，内部的反斜杠不代表转义；在Windows中，直接从资源管理器中复制来的文件地址一般用反斜杠做层级分割，此时使用原生字符可以避开反斜杠的转义。</span><br><span class="line"></span><br><span class="line">* `&quot;1&quot;.zfill(3)` 输出 `001` ，&quot;zfill&quot;输出目标字符串右对齐的定长结果</span><br><span class="line"></span><br><span class="line">* python的pandas库想要处理excel文件需要额外的支持：&quot;openpyxl&quot;。该支持有时会出现如下报错：`openpyxl.utils.exceptions.IllegalCharacterError` ，这意味着内部字符出现了非法字符，如 `退格:\b` 等；在携程爬取的餐馆信息中，&quot;餐厅介绍&quot;中经常混有 `\b` 即 `\x08` 字符（这个不是&quot;b&quot;的转义），在评论中还有 `\u0000` 即 `\x00` ，`\u0001` 即 `\x01` 等字符 </span><br><span class="line"></span><br><span class="line">#### 携程</span><br><span class="line"></span><br><span class="line">景点与餐馆信息爬取都采用单线程，速度较慢但仍在可接受范围内，由于访问速度不快不容易响应反爬虫与反扫描</span><br><span class="line"></span><br><span class="line">##### 信息分析</span><br><span class="line"></span><br><span class="line">起初爬虫时希望通过直接分析网页结构来剖析出重要信息，后来发现携程的网页源码中都有一份json信息用于网页的显示，该json信息包括了某个景点或餐厅的全部重要信息，且格式规整。</span><br><span class="line"></span><br><span class="line">在携程的景点页面中，底部 `&lt;script&gt;` 中有一个名为 `__NEXT_DATA__` 的变量，拥有json格式的该网页所需的信息，其中包含了一个&quot;poiDetail&quot;属性，包括了该景点的具体信息，有poiID与bussinessID，但不包含经纬度。</span><br><span class="line"></span><br><span class="line">在携程的餐馆页面中，底部 `&lt;script&gt;` 中有一个名为&quot;INTERFACE&quot;的变量，内部有一个键为&quot;poiData&quot;，含有该餐馆的所有poi信息，包括id与经纬度</span><br><span class="line"></span><br><span class="line">###### headers：</span><br><span class="line"></span><br><span class="line">| 请求头     | 内容                                 |</span><br><span class="line">| ---------- | ------------------------------------ |</span><br><span class="line">| User-Agent | 常用浏览器头即可，必带               |</span><br><span class="line">| Referer    | 不采用Origin，携程的首页即可，非必带 |</span><br><span class="line"></span><br><span class="line">##### 标签结构</span><br><span class="line"></span><br><span class="line">| name | CLASS          | 含义     |</span><br><span class="line">| ---- | -------------- | -------- |</span><br><span class="line">| div  | list_wide_mod2 | 条目外框 |</span><br><span class="line">|      | list_mod2      | 小条目框 |</span><br><span class="line">|      | leftimg        | 预览图   |</span><br><span class="line">|      | retailbox      | 简介信息 |</span><br><span class="line"></span><br><span class="line">##### 景点公告信息</span><br><span class="line"></span><br><span class="line">单击公告信息后页面会动态生成一个新Div用于展示公告信息，需要JS触发，直接访问时html内容中无该信息。</span><br><span class="line"></span><br><span class="line">但在JS源码中有json存储了页面所需的所有数据，包括了未显示的公告信息，因此直接使用Re正则匹配即可获取该信息</span><br><span class="line"></span><br><span class="line">##### 餐馆</span><br><span class="line"></span><br><span class="line">外部页面（餐馆条目浏览）结构与景点完全一致。但所有索引分类下的概览条目页面最多到101页，102页必定出现非正常跳转，常规只能爬取1515个餐馆信息</span><br><span class="line"></span><br><span class="line">##### 酒店</span><br><span class="line"></span><br><span class="line">提供了酒店数据库查询的api，通过burp抓包尝试会发现存在两种接口请求：一种短时有效但可以查询所有酒店，一种长时有效但只能查询部分酒店。</span><br><span class="line"></span><br><span class="line">貌似请求过于频繁，账号cookie遭到封禁，目前9761账户在携程查询不了任何酒店信息</span><br><span class="line"></span><br><span class="line">#### 美团</span><br><span class="line"></span><br><span class="line">##### 酒店</span><br><span class="line"></span><br><span class="line">通过burp分析请求获取酒店列表：</span><br><span class="line"></span><br><span class="line">```http</span><br><span class="line">GET /group/v4/poi/pcsearch/10?uuid=4a899a95c18a4f738d56.1675062337.1.0.0&amp;userid=3713427696&amp;limit=32&amp;offset=64&amp;cateId=-1&amp;q=%E9%85%92%E5%BA%97&amp;token=AgH2Ixv6W1V5_MQBOmcRqg4MW1mZVZoqIjLh7F4yQrmMZFaYYImfD3mpZEyRwvtclnU0YiZV_2NhVwAAAAB1FgAAI3kRrzXcgzb84_5pbmwD03_O4NxyHb88MEXgmbIoRdiPLP3M_cKERNvqnBhzI7Cs HTTP/1.1</span><br><span class="line">Host: apimobile.meituan.com</span><br><span class="line">Connection: close</span><br><span class="line">sec-ch-ua: &quot;Not_A Brand&quot;;v=&quot;99&quot;, &quot;Google Chrome&quot;;v=&quot;109&quot;, &quot;Chromium&quot;;v=&quot;109&quot;</span><br><span class="line">sec-ch-ua-mobile: ?0</span><br><span class="line">User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36</span><br><span class="line">sec-ch-ua-platform: &quot;Windows&quot;</span><br><span class="line">Accept: */*</span><br><span class="line">Origin: https://sh.meituan.com</span><br><span class="line">Sec-Fetch-Site: same-site</span><br><span class="line">Sec-Fetch-Mode: cors</span><br><span class="line">Sec-Fetch-Dest: empty</span><br><span class="line">Referer: https://sh.meituan.com/</span><br><span class="line">Accept-Encoding: gzip, deflate</span><br><span class="line">Accept-Language: zh-CN,zh;q=0.9</span><br><span class="line">Cookie: uuid=4a899a95c18a4f738d56.1675062337.1.0.0; _lxsdk_cuid=186017edeffc8-0b965c8927c92f-26021051-154ac4-186017edeffc8; WEBDFPID=u2980ux9z760597zz21y27677508wz2w813982vv7v0979586v83zx98-1990422338057-1675062337623KOQGKGUfd79fef3d01d5e9aadc18ccd4d0c95073163; iuuid=4C07B6632DEA19F9867D84FDCDF2CC095E4FFC958F8E9A7B2D8D63BFC1EBC02E; _lxsdk=4C07B6632DEA19F9867D84FDCDF2CC095E4FFC958F8E9A7B2D8D63BFC1EBC02E; mtcdn=K; _ga=GA1.1.1101332403.1675416280; _lx_utm=utm_source%3Dbing%26utm_medium%3Dorganic; IJSESSIONID=node01mv4hf7rnz1b9uvb50jb5ampx64811464; userTicket=HNzsIiTSpmwIHqDmMXsLgpycvrQrKtBMNvmRiZMc; _yoda_verify_resp=CElO0GouCUiFSdZrNXPzZwfYr7qI3reB%2BiiQ1YSiQuqveP41aQVLZtduYXcG%2BJQT19QA%2BdPHFJqBt%2BRu9oDgZZCP1n4siSw3q0AwvBlTU1lbt5t9Pki7MU19ga7A4AAEHjffqqu2r4Tk5YlPXSl2jjhxuUp1Ta%2F%2FFqYJ96%2FdJ3KJBQ5C1liqqv7KRDTDuWEm0e4ZU1ubm4IG%2BitdN%2F1FcDvxlJ%2B%2FJTfutxT6wEXNA1hgjCy7Mvf5Rn%2FkqGvAHmvKif9Oldb3d%2BOMEiPhl%2B%2FhdwD7AboA11%2FDrCspmdb28W4TDk9ecBv0uFDRaMIsrBRwXR%2Bdbw1SdXGplie%2F1eyHn8KmQM%2FE1NIBRF5sUQAKevannLCNU2lJwUmNbJA273tI; _yoda_verify_rid=168082e51980f019; u=3713427696; n=vvi966037896; lt=AgH2Ixv6W1V5_MQBOmcRqg4MW1mZVZoqIjLh7F4yQrmMZFaYYImfD3mpZEyRwvtclnU0YiZV_2NhVwAAAAB1FgAAI3kRrzXcgzb84_5pbmwD03_O4NxyHb88MEXgmbIoRdiPLP3M_cKERNvqnBhzI7Cs; mt_c_token=AgH2Ixv6W1V5_MQBOmcRqg4MW1mZVZoqIjLh7F4yQrmMZFaYYImfD3mpZEyRwvtclnU0YiZV_2NhVwAAAAB1FgAAI3kRrzXcgzb84_5pbmwD03_O4NxyHb88MEXgmbIoRdiPLP3M_cKERNvqnBhzI7Cs; token=AgH2Ixv6W1V5_MQBOmcRqg4MW1mZVZoqIjLh7F4yQrmMZFaYYImfD3mpZEyRwvtclnU0YiZV_2NhVwAAAAB1FgAAI3kRrzXcgzb84_5pbmwD03_O4NxyHb88MEXgmbIoRdiPLP3M_cKERNvqnBhzI7Cs; token2=AgH2Ixv6W1V5_MQBOmcRqg4MW1mZVZoqIjLh7F4yQrmMZFaYYImfD3mpZEyRwvtclnU0YiZV_2NhVwAAAAB1FgAAI3kRrzXcgzb84_5pbmwD03_O4NxyHb88MEXgmbIoRdiPLP3M_cKERNvqnBhzI7Cs; isid=AgH2Ixv6W1V5_MQBOmcRqg4MW1mZVZoqIjLh7F4yQrmMZFaYYImfD3mpZEyRwvtclnU0YiZV_2NhVwAAAAB1FgAAI3kRrzXcgzb84_5pbmwD03_O4NxyHb88MEXgmbIoRdiPLP3M_cKERNvqnBhzI7Cs; oops=AgH2Ixv6W1V5_MQBOmcRqg4MW1mZVZoqIjLh7F4yQrmMZFaYYImfD3mpZEyRwvtclnU0YiZV_2NhVwAAAAB1FgAAI3kRrzXcgzb84_5pbmwD03_O4NxyHb88MEXgmbIoRdiPLP3M_cKERNvqnBhzI7Cs; logintype=normal; unc=vvi966037896; webp=1; idau=1; __utma=74597006.1101332403.1675416280.1675416570.1675416570.1; __utmc=74597006; __utmz=74597006.1675416570.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none); latlng=29.288163,120.048685,1675416571887; ci=10; cityname=%E4%B8%8A%E6%B5%B7; ci3=1; i_extend=C_b0GimthomepagesearchH__a; __utmb=74597006.12.9.1675416602073; _ga_95GX0SH5GM=GS1.1.1675416279.1.0.1675416612.0.0.0; firstTime=1675417103965; _lxsdk_s=18616979b23-5b2-935-2d3%7C%7C279</span><br></pre></td></tr></table></figure></div>
+</code></pre>
+</li>
+</ul>
+<p>该接口用于分组查询上海酒店基本poi信息，参数 <code>offset</code> 与 <code>limit</code> 为数据库查询缩进，通过递增limit可查询到美团所拥有的所有上海酒店信息，共1056家酒店信息，包括字段：</p>
+<ol>
+<li>酒店名称</li>
+<li>经纬度</li>
+<li>酒店类型（经济酒店，高档型…）</li>
+<li>所属区域（迪士尼，浦东机场&#x2F;机场镇…）</li>
+</ol>
+<p>（经测试该接口可反复使用）</p>
+<hr>
+<p>同理美团也是用类似的接口获取酒店的具体poi数据：</p>
+<div class="highlight-container" data-rel="Http"><figure class="iseeu highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">GET</span> <span class="string">/group/v1/poi/4210016?utm_medium=touch</span> <span class="meta">HTTP/1.1</span></span><br><span class="line"><span class="attribute">Host</span><span class="punctuation">: </span>ihotel.meituan.com</span><br><span class="line"><span class="attribute">Connection</span><span class="punctuation">: </span>close</span><br><span class="line"><span class="attribute">sec-ch-ua</span><span class="punctuation">: </span>&quot;Not_A Brand&quot;;v=&quot;99&quot;, &quot;Google Chrome&quot;;v=&quot;109&quot;, &quot;Chromium&quot;;v=&quot;109&quot;</span><br><span class="line"><span class="attribute">Content-Type</span><span class="punctuation">: </span>application/json; charset=utf-8</span><br><span class="line">__skcy: no-signature</span><br><span class="line"><span class="attribute">sec-ch-ua-mobile</span><span class="punctuation">: </span>?0</span><br><span class="line"><span class="attribute">User-Agent</span><span class="punctuation">: </span>Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36</span><br><span class="line"><span class="attribute">sec-ch-ua-platform</span><span class="punctuation">: </span>&quot;Windows&quot;</span><br><span class="line"><span class="attribute">Accept</span><span class="punctuation">: </span>*/*</span><br><span class="line"><span class="attribute">Origin</span><span class="punctuation">: </span>https://i.meituan.com</span><br><span class="line"><span class="attribute">Sec-Fetch-Site</span><span class="punctuation">: </span>same-site</span><br><span class="line"><span class="attribute">Sec-Fetch-Mode</span><span class="punctuation">: </span>cors</span><br><span class="line"><span class="attribute">Sec-Fetch-Dest</span><span class="punctuation">: </span>empty</span><br><span class="line"><span class="attribute">Referer</span><span class="punctuation">: </span>https://i.meituan.com/</span><br><span class="line"><span class="attribute">Accept-Encoding</span><span class="punctuation">: </span>gzip, deflate</span><br><span class="line"><span class="attribute">Accept-Language</span><span class="punctuation">: </span>zh-CN,zh;q=0.9</span><br><span class="line"><span class="attribute">Cookie</span><span class="punctuation">: </span>uuid=c14ca1cdb6cb491cb852.1675883488.1.0.0; _lxsdk_cuid=1863270a779c8-0e660ef2964f5d-26021051-154ac4-1863270a779c8; WEBDFPID=uz153641v5735x630w697v5x2y4v5wzw8136729zzyy97958x225vwv2-1991243489920-1675883489507QIIOSOKfd79fef3d01d5e9aadc18ccd4d0c95073892; iuuid=B6DD25F7F7DC01618D092FA7F85F184E0EC041E4990C6E3EE7C6F338AB8A9D0F; _lxsdk=B6DD25F7F7DC01618D092FA7F85F184E0EC041E4990C6E3EE7C6F338AB8A9D0F; mtcdn=K; token=AgFlIZvqpA1MIltqfPVEEUY6QKrvL8pnuZ0W_oCaih2wevbFvvzKaKRrg8_UzItwfFw2BFFlSkwJ2QAAAAB1FgAAaGwgEO4GYurHvqvGmCq1ZeLQew23jx13eEgUTejRBpnpcfzrzw444F9PQzM_zyM9; userId=3713427696; isid=AgFlIZvqpA1MIltqfPVEEUY6QKrvL8pnuZ0W_oCaih2wevbFvvzKaKRrg8_UzItwfFw2BFFlSkwJ2QAAAAB1FgAAaGwgEO4GYurHvqvGmCq1ZeLQew23jx13eEgUTejRBpnpcfzrzw444F9PQzM_zyM9; _lx_utm=utm_source%3Dbing%26utm_medium%3Dorganic; ci=10; rvct=10; IJSESSIONID=node0w7pq6y6knmue6acokjpwysm5201796; cityname=%E4%B8%8A%E6%B5%B7; latlng=29.310704%2C120.126082; ci3=405; i_extend=E240077049535319689408199078345271175498_c0_e-8307769758658460306_anull_o1_dhotelpoitagb_k1002Gempty__xhotelhomepage__yselect__zday; lt=AgHgIRrdp47THA0KuqfLkT-0q_xPG4XE8TgRkmzDWFKFMLoXhv9wYZ81jhHLs2OKWzMlnvPSD8zR0AAAAAB1FgAAr1wFL5F5lsDOzFMemR4dm94nUzPeimCpl5W7VgUhu7CWmHhAGlbxONdXbewR3T3_; u=3713427696; n=vvi966037896; token2=AgHgIRrdp47THA0KuqfLkT-0q_xPG4XE8TgRkmzDWFKFMLoXhv9wYZ81jhHLs2OKWzMlnvPSD8zR0AAAAAB1FgAAr1wFL5F5lsDOzFMemR4dm94nUzPeimCpl5W7VgUhu7CWmHhAGlbxONdXbewR3T3_; firstTime=1675930120121; unc=vvi966037896; oops=AgHgIRrdp47THA0KuqfLkT-0q_xPG4XE8TgRkmzDWFKFMLoXhv9wYZ81jhHLs2OKWzMlnvPSD8zR0AAAAAB1FgAAr1wFL5F5lsDOzFMemR4dm94nUzPeimCpl5W7VgUhu7CWmHhAGlbxONdXbewR3T3_; mt_c_token=AgHgIRrdp47THA0KuqfLkT-0q_xPG4XE8TgRkmzDWFKFMLoXhv9wYZ81jhHLs2OKWzMlnvPSD8zR0AAAAAB1FgAAr1wFL5F5lsDOzFMemR4dm94nUzPeimCpl5W7VgUhu7CWmHhAGlbxONdXbewR3T3_; logintype=normal; _lxsdk_s=1863537c012-4b8-6b7-474%7C%7C655</span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure></div>
+
+<p>Get传递的参数中只有 <code>utm_medium=touch</code> 是必须携带的，其他省略了以下参数：</p>
+<div class="highlight-container" data-rel="Json"><figure class="iseeu highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">	version_name=<span class="number">999.9</span><span class="punctuation">,</span></span><br><span class="line">	platformid=<span class="number">1</span><span class="punctuation">,</span></span><br><span class="line">	start=<span class="number">1675900800000</span><span class="punctuation">,</span></span><br><span class="line">	end=<span class="number">1675987200000</span><span class="punctuation">,</span></span><br><span class="line">	mypos=<span class="number">29.310704</span><span class="punctuation">,</span></span><br><span class="line">	lat=<span class="number">29.310704</span><span class="punctuation">,</span></span><br><span class="line">	gpsCityId=<span class="number">10</span><span class="punctuation">,</span></span><br><span class="line">	cityId=<span class="number">10</span><span class="punctuation">,</span></span><br><span class="line">	subtype=<span class="number">0</span><span class="punctuation">,</span></span><br><span class="line">	type=<span class="number">1</span><span class="punctuation">,</span></span><br><span class="line">	isRecommend=<span class="number">0</span><span class="punctuation">,</span></span><br><span class="line">	propagateData=%<span class="number">7</span>B%<span class="number">22</span>content%<span class="number">22</span>%<span class="number">3</span>A%<span class="number">22</span>CYksnts4RuHwqJNWe0pdnGlo1FqKFXd8JYIVoBxuvjs7Jz3w0yowkjt78GH%<span class="number">2</span>BBshjLonz0Pb8b0bPDiDJyGJ%<span class="number">2</span>BehN5zJChagHVFvDXQ4h3qrWZvRGKjAArozng7N47WjRVWIplBhQV5s5pixFqZwfRTUYd%<span class="number">2</span>FZzNjkbJClA4k5UnvzksmlsGLx4iTbya82xCe9D%<span class="number">2</span>B0%<span class="number">2</span>BUEfKQITA0rrdGFYRuz951VA6jTwm2iJe4ZqM2STxVyvTu%<span class="number">2</span>BtzQSVD8mVZ4rxBbKqcpiKiz%<span class="number">2</span>FBTkB0D9Wzer8iAeQ%<span class="number">2</span>FrXhlqtZabDihUk14CTgF%<span class="number">2</span>FnvV3ZXAqR6vymJRHOYeZvNFp8nXf%<span class="number">2</span>Bv5yeR%<span class="number">2</span>B6irhHx8JnWM4Ln32CQKrYmDzSaAeasLE9lXmRULaeH%<span class="number">2</span>BU4ABRvu6cEWKCuSiRIZsJoOclGDLUTx%<span class="number">2</span>BwqQ5%<span class="number">2</span>BGScVuOPm6RgS4bF%<span class="number">2</span>Bqjl5m%<span class="number">2</span>FHu1UKlCgxOvZs1GFcaPMBLVTfKUF58rIxc5U29lCTcevRxqhcwoRo77RK3l78yZRcDmcfBfR5eBr1f1TffWRJmaqFQcih%<span class="number">2</span>Fdi%<span class="number">2</span>BD75m00wpwrBK0os0uWrmwY4FH5oXbEPP6VcJElRv%<span class="number">2</span>BYSuZoJ8IEbcs%<span class="number">2</span>Bb%<span class="number">2</span>B5ad7x8XD7sLV5kNzgCcq%<span class="number">2</span>BtfTG4seXx3aZJgnhKXYupR0jLt8%<span class="number">2</span>Beq8%<span class="number">2</span>FXVgP6MLT0P%<span class="number">2</span>FgN3FPTG%<span class="number">2</span>F9QPnxILmwa2pN10MEjtf2pYzrkqSUgAxLCXx0G4yDweeTXjypOkuF3mR52h7qe5d9z%<span class="number">2</span>BP2I%<span class="number">2</span>BcGsXvSuK3OzhyHV%<span class="number">2</span>B16pTlyX0as2IkSN9JTOwW4FYq6OO95KXB1c9J0ncpENfOuvazcHQOUBUFjafI366VIbEyHZI2qAOY8Ze8l6I40fSyaMQQ8dyoDGaPEM5blt9QBZiUXgs0riTNAQtDq7Ai4pkbRfe0jUlIolV7PgQ4%<span class="number">2</span>F%<span class="number">2</span>Bl%<span class="number">2</span>BKdXGrHvmSWHLSZBoeeAqeain8WBR%<span class="number">2</span>FfNuEo2QcIyDgY1x05GWU%<span class="number">2</span>FRqODs%<span class="number">2</span>BIfeQt%<span class="number">2</span>F%<span class="number">2</span>F6FnahJ2IMYVyiYqMNsekmnCf%<span class="number">2</span>BuAECkGG7CukKvLLle4KsldujZpztsxDcnZIsFh7Wvl1Rggm3NdcahBttS%<span class="number">2</span>Bl8Pb7FzdfEUqI%<span class="number">2</span>FqjH7XqX%<span class="number">2</span>B2DHVKi3ODjUjk0airAcwBxy%<span class="number">2</span>BUc6pDQdQ%<span class="number">2</span>BOj9v1mOKMB4JtU0USOOdQKiqpk%<span class="number">22</span>%<span class="number">2</span>C%<span class="number">22</span>contentTransparent%<span class="number">22</span>%<span class="number">3</span>A%<span class="number">222</span>idP2QUe9eSgmCCWCa15oR%<span class="number">2</span>F0rGXdfoWOASuEdpMvzS3FefAsYNMkhsIlsBsLXwZUEz2kWbYmIPuLHjt27YlK7YTslZq%<span class="number">2</span>BLe%<span class="number">2</span>BAn6%<span class="number">2</span>F%<span class="number">2</span>B8bFDSOA3ddWN%<span class="number">2</span>F9d5puuA9dRX0jfcNzcbhdPummnOF3EQcPkwobgEQml1%<span class="number">2</span>F3DAc2%<span class="number">2</span>FJWYdowOGKf3AaS47Yua6JAHiU2N5B%<span class="number">2</span>BdylFJZvIlS1nzQFQvvJwuo8Lw%<span class="number">2</span>BxIGTZnBOeQ8PNVAlVCJEw5BkkaM6brf7A0Rn%<span class="number">2</span>FN8VMUHLRjiQ%<span class="number">2</span>FL1JNBPpbWKMOXEi0fdaHKLRcNPxtZt5jKD8%<span class="number">2</span>Fz2GNTHx4UHREbPIpD1DWTJr4Ve1%<span class="number">2</span>B2W7PIEM8zrEe26uvgUU4K%<span class="number">2</span>BZB4QjEyFyv%<span class="number">2</span>BnTQxc8m%<span class="number">2</span>FERzZ1ESyNWJ5ZzZ%<span class="number">2</span>FjRJOTd4zJO9%<span class="number">2</span>BiS1eQ%<span class="number">22</span>%<span class="number">2</span>C%<span class="number">22</span>poiType%<span class="number">22</span>%<span class="number">3</span>A%<span class="number">221</span>%<span class="number">22</span>%<span class="number">7</span>D<span class="punctuation">,</span></span><br><span class="line">	recType=<span class="number">0</span><span class="punctuation">,</span></span><br><span class="line">	isLocal=<span class="number">1</span><span class="punctuation">,</span></span><br><span class="line">	entryType=<span class="number">2</span><span class="punctuation">,</span></span><br><span class="line">	fields=phone%<span class="number">2</span>CscoreSource%<span class="number">2</span>CmarkNumbers%<span class="number">2</span>CcityId%<span class="number">2</span>Caddr%<span class="number">2</span>Clng%<span class="number">2</span>ChasGroup%<span class="number">2</span>CsubwayStationId%<span class="number">2</span>Ccates%<span class="number">2</span>CfrontImg%<span class="number">2</span>CchooseSitting%<span class="number">2</span>Cwifi%<span class="number">2</span>CavgPrice%<span class="number">2</span>Cstyle%<span class="number">2</span>CfeatureMenus%<span class="number">2</span>CavgScore%<span class="number">2</span>Cname%<span class="number">2</span>CparkingInfo%<span class="number">2</span>Clat%<span class="number">2</span>CcateId%<span class="number">2</span>Cintroduction%<span class="number">2</span>CshowType%<span class="number">2</span>CareaId%<span class="number">2</span>CdistrictId%<span class="number">2</span>Cpreferent%<span class="number">2</span>ClowestPrice%<span class="number">2</span>CcateName%<span class="number">2</span>CareaName%<span class="number">2</span>CzlSourceType%<span class="number">2</span>CcampaignTag%<span class="number">2</span>CmallName%<span class="number">2</span>CmallId%<span class="number">2</span>CbrandId%<span class="number">2</span>CbrandName%<span class="number">2</span>CbrandLogo%<span class="number">2</span>CbrandStory%<span class="number">2</span>CsmPromotion%<span class="number">2</span>Cktv%<span class="number">2</span>Cgeo%<span class="number">2</span>ChistoryCouponCount%<span class="number">2</span>Crecommendation%<span class="number">2</span>CiUrl%<span class="number">2</span>CisQueuing%<span class="number">2</span>CnewPayInfo%<span class="number">2</span>CpayInfo%<span class="number">2</span>CsourceType%<span class="number">2</span>Cabstracts%<span class="number">2</span>CgroupInfo%<span class="number">2</span>CisSuperVoucher%<span class="number">2</span>Cdiscount%<span class="number">2</span>CisWaimai%<span class="number">2</span>CcollectionDeals%<span class="number">2</span>CnearPoi%<span class="number">2</span>Csparkle%<span class="number">2</span>CtopicList%<span class="number">2</span>CcityIds%<span class="number">2</span>CshowChannel%<span class="number">2</span>CshowStatus<span class="punctuation">,</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure></div>
+
+<p>通过调整”poi&#x2F;“后的poiid即可获取不同酒店的信息json</p>
+<hr>
+<p>通过组合上述两个api可获得1000多个酒店的具体信息。</p>
+<p>mysql密码：Oy+Hm&gt;:lg9l,</p>
+<!-- flag of hidden posts -->
+        </div>
+
+        
+            <div class="post-copyright-info w-full my-8 px-2 sm:px-6 md:px-8">
+                <div class="article-copyright-info-container">
+    <ul>
+        <li><strong>Title:</strong> Travel Recommendation</li>
+        <li><strong>Author:</strong> Forestsetyou</li>
+        <li><strong>Created at
+                :</strong> 2023-02-24 19:14:00</li>
+        
+            <li>
+                <strong>Updated at
+                    :</strong> 2023-09-24 17:21:00
+            </li>
+        
+        <li>
+            <strong>Link:</strong> https://forestsetyou.github.io/2023/02/24/Development/Project/Travel Recommendation/
+        </li>
+        <li>
+            <strong>
+                License:
+            </strong>
+            
+
+            
+                This work is licensed under <a class="license" target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0">CC BY-NC-SA 4.0</a>.
+            
+        </li>
+    </ul>
+</div>
+
+            </div>
+        
+
+        
+
+        
+
+        
+
+
+        
+    </div>
+
+    
+        <div class="toc-content-container">
+            <div class="post-toc-wrap">
+    <div class="post-toc">
+        <div class="toc-title">On this page</div>
+        <div class="page-title">Travel Recommendation</div>
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%97%85%E6%B8%B8%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F"><span class="nav-text">旅游推荐系统</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%97%85%E6%B8%B8%E6%8E%A8%E8%8D%90%E7%AE%97%E6%B3%95"><span class="nav-text">旅游推荐算法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AE%97%E6%B3%95%E7%BB%86%E8%8A%82"><span class="nav-text">算法细节</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%99%BA%E8%83%BD%E6%8F%90%E5%8F%96%E7%AE%97%E6%B3%95"><span class="nav-text">智能提取算法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#JavaScript"><span class="nav-text">JavaScript</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%97%85%E6%B8%B8%E8%B5%84%E6%BA%90%E6%95%B0%E6%8D%AE"><span class="nav-text">旅游资源数据</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#POI%E6%95%B0%E6%8D%AE%E5%B8%B8%E7%94%A8%E5%88%86%E7%B1%BB"><span class="nav-text">POI数据常用分类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%AC%E5%85%B1%E6%95%B0%E6%8D%AE%E9%9B%86"><span class="nav-text">公共数据集</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%88%AC%E8%99%AB"><span class="nav-text">爬虫</span></a></li></ol></li></ol></li></ol>
+
+    </div>
+</div>
+        </div>
+    
+</div>
+
+
+
+                
+
+            </div>
+
+            
+
+        </div>
+
+        <div class="main-content-footer">
+            <footer class="footer mt-5 py-5 h-auto text-base text-third-text-color relative border-t-2 border-t-border-color">
+    <div class="info-container py-3 text-center">
+        
+        <div class="text-center">
+            &copy;
+            
+              <span>2024</span>
+              -
+            
+            2024&nbsp;&nbsp;<i class="fa-solid fa-heart fa-beat" style="--fa-animation-duration: 0.5s; color: #f54545"></i>&nbsp;&nbsp;<a href="/">Forestsetyou</a>
+            
+        </div>
+        
+        <div class="relative text-center lg:absolute lg:left-[20px] lg:top-1/2 lg:-translate-y-1/2 lg:text-left">
+            <span class="lg:block text-sm">POWERED BY <?xml version="1.0" encoding="utf-8"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg class="relative top-[2px] inline-block align-baseline" version="1.1" id="圖層_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="1rem" height="1rem" viewBox="0 0 512 512" enable-background="new 0 0 512 512" xml:space="preserve"><path fill="#0E83CD" d="M256.4,25.8l-200,115.5L56,371.5l199.6,114.7l200-115.5l0.4-230.2L256.4,25.8z M349,354.6l-18.4,10.7l-18.6-11V275H200v79.6l-18.4,10.7l-18.6-11v-197l18.5-10.6l18.5,10.8V237h112v-79.6l18.5-10.6l18.5,10.8V354.6z"/></svg><a target="_blank" class="text-base" href="https://hexo.io">Hexo</a></span>
+            <span class="text-sm lg:block">THEME&nbsp;<a class="text-base" target="_blank" href="https://github.com/EvanNotFound/hexo-theme-redefine">Redefine v2.6.1</a></span>
+        </div>
+        
+        
+        
+        
+        
+    </div>  
+</footer>
+        </div>
+    </div>
+
+    
+        <div class="post-tools">
+            <div class="post-tools-container">
+    <ul class="article-tools-list">
+        <!-- TOC aside toggle -->
+        
+            <li class="right-bottom-tools page-aside-toggle">
+                <i class="fa-regular fa-outdent"></i>
+            </li>
+        
+
+        <!-- go comment -->
+        
+    </ul>
+</div>
+
+        </div>
+    
+
+    <div class="right-side-tools-container">
+        <div class="side-tools-container">
+    <ul class="hidden-tools-list">
+        <li class="right-bottom-tools tool-font-adjust-plus flex justify-center items-center">
+            <i class="fa-regular fa-magnifying-glass-plus"></i>
+        </li>
+
+        <li class="right-bottom-tools tool-font-adjust-minus flex justify-center items-center">
+            <i class="fa-regular fa-magnifying-glass-minus"></i>
+        </li>
+
+        <li class="right-bottom-tools tool-dark-light-toggle flex justify-center items-center">
+            <i class="fa-regular fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        
+
+        <li class="right-bottom-tools tool-scroll-to-bottom flex justify-center items-center">
+            <i class="fa-regular fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="visible-tools-list">
+        <li class="right-bottom-tools toggle-tools-list flex justify-center items-center">
+            <i class="fa-regular fa-cog fa-spin"></i>
+        </li>
+        
+            <li class="right-bottom-tools tool-scroll-to-top flex justify-center items-center">
+                <i class="arrow-up fas fa-arrow-up"></i>
+                <span class="percent"></span>
+            </li>
+        
+        
+    </ul>
+</div>
+
+    </div>
+
+    <div class="image-viewer-container">
+    <img src="">
+</div>
+
+
+    
+        <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-input-field-pre">
+            <i class="fa-solid fa-keyboard"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="Search..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="popup-btn-close">
+                <i class="fa-solid fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fa-solid fa-spinner fa-spin-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+
+</main>
+
+
+    
+<script src="/js/libs/Swup.min.js"></script>
+
+<script src="/js/libs/SwupSlideTheme.min.js"></script>
+
+<script src="/js/libs/SwupScriptsPlugin.min.js"></script>
+
+<script src="/js/libs/SwupProgressPlugin.min.js"></script>
+
+<script src="/js/libs/SwupScrollPlugin.min.js"></script>
+
+<script src="/js/libs/SwupPreloadPlugin.min.js"></script>
+
+<script>
+    const swup = new Swup({
+        plugins: [
+            new SwupScriptsPlugin({
+                optin: true,
+            }),
+            new SwupProgressPlugin(),
+            new SwupScrollPlugin({
+                offset: 80,
+            }),
+            new SwupSlideTheme({
+                mainElement: ".main-content-body",
+            }),
+            new SwupPreloadPlugin(),
+        ],
+        containers: ["#swup"],
+    });
+</script>
+
+
+
+
+
+
+
+<script src="/js/tools/imageViewer.js" type="module"></script>
+
+<script src="/js/utils.js" type="module"></script>
+
+<script src="/js/main.js" type="module"></script>
+
+<script src="/js/layouts/navbarShrink.js" type="module"></script>
+
+<script src="/js/tools/scrollTopBottom.js" type="module"></script>
+
+<script src="/js/tools/lightDarkSwitch.js" type="module"></script>
+
+<script src="/js/layouts/categoryList.js" type="module"></script>
+
+
+
+    
+<script src="/js/tools/localSearch.js" type="module"></script>
+
+
+
+
+    
+<script src="/js/tools/codeBlock.js" type="module"></script>
+
+
+
+
+    
+<script src="/js/layouts/lazyload.js" type="module"></script>
+
+
+
+
+
+
+  
+<script src="/js/libs/Typed.min.js"></script>
+
+  
+<script src="/js/plugins/typed.js" type="module"></script>
+
+
+
+
+
+
+
+
+
+<div class="post-scripts" data-swup-reload-script>
+    
+        
+<script src="/js/tools/tocToggle.js" type="module"></script>
+
+<script src="/js/layouts/toc.js" type="module"></script>
+
+<script src="/js/plugins/tabs.js" type="module"></script>
+
+    
+</div>
+
+
+</body>
+</html>

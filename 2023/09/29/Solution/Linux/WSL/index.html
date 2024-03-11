@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="keywords" content="ctf, solution, note, blog">
+    
+    <meta name="author" content="Forestsetyou">
+    <!-- preconnect -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    
+    <!--- Seo Part-->
+    
+    <link rel="canonical" href="http://forestsetyou.github.io/2023/09/29/solution/linux/wsl/"/>
+    <meta name="robots" content="index,follow">
+    <meta name="googlebot" content="index,follow">
+    <meta name="revisit-after" content="1 days">
+    
+        <meta name="description" content="false">
+<meta property="og:type" content="article">
+<meta property="og:title" content="WSL">
+<meta property="og:url" content="http://forestsetyou.github.io/2023/09/29/Solution/Linux/WSL/index.html">
+<meta property="og:site_name" content="Festu&#39;s Blog">
+<meta property="og:description" content="false">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2023-09-28T17:42:00.000Z">
+<meta property="article:modified_time" content="2023-10-03T17:20:00.000Z">
+<meta property="article:author" content="Forestsetyou">
+<meta property="article:tag" content="ctf, solution, note, blog">
+<meta name="twitter:card" content="summary">
+    
+    
+    <!--- Icon Part-->
+    <link rel="icon" type="image/png" href="/hide_imgs/smiling_face.png" sizes="192x192">
+    <link rel="apple-touch-icon" sizes="180x180" href="/hide_imgs/smiling_face.png">
+    <meta name="theme-color" content="#A31F34">
+    <link rel="shortcut icon" href="/hide_imgs/smiling_face.png">
+    <!--- Page Info-->
+    
+    <title>
+        
+            WSL -
+        
+        Festu&#39;s Blog
+    </title><meta name="robots" content="noindex">
+
+    
+<link rel="stylesheet" href="/fonts/Chillax/chillax.css">
+
+
+    <!--- Inject Part-->
+    
+
+    
+        <style>
+    :root {
+        --preloader-background-color: #fff;
+        --preloader-text-color: #000;
+    }
+
+    @media (prefers-color-scheme: dark) {
+        :root {
+            --preloader-background-color: #202124;
+            --preloader-text-color: #fff;
+        }
+    }
+
+    @media (prefers-color-scheme: light) {
+        :root {
+            --preloader-background-color: #fff;
+            --preloader-text-color: #000;
+        }
+    }
+
+    @media (max-width: 600px) {
+        .ml13 {
+            font-size: 2.6rem !important; /* Adjust this value as needed */
+        }
+    }
+
+    .preloader {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem; /* Tailwind 'gap-4' is 1rem */
+        align-items: center;
+        justify-content: center;
+        position: fixed;
+        padding: 12px;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh; /* 'h-screen' is 100% of the viewport height */
+        background-color: var(--preloader-background-color);
+        z-index: 1100; /* 'z-[1100]' sets the z-index */
+        transition: opacity 0.2s ease-in-out;
+    }
+
+    .ml13 {
+        font-size: 3.2rem;
+        /* text-transform: uppercase; */
+        color: var(--preloader-text-color);
+        letter-spacing: -1px;
+        font-weight: 500;
+        font-family: 'Chillax-Variable', sans-serif;
+        text-align: center;
+    }
+
+    .ml13 .word {
+        display: inline-flex;
+        flex-wrap: wrap;
+        white-space: nowrap;
+    }
+
+    .ml13 .letter {
+        display: inline-block;
+        line-height: 1em;
+    }
+</style>
+
+<div class="preloader">
+    
+<script src="/js/libs/anime.min.js"></script>
+
+    <h1 class="ml13">
+        Festu&#39;s Blog
+    </h1>
+    <script>
+        var textWrapper = document.querySelector('.ml13');
+        // Split text into words
+        var words = textWrapper.textContent.trim().split(' ');
+
+        // Clear the existing content
+        textWrapper.innerHTML = '';
+
+        // Wrap each word and its letters in spans
+        words.forEach(function(word) {
+            var wordSpan = document.createElement('span');
+            wordSpan.classList.add('word');
+            wordSpan.innerHTML = word.replace(/\S/g, "<span class='letter'>$&</span>");
+            textWrapper.appendChild(wordSpan);
+            textWrapper.appendChild(document.createTextNode(' ')); // Add space between words
+        });
+
+
+        anime.timeline({loop: true})
+            .add({
+                targets: '.ml13 .letter',
+                translateY: [100,0],
+                translateZ: 0,
+                opacity: [0,1],
+                easing: "easeOutExpo",
+                duration: 1400,
+                delay: (el, i) => 300 + 30 * i
+            }).add({
+            targets: '.ml13 .letter',
+            translateY: [0,-100],
+            opacity: [1,0],
+            easing: "easeInExpo",
+            duration: 1200,
+            delay: (el, i) => 100 + 30 * i
+        });
+
+        let themeStatus = JSON.parse(localStorage.getItem('REDEFINE-THEME-STATUS'))?.isDark;
+
+        // If the theme status is not found in local storage, check the preferred color scheme
+        if (themeStatus === undefined || themeStatus === null) {
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                themeStatus = 'dark';
+            } else {
+                themeStatus = 'light';
+            }
+        }
+
+        // Now you can use the themeStatus variable in your code
+        if (themeStatus) {
+            document.documentElement.style.setProperty('--preloader-background-color', '#202124');
+            document.documentElement.style.setProperty('--preloader-text-color', '#fff');
+        } else {
+            document.documentElement.style.setProperty('--preloader-background-color', '#fff');
+            document.documentElement.style.setProperty('--preloader-text-color', '#000');
+        }
+
+        window.addEventListener('load', function () {
+            hidePreloaderAfterTimeout(1000); // Hide after 1000 milliseconds once the window has loaded
+        });
+
+        // Backup failsafe: Hide preloader after a maximum of 5000 milliseconds, regardless of the window load event
+        hidePreloaderAfterTimeout(5000);
+
+        function hidePreloaderAfterTimeout(delay) {
+            setTimeout(function () {
+                var preloader = document.querySelector('.preloader');
+                preloader.style.opacity = '0';
+                setTimeout(function () {
+                    preloader.style.display = 'none';
+                }, 200);
+            }, delay);
+        }
+    </script>
+</div>
+    
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+
+    
+        
+<link rel="stylesheet" href="/assets/build/styles.css">
+
+    
+
+    
+<link rel="stylesheet" href="/fonts/fonts.css">
+
+    
+<link rel="stylesheet" href="/fonts/Satoshi/satoshi.css">
+
+    <!--- Font Part-->
+    
+    
+    
+    
+
+
+    <script id="hexo-configurations">
+    window.config = {"hostname":"forestsetyou.github.io","root":"/","language":"en","path":"search.xml"};
+    window.theme = {"articles":{"style":{"font_size":"16px","line_height":1.5,"image_border_radius":"14px","image_alignment":"center","image_caption":false,"link_icon":true,"title_alignment":"left","headings_top_spacing":{"h1":"5rem","h2":"4rem","h3":"2.8rem","h4":"2.5rem","h5":"2.2rem","h6":"2rem"}},"word_count":{"enable":false,"count":true,"min2read":true},"author_label":{"enable":false,"auto":false,"list":[]},"code_block":{"copy":true,"style":"simple","font":{"enable":false,"family":null,"url":null}},"toc":{"enable":true,"max_depth":3,"number":false,"expand":true,"init_open":true},"copyright":{"enable":true,"default":"cc_by_nc_sa"},"lazyload":true,"recommendation":{"enable":false,"title":"推荐阅读","limit":3,"mobile_limit":2,"placeholder":"/images/wallhaven-wqery6-light.webp","skip_dirs":[]}},"colors":{"primary":"#A31F34","secondary":null,"default_mode":"light"},"global":{"fonts":{"chinese":{"enable":false,"family":null,"url":null},"english":{"enable":false,"family":null,"url":null}},"content_max_width":"1000px","sidebar_width":"210px","hover":{"shadow":true,"scale":false},"scroll_progress":{"bar":false,"percentage":true},"website_counter":{"url":"https://cn.vercount.one/js","enable":false,"site_pv":true,"site_uv":true,"post_pv":true},"single_page":true,"preloader":true,"open_graph":true,"google_analytics":{"enable":false,"id":null}},"home_banner":{"enable":true,"style":"fixed","image":{"light":"/hide_imgs/light_banner-5.png","dark":"/hide_imgs/dark_banner.png"},"title":"Festu's Blog","subtitle":{"text":["Life Goes On."],"hitokoto":{"enable":false,"api":"https://v1.hitokoto.cn"},"typing_speed":100,"backing_speed":80,"starting_delay":500,"backing_delay":1500,"loop":false,"smart_backspace":false},"text_color":{"light":"#fff","dark":"#d1d1b6"},"text_style":{"title_size":"2.8rem","subtitle_size":"1.5rem","line_height":1.2},"custom_font":{"enable":false,"family":null,"url":null},"social_links":{"enable":true,"style":"default","links":{"github":"https://github.com/Forestsetyou","instagram":null,"zhihu":null,"twitter":null,"email":null},"qrs":{"weixin":null}}},"plugins":{"feed":{"enable":false},"aplayer":{"enable":false,"type":"fixed","audios":[{"name":null,"artist":null,"url":null,"cover":null,"lrc":null}]},"mermaid":{"enable":false,"version":"9.3.0"}},"version":"2.6.1","navbar":{"auto_hide":false,"color":{"left":"#f78736","right":"#367df7","transparency":35},"width":{"home":"1200px","pages":"1000px"},"links":{"Home":{"path":"/","icon":"fa-regular fa-house"},"Archives":{"path":"/archives","icon":"fa-regular fa-archive"},"categories":{"path":"/categories","icon":"fa-regular fa-folder"},"tags":{"path":"/tags","icon":"fa-regular fa-tags"}},"search":{"enable":true,"preload":true}},"page_templates":{"friends_column":2,"tags_style":"blur"},"home":{"sidebar":{"enable":true,"position":"left","first_item":"menu","announcement":null,"show_on_mobile":true,"links":null},"article_date_format":"auto","categories":{"enable":true,"limit":3},"tags":{"enable":true,"limit":3}},"footerStart":"2024/03/11 03:27:59"};
+    window.lang_ago = {"second":"%s seconds ago","minute":"%s minutes ago","hour":"%s hours ago","day":"%s days ago","week":"%s weeks ago","month":"%s months ago","year":"%s years ago"};
+    window.data = {"masonry":false};
+  </script>
+    
+    <!--- Fontawesome Part-->
+    
+<link rel="stylesheet" href="/fontawesome/fontawesome.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/brands.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/solid.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/regular.min.css">
+
+    
+    
+    
+    
+<meta name="generator" content="Hexo 7.1.1"></head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+
+    
+        <span class="pjax-progress-bar"></span>
+<!--        <span class="swup-progress-icon">-->
+<!--            <i class="fa-solid fa-circle-notch fa-spin"></i>-->
+<!--        </span>-->
+    
+</div>
+
+
+<main class="page-container" id="swup">
+
+    
+
+    <div class="main-content-container">
+
+
+        <div class="main-content-header">
+            <header class="navbar-container px-6 md:px-12">
+
+    <div class="navbar-content ">
+        <div class="left">
+            
+                <a class="logo-image" href="/">
+                    <img src="/hide_imgs/smiling_face.png">
+                </a>
+            
+            <a class="logo-title" href="/">
+                
+                Festu&#39;s Blog
+                
+            </a>
+        </div>
+
+        <div class="right">
+            <!-- PC -->
+            <div class="desktop">
+                <ul class="navbar-list">
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/"
+                                        >
+                                    <i class="fa-regular fa-house fa-fw"></i>
+                                    HOME
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/archives"
+                                        >
+                                    <i class="fa-regular fa-archive fa-fw"></i>
+                                    ARCHIVES
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/categories"
+                                        >
+                                    <i class="fa-regular fa-folder fa-fw"></i>
+                                    CATEGORIES
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/tags"
+                                        >
+                                    <i class="fa-regular fa-tags fa-fw"></i>
+                                    TAGS
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                    
+                        <li class="navbar-item search search-popup-trigger">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </li>
+                    
+                </ul>
+            </div>
+            <!-- Mobile -->
+            <div class="mobile">
+                
+                    <div class="icon-item search search-popup-trigger"><i class="fa-solid fa-magnifying-glass"></i>
+                    </div>
+                
+                <div class="icon-item navbar-bar">
+                    <div class="navbar-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile sheet -->
+    <div class="navbar-drawer h-screen w-full absolute top-0 left-0 bg-background-color flex flex-col justify-between">
+        <ul class="drawer-navbar-list flex flex-col px-4 justify-center items-start">
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/"
+                        >
+                            <span>
+                                HOME
+                            </span>
+                            
+                                <i class="fa-regular fa-house fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/archives"
+                        >
+                            <span>
+                                ARCHIVES
+                            </span>
+                            
+                                <i class="fa-regular fa-archive fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/categories"
+                        >
+                            <span>
+                                CATEGORIES
+                            </span>
+                            
+                                <i class="fa-regular fa-folder fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/tags"
+                        >
+                            <span>
+                                TAGS
+                            </span>
+                            
+                                <i class="fa-regular fa-tags fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+
+            
+            
+        </ul>
+
+        <div class="statistics flex justify-around my-2.5">
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/tags">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">1</div>
+        <div class="label text-third-text-color text-sm">Tags</div>
+    </a>
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/categories">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">10</div>
+        <div class="label text-third-text-color text-sm">Categories</div>
+    </a>
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/archives">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">14</div>
+        <div class="label text-third-text-color text-sm">Posts</div>
+    </a>
+</div>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="main-content-body">
+
+            
+
+            <div class="main-content">
+
+                
+                    <div class="post-page-container flex relative justify-between box-border w-full h-full">
+    <div class="article-content-container">
+
+        <div class="article-title relative w-full">
+            
+                
+                
+                <img src="/hide_imgs/post_thumbnail.png" alt="WSL" class="w-full h-60 sm:h-72 md:h-80 object-cover sm:rounded-t-large dark:brightness-75"/>
+                
+                <div class="w-full flex items-center absolute bottom-0 justify-start">
+                    <h1 class="article-title-cover text-center mx-6 my-6 text-second-text-color bg-background-color-transparent px-4 py-3 text-3xl sm:text-4xl md:text-5xl font-bold backdrop-blur-lg rounded-xl border border-border-color ">WSL</h1>
+                </div>
+            
+            </div>
+
+        
+            <div class="article-header flex flex-row gap-2 items-center px-2 sm:px-6 md:px-8">
+                <div class="avatar w-[46px] h-[46px] flex-shrink-0 rounded-medium border border-border-color p-[1px]">
+                    <img src="/hide_imgs/avatar.png">
+                </div>
+                <div class="info flex flex-col justify-between">
+                    <div class="author flex items-center">
+                        <span class="name text-default-text-color text-lg font-semibold">Forestsetyou</span>
+                        
+                    </div>
+                    <div class="meta-info">
+                        <div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fa-regular fa-pen-fancy"></i>&nbsp;
+        <span class="desktop">2023-09-29 01:42</span>
+        <span class="mobile">2023-09-29 01:42</span>
+        <span class="hover-info">Created</span>
+    </span>
+    
+        <span class="article-date article-meta-item">
+            <i class="fa-regular fa-wrench"></i>&nbsp;
+            <span class="desktop">2023-10-04 01:20</span>
+            <span class="mobile">2023-10-04 01:20</span>
+            <span class="hover-info">Updated</span>
+        </span>
+    
+
+    
+        <span class="article-categories article-meta-item">
+            <i class="fa-regular fa-folders"></i>&nbsp;
+            <ul>
+                
+                
+                    
+                        
+                        <li>
+                            <a href="/categories/Solution/">Solution</a>&nbsp;
+                        </li>
+                    
+                    
+                
+                    
+                        
+                            <li>></li>
+                        
+                        <li>
+                            <a href="/categories/Solution/Linux/">Linux</a>&nbsp;
+                        </li>
+                    
+                    
+                
+            </ul>
+        </span>
+    
+    
+
+    
+    
+    
+    
+</div>
+
+                    </div>
+                </div>
+            </div>
+        
+
+        
+
+
+        <div class="article-content markdown-body px-2 sm:px-6 md:px-8 pb-8">
+            <h1 id="WSL"><a href="#WSL" class="headerlink" title="WSL"></a>WSL</h1><p><em>Windows Subsystem for Linux</em></p>
+<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><p><a class="link"   target="_blank" rel="noopener" href="https://learn.microsoft.com/zh-cn/windows/wsl/install" >微软-安装WSL <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+<p><strong>安装过程中用到的一切命令行需要以管理员身份运行。</strong></p>
+<hr>
+<p>首先需要开启『Windows 对 WSL 的支持』，提供两种方案：</p>
+<ul>
+<li><p>用 pwsh 开启：</p>
+<div class="highlight-container" data-rel="Powershell"><figure class="iseeu highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Enable-WindowsOptionalFeature</span> <span class="literal">-Online</span> <span class="literal">-FeatureName</span> Microsoft<span class="literal">-Windows-Subsystem-Linux</span></span><br></pre></td></tr></table></figure></div>
+</li>
+<li><p>在桌面系统中开启。在系统搜索栏中输入『启用或关闭 Windows 功能』，打开功能管理后勾选支持。</p>
+</li>
+</ul>
+<p>接着需要安装 WSL，提供两种方式：</p>
+<ul>
+<li><p>使用命令行（推荐）：</p>
+<div class="highlight-container" data-rel="Powershell"><figure class="iseeu highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wsl <span class="literal">--install</span></span><br></pre></td></tr></table></figure></div>
+</li>
+<li><p>微软商店中下载</p>
+</li>
+</ul>
+<p>选择 Linux 系统，安装镜像。（WSL 命令稳定联网需要科学手段）：</p>
+<ol>
+<li><code>wsl -l -o</code> 查看可安装镜像</li>
+<li><code>wsl --install -d &lt;distro name&gt;</code></li>
+</ol>
+<p>安装好后自动进入系统配置，配置完毕后 WSL 1 就装好了。</p>
+<p><strong>WSL 1 不需要开启 Hyper-V</strong></p>
+<hr>
+<p>如果需要安装 WSL 2，则需要额外的步骤。</p>
+<p>首先需要启用系统的 <code>Hyper-V</code> 功能，参考：<a class="link"   target="_blank" rel="noopener" href="https://learn.microsoft.com/zh-cn/virtualization/hyper-v-on-windows/quick-start/enable-hyper-v" >微软-Win10 启用 Hyper-V <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+<blockquote>
+<p><em>值得一提的是 Windows 系统不论什么版本，在首次安装后默认是启用 Hyper-V 功能的，不需要特地激活，但服务默认关闭。</em></p>
+<p>这意味着你不需要在功能中开启它，而是可以直接管理他的服务，开启服务即打开了系统的 Hyper-V。</p>
+<p>当然这并不一定准确，Hyper-V 本身需要”Virtualization Technology”（简称 VT，即虚拟化技术）的支持，如果 CPU 本身就不支持，那 Hyper-V 自然不可能激活。</p>
+<p>我自己用的 Windows 家庭版，系统被安装时 Hyper-V 并未启用，我仍可以使用安卓模拟器（例如雷电模拟器）。</p>
+<p>安装 Docker Desktop 时，由于默认使用 WSL2  引擎，它自动为我启用了 Hyper-V。</p>
+<p>安装完毕后用 <code>wsl -l -v</code> 会找到两个用于构建 docker 服务的 WSL 分发：</p>
+<div class="highlight-container" data-rel="Powershell"><figure class="iseeu highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">NAME                   STATE           VERSION</span><br><span class="line">docker<span class="literal">-desktop</span>         Stopped         <span class="number">2</span></span><br><span class="line">docker<span class="literal">-desktop-data</span>    Stopped         <span class="number">2</span></span><br></pre></td></tr></table></figure></div>
+
+<hr>
+<p>另外，附上微软对”Hyper-V”的说明：</p>
+<div class="highlight-container" data-rel="Ini"><figure class="iseeu highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Hyper-V 是基于虚拟机监控程序的虚拟化技术。 Hyper-V 使用 Windows 虚拟机监控程序，后者需要具有特定功能的物理处理器。</span><br></pre></td></tr></table></figure></div>
+</blockquote>
+<p>对于不同版本的 Windows，<strong>启用 Hyper-V 功能</strong>的方式不同。</p>
+<p>对于专业版，提供两种方式：</p>
+<ul>
+<li><p>直接在『启用或关闭 Windows 功能』勾选 Hyper-V ，重启后生效。</p>
+</li>
+<li><p>使用 pwsh-CLI 启动：</p>
+<div class="highlight-container" data-rel="Powershell"><figure class="iseeu highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Enable-WindowsOptionalFeature</span> <span class="literal">-Online</span> <span class="literal">-FeatureName</span> Microsoft<span class="literal">-Hyper-V</span> <span class="literal">-All</span></span><br></pre></td></tr></table></figure></div>
+</li>
+<li><p>使用 cmd-CLI 启动：</p>
+<div class="highlight-container" data-rel="Cmd"><figure class="iseeu highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">DISM /Online /Enable-Feature /All /FeatureName:Microsoft-Hyper-V</span><br></pre></td></tr></table></figure></div></li>
+</ul>
+<p>对于家庭版（我的版本）：Windows 关闭了对家庭版的”Hyper-V”官方支持，因此需要以特殊手段启动，参考：<a class="link"   target="_blank" rel="noopener" href="https://blog.csdn.net/lanxingxing666666/article/details/111354089" >Windows10没有Hyper-V的解决办法 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+<p>创建以下 cmd 脚本，并以管理员身份运行，下载 Hyper-V 功能的支持组件：</p>
+<div class="highlight-container" data-rel="Cmd"><figure class="iseeu highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">pushd</span> &quot;%~dp0&quot;</span><br><span class="line"><span class="built_in">dir</span> /b <span class="variable">%SystemRoot%</span>\servicing\Packages\*Hyper-V*.mum &gt;hyper-v.txt</span><br><span class="line"><span class="keyword">for</span> /f <span class="variable">%%i</span> <span class="keyword">in</span> (&#x27;<span class="built_in">findstr</span> /i . hyper-v.txt <span class="number">2</span>^&gt;<span class="built_in">nul</span>&#x27;) <span class="keyword">do</span> dism /online /norestart /add-package:&quot;<span class="variable">%SystemRoot%</span>\servicing\Packages\<span class="variable">%%i</span>&quot;</span><br><span class="line"><span class="built_in">del</span> hyper-v.txt</span><br><span class="line">Dism /online /enable-feature /featurename:Microsoft-Hyper-V-All /LimitAccess /ALL</span><br></pre></td></tr></table></figure></div>
+
+<p>下载完毕后，Windows 的功能中就注册了 Hyper-V ，专业版的打开方式就可以使用了。</p>
+<blockquote>
+<p>有多种方式可以查看自己电脑的 Hyper-V 功能是否开启：</p>
+<ol>
+<li>启动任务管理器，在『性能』中查看『虚拟化』是否启用</li>
+<li><code>systeminfo</code> 查看系统信息，最下方会有 Hyper-V 的相关信息</li>
+</ol>
+</blockquote>
+<p>至此 Hyper-V 功能已经打开，我们还需要启动 Hyper-V 服务：</p>
+<div class="highlight-container" data-rel="Powershell"><figure class="iseeu highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">bcdedit /<span class="built_in">set</span> hypervisorlaunchtype auto	<span class="comment"># 开启服务</span></span><br><span class="line">bcdedit /<span class="built_in">set</span> hypervisorlaunchtype off	<span class="comment"># 关闭</span></span><br></pre></td></tr></table></figure></div>
+
+<p>重启后服务成功开启。</p>
+<blockquote>
+<p>关于手动启用虚拟化，可以在 BIOS 中开启『Virtualization Technology』，『联想小新 pro14』在开机时反复按 <code>F2</code> 键即可进入BIOS。</p>
+</blockquote>
+<h3 id="环境适配"><a href="#环境适配" class="headerlink" title="环境适配"></a>环境适配</h3><p>除了 WSL，系统环境中一般还有很多其他的虚拟化服务，他们或多或少都对 Hyper-V 的开启或关闭有要求，例如：</p>
+<ol>
+<li><p>Docker，如果使用 Docker Desktop 且使用基于 WSL2 的引擎，则需要开启 Hyper-V。</p>
+</li>
+<li><p>虚拟机平台，包括 Vmware、Virtubox 与一众安卓模拟器。他们<strong>起初</strong>都需要关闭 Hyper-V 才能正常运行。</p>
+<p>但是后来部分软件的引擎得到更新，例如 <a class="link"   target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/161578626" >Vmware16.0 Pro <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a> 已经兼容 Hyper-V；安卓模拟器中，<strong>国际版</strong>蓝叠模拟器（BlueStacks）、微软的”msft-android-emulator”、Mumu 模拟器的”Mumu X”版本等也都支持了 Hyper-V。</p>
+</li>
+</ol>
+<h2 id="基本使用"><a href="#基本使用" class="headerlink" title="基本使用"></a>基本使用</h2><p><em><code>wsl-cli</code> 的联网功能需要科学手段</em></p>
+<h3 id="Commands"><a href="#Commands" class="headerlink" title="Commands"></a>Commands</h3><div class="highlight-container" data-rel="Powershell"><figure class="iseeu highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">wsl [-<span class="type">e</span>, --<span class="type">exec</span>] &lt;cmd&gt;	<span class="comment"># 用默认分发执行命令</span></span><br><span class="line">wsl <span class="literal">-l</span> <span class="literal">-v</span> 		<span class="comment"># 查看已安装的 wsl 系统版本信息</span></span><br><span class="line">wsl <span class="literal">--shutdown</span>	<span class="comment"># 关闭所有分发</span></span><br><span class="line">wsl <span class="literal">--status</span>	<span class="comment"># 查看 wsl 状态</span></span><br><span class="line">wsl <span class="literal">-t</span>, <span class="literal">--terminate</span>	<span class="comment"># 关机指定分发</span></span><br><span class="line">wsl <span class="literal">-d</span> &lt;distro&gt;	<span class="comment"># 选择分发进入</span></span><br><span class="line">	<span class="literal">--cd</span> &lt;<span class="built_in">dir</span>&gt;	<span class="comment"># 进入指定目录，可使用特殊路径</span></span><br><span class="line">	<span class="literal">--user</span>, <span class="literal">-u</span> &lt;user&gt;	<span class="comment"># 登录指定用户</span></span><br><span class="line">wsl <span class="literal">-s</span>, <span class="literal">--setdefault</span> &lt;distro&gt;	<span class="comment"># 设置默认分发</span></span><br><span class="line">wsl <span class="literal">--unregister</span> &lt;distro&gt;	<span class="comment"># 注销分发</span></span><br><span class="line">wsl <span class="literal">--set-default-version</span> &lt;ver&gt; <span class="comment"># 设置默认 WSL 版本</span></span><br><span class="line">wsl <span class="literal">--set-version</span> &lt;distro&gt; &lt;ver&gt;	<span class="comment"># 设置某分发的WSL版本</span></span><br><span class="line">wsl <span class="literal">--update</span>	<span class="comment"># 更新 WSL</span></span><br><span class="line">wsl <span class="literal">--export</span> &lt;distro&gt; &lt;destination&gt;	<span class="comment"># 导出指定分发为 tar 包</span></span><br><span class="line">	<span class="literal">--</span> vhd	<span class="comment">##  添加该参数则导出为 vhdx 文件</span></span><br><span class="line">wsl <span class="literal">--import</span> &lt;distro&gt; &lt;destination&gt; &lt;source&gt;	<span class="comment"># 从 tar 包中导入分发并安装至指定位置</span></span><br><span class="line">	<span class="literal">--vhd</span>	<span class="comment">## 额外增加该参数则识别 vhdx 文件</span></span><br><span class="line">wsl <span class="literal">--import-in-place</span> &lt;distro&gt; &lt;source&gt;	<span class="comment"># 从 vhdx 文件中导入分发并保留原位置</span></span><br></pre></td></tr></table></figure></div>
+
+<h3 id="Debris"><a href="#Debris" class="headerlink" title="Debris"></a>Debris</h3><ul>
+<li>从默认的 WSL 1 升级为 WSL 2 后，命令 <code>wsl --mount</code> 变为可用。</li>
+</ul>
+<h3 id="环境配置"><a href="#环境配置" class="headerlink" title="环境配置"></a>环境配置</h3><p><a class="link"   target="_blank" rel="noopener" href="https://linux.cn/article-13030-1.html" >高效简洁的Zsh配置 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+<p><a class="link"   target="_blank" rel="noopener" href="https://archived.mednight4.com/2021/02/08/wsl2-linux-pei-zhi-liu-cheng-chao-xiang-xi-zhi-nan/" >WSL2+Linux-Kali完整配置 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+<!-- flag of hidden posts -->
+        </div>
+
+        
+            <div class="post-copyright-info w-full my-8 px-2 sm:px-6 md:px-8">
+                <div class="article-copyright-info-container">
+    <ul>
+        <li><strong>Title:</strong> WSL</li>
+        <li><strong>Author:</strong> Forestsetyou</li>
+        <li><strong>Created at
+                :</strong> 2023-09-29 01:42:00</li>
+        
+            <li>
+                <strong>Updated at
+                    :</strong> 2023-10-04 01:20:00
+            </li>
+        
+        <li>
+            <strong>Link:</strong> https://forestsetyou.github.io/2023/09/29/Solution/Linux/WSL/
+        </li>
+        <li>
+            <strong>
+                License:
+            </strong>
+            
+
+            
+                This work is licensed under <a class="license" target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0">CC BY-NC-SA 4.0</a>.
+            
+        </li>
+    </ul>
+</div>
+
+            </div>
+        
+
+        
+
+        
+
+        
+
+
+        
+    </div>
+
+    
+        <div class="toc-content-container">
+            <div class="post-toc-wrap">
+    <div class="post-toc">
+        <div class="toc-title">On this page</div>
+        <div class="page-title">WSL</div>
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#WSL"><span class="nav-text">WSL</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%89%E8%A3%85"><span class="nav-text">安装</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%8E%AF%E5%A2%83%E9%80%82%E9%85%8D"><span class="nav-text">环境适配</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8"><span class="nav-text">基本使用</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Commands"><span class="nav-text">Commands</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Debris"><span class="nav-text">Debris</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE"><span class="nav-text">环境配置</span></a></li></ol></li></ol></li></ol>
+
+    </div>
+</div>
+        </div>
+    
+</div>
+
+
+
+                
+
+            </div>
+
+            
+
+        </div>
+
+        <div class="main-content-footer">
+            <footer class="footer mt-5 py-5 h-auto text-base text-third-text-color relative border-t-2 border-t-border-color">
+    <div class="info-container py-3 text-center">
+        
+        <div class="text-center">
+            &copy;
+            
+              <span>2024</span>
+              -
+            
+            2024&nbsp;&nbsp;<i class="fa-solid fa-heart fa-beat" style="--fa-animation-duration: 0.5s; color: #f54545"></i>&nbsp;&nbsp;<a href="/">Forestsetyou</a>
+            
+        </div>
+        
+        <div class="relative text-center lg:absolute lg:left-[20px] lg:top-1/2 lg:-translate-y-1/2 lg:text-left">
+            <span class="lg:block text-sm">POWERED BY <?xml version="1.0" encoding="utf-8"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg class="relative top-[2px] inline-block align-baseline" version="1.1" id="圖層_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="1rem" height="1rem" viewBox="0 0 512 512" enable-background="new 0 0 512 512" xml:space="preserve"><path fill="#0E83CD" d="M256.4,25.8l-200,115.5L56,371.5l199.6,114.7l200-115.5l0.4-230.2L256.4,25.8z M349,354.6l-18.4,10.7l-18.6-11V275H200v79.6l-18.4,10.7l-18.6-11v-197l18.5-10.6l18.5,10.8V237h112v-79.6l18.5-10.6l18.5,10.8V354.6z"/></svg><a target="_blank" class="text-base" href="https://hexo.io">Hexo</a></span>
+            <span class="text-sm lg:block">THEME&nbsp;<a class="text-base" target="_blank" href="https://github.com/EvanNotFound/hexo-theme-redefine">Redefine v2.6.1</a></span>
+        </div>
+        
+        
+        
+        
+        
+    </div>  
+</footer>
+        </div>
+    </div>
+
+    
+        <div class="post-tools">
+            <div class="post-tools-container">
+    <ul class="article-tools-list">
+        <!-- TOC aside toggle -->
+        
+            <li class="right-bottom-tools page-aside-toggle">
+                <i class="fa-regular fa-outdent"></i>
+            </li>
+        
+
+        <!-- go comment -->
+        
+    </ul>
+</div>
+
+        </div>
+    
+
+    <div class="right-side-tools-container">
+        <div class="side-tools-container">
+    <ul class="hidden-tools-list">
+        <li class="right-bottom-tools tool-font-adjust-plus flex justify-center items-center">
+            <i class="fa-regular fa-magnifying-glass-plus"></i>
+        </li>
+
+        <li class="right-bottom-tools tool-font-adjust-minus flex justify-center items-center">
+            <i class="fa-regular fa-magnifying-glass-minus"></i>
+        </li>
+
+        <li class="right-bottom-tools tool-dark-light-toggle flex justify-center items-center">
+            <i class="fa-regular fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        
+
+        <li class="right-bottom-tools tool-scroll-to-bottom flex justify-center items-center">
+            <i class="fa-regular fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="visible-tools-list">
+        <li class="right-bottom-tools toggle-tools-list flex justify-center items-center">
+            <i class="fa-regular fa-cog fa-spin"></i>
+        </li>
+        
+            <li class="right-bottom-tools tool-scroll-to-top flex justify-center items-center">
+                <i class="arrow-up fas fa-arrow-up"></i>
+                <span class="percent"></span>
+            </li>
+        
+        
+    </ul>
+</div>
+
+    </div>
+
+    <div class="image-viewer-container">
+    <img src="">
+</div>
+
+
+    
+        <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-input-field-pre">
+            <i class="fa-solid fa-keyboard"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="Search..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="popup-btn-close">
+                <i class="fa-solid fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fa-solid fa-spinner fa-spin-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+
+</main>
+
+
+    
+<script src="/js/libs/Swup.min.js"></script>
+
+<script src="/js/libs/SwupSlideTheme.min.js"></script>
+
+<script src="/js/libs/SwupScriptsPlugin.min.js"></script>
+
+<script src="/js/libs/SwupProgressPlugin.min.js"></script>
+
+<script src="/js/libs/SwupScrollPlugin.min.js"></script>
+
+<script src="/js/libs/SwupPreloadPlugin.min.js"></script>
+
+<script>
+    const swup = new Swup({
+        plugins: [
+            new SwupScriptsPlugin({
+                optin: true,
+            }),
+            new SwupProgressPlugin(),
+            new SwupScrollPlugin({
+                offset: 80,
+            }),
+            new SwupSlideTheme({
+                mainElement: ".main-content-body",
+            }),
+            new SwupPreloadPlugin(),
+        ],
+        containers: ["#swup"],
+    });
+</script>
+
+
+
+
+
+
+
+<script src="/js/tools/imageViewer.js" type="module"></script>
+
+<script src="/js/utils.js" type="module"></script>
+
+<script src="/js/main.js" type="module"></script>
+
+<script src="/js/layouts/navbarShrink.js" type="module"></script>
+
+<script src="/js/tools/scrollTopBottom.js" type="module"></script>
+
+<script src="/js/tools/lightDarkSwitch.js" type="module"></script>
+
+<script src="/js/layouts/categoryList.js" type="module"></script>
+
+
+
+    
+<script src="/js/tools/localSearch.js" type="module"></script>
+
+
+
+
+    
+<script src="/js/tools/codeBlock.js" type="module"></script>
+
+
+
+
+    
+<script src="/js/layouts/lazyload.js" type="module"></script>
+
+
+
+
+
+
+  
+<script src="/js/libs/Typed.min.js"></script>
+
+  
+<script src="/js/plugins/typed.js" type="module"></script>
+
+
+
+
+
+
+
+
+
+<div class="post-scripts" data-swup-reload-script>
+    
+        
+<script src="/js/tools/tocToggle.js" type="module"></script>
+
+<script src="/js/layouts/toc.js" type="module"></script>
+
+<script src="/js/plugins/tabs.js" type="module"></script>
+
+    
+</div>
+
+
+</body>
+</html>

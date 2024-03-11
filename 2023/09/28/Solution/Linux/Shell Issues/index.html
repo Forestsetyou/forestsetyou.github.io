@@ -1,0 +1,1009 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="keywords" content="ctf, solution, note, blog">
+    
+    <meta name="author" content="Forestsetyou">
+    <!-- preconnect -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    
+    <!--- Seo Part-->
+    
+    <link rel="canonical" href="http://forestsetyou.github.io/2023/09/28/solution/linux/shell issues/"/>
+    <meta name="robots" content="index,follow">
+    <meta name="googlebot" content="index,follow">
+    <meta name="revisit-after" content="1 days">
+    
+        <meta name="description" content="false">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Shell Issues">
+<meta property="og:url" content="http://forestsetyou.github.io/2023/09/28/Solution/Linux/Shell%20Issues/index.html">
+<meta property="og:site_name" content="Festu&#39;s Blog">
+<meta property="og:description" content="false">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2023-09-28T11:09:00.000Z">
+<meta property="article:modified_time" content="2023-09-28T17:49:00.000Z">
+<meta property="article:author" content="Forestsetyou">
+<meta property="article:tag" content="ctf, solution, note, blog">
+<meta name="twitter:card" content="summary">
+    
+    
+    <!--- Icon Part-->
+    <link rel="icon" type="image/png" href="/hide_imgs/smiling_face.png" sizes="192x192">
+    <link rel="apple-touch-icon" sizes="180x180" href="/hide_imgs/smiling_face.png">
+    <meta name="theme-color" content="#A31F34">
+    <link rel="shortcut icon" href="/hide_imgs/smiling_face.png">
+    <!--- Page Info-->
+    
+    <title>
+        
+            Shell Issues -
+        
+        Festu&#39;s Blog
+    </title>
+
+    
+<link rel="stylesheet" href="/fonts/Chillax/chillax.css">
+
+
+    <!--- Inject Part-->
+    
+
+    
+        <style>
+    :root {
+        --preloader-background-color: #fff;
+        --preloader-text-color: #000;
+    }
+
+    @media (prefers-color-scheme: dark) {
+        :root {
+            --preloader-background-color: #202124;
+            --preloader-text-color: #fff;
+        }
+    }
+
+    @media (prefers-color-scheme: light) {
+        :root {
+            --preloader-background-color: #fff;
+            --preloader-text-color: #000;
+        }
+    }
+
+    @media (max-width: 600px) {
+        .ml13 {
+            font-size: 2.6rem !important; /* Adjust this value as needed */
+        }
+    }
+
+    .preloader {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem; /* Tailwind 'gap-4' is 1rem */
+        align-items: center;
+        justify-content: center;
+        position: fixed;
+        padding: 12px;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh; /* 'h-screen' is 100% of the viewport height */
+        background-color: var(--preloader-background-color);
+        z-index: 1100; /* 'z-[1100]' sets the z-index */
+        transition: opacity 0.2s ease-in-out;
+    }
+
+    .ml13 {
+        font-size: 3.2rem;
+        /* text-transform: uppercase; */
+        color: var(--preloader-text-color);
+        letter-spacing: -1px;
+        font-weight: 500;
+        font-family: 'Chillax-Variable', sans-serif;
+        text-align: center;
+    }
+
+    .ml13 .word {
+        display: inline-flex;
+        flex-wrap: wrap;
+        white-space: nowrap;
+    }
+
+    .ml13 .letter {
+        display: inline-block;
+        line-height: 1em;
+    }
+</style>
+
+<div class="preloader">
+    
+<script src="/js/libs/anime.min.js"></script>
+
+    <h1 class="ml13">
+        Festu&#39;s Blog
+    </h1>
+    <script>
+        var textWrapper = document.querySelector('.ml13');
+        // Split text into words
+        var words = textWrapper.textContent.trim().split(' ');
+
+        // Clear the existing content
+        textWrapper.innerHTML = '';
+
+        // Wrap each word and its letters in spans
+        words.forEach(function(word) {
+            var wordSpan = document.createElement('span');
+            wordSpan.classList.add('word');
+            wordSpan.innerHTML = word.replace(/\S/g, "<span class='letter'>$&</span>");
+            textWrapper.appendChild(wordSpan);
+            textWrapper.appendChild(document.createTextNode(' ')); // Add space between words
+        });
+
+
+        anime.timeline({loop: true})
+            .add({
+                targets: '.ml13 .letter',
+                translateY: [100,0],
+                translateZ: 0,
+                opacity: [0,1],
+                easing: "easeOutExpo",
+                duration: 1400,
+                delay: (el, i) => 300 + 30 * i
+            }).add({
+            targets: '.ml13 .letter',
+            translateY: [0,-100],
+            opacity: [1,0],
+            easing: "easeInExpo",
+            duration: 1200,
+            delay: (el, i) => 100 + 30 * i
+        });
+
+        let themeStatus = JSON.parse(localStorage.getItem('REDEFINE-THEME-STATUS'))?.isDark;
+
+        // If the theme status is not found in local storage, check the preferred color scheme
+        if (themeStatus === undefined || themeStatus === null) {
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                themeStatus = 'dark';
+            } else {
+                themeStatus = 'light';
+            }
+        }
+
+        // Now you can use the themeStatus variable in your code
+        if (themeStatus) {
+            document.documentElement.style.setProperty('--preloader-background-color', '#202124');
+            document.documentElement.style.setProperty('--preloader-text-color', '#fff');
+        } else {
+            document.documentElement.style.setProperty('--preloader-background-color', '#fff');
+            document.documentElement.style.setProperty('--preloader-text-color', '#000');
+        }
+
+        window.addEventListener('load', function () {
+            hidePreloaderAfterTimeout(1000); // Hide after 1000 milliseconds once the window has loaded
+        });
+
+        // Backup failsafe: Hide preloader after a maximum of 5000 milliseconds, regardless of the window load event
+        hidePreloaderAfterTimeout(5000);
+
+        function hidePreloaderAfterTimeout(delay) {
+            setTimeout(function () {
+                var preloader = document.querySelector('.preloader');
+                preloader.style.opacity = '0';
+                setTimeout(function () {
+                    preloader.style.display = 'none';
+                }, 200);
+            }, delay);
+        }
+    </script>
+</div>
+    
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+
+    
+        
+<link rel="stylesheet" href="/assets/build/styles.css">
+
+    
+
+    
+<link rel="stylesheet" href="/fonts/fonts.css">
+
+    
+<link rel="stylesheet" href="/fonts/Satoshi/satoshi.css">
+
+    <!--- Font Part-->
+    
+    
+    
+    
+
+
+    <script id="hexo-configurations">
+    window.config = {"hostname":"forestsetyou.github.io","root":"/","language":"en","path":"search.xml"};
+    window.theme = {"articles":{"style":{"font_size":"16px","line_height":1.5,"image_border_radius":"14px","image_alignment":"center","image_caption":false,"link_icon":true,"title_alignment":"left","headings_top_spacing":{"h1":"5rem","h2":"4rem","h3":"2.8rem","h4":"2.5rem","h5":"2.2rem","h6":"2rem"}},"word_count":{"enable":false,"count":true,"min2read":true},"author_label":{"enable":false,"auto":false,"list":[]},"code_block":{"copy":true,"style":"simple","font":{"enable":false,"family":null,"url":null}},"toc":{"enable":true,"max_depth":3,"number":false,"expand":true,"init_open":true},"copyright":{"enable":true,"default":"cc_by_nc_sa"},"lazyload":true,"recommendation":{"enable":false,"title":"推荐阅读","limit":3,"mobile_limit":2,"placeholder":"/images/wallhaven-wqery6-light.webp","skip_dirs":[]}},"colors":{"primary":"#A31F34","secondary":null,"default_mode":"light"},"global":{"fonts":{"chinese":{"enable":false,"family":null,"url":null},"english":{"enable":false,"family":null,"url":null}},"content_max_width":"1000px","sidebar_width":"210px","hover":{"shadow":true,"scale":false},"scroll_progress":{"bar":false,"percentage":true},"website_counter":{"url":"https://cn.vercount.one/js","enable":false,"site_pv":true,"site_uv":true,"post_pv":true},"single_page":true,"preloader":true,"open_graph":true,"google_analytics":{"enable":false,"id":null}},"home_banner":{"enable":true,"style":"fixed","image":{"light":"/hide_imgs/light_banner-5.png","dark":"/hide_imgs/dark_banner.png"},"title":"Festu's Blog","subtitle":{"text":["Life Goes On."],"hitokoto":{"enable":false,"api":"https://v1.hitokoto.cn"},"typing_speed":100,"backing_speed":80,"starting_delay":500,"backing_delay":1500,"loop":false,"smart_backspace":false},"text_color":{"light":"#fff","dark":"#d1d1b6"},"text_style":{"title_size":"2.8rem","subtitle_size":"1.5rem","line_height":1.2},"custom_font":{"enable":false,"family":null,"url":null},"social_links":{"enable":true,"style":"default","links":{"github":"https://github.com/Forestsetyou","instagram":null,"zhihu":null,"twitter":null,"email":null},"qrs":{"weixin":null}}},"plugins":{"feed":{"enable":false},"aplayer":{"enable":false,"type":"fixed","audios":[{"name":null,"artist":null,"url":null,"cover":null,"lrc":null}]},"mermaid":{"enable":false,"version":"9.3.0"}},"version":"2.6.1","navbar":{"auto_hide":false,"color":{"left":"#f78736","right":"#367df7","transparency":35},"width":{"home":"1200px","pages":"1000px"},"links":{"Home":{"path":"/","icon":"fa-regular fa-house"},"Archives":{"path":"/archives","icon":"fa-regular fa-archive"},"categories":{"path":"/categories","icon":"fa-regular fa-folder"},"tags":{"path":"/tags","icon":"fa-regular fa-tags"}},"search":{"enable":true,"preload":true}},"page_templates":{"friends_column":2,"tags_style":"blur"},"home":{"sidebar":{"enable":true,"position":"left","first_item":"menu","announcement":null,"show_on_mobile":true,"links":null},"article_date_format":"auto","categories":{"enable":true,"limit":3},"tags":{"enable":true,"limit":3}},"footerStart":"2024/03/11 03:27:59"};
+    window.lang_ago = {"second":"%s seconds ago","minute":"%s minutes ago","hour":"%s hours ago","day":"%s days ago","week":"%s weeks ago","month":"%s months ago","year":"%s years ago"};
+    window.data = {"masonry":false};
+  </script>
+    
+    <!--- Fontawesome Part-->
+    
+<link rel="stylesheet" href="/fontawesome/fontawesome.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/brands.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/solid.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/regular.min.css">
+
+    
+    
+    
+    
+<meta name="generator" content="Hexo 7.1.1"></head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+
+    
+        <span class="pjax-progress-bar"></span>
+<!--        <span class="swup-progress-icon">-->
+<!--            <i class="fa-solid fa-circle-notch fa-spin"></i>-->
+<!--        </span>-->
+    
+</div>
+
+
+<main class="page-container" id="swup">
+
+    
+
+    <div class="main-content-container">
+
+
+        <div class="main-content-header">
+            <header class="navbar-container px-6 md:px-12">
+
+    <div class="navbar-content ">
+        <div class="left">
+            
+                <a class="logo-image" href="/">
+                    <img src="/hide_imgs/smiling_face.png">
+                </a>
+            
+            <a class="logo-title" href="/">
+                
+                Festu&#39;s Blog
+                
+            </a>
+        </div>
+
+        <div class="right">
+            <!-- PC -->
+            <div class="desktop">
+                <ul class="navbar-list">
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/"
+                                        >
+                                    <i class="fa-regular fa-house fa-fw"></i>
+                                    HOME
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/archives"
+                                        >
+                                    <i class="fa-regular fa-archive fa-fw"></i>
+                                    ARCHIVES
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/categories"
+                                        >
+                                    <i class="fa-regular fa-folder fa-fw"></i>
+                                    CATEGORIES
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/tags"
+                                        >
+                                    <i class="fa-regular fa-tags fa-fw"></i>
+                                    TAGS
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                    
+                        <li class="navbar-item search search-popup-trigger">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </li>
+                    
+                </ul>
+            </div>
+            <!-- Mobile -->
+            <div class="mobile">
+                
+                    <div class="icon-item search search-popup-trigger"><i class="fa-solid fa-magnifying-glass"></i>
+                    </div>
+                
+                <div class="icon-item navbar-bar">
+                    <div class="navbar-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile sheet -->
+    <div class="navbar-drawer h-screen w-full absolute top-0 left-0 bg-background-color flex flex-col justify-between">
+        <ul class="drawer-navbar-list flex flex-col px-4 justify-center items-start">
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/"
+                        >
+                            <span>
+                                HOME
+                            </span>
+                            
+                                <i class="fa-regular fa-house fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/archives"
+                        >
+                            <span>
+                                ARCHIVES
+                            </span>
+                            
+                                <i class="fa-regular fa-archive fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/categories"
+                        >
+                            <span>
+                                CATEGORIES
+                            </span>
+                            
+                                <i class="fa-regular fa-folder fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/tags"
+                        >
+                            <span>
+                                TAGS
+                            </span>
+                            
+                                <i class="fa-regular fa-tags fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+
+            
+            
+        </ul>
+
+        <div class="statistics flex justify-around my-2.5">
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/tags">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">1</div>
+        <div class="label text-third-text-color text-sm">Tags</div>
+    </a>
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/categories">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">10</div>
+        <div class="label text-third-text-color text-sm">Categories</div>
+    </a>
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/archives">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">14</div>
+        <div class="label text-third-text-color text-sm">Posts</div>
+    </a>
+</div>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="main-content-body">
+
+            
+
+            <div class="main-content">
+
+                
+                    <div class="post-page-container flex relative justify-between box-border w-full h-full">
+    <div class="article-content-container">
+
+        <div class="article-title relative w-full">
+            
+                
+                
+                <img src="/hide_imgs/post_thumbnail-2.jpg" alt="Shell Issues" class="w-full h-60 sm:h-72 md:h-80 object-cover sm:rounded-t-large dark:brightness-75"/>
+                
+                <div class="w-full flex items-center absolute bottom-0 justify-start">
+                    <h1 class="article-title-cover text-center mx-6 my-6 text-second-text-color bg-background-color-transparent px-4 py-3 text-3xl sm:text-4xl md:text-5xl font-bold backdrop-blur-lg rounded-xl border border-border-color ">Shell Issues</h1>
+                </div>
+            
+            </div>
+
+        
+            <div class="article-header flex flex-row gap-2 items-center px-2 sm:px-6 md:px-8">
+                <div class="avatar w-[46px] h-[46px] flex-shrink-0 rounded-medium border border-border-color p-[1px]">
+                    <img src="/hide_imgs/avatar.png">
+                </div>
+                <div class="info flex flex-col justify-between">
+                    <div class="author flex items-center">
+                        <span class="name text-default-text-color text-lg font-semibold">Forestsetyou</span>
+                        
+                    </div>
+                    <div class="meta-info">
+                        <div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fa-regular fa-pen-fancy"></i>&nbsp;
+        <span class="desktop">2023-09-28 19:09</span>
+        <span class="mobile">2023-09-28 19:09</span>
+        <span class="hover-info">Created</span>
+    </span>
+    
+        <span class="article-date article-meta-item">
+            <i class="fa-regular fa-wrench"></i>&nbsp;
+            <span class="desktop">2023-09-29 01:49</span>
+            <span class="mobile">2023-09-29 01:49</span>
+            <span class="hover-info">Updated</span>
+        </span>
+    
+
+    
+        <span class="article-categories article-meta-item">
+            <i class="fa-regular fa-folders"></i>&nbsp;
+            <ul>
+                
+                
+                    
+                        
+                        <li>
+                            <a href="/categories/Solution/">Solution</a>&nbsp;
+                        </li>
+                    
+                    
+                
+                    
+                        
+                            <li>></li>
+                        
+                        <li>
+                            <a href="/categories/Solution/Linux/">Linux</a>&nbsp;
+                        </li>
+                    
+                    
+                
+            </ul>
+        </span>
+    
+    
+
+    
+    
+    
+    
+</div>
+
+                    </div>
+                </div>
+            </div>
+        
+
+        
+
+
+        <div class="article-content markdown-body px-2 sm:px-6 md:px-8 pb-8">
+            <h2 id="Debris"><a href="#Debris" class="headerlink" title="Debris"></a>Debris</h2><ul>
+<li><p>双引号包裹下引用变量，其中的<strong>换行符号</strong>（不是转义）会被解析，否则会被直接忽视（不会被替换为 <code>\n</code> ），例如：</p>
+<div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$pre</span>=<span class="string">&quot;</span></span><br><span class="line"><span class="string">I</span></span><br><span class="line"><span class="string">Love</span></span><br><span class="line"><span class="string">You</span></span><br><span class="line"><span class="string">&quot;</span></span><br><span class="line"><span class="built_in">echo</span> <span class="variable">$pre</span>	<span class="comment"># 输出一行内容</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;<span class="variable">$pre</span>&quot;</span>	<span class="comment"># 输出多行内容</span></span><br></pre></td></tr></table></figure></div>
+</li>
+<li><p>引用变量时，若其中存储的是字符串且对字符串的转义有严格要求，则形如 <code>&quot;$var&quot;</code> 的变量引用<strong>等价于</strong>其内容外套一层双引号，该引用过程只发生一次转义。</p>
+</li>
+</ul>
+<h2 id="Solutions"><a href="#Solutions" class="headerlink" title="Solutions"></a>Solutions</h2><h3 id="重定向权限与-tee"><a href="#重定向权限与-tee" class="headerlink" title="重定向权限与 tee"></a>重定向权限与 <code>tee</code></h3><div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo echo $pre_source &gt; /etc/apt/sources.list</span><br></pre></td></tr></table></figure></div>
+
+<p>该语句会提示权限不够，因为 <code>&gt;, &gt;&gt;</code> 等重定向符也需要 root 权限。</p>
+<p>可以利用 <code>tee</code> 命令进行重定向：</p>
+<div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">echo</span> <span class="string">&quot;<span class="variable">$pre_source</span>&quot;</span> | sudo <span class="built_in">tee</span> /etc/apt/sources.list</span><br></pre></td></tr></table></figure></div>
+
+<p><code>tee</code> 相当于 <code>&gt;</code> ，<code>tee -a</code> 相当于 <code>&gt;&gt;</code> 。</p>
+<h3 id="Here-Document"><a href="#Here-Document" class="headerlink" title="Here Document"></a>Here Document</h3><p>为”here document”的分隔符加双引号，会让其不解析输入内容中的变量表达式 <code>$&lt;str&gt;</code> ：</p>
+<div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;cmd&gt; &lt;&lt; <span class="string">&quot;EOF&quot;</span></span><br><span class="line">	<span class="variable">$abc</span></span><br><span class="line">EOF</span><br></pre></td></tr></table></figure></div>
+
+<p>终止符仍为 <code>EOF</code> 不加引号，且必须顶格。</p>
+<hr>
+<div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"><span class="comment"># 设置 root 密码</span></span><br><span class="line"><span class="keyword">function</span> <span class="function"><span class="title">root_passwd</span></span>()&#123;</span><br><span class="line">    passwd -d root &gt; /dev/null</span><br><span class="line">    passwd root &lt;&lt;- <span class="string">EOF &gt; /dev/null</span></span><br><span class="line"><span class="string">        &quot;$pre_passwd&quot;</span></span><br><span class="line"><span class="string">        &quot;$pre_passwd&quot;</span></span><br><span class="line"><span class="string">EOF</span></span><br><span class="line">    <span class="comment"># EOF 好像必须挤在开头, 且后面不能跟别的东西, 包括注释</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+
+<p><code>&lt;&lt;-</code> 能让传入的数据忽略制表符 <code>\t</code> 。</p>
+<p><strong>但是</strong>在编辑器 VSC 中的 tab 按键产生的缩进实际上是多个空格，而 Vim 下的 tab 产生的缩进用的才是制表符 <code>\t</code> 。</p>
+<p>由于 <code>&lt;&lt;-</code> 只会忽略制表符 <code>\t</code> 而不是空格，因此此处输入的密码前面有数个空格。</p>
+<p><strong>同时</strong> hd 下的双引号并不会被解析，因此密码前后各有一个双引号。</p>
+<h3 id="shell-与-echo-的转义"><a href="#shell-与-echo-的转义" class="headerlink" title="shell 与 echo 的转义"></a><code>shell</code> 与 <code>echo</code> 的转义</h3><p>shell 真是转义地狱：</p>
+<div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line">pre=<span class="string">&quot;</span></span><br><span class="line"><span class="string">        echo \&quot;</span></span><br><span class="line"><span class="string">#   for i in &#123;0..255&#125;; do print -Pn \\\&quot;%\\\$&#123;i&#125;F\\\$&#123;(l:3::0:)i&#125;%f \\\&quot; \\\$&#123;\\\$&#123;(M)\\\$((i%8)):#7&#125;:+\\\$&#x27;\\\\n&#x27;&#125;; done</span></span><br><span class="line"><span class="string">        \&quot;</span></span><br><span class="line"><span class="string">&quot;</span></span><br></pre></td></tr></table></figure></div>
+
+<p>执行 <code>su - festu -c $pre</code> 换行会被转义后输出。</p>
+<p><strong>解释：</strong></p>
+<p><code>echo</code> 会对传入的特殊字符转义一次。其转义范围包括 <code>\n, \t</code> 等特殊字符，但不包括 <code>$, `, &quot;</code> 。</p>
+<p>据此来剖析一下上述语句的转义流程。</p>
+<p>首先是 $pre 变量被创建，shell 解析双引号括起的字符串时，会对其中的 <code>$, `, &quot;</code> 进行一次转义。因此存入 $pre 中的换行周边的内容为 <code>\\n</code> 。</p>
+<p>接着变量作为参数被给命令 <code>su</code> ，这个过程原样传递。传入的内容又作为 shell 命令被解析，由于换行符仍然是被双引号括起的字符串，因此再次发生转义，<code>\\n</code> 变为 <code>\n</code> 作为参数被传给 <code>echo</code> 命令，然后又被转义，最后变成了换行被输出。</p>
+<p>前两次转义对 <code>$, `, &quot;</code> 同样生效，同时又作用于 <code>\\\\n</code> 中的反斜杠，换行符也牵连着被**转义**了两次（当然这里只是说起了转义的效果，实际上 shell 解析双引号括起的字符串时并不解析换行符本身的转义即  <code>\n</code> ）</p>
+<p>而 echo 的转义只对换行符本身起效，因此换行符最终被转义了三次，区别于 shell 特殊字符的两次。</p>
+<p><strong>解决方案：</strong>为 <code>echo</code> 添加 <code>-E</code> 参数取消它自带的特殊字符转义：</p>
+<div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">pre=<span class="string">&quot;</span></span><br><span class="line"><span class="string">        echo -E \&quot;</span></span><br><span class="line"><span class="string">#   for i in &#123;0..255&#125;; do print -Pn \\\&quot;%\\\$&#123;i&#125;F\\\$&#123;(l:3::0:)i&#125;%f \\\&quot; \\\$&#123;\\\$&#123;(M)\\\$((i%8)):#7&#125;:+\\\$&#x27;\\\\n&#x27;&#125;; done</span></span><br><span class="line"><span class="string">        \&quot;</span></span><br><span class="line"><span class="string">&quot;</span></span><br></pre></td></tr></table></figure></div>
+
+<p>值得一提的是 echo 与 shell 的转义非常复杂，反复混用可能会非常混乱，造成”转义地狱”的糟糕情况（虽然 shell 早就是了），而且研究起来价值不高，因此不建议反复混用或深究。</p>
+<hr>
+<p>（就深究一点点 &#x3D; &#x3D;）</p>
+<p>例如 shell 并不解析单引号字符串中的转义，因此理论上下面的脚本也能输出 <code>\n</code> ：</p>
+<div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">pre=<span class="string">&quot;</span></span><br><span class="line"><span class="string">        echo &#x27;</span></span><br><span class="line"><span class="string">#   for i in &#123;0..255&#125;; do print -Pn \\\&quot;%\\\$&#123;i&#125;F\\\$&#123;(l:3::0:)i&#125;%f \\\&quot; \\\$&#123;\\\$&#123;(M)\\\$((i%8)):#7&#125;:+\\\$&#x27;\\\\n&#x27;&#125;; done</span></span><br><span class="line"><span class="string">        &#x27;</span></span><br><span class="line"><span class="string">&quot;</span></span><br></pre></td></tr></table></figure></div>
+
+<p>对于 <code>\\\\n</code> ，变量赋值时是双引号字符串，被转义一次，变为 <code>\\n</code> ；执行字符串表示的命令时是单引号字符串，因此不做转义；传给 <code>echo</code> 后被转义一次，变为 <code>\n</code> 。</p>
+<p>理论上该语句只对换行符做了两次转义，最后输出的只是字符 <code>\n</code> 。但实际上输出时仍发生了换行。</p>
+<p>除此之外还有很多奇怪的问题…总之不建议深究。</p>
+<hr>
+<p>最后作出一个结论，如果是全是使用双引号的需要二次转义的场景（写入配置时），使用 <code>echo -E</code></p>
+<h3 id="重定向"><a href="#重定向" class="headerlink" title="重定向"></a>重定向</h3><p>写脚本时看能希望在脚本运行时，永久将『标准错误输入』重定向至某处，利用 <code>exec</code> 可实现：</p>
+<div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">exec</span> 2&gt;~/errLog		<span class="comment"># 重定向至文件</span></span><br><span class="line"><span class="built_in">exec</span> 1&gt;/dev/null	<span class="comment"># 重定向至空</span></span><br><span class="line"><span class="built_in">exec</span> 1&gt;/dev/tty1	<span class="comment"># 将标准输出重定向到 tty1 终端</span></span><br></pre></td></tr></table></figure></div>
+
+<p>标准输入输出设备标识符：</p>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">/proc/self/fd/0：标准输入 0</span><br><span class="line">/proc/self/fd/1：标准输出 1 </span><br><span class="line">/proc/self/fd/2：标准错误输出 2</span><br></pre></td></tr></table></figure></div>
+
+<h4 id="与另一个用户通信"><a href="#与另一个用户通信" class="headerlink" title="与另一个用户通信"></a>与另一个用户通信</h4><p><code>write bob &gt; /dev/tty2</code> 与同一系统下的另一用户 bob 通信。</p>
+<h3 id="su-指定用户执行命令"><a href="#su-指定用户执行命令" class="headerlink" title="su 指定用户执行命令"></a><code>su</code> 指定用户执行命令</h3><p>在交互式 shell 中 su 指定用户执行命令并不能准确读取用户的环境变量如 <code>~</code> ，但在脚本中运行时可以。</p>
+<div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">su - festu -c <span class="string">&quot;</span></span><br><span class="line"><span class="string">	cd ~;</span></span><br><span class="line"><span class="string">	mkdir -p Tmp;</span></span><br><span class="line"><span class="string">	cd Tmp;</span></span><br><span class="line"><span class="string">	echo <span class="variable">$user</span> &gt;&gt; tmp.txt</span></span><br><span class="line"><span class="string">&quot;</span></span><br><span class="line"><span class="comment"># tmp.txt 中的内容为&quot;festu&quot;，有换行可以不要分号</span></span><br><span class="line"><span class="comment"># sudo 执行 Shell 脚本时也能读取正确的用户变量</span></span><br></pre></td></tr></table></figure></div>
+
+<p>奇怪的转义特性（感觉是 BUG）：</p>
+<div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">user=<span class="string">&quot;festu&quot;</span></span><br><span class="line">su - festu -c <span class="string">&quot;echo \$user&quot;</span> <span class="comment"># 输出空行</span></span><br><span class="line">su - festu -c <span class="string">&quot;echo <span class="variable">$user</span>&quot;</span> <span class="comment"># 输出&quot;festu&quot;</span></span><br><span class="line">su - festu -c <span class="string">&quot;echo \&quot;\$user\&quot;&quot;</span> <span class="comment"># 输出&quot;festu&quot;</span></span><br><span class="line">su - festu -c <span class="string">&quot;echo \&quot;\\\$user\&quot;&quot;</span> <span class="comment"># 输出&quot;$user&quot;</span></span><br></pre></td></tr></table></figure></div>
+
+<p>当试图用 <code>echo</code> 向配置文件中写入原生的 <code>$HOME</code> 等字符串时，需要注意转义的次数。</p>
+<h3 id="Vim-操作与转义脚本"><a href="#Vim-操作与转义脚本" class="headerlink" title="Vim 操作与转义脚本"></a>Vim 操作与转义脚本</h3><p><strong>使用场景：</strong></p>
+<p>在编写系统配置脚本时，希望用 <code>echo &#39;...&#39; &gt; conf</code> 语句去快速创建配置文件，由于单引号内的字符是绝对的原始字符串，因此无需特殊处理。但如果使用了双引号，就要考虑对原配置文件进行转义处理。</p>
+<p>更进一步，脚本中可能需要指定用户执行配置命令，以利用用户的环境变量，如家目录 <code>~</code> ：</p>
+<div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">su - &lt;user&gt; -c <span class="string">&quot;</span></span><br><span class="line"><span class="string">	echo \&quot;</span></span><br><span class="line"><span class="string">		...</span></span><br><span class="line"><span class="string">	\&quot; &gt; ~/conf</span></span><br><span class="line"><span class="string">&quot;</span></span><br></pre></td></tr></table></figure></div>
+
+<p>此时就需要对配置文件的内容进行二次转义。</p>
+<p><strong>转义脚本：</strong></p>
+<div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> [ -z <span class="variable">$1</span> ];<span class="keyword">then</span></span><br><span class="line">	<span class="built_in">echo</span> <span class="string">&quot;<span class="variable">$&#123;0&#125;</span> fileName [times]&quot;</span></span><br><span class="line">	<span class="built_in">exit</span> 1</span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> [[ <span class="variable">$1</span> == <span class="string">&quot;-h&quot;</span> || <span class="variable">$1</span> == <span class="string">&quot;--help&quot;</span> ]];<span class="keyword">then</span></span><br><span class="line">	<span class="built_in">echo</span> <span class="string">&quot;Escape special characters in \&quot;Double Quotes\&quot; of shell scripts (for one time or more).&quot;</span></span><br><span class="line">	<span class="built_in">exit</span> 1</span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> [ -z <span class="variable">$2</span> ];<span class="keyword">then</span></span><br><span class="line">	<span class="built_in">times</span>=1</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">	<span class="built_in">times</span>=<span class="variable">$2</span></span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> ((i=<span class="number">0</span>;i&lt;<span class="variable">$&#123;times&#125;</span>;i++))</span><br><span class="line"><span class="keyword">do</span></span><br><span class="line">	vim <span class="variable">$1</span> &lt;&lt;- <span class="string">EOF</span></span><br><span class="line"><span class="string">		:%s/\\\\/\\\\\\\\/g</span></span><br><span class="line"><span class="string">		:%s/\&quot;/\\\\\&quot;/g</span></span><br><span class="line"><span class="string">		:%s/[\$]/\\\\\$/g</span></span><br><span class="line"><span class="string">		:%s/\`/\\\\\`/g</span></span><br><span class="line"><span class="string">		:wq</span></span><br><span class="line"><span class="string">EOF</span></span><br><span class="line"><span class="keyword">done</span></span><br></pre></td></tr></table></figure></div>
+
+<p><strong>解析：</strong></p>
+<p>非常的美妙不是吗。</p>
+<p>首先在终端中键入的（即保存在文本中的） <code>\\</code> 被 shell 解析时发生第一次转义。</p>
+<p>对于表达式 <code>s/&lt;regex&gt;/&lt;string&gt;/g</code> ，首先他会<strong>直观地</strong>替换 vim 显示的内容（尤其是对于反斜杠）。</p>
+<p>表达式中 regex 部分被视为正则表达式，string 部分被视为普通字符串，<code>\\</code> 由于其特殊性，不论在 regex 部分还是 string 部分都会且仅会被转义一次变为 <code>\</code> 。</p>
+<p>由于替换的”直观性”，<strong>在 vim 中看到的</strong>的所有 <code>\</code> 会被挨个替换<br>而对于 <code>$</code> 字符，由于在正则表达式中它代表结尾，因此在 regex 中表示一个 <code>$</code> ，需要用 <code>\$</code> 。</p>
+<p>由于这是转义一次后的结果，因此写在脚本中的字符串为 <code>\\$</code> ；或者用 <code>[$]</code> 即 <code>[\\$]</code> 也可以。而在 string 部分 <code>$</code> 是普通字符，因此不需要转义。</p>
+<p>对于反引号 <code>`</code> ，由于在 shell 脚本中它有特殊含义，因此首先需要用 <code>\\\`</code> 来转义，使其在被 shell 解析后仍为反引号，而不是作为命令解析器被处理。</p>
+<p>从这个角度来讲，<code>$</code> 也应该额外添加反引号做转义，事实上这么做确实是更好的。</p>
+<p>回到反引号，在作为 vim 命令模式的参数传入时它和美元符号一样没有特殊含义，因此不再需要额外的转义。</p>
+
+        </div>
+
+        
+            <div class="post-copyright-info w-full my-8 px-2 sm:px-6 md:px-8">
+                <div class="article-copyright-info-container">
+    <ul>
+        <li><strong>Title:</strong> Shell Issues</li>
+        <li><strong>Author:</strong> Forestsetyou</li>
+        <li><strong>Created at
+                :</strong> 2023-09-28 19:09:00</li>
+        
+            <li>
+                <strong>Updated at
+                    :</strong> 2023-09-29 01:49:00
+            </li>
+        
+        <li>
+            <strong>Link:</strong> https://forestsetyou.github.io/2023/09/28/Solution/Linux/Shell Issues/
+        </li>
+        <li>
+            <strong>
+                License:
+            </strong>
+            
+
+            
+                This work is licensed under <a class="license" target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0">CC BY-NC-SA 4.0</a>.
+            
+        </li>
+    </ul>
+</div>
+
+            </div>
+        
+
+        
+
+        
+
+        
+            <div class="article-nav my-8 flex justify-between items-center px-2 sm:px-6 md:px-8">
+                
+                    <div class="article-prev border-border-color shadow-redefine-flat shadow-shadow-color-2 rounded-medium px-4 py-2 hover:shadow-redefine-flat-hover hover:shadow-shadow-color-2">
+                        <a class="prev"
+                        rel="prev"
+                        href="/2023/09/28/Solution/Linux/Linux%20Issues/"
+                        >
+                            <span class="left arrow-icon flex justify-center items-center">
+                                <i class="fa-solid fa-chevron-left"></i>
+                            </span>
+                            <span class="title flex justify-center items-center">
+                                <span class="post-nav-title-item">Linux Issues</span>
+                                <span class="post-nav-item">Prev posts</span>
+                            </span>
+                        </a>
+                    </div>
+                
+                
+                    <div class="article-next border-border-color shadow-redefine-flat shadow-shadow-color-2 rounded-medium px-4 py-2 hover:shadow-redefine-flat-hover hover:shadow-shadow-color-2">
+                        <a class="next"
+                        rel="next"
+                        href="/2023/09/25/Solution/Windows/Windows%20Issues/"
+                        >
+                            <span class="title flex justify-center items-center">
+                                <span class="post-nav-title-item">Windows Issues</span>
+                                <span class="post-nav-item">Next posts</span>
+                            </span>
+                            <span class="right arrow-icon flex justify-center items-center">
+                                <i class="fa-solid fa-chevron-right"></i>
+                            </span>
+                        </a>
+                    </div>
+                
+            </div>
+        
+
+
+        
+    </div>
+
+    
+        <div class="toc-content-container">
+            <div class="post-toc-wrap">
+    <div class="post-toc">
+        <div class="toc-title">On this page</div>
+        <div class="page-title">Shell Issues</div>
+        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Debris"><span class="nav-text">Debris</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Solutions"><span class="nav-text">Solutions</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%87%8D%E5%AE%9A%E5%90%91%E6%9D%83%E9%99%90%E4%B8%8E-tee"><span class="nav-text">重定向权限与 tee</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Here-Document"><span class="nav-text">Here Document</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#shell-%E4%B8%8E-echo-%E7%9A%84%E8%BD%AC%E4%B9%89"><span class="nav-text">shell 与 echo 的转义</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%87%8D%E5%AE%9A%E5%90%91"><span class="nav-text">重定向</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#su-%E6%8C%87%E5%AE%9A%E7%94%A8%E6%88%B7%E6%89%A7%E8%A1%8C%E5%91%BD%E4%BB%A4"><span class="nav-text">su 指定用户执行命令</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Vim-%E6%93%8D%E4%BD%9C%E4%B8%8E%E8%BD%AC%E4%B9%89%E8%84%9A%E6%9C%AC"><span class="nav-text">Vim 操作与转义脚本</span></a></li></ol></li></ol>
+
+    </div>
+</div>
+        </div>
+    
+</div>
+
+
+
+                
+
+            </div>
+
+            
+
+        </div>
+
+        <div class="main-content-footer">
+            <footer class="footer mt-5 py-5 h-auto text-base text-third-text-color relative border-t-2 border-t-border-color">
+    <div class="info-container py-3 text-center">
+        
+        <div class="text-center">
+            &copy;
+            
+              <span>2024</span>
+              -
+            
+            2024&nbsp;&nbsp;<i class="fa-solid fa-heart fa-beat" style="--fa-animation-duration: 0.5s; color: #f54545"></i>&nbsp;&nbsp;<a href="/">Forestsetyou</a>
+            
+        </div>
+        
+        <div class="relative text-center lg:absolute lg:left-[20px] lg:top-1/2 lg:-translate-y-1/2 lg:text-left">
+            <span class="lg:block text-sm">POWERED BY <?xml version="1.0" encoding="utf-8"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg class="relative top-[2px] inline-block align-baseline" version="1.1" id="圖層_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="1rem" height="1rem" viewBox="0 0 512 512" enable-background="new 0 0 512 512" xml:space="preserve"><path fill="#0E83CD" d="M256.4,25.8l-200,115.5L56,371.5l199.6,114.7l200-115.5l0.4-230.2L256.4,25.8z M349,354.6l-18.4,10.7l-18.6-11V275H200v79.6l-18.4,10.7l-18.6-11v-197l18.5-10.6l18.5,10.8V237h112v-79.6l18.5-10.6l18.5,10.8V354.6z"/></svg><a target="_blank" class="text-base" href="https://hexo.io">Hexo</a></span>
+            <span class="text-sm lg:block">THEME&nbsp;<a class="text-base" target="_blank" href="https://github.com/EvanNotFound/hexo-theme-redefine">Redefine v2.6.1</a></span>
+        </div>
+        
+        
+        
+        
+        
+    </div>  
+</footer>
+        </div>
+    </div>
+
+    
+        <div class="post-tools">
+            <div class="post-tools-container">
+    <ul class="article-tools-list">
+        <!-- TOC aside toggle -->
+        
+            <li class="right-bottom-tools page-aside-toggle">
+                <i class="fa-regular fa-outdent"></i>
+            </li>
+        
+
+        <!-- go comment -->
+        
+    </ul>
+</div>
+
+        </div>
+    
+
+    <div class="right-side-tools-container">
+        <div class="side-tools-container">
+    <ul class="hidden-tools-list">
+        <li class="right-bottom-tools tool-font-adjust-plus flex justify-center items-center">
+            <i class="fa-regular fa-magnifying-glass-plus"></i>
+        </li>
+
+        <li class="right-bottom-tools tool-font-adjust-minus flex justify-center items-center">
+            <i class="fa-regular fa-magnifying-glass-minus"></i>
+        </li>
+
+        <li class="right-bottom-tools tool-dark-light-toggle flex justify-center items-center">
+            <i class="fa-regular fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        
+
+        <li class="right-bottom-tools tool-scroll-to-bottom flex justify-center items-center">
+            <i class="fa-regular fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="visible-tools-list">
+        <li class="right-bottom-tools toggle-tools-list flex justify-center items-center">
+            <i class="fa-regular fa-cog fa-spin"></i>
+        </li>
+        
+            <li class="right-bottom-tools tool-scroll-to-top flex justify-center items-center">
+                <i class="arrow-up fas fa-arrow-up"></i>
+                <span class="percent"></span>
+            </li>
+        
+        
+    </ul>
+</div>
+
+    </div>
+
+    <div class="image-viewer-container">
+    <img src="">
+</div>
+
+
+    
+        <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-input-field-pre">
+            <i class="fa-solid fa-keyboard"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="Search..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="popup-btn-close">
+                <i class="fa-solid fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fa-solid fa-spinner fa-spin-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+
+</main>
+
+
+    
+<script src="/js/libs/Swup.min.js"></script>
+
+<script src="/js/libs/SwupSlideTheme.min.js"></script>
+
+<script src="/js/libs/SwupScriptsPlugin.min.js"></script>
+
+<script src="/js/libs/SwupProgressPlugin.min.js"></script>
+
+<script src="/js/libs/SwupScrollPlugin.min.js"></script>
+
+<script src="/js/libs/SwupPreloadPlugin.min.js"></script>
+
+<script>
+    const swup = new Swup({
+        plugins: [
+            new SwupScriptsPlugin({
+                optin: true,
+            }),
+            new SwupProgressPlugin(),
+            new SwupScrollPlugin({
+                offset: 80,
+            }),
+            new SwupSlideTheme({
+                mainElement: ".main-content-body",
+            }),
+            new SwupPreloadPlugin(),
+        ],
+        containers: ["#swup"],
+    });
+</script>
+
+
+
+
+
+
+
+<script src="/js/tools/imageViewer.js" type="module"></script>
+
+<script src="/js/utils.js" type="module"></script>
+
+<script src="/js/main.js" type="module"></script>
+
+<script src="/js/layouts/navbarShrink.js" type="module"></script>
+
+<script src="/js/tools/scrollTopBottom.js" type="module"></script>
+
+<script src="/js/tools/lightDarkSwitch.js" type="module"></script>
+
+<script src="/js/layouts/categoryList.js" type="module"></script>
+
+
+
+    
+<script src="/js/tools/localSearch.js" type="module"></script>
+
+
+
+
+    
+<script src="/js/tools/codeBlock.js" type="module"></script>
+
+
+
+
+    
+<script src="/js/layouts/lazyload.js" type="module"></script>
+
+
+
+
+
+
+  
+<script src="/js/libs/Typed.min.js"></script>
+
+  
+<script src="/js/plugins/typed.js" type="module"></script>
+
+
+
+
+
+
+
+
+
+<div class="post-scripts" data-swup-reload-script>
+    
+        
+<script src="/js/tools/tocToggle.js" type="module"></script>
+
+<script src="/js/layouts/toc.js" type="module"></script>
+
+<script src="/js/plugins/tabs.js" type="module"></script>
+
+    
+</div>
+
+
+</body>
+</html>

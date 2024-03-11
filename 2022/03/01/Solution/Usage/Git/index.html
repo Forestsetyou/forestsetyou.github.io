@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="keywords" content="ctf, solution, note, blog">
+    
+    <meta name="author" content="Forestsetyou">
+    <!-- preconnect -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    
+    <!--- Seo Part-->
+    
+    <link rel="canonical" href="http://forestsetyou.github.io/2022/03/01/solution/usage/git/"/>
+    <meta name="robots" content="index,follow">
+    <meta name="googlebot" content="index,follow">
+    <meta name="revisit-after" content="1 days">
+    
+        <meta name="description" content="false">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Git">
+<meta property="og:url" content="http://forestsetyou.github.io/2022/03/01/Solution/Usage/Git/index.html">
+<meta property="og:site_name" content="Festu&#39;s Blog">
+<meta property="og:description" content="false">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://picturebed-1310517892.file.myqcloud.com/2022/202208221810729.jpeg">
+<meta property="article:published_time" content="2022-02-28T17:27:00.000Z">
+<meta property="article:modified_time" content="2023-09-23T17:05:00.000Z">
+<meta property="article:author" content="Forestsetyou">
+<meta property="article:tag" content="ctf, solution, note, blog">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://picturebed-1310517892.file.myqcloud.com/2022/202208221810729.jpeg">
+    
+    
+    <!--- Icon Part-->
+    <link rel="icon" type="image/png" href="/hide_imgs/smiling_face.png" sizes="192x192">
+    <link rel="apple-touch-icon" sizes="180x180" href="/hide_imgs/smiling_face.png">
+    <meta name="theme-color" content="#A31F34">
+    <link rel="shortcut icon" href="/hide_imgs/smiling_face.png">
+    <!--- Page Info-->
+    
+    <title>
+        
+            Git -
+        
+        Festu&#39;s Blog
+    </title><meta name="robots" content="noindex">
+
+    
+<link rel="stylesheet" href="/fonts/Chillax/chillax.css">
+
+
+    <!--- Inject Part-->
+    
+
+    
+        <style>
+    :root {
+        --preloader-background-color: #fff;
+        --preloader-text-color: #000;
+    }
+
+    @media (prefers-color-scheme: dark) {
+        :root {
+            --preloader-background-color: #202124;
+            --preloader-text-color: #fff;
+        }
+    }
+
+    @media (prefers-color-scheme: light) {
+        :root {
+            --preloader-background-color: #fff;
+            --preloader-text-color: #000;
+        }
+    }
+
+    @media (max-width: 600px) {
+        .ml13 {
+            font-size: 2.6rem !important; /* Adjust this value as needed */
+        }
+    }
+
+    .preloader {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem; /* Tailwind 'gap-4' is 1rem */
+        align-items: center;
+        justify-content: center;
+        position: fixed;
+        padding: 12px;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh; /* 'h-screen' is 100% of the viewport height */
+        background-color: var(--preloader-background-color);
+        z-index: 1100; /* 'z-[1100]' sets the z-index */
+        transition: opacity 0.2s ease-in-out;
+    }
+
+    .ml13 {
+        font-size: 3.2rem;
+        /* text-transform: uppercase; */
+        color: var(--preloader-text-color);
+        letter-spacing: -1px;
+        font-weight: 500;
+        font-family: 'Chillax-Variable', sans-serif;
+        text-align: center;
+    }
+
+    .ml13 .word {
+        display: inline-flex;
+        flex-wrap: wrap;
+        white-space: nowrap;
+    }
+
+    .ml13 .letter {
+        display: inline-block;
+        line-height: 1em;
+    }
+</style>
+
+<div class="preloader">
+    
+<script src="/js/libs/anime.min.js"></script>
+
+    <h1 class="ml13">
+        Festu&#39;s Blog
+    </h1>
+    <script>
+        var textWrapper = document.querySelector('.ml13');
+        // Split text into words
+        var words = textWrapper.textContent.trim().split(' ');
+
+        // Clear the existing content
+        textWrapper.innerHTML = '';
+
+        // Wrap each word and its letters in spans
+        words.forEach(function(word) {
+            var wordSpan = document.createElement('span');
+            wordSpan.classList.add('word');
+            wordSpan.innerHTML = word.replace(/\S/g, "<span class='letter'>$&</span>");
+            textWrapper.appendChild(wordSpan);
+            textWrapper.appendChild(document.createTextNode(' ')); // Add space between words
+        });
+
+
+        anime.timeline({loop: true})
+            .add({
+                targets: '.ml13 .letter',
+                translateY: [100,0],
+                translateZ: 0,
+                opacity: [0,1],
+                easing: "easeOutExpo",
+                duration: 1400,
+                delay: (el, i) => 300 + 30 * i
+            }).add({
+            targets: '.ml13 .letter',
+            translateY: [0,-100],
+            opacity: [1,0],
+            easing: "easeInExpo",
+            duration: 1200,
+            delay: (el, i) => 100 + 30 * i
+        });
+
+        let themeStatus = JSON.parse(localStorage.getItem('REDEFINE-THEME-STATUS'))?.isDark;
+
+        // If the theme status is not found in local storage, check the preferred color scheme
+        if (themeStatus === undefined || themeStatus === null) {
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                themeStatus = 'dark';
+            } else {
+                themeStatus = 'light';
+            }
+        }
+
+        // Now you can use the themeStatus variable in your code
+        if (themeStatus) {
+            document.documentElement.style.setProperty('--preloader-background-color', '#202124');
+            document.documentElement.style.setProperty('--preloader-text-color', '#fff');
+        } else {
+            document.documentElement.style.setProperty('--preloader-background-color', '#fff');
+            document.documentElement.style.setProperty('--preloader-text-color', '#000');
+        }
+
+        window.addEventListener('load', function () {
+            hidePreloaderAfterTimeout(1000); // Hide after 1000 milliseconds once the window has loaded
+        });
+
+        // Backup failsafe: Hide preloader after a maximum of 5000 milliseconds, regardless of the window load event
+        hidePreloaderAfterTimeout(5000);
+
+        function hidePreloaderAfterTimeout(delay) {
+            setTimeout(function () {
+                var preloader = document.querySelector('.preloader');
+                preloader.style.opacity = '0';
+                setTimeout(function () {
+                    preloader.style.display = 'none';
+                }, 200);
+            }, delay);
+        }
+    </script>
+</div>
+    
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+
+    
+        
+<link rel="stylesheet" href="/assets/build/styles.css">
+
+    
+
+    
+<link rel="stylesheet" href="/fonts/fonts.css">
+
+    
+<link rel="stylesheet" href="/fonts/Satoshi/satoshi.css">
+
+    <!--- Font Part-->
+    
+    
+    
+    
+
+
+    <script id="hexo-configurations">
+    window.config = {"hostname":"forestsetyou.github.io","root":"/","language":"en","path":"search.xml"};
+    window.theme = {"articles":{"style":{"font_size":"16px","line_height":1.5,"image_border_radius":"14px","image_alignment":"center","image_caption":false,"link_icon":true,"title_alignment":"left","headings_top_spacing":{"h1":"5rem","h2":"4rem","h3":"2.8rem","h4":"2.5rem","h5":"2.2rem","h6":"2rem"}},"word_count":{"enable":false,"count":true,"min2read":true},"author_label":{"enable":false,"auto":false,"list":[]},"code_block":{"copy":true,"style":"simple","font":{"enable":false,"family":null,"url":null}},"toc":{"enable":true,"max_depth":3,"number":false,"expand":true,"init_open":true},"copyright":{"enable":true,"default":"cc_by_nc_sa"},"lazyload":true,"recommendation":{"enable":false,"title":"推荐阅读","limit":3,"mobile_limit":2,"placeholder":"/images/wallhaven-wqery6-light.webp","skip_dirs":[]}},"colors":{"primary":"#A31F34","secondary":null,"default_mode":"light"},"global":{"fonts":{"chinese":{"enable":false,"family":null,"url":null},"english":{"enable":false,"family":null,"url":null}},"content_max_width":"1000px","sidebar_width":"210px","hover":{"shadow":true,"scale":false},"scroll_progress":{"bar":false,"percentage":true},"website_counter":{"url":"https://cn.vercount.one/js","enable":false,"site_pv":true,"site_uv":true,"post_pv":true},"single_page":true,"preloader":true,"open_graph":true,"google_analytics":{"enable":false,"id":null}},"home_banner":{"enable":true,"style":"fixed","image":{"light":"/hide_imgs/light_banner-5.png","dark":"/hide_imgs/dark_banner.png"},"title":"Festu's Blog","subtitle":{"text":["Life Goes On."],"hitokoto":{"enable":false,"api":"https://v1.hitokoto.cn"},"typing_speed":100,"backing_speed":80,"starting_delay":500,"backing_delay":1500,"loop":false,"smart_backspace":false},"text_color":{"light":"#fff","dark":"#d1d1b6"},"text_style":{"title_size":"2.8rem","subtitle_size":"1.5rem","line_height":1.2},"custom_font":{"enable":false,"family":null,"url":null},"social_links":{"enable":true,"style":"default","links":{"github":"https://github.com/Forestsetyou","instagram":null,"zhihu":null,"twitter":null,"email":null},"qrs":{"weixin":null}}},"plugins":{"feed":{"enable":false},"aplayer":{"enable":false,"type":"fixed","audios":[{"name":null,"artist":null,"url":null,"cover":null,"lrc":null}]},"mermaid":{"enable":false,"version":"9.3.0"}},"version":"2.6.1","navbar":{"auto_hide":false,"color":{"left":"#f78736","right":"#367df7","transparency":35},"width":{"home":"1200px","pages":"1000px"},"links":{"Home":{"path":"/","icon":"fa-regular fa-house"},"Archives":{"path":"/archives","icon":"fa-regular fa-archive"},"categories":{"path":"/categories","icon":"fa-regular fa-folder"},"tags":{"path":"/tags","icon":"fa-regular fa-tags"}},"search":{"enable":true,"preload":true}},"page_templates":{"friends_column":2,"tags_style":"blur"},"home":{"sidebar":{"enable":true,"position":"left","first_item":"menu","announcement":null,"show_on_mobile":true,"links":null},"article_date_format":"auto","categories":{"enable":true,"limit":3},"tags":{"enable":true,"limit":3}},"footerStart":"2024/03/11 03:27:59"};
+    window.lang_ago = {"second":"%s seconds ago","minute":"%s minutes ago","hour":"%s hours ago","day":"%s days ago","week":"%s weeks ago","month":"%s months ago","year":"%s years ago"};
+    window.data = {"masonry":false};
+  </script>
+    
+    <!--- Fontawesome Part-->
+    
+<link rel="stylesheet" href="/fontawesome/fontawesome.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/brands.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/solid.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/regular.min.css">
+
+    
+    
+    
+    
+<meta name="generator" content="Hexo 7.1.1"></head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+
+    
+        <span class="pjax-progress-bar"></span>
+<!--        <span class="swup-progress-icon">-->
+<!--            <i class="fa-solid fa-circle-notch fa-spin"></i>-->
+<!--        </span>-->
+    
+</div>
+
+
+<main class="page-container" id="swup">
+
+    
+
+    <div class="main-content-container">
+
+
+        <div class="main-content-header">
+            <header class="navbar-container px-6 md:px-12">
+
+    <div class="navbar-content ">
+        <div class="left">
+            
+                <a class="logo-image" href="/">
+                    <img src="/hide_imgs/smiling_face.png">
+                </a>
+            
+            <a class="logo-title" href="/">
+                
+                Festu&#39;s Blog
+                
+            </a>
+        </div>
+
+        <div class="right">
+            <!-- PC -->
+            <div class="desktop">
+                <ul class="navbar-list">
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/"
+                                        >
+                                    <i class="fa-regular fa-house fa-fw"></i>
+                                    HOME
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/archives"
+                                        >
+                                    <i class="fa-regular fa-archive fa-fw"></i>
+                                    ARCHIVES
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/categories"
+                                        >
+                                    <i class="fa-regular fa-folder fa-fw"></i>
+                                    CATEGORIES
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/tags"
+                                        >
+                                    <i class="fa-regular fa-tags fa-fw"></i>
+                                    TAGS
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                    
+                        <li class="navbar-item search search-popup-trigger">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </li>
+                    
+                </ul>
+            </div>
+            <!-- Mobile -->
+            <div class="mobile">
+                
+                    <div class="icon-item search search-popup-trigger"><i class="fa-solid fa-magnifying-glass"></i>
+                    </div>
+                
+                <div class="icon-item navbar-bar">
+                    <div class="navbar-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile sheet -->
+    <div class="navbar-drawer h-screen w-full absolute top-0 left-0 bg-background-color flex flex-col justify-between">
+        <ul class="drawer-navbar-list flex flex-col px-4 justify-center items-start">
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/"
+                        >
+                            <span>
+                                HOME
+                            </span>
+                            
+                                <i class="fa-regular fa-house fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/archives"
+                        >
+                            <span>
+                                ARCHIVES
+                            </span>
+                            
+                                <i class="fa-regular fa-archive fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/categories"
+                        >
+                            <span>
+                                CATEGORIES
+                            </span>
+                            
+                                <i class="fa-regular fa-folder fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/tags"
+                        >
+                            <span>
+                                TAGS
+                            </span>
+                            
+                                <i class="fa-regular fa-tags fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+
+            
+            
+        </ul>
+
+        <div class="statistics flex justify-around my-2.5">
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/tags">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">1</div>
+        <div class="label text-third-text-color text-sm">Tags</div>
+    </a>
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/categories">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">10</div>
+        <div class="label text-third-text-color text-sm">Categories</div>
+    </a>
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/archives">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">14</div>
+        <div class="label text-third-text-color text-sm">Posts</div>
+    </a>
+</div>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="main-content-body">
+
+            
+
+            <div class="main-content">
+
+                
+                    <div class="post-page-container flex relative justify-between box-border w-full h-full">
+    <div class="article-content-container">
+
+        <div class="article-title relative w-full">
+            
+                
+                
+                <img src="/hide_imgs/post_thumbnail-2.jpg" alt="Git" class="w-full h-60 sm:h-72 md:h-80 object-cover sm:rounded-t-large dark:brightness-75"/>
+                
+                <div class="w-full flex items-center absolute bottom-0 justify-start">
+                    <h1 class="article-title-cover text-center mx-6 my-6 text-second-text-color bg-background-color-transparent px-4 py-3 text-3xl sm:text-4xl md:text-5xl font-bold backdrop-blur-lg rounded-xl border border-border-color ">Git</h1>
+                </div>
+            
+            </div>
+
+        
+            <div class="article-header flex flex-row gap-2 items-center px-2 sm:px-6 md:px-8">
+                <div class="avatar w-[46px] h-[46px] flex-shrink-0 rounded-medium border border-border-color p-[1px]">
+                    <img src="/hide_imgs/avatar.png">
+                </div>
+                <div class="info flex flex-col justify-between">
+                    <div class="author flex items-center">
+                        <span class="name text-default-text-color text-lg font-semibold">Forestsetyou</span>
+                        
+                    </div>
+                    <div class="meta-info">
+                        <div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fa-regular fa-pen-fancy"></i>&nbsp;
+        <span class="desktop">2022-03-01 01:27</span>
+        <span class="mobile">2022-03-01 01:27</span>
+        <span class="hover-info">Created</span>
+    </span>
+    
+        <span class="article-date article-meta-item">
+            <i class="fa-regular fa-wrench"></i>&nbsp;
+            <span class="desktop">2023-09-24 01:05</span>
+            <span class="mobile">2023-09-24 01:05</span>
+            <span class="hover-info">Updated</span>
+        </span>
+    
+
+    
+        <span class="article-categories article-meta-item">
+            <i class="fa-regular fa-folders"></i>&nbsp;
+            <ul>
+                
+                
+                    
+                        
+                        <li>
+                            <a href="/categories/Solution/">Solution</a>&nbsp;
+                        </li>
+                    
+                    
+                
+                    
+                        
+                            <li>></li>
+                        
+                        <li>
+                            <a href="/categories/Solution/Usage/">Usage</a>&nbsp;
+                        </li>
+                    
+                    
+                
+            </ul>
+        </span>
+    
+    
+
+    
+    
+    
+    
+</div>
+
+                    </div>
+                </div>
+            </div>
+        
+
+        
+
+
+        <div class="article-content markdown-body px-2 sm:px-6 md:px-8 pb-8">
+            <p>参考廖雪峰大佬的Git教程进行学习：<a class="link"   target="_blank" rel="noopener" href="https://www.liaoxuefeng.com/wiki/896043488029600/896067074338496" >廖雪峰的Git教程 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://picturebed-1310517892.file.myqcloud.com/2022/202208221810729.jpeg"
+                      alt="git常用命令"
+                ></p>
+<h1 id="Git安装"><a href="#Git安装" class="headerlink" title="Git安装"></a>Git安装</h1><p>1.Linux<br>Debian&#x2F;Ubuntu:”sudo apt-get install git(git-core)”:包管理获取安装包<br>其他:下载git源码并解压后,”.&#x2F;config”,”make”,”sudo make install”<br>2.Windows<br>正常安装即可</p>
+<p><strong>安装完后需要设置本地的用户与地址</strong></p>
+<ul>
+<li><input disabled="" type="checkbox"> git config –global user.name “Yourname”</li>
+<li><input disabled="" type="checkbox"> git config –global user.email “<a class="link"   href="mailto:&#x65;&#120;&#x61;&#x6d;&#x70;&#x6c;&#101;&#64;&#101;&#x6d;&#97;&#x69;&#108;&#x2e;&#99;&#x6f;&#109;" >&#x65;&#120;&#x61;&#x6d;&#x70;&#x6c;&#101;&#64;&#101;&#x6d;&#97;&#x69;&#108;&#x2e;&#99;&#x6f;&#109; <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a>“</li>
+</ul>
+<h3 id="其他git配置"><a href="#其他git配置" class="headerlink" title="其他git配置"></a>其他git配置</h3><div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">git config --global color.ui true  #Git显示颜色，&quot;global&quot;为全局参数,表示用于当前用户在本地的所有git仓库,若没有只对当前仓库有效</span><br><span class="line">                    alias.st status  #给&quot;status&quot;设置别名&quot;st&quot;,带&quot;--&quot;的参数无法单独设置，但可以连带前面的命令一起设置别名</span><br><span class="line">                    alias.last &#x27;log -l&#x27;  #显示最新一次的提交</span><br><span class="line">                    -e  #直接呼出&quot;.gitconfig&quot;文件</span><br></pre></td></tr></table></figure></div>
+
+<h3 id="gitignore文件配置"><a href="#gitignore文件配置" class="headerlink" title=".gitignore文件配置"></a>.gitignore文件配置</h3><p>组件说明:<a class="link"   target="_blank" rel="noopener" href="https://github.com/github/gitignore" >https://github.com/github/gitignore <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+<p>尝试添加”.gitignore”所忽略的文件会报错，可通过<code>git add -f &lt;name&gt;</code>强行添加，也可以用<code>git check-ignore -v &lt;name&gt;</code>:检查”.gitignore”检查忽略规则与文件的关系</p>
+<p>“!&lt;name&gt;“在”.gitignore”规则中排除指定文件</p>
+<p>无法用资源管理器直接新建名为”.gitignore”的文件，但是可以用文本编辑器”新建+保存”或者”另存为”的方式创建该文件</p>
+<h3 id="Git-配置代理"><a href="#Git-配置代理" class="headerlink" title="Git 配置代理"></a>Git 配置代理</h3><p>只对”github.com”配置”http”<strong>全局</strong>对应的”socks5”代理：</p>
+<div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git config --global http.https://github.com.proxy socks5://127.0.0.1:51837</span><br></pre></td></tr></table></figure></div>
+
+<p>配置<strong>全局”https”代理</strong>：</p>
+<div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git config --global https.proxy http://127.0.0.1:58591</span><br></pre></td></tr></table></figure></div>
+
+<p>取消”http”代理服务器：</p>
+<div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git config --global --<span class="built_in">unset</span> http.proxy</span><br></pre></td></tr></table></figure></div>
+
+<h1 id="Git命令"><a href="#Git命令" class="headerlink" title="Git命令"></a>Git命令</h1><div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><span class="line">git remote add origin git@github.com:forestsetyou/xxx.git:添加github的远程仓库到本地的origin</span><br><span class="line">git clone git@github.com:Forestsetyou/Codes2022:利用SSH协议远程克隆Github仓库</span><br><span class="line">          &lt;URL&gt;:http协议克隆仓库</span><br><span class="line">git init:初始化仓库</span><br><span class="line">git commit -m &quot;msg&quot;:提交改动，备注&quot;msg&quot;</span><br><span class="line">git commit:跳出&quot;EDITMSG&quot;文件要求写入提交说明，否则提交失败，写入后保存退出即可</span><br><span class="line">git add &quot;file1.txt&quot; &quot;file2.txt&quot;:添加改动过的文件</span><br><span class="line">git status:查看当前工作区状况，工作区与版本库的比较以及工作区与缓存区的比较</span><br><span class="line">git diff &lt;file&gt;:查看缓存区与工作区的文件变化</span><br><span class="line">git diff HEAD -- &lt;file&gt;:查看库中最新版本与工作区的某文件的变化</span><br><span class="line">git log:查看历史提交情况</span><br><span class="line">        --pretty=oneline:查看历史版本并只显示版本号与说明</span><br><span class="line">        --abbrev-commit:缩略版本号</span><br><span class="line">        --graph:显示时间线</span><br><span class="line">        -l:最新一次的提交</span><br><span class="line">git reset --hard HEAD^(^^/~100):回退至上一个版本/两个版本前/一百个版本前</span><br><span class="line">git reset HEAD &lt;file&gt;:撤销某文件缓存区修改</span><br><span class="line">git reset HEAD^ &lt;file&gt;:将某文件恢复至上一版本，并将该修改提交至缓存区</span><br><span class="line">git reflog: 查看历史命令-版本操作记录-版本号</span><br><span class="line">git checkout(restore) -- &lt;file&gt;:将工作区某文件恢复至上一次add或commit的状态</span><br><span class="line">rm &lt;file&gt;:移除某文件</span><br><span class="line">git rm:确认删除修改</span><br><span class="line">git rm --cached &lt;file&gt;:缓存区中放弃对文件的追踪，工作区仍保留该文件</span><br><span class="line">       --f &lt;file&gt;:强行删除文件并同步至缓存区</span><br><span class="line">git push origin master:将本地&quot;master&quot;分支推送至&quot;origin&quot;仓库</span><br><span class="line">                &lt;tagName&gt;:将某个标签推送</span><br><span class="line">                --tags:一次性推送tag</span><br><span class="line">                :refs/tags/&lt;tagName&gt;:删除远程某个tag，需先在本地删除</span><br><span class="line">git push -u origin master:推送并关联两个仓库</span><br><span class="line">git pull origin main:将origin仓库main分支拉取至本地</span><br><span class="line">                     --allow-unrelated-histories:拉取或推送的同时允许合并两个不关联分支</span><br><span class="line">ssh-keygen -t rsa -C &quot;youremail@example.com&quot;:创建ssh密钥</span><br><span class="line">ssh-keygen.exe:创建ssh密钥</span><br><span class="line">git remote -v:查看远程库信息</span><br><span class="line">git remote rm &lt;name&gt;:根据命名解除远程库的绑定</span><br><span class="line">git checkout dev/git switch dev/&lt;commit&gt;:切换到&quot;dev&quot;分支，或某次提交，不指向分支的指针为分离的指针</span><br><span class="line">git checkout -b dev/git switch -c dev:创建并切换到&quot;dev&quot;分支</span><br><span class="line">git branch:查看当前分支</span><br><span class="line">git branch dev:创建新分支&quot;dev&quot;</span><br><span class="line">git branch &lt;name&gt; &lt;commit&gt;:给(分离出的)某次提交创建临时分支</span><br><span class="line">git branch -d dev:删除&quot;dev&quot;分支</span><br><span class="line">           -D:强行删除分支</span><br><span class="line">git merge dev:合并&quot;dev&quot;分支到当前分支(同时选择多个分支会出错)</span><br><span class="line">          --no-ff:禁用&quot;fastforward&quot;，保留合并时间线   </span><br><span class="line">git mv &lt;OldName&gt; &lt;NewName&gt;:重命名文件并记录修改</span><br><span class="line">git stash:暂存工作区</span><br><span class="line">git stash list:查看暂存列表</span><br><span class="line">git stash apply (stash@&#123;0&#125;):保留(指定版本的)暂存并恢复</span><br><span class="line">git stash drop:删除暂存(默认为&quot;stash@&#123;0&#125;&quot;版本)</span><br><span class="line">git stash pop:恢复暂存并删除</span><br><span class="line">git cherry-pick &lt;commit&gt;:复现指定提交</span><br><span class="line">git checkout -b dev origin/dev:创建远程仓库已有的&quot;dev&quot;分支(将两者链接)</span><br><span class="line">git branch --set-upstream-to=origin/main main:链接远程库的&quot;main&quot;分支与本地库的&quot;main&quot;分支用于&quot;pull&quot;</span><br><span class="line">git branch --set-upstream-to origin/main main:同上</span><br><span class="line">git branch --set-upstream-to origin master:将当前仓库的master分支与origin默认分支进行推送连接</span><br><span class="line">git branch --set-upstream-to=origin/main:将当前分支与远程库的&quot;main&quot;分支链接</span><br><span class="line">           --set-upstream target src: 目标仓库-源仓库</span><br><span class="line">git rebase:把本地未push的分叉提交历史整理成直线</span><br><span class="line">git tag &lt;name&gt; &lt;commit&gt;:(给某次提交)打标签，默认为本分支最新提交</span><br><span class="line">        -a &lt;name&gt; -m &lt;msg&gt; &lt;commit&gt;:给某次提交打上标签与说明</span><br><span class="line">        -d &lt;tagName&gt;:删除</span><br><span class="line">git tag:查看标签(字母排序)</span><br><span class="line">git show &lt;tagname&gt;:查看标签信息</span><br></pre></td></tr></table></figure></div>
+
+<h2 id="说明"><a href="#说明" class="headerlink" title="说明"></a>说明</h2><ul>
+<li><p>Git分为三个区：工作区，暂存区（缓存区），当前分支（HEAD指针指向的位置）。目录中出现更改，但未add的内容是工作区特有的，被add的内容会被放入暂存区，commit的内容存放在分支中。</p>
+</li>
+<li><p>Windows自带的记事本编辑UTF-8编码的文件会在开头加上0xefbbbf的字符<br>git缓存区中对同一文件的修改，在未提交前新的覆盖旧的<br>git支持多种语言，但ssh协议最快；https协议每次使用都需要口令<br>“git log”后按q退出</p>
+</li>
+<li><p><code>fast-forward</code> 一般出现在拉取远程或推送本地，两个仓库需要合并的时候。它指远程仓库中的文件记录树与本地的文件记录树完全没有共同的父节点。因而需要参数 <code>--allow-unrelated-histories</code> 强制合并 <code>merge</code> 两棵树。</p>
+</li>
+<li><p><code>--soft</code> 表示保留工作区；<code>--hard</code> 表示根据回滚操作相应改变工作区（会丢失信息）</p>
+</li>
+<li><p>参考：<a class="link"   target="_blank" rel="noopener" href="https://www.cnblogs.com/itlover2013/p/14248070.html" >git撤销远程仓库的提交 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a>，<a class="link"   target="_blank" rel="noopener" href="https://blog.csdn.net/qq_20042935/article/details/107222147" >git删除远程仓库分支 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a><br>和项目的队友试着用git共享代码仓库就遇到这个问题，为了测试push随意更新了分支并上传了，然后发现出问题了，队友的git树没有这个新分支，因此要先pull下来新的仓库，重新commit后再提交（好像不是什么大问题）。<br>那能不能直接push基于旧版本的git树呢？</p>
+</li>
+</ul>
+<h2 id="报错"><a href="#报错" class="headerlink" title="报错"></a>报错</h2><h3 id="“no-tracking-information”"><a href="#“no-tracking-information”" class="headerlink" title="“no tracking information”"></a>“no tracking information”</h3><p>**分析:**本地分支和远程分支的链接关系没有创建，用如下命令创建链接关系:</p>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git branch --set-upstream-to &lt;remoteBranchPath&gt; &lt;branchName&gt;</span><br></pre></td></tr></table></figure></div>
+
+<h3 id="“OpenSSL-SSL-read-Connection-was-reset-errno-10054”"><a href="#“OpenSSL-SSL-read-Connection-was-reset-errno-10054”" class="headerlink" title="“OpenSSL SSL_read: Connection was reset, errno 10054”"></a>“OpenSSL SSL_read: Connection was reset, errno 10054”</h3><p>**分析:**SSL证书认证出现问题，可试着解除SSL认证：</p>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git config --global http.sslVerify &quot;false&quot;</span><br></pre></td></tr></table></figure></div>
+
+<h3 id="“fatal-refusing-to-merge-unrelated-histories”"><a href="#“fatal-refusing-to-merge-unrelated-histories”" class="headerlink" title="“fatal: refusing to merge unrelated histories”"></a>“fatal: refusing to merge unrelated histories”</h3><p>**分析:**本地与远程的分支合并出现了问题，可在命令后加上”–allow-unrelated-histories”合并分支,例如：</p>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git pull origin main --allow-unrelated-histories</span><br></pre></td></tr></table></figure></div>
+
+<h3 id="“fatal-remote-origin-already-exists-”"><a href="#“fatal-remote-origin-already-exists-”" class="headerlink" title="“fatal: remote origin already exists.”"></a>“fatal: remote origin already exists.”</h3><p>**分析:**本地仓库已关联一个”origin”仓库，需要先用<code>git remote rm origin</code>解绑，再重新关联</p>
+<h3 id="“Updates-were-rejected-because-the-tip-of-your-current-branch-is-behind-its-remote-counterpart-”"><a href="#“Updates-were-rejected-because-the-tip-of-your-current-branch-is-behind-its-remote-counterpart-”" class="headerlink" title="“Updates were rejected because the tip of your current branch is behind its remote counterpart.”"></a>“Updates were rejected because the tip of your current branch is behind its remote counterpart.”</h3><p>**分析:**提交出现冲突，先将远程分支拉取至本地合并，解决冲突后再次推送即可</p>
+<!-- flag of hidden posts -->
+        </div>
+
+        
+            <div class="post-copyright-info w-full my-8 px-2 sm:px-6 md:px-8">
+                <div class="article-copyright-info-container">
+    <ul>
+        <li><strong>Title:</strong> Git</li>
+        <li><strong>Author:</strong> Forestsetyou</li>
+        <li><strong>Created at
+                :</strong> 2022-03-01 01:27:00</li>
+        
+            <li>
+                <strong>Updated at
+                    :</strong> 2023-09-24 01:05:00
+            </li>
+        
+        <li>
+            <strong>Link:</strong> https://forestsetyou.github.io/2022/03/01/Solution/Usage/Git/
+        </li>
+        <li>
+            <strong>
+                License:
+            </strong>
+            
+
+            
+                This work is licensed under <a class="license" target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0">CC BY-NC-SA 4.0</a>.
+            
+        </li>
+    </ul>
+</div>
+
+            </div>
+        
+
+        
+
+        
+
+        
+
+
+        
+    </div>
+
+    
+        <div class="toc-content-container">
+            <div class="post-toc-wrap">
+    <div class="post-toc">
+        <div class="toc-title">On this page</div>
+        <div class="page-title">Git</div>
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Git%E5%AE%89%E8%A3%85"><span class="nav-text">Git安装</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B6%E4%BB%96git%E9%85%8D%E7%BD%AE"><span class="nav-text">其他git配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#gitignore%E6%96%87%E4%BB%B6%E9%85%8D%E7%BD%AE"><span class="nav-text">.gitignore文件配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Git-%E9%85%8D%E7%BD%AE%E4%BB%A3%E7%90%86"><span class="nav-text">Git 配置代理</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Git%E5%91%BD%E4%BB%A4"><span class="nav-text">Git命令</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AF%B4%E6%98%8E"><span class="nav-text">说明</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8A%A5%E9%94%99"><span class="nav-text">报错</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E2%80%9Cno-tracking-information%E2%80%9D"><span class="nav-text">“no tracking information”</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E2%80%9COpenSSL-SSL-read-Connection-was-reset-errno-10054%E2%80%9D"><span class="nav-text">“OpenSSL SSL_read: Connection was reset, errno 10054”</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E2%80%9Cfatal-refusing-to-merge-unrelated-histories%E2%80%9D"><span class="nav-text">“fatal: refusing to merge unrelated histories”</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E2%80%9Cfatal-remote-origin-already-exists-%E2%80%9D"><span class="nav-text">“fatal: remote origin already exists.”</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E2%80%9CUpdates-were-rejected-because-the-tip-of-your-current-branch-is-behind-its-remote-counterpart-%E2%80%9D"><span class="nav-text">“Updates were rejected because the tip of your current branch is behind its remote counterpart.”</span></a></li></ol></li></ol></li></ol>
+
+    </div>
+</div>
+        </div>
+    
+</div>
+
+
+
+                
+
+            </div>
+
+            
+
+        </div>
+
+        <div class="main-content-footer">
+            <footer class="footer mt-5 py-5 h-auto text-base text-third-text-color relative border-t-2 border-t-border-color">
+    <div class="info-container py-3 text-center">
+        
+        <div class="text-center">
+            &copy;
+            
+              <span>2024</span>
+              -
+            
+            2024&nbsp;&nbsp;<i class="fa-solid fa-heart fa-beat" style="--fa-animation-duration: 0.5s; color: #f54545"></i>&nbsp;&nbsp;<a href="/">Forestsetyou</a>
+            
+        </div>
+        
+        <div class="relative text-center lg:absolute lg:left-[20px] lg:top-1/2 lg:-translate-y-1/2 lg:text-left">
+            <span class="lg:block text-sm">POWERED BY <?xml version="1.0" encoding="utf-8"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg class="relative top-[2px] inline-block align-baseline" version="1.1" id="圖層_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="1rem" height="1rem" viewBox="0 0 512 512" enable-background="new 0 0 512 512" xml:space="preserve"><path fill="#0E83CD" d="M256.4,25.8l-200,115.5L56,371.5l199.6,114.7l200-115.5l0.4-230.2L256.4,25.8z M349,354.6l-18.4,10.7l-18.6-11V275H200v79.6l-18.4,10.7l-18.6-11v-197l18.5-10.6l18.5,10.8V237h112v-79.6l18.5-10.6l18.5,10.8V354.6z"/></svg><a target="_blank" class="text-base" href="https://hexo.io">Hexo</a></span>
+            <span class="text-sm lg:block">THEME&nbsp;<a class="text-base" target="_blank" href="https://github.com/EvanNotFound/hexo-theme-redefine">Redefine v2.6.1</a></span>
+        </div>
+        
+        
+        
+        
+        
+    </div>  
+</footer>
+        </div>
+    </div>
+
+    
+        <div class="post-tools">
+            <div class="post-tools-container">
+    <ul class="article-tools-list">
+        <!-- TOC aside toggle -->
+        
+            <li class="right-bottom-tools page-aside-toggle">
+                <i class="fa-regular fa-outdent"></i>
+            </li>
+        
+
+        <!-- go comment -->
+        
+    </ul>
+</div>
+
+        </div>
+    
+
+    <div class="right-side-tools-container">
+        <div class="side-tools-container">
+    <ul class="hidden-tools-list">
+        <li class="right-bottom-tools tool-font-adjust-plus flex justify-center items-center">
+            <i class="fa-regular fa-magnifying-glass-plus"></i>
+        </li>
+
+        <li class="right-bottom-tools tool-font-adjust-minus flex justify-center items-center">
+            <i class="fa-regular fa-magnifying-glass-minus"></i>
+        </li>
+
+        <li class="right-bottom-tools tool-dark-light-toggle flex justify-center items-center">
+            <i class="fa-regular fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        
+
+        <li class="right-bottom-tools tool-scroll-to-bottom flex justify-center items-center">
+            <i class="fa-regular fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="visible-tools-list">
+        <li class="right-bottom-tools toggle-tools-list flex justify-center items-center">
+            <i class="fa-regular fa-cog fa-spin"></i>
+        </li>
+        
+            <li class="right-bottom-tools tool-scroll-to-top flex justify-center items-center">
+                <i class="arrow-up fas fa-arrow-up"></i>
+                <span class="percent"></span>
+            </li>
+        
+        
+    </ul>
+</div>
+
+    </div>
+
+    <div class="image-viewer-container">
+    <img src="">
+</div>
+
+
+    
+        <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-input-field-pre">
+            <i class="fa-solid fa-keyboard"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="Search..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="popup-btn-close">
+                <i class="fa-solid fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fa-solid fa-spinner fa-spin-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+
+</main>
+
+
+    
+<script src="/js/libs/Swup.min.js"></script>
+
+<script src="/js/libs/SwupSlideTheme.min.js"></script>
+
+<script src="/js/libs/SwupScriptsPlugin.min.js"></script>
+
+<script src="/js/libs/SwupProgressPlugin.min.js"></script>
+
+<script src="/js/libs/SwupScrollPlugin.min.js"></script>
+
+<script src="/js/libs/SwupPreloadPlugin.min.js"></script>
+
+<script>
+    const swup = new Swup({
+        plugins: [
+            new SwupScriptsPlugin({
+                optin: true,
+            }),
+            new SwupProgressPlugin(),
+            new SwupScrollPlugin({
+                offset: 80,
+            }),
+            new SwupSlideTheme({
+                mainElement: ".main-content-body",
+            }),
+            new SwupPreloadPlugin(),
+        ],
+        containers: ["#swup"],
+    });
+</script>
+
+
+
+
+
+
+
+<script src="/js/tools/imageViewer.js" type="module"></script>
+
+<script src="/js/utils.js" type="module"></script>
+
+<script src="/js/main.js" type="module"></script>
+
+<script src="/js/layouts/navbarShrink.js" type="module"></script>
+
+<script src="/js/tools/scrollTopBottom.js" type="module"></script>
+
+<script src="/js/tools/lightDarkSwitch.js" type="module"></script>
+
+<script src="/js/layouts/categoryList.js" type="module"></script>
+
+
+
+    
+<script src="/js/tools/localSearch.js" type="module"></script>
+
+
+
+
+    
+<script src="/js/tools/codeBlock.js" type="module"></script>
+
+
+
+
+    
+<script src="/js/layouts/lazyload.js" type="module"></script>
+
+
+
+
+
+
+  
+<script src="/js/libs/Typed.min.js"></script>
+
+  
+<script src="/js/plugins/typed.js" type="module"></script>
+
+
+
+
+
+
+
+
+
+<div class="post-scripts" data-swup-reload-script>
+    
+        
+<script src="/js/tools/tocToggle.js" type="module"></script>
+
+<script src="/js/layouts/toc.js" type="module"></script>
+
+<script src="/js/plugins/tabs.js" type="module"></script>
+
+    
+</div>
+
+
+</body>
+</html>

@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="keywords" content="ctf, solution, note, blog">
+    
+    <meta name="author" content="Forestsetyou">
+    <!-- preconnect -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    
+    <!--- Seo Part-->
+    
+    <link rel="canonical" href="http://forestsetyou.github.io/2022/04/10/development/algorithm/认识实习——但是动态规划/"/>
+    <meta name="robots" content="index,follow">
+    <meta name="googlebot" content="index,follow">
+    <meta name="revisit-after" content="1 days">
+    
+        <meta name="description" content="false">
+<meta property="og:type" content="article">
+<meta property="og:title" content="认识实习——但是动态规划">
+<meta property="og:url" content="http://forestsetyou.github.io/2022/04/10/Development/Algorithm/%E8%AE%A4%E8%AF%86%E5%AE%9E%E4%B9%A0%E2%80%94%E2%80%94%E4%BD%86%E6%98%AF%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/index.html">
+<meta property="og:site_name" content="Festu&#39;s Blog">
+<meta property="og:description" content="false">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://img2022.cnblogs.com/blog/2724756/202204/2724756-20220410162700330-570935280.png">
+<meta property="og:image" content="https://img2022.cnblogs.com/blog/2724756/202204/2724756-20220410162717613-1932020107.png">
+<meta property="og:image" content="https://img2022.cnblogs.com/blog/2724756/202204/2724756-20220410162735097-1943064373.png">
+<meta property="og:image" content="https://img2022.cnblogs.com/blog/2724756/202204/2724756-20220410162813237-2052597319.png">
+<meta property="og:image" content="https://img2022.cnblogs.com/blog/2724756/202204/2724756-20220410162835378-1306705306.png">
+<meta property="og:image" content="https://img2022.cnblogs.com/blog/2724756/202204/2724756-20220410162901760-1015503738.png">
+<meta property="article:published_time" content="2022-04-10T08:26:00.000Z">
+<meta property="article:modified_time" content="2023-08-03T10:07:00.000Z">
+<meta property="article:author" content="Forestsetyou">
+<meta property="article:tag" content="Schoolwork">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://img2022.cnblogs.com/blog/2724756/202204/2724756-20220410162700330-570935280.png">
+    
+    
+    <!--- Icon Part-->
+    <link rel="icon" type="image/png" href="/hide_imgs/smiling_face.png" sizes="192x192">
+    <link rel="apple-touch-icon" sizes="180x180" href="/hide_imgs/smiling_face.png">
+    <meta name="theme-color" content="#A31F34">
+    <link rel="shortcut icon" href="/hide_imgs/smiling_face.png">
+    <!--- Page Info-->
+    
+    <title>
+        
+            认识实习——但是动态规划 -
+        
+        Festu&#39;s Blog
+    </title><meta name="robots" content="noindex">
+
+    
+<link rel="stylesheet" href="/fonts/Chillax/chillax.css">
+
+
+    <!--- Inject Part-->
+    
+
+    
+        <style>
+    :root {
+        --preloader-background-color: #fff;
+        --preloader-text-color: #000;
+    }
+
+    @media (prefers-color-scheme: dark) {
+        :root {
+            --preloader-background-color: #202124;
+            --preloader-text-color: #fff;
+        }
+    }
+
+    @media (prefers-color-scheme: light) {
+        :root {
+            --preloader-background-color: #fff;
+            --preloader-text-color: #000;
+        }
+    }
+
+    @media (max-width: 600px) {
+        .ml13 {
+            font-size: 2.6rem !important; /* Adjust this value as needed */
+        }
+    }
+
+    .preloader {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem; /* Tailwind 'gap-4' is 1rem */
+        align-items: center;
+        justify-content: center;
+        position: fixed;
+        padding: 12px;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh; /* 'h-screen' is 100% of the viewport height */
+        background-color: var(--preloader-background-color);
+        z-index: 1100; /* 'z-[1100]' sets the z-index */
+        transition: opacity 0.2s ease-in-out;
+    }
+
+    .ml13 {
+        font-size: 3.2rem;
+        /* text-transform: uppercase; */
+        color: var(--preloader-text-color);
+        letter-spacing: -1px;
+        font-weight: 500;
+        font-family: 'Chillax-Variable', sans-serif;
+        text-align: center;
+    }
+
+    .ml13 .word {
+        display: inline-flex;
+        flex-wrap: wrap;
+        white-space: nowrap;
+    }
+
+    .ml13 .letter {
+        display: inline-block;
+        line-height: 1em;
+    }
+</style>
+
+<div class="preloader">
+    
+<script src="/js/libs/anime.min.js"></script>
+
+    <h1 class="ml13">
+        Festu&#39;s Blog
+    </h1>
+    <script>
+        var textWrapper = document.querySelector('.ml13');
+        // Split text into words
+        var words = textWrapper.textContent.trim().split(' ');
+
+        // Clear the existing content
+        textWrapper.innerHTML = '';
+
+        // Wrap each word and its letters in spans
+        words.forEach(function(word) {
+            var wordSpan = document.createElement('span');
+            wordSpan.classList.add('word');
+            wordSpan.innerHTML = word.replace(/\S/g, "<span class='letter'>$&</span>");
+            textWrapper.appendChild(wordSpan);
+            textWrapper.appendChild(document.createTextNode(' ')); // Add space between words
+        });
+
+
+        anime.timeline({loop: true})
+            .add({
+                targets: '.ml13 .letter',
+                translateY: [100,0],
+                translateZ: 0,
+                opacity: [0,1],
+                easing: "easeOutExpo",
+                duration: 1400,
+                delay: (el, i) => 300 + 30 * i
+            }).add({
+            targets: '.ml13 .letter',
+            translateY: [0,-100],
+            opacity: [1,0],
+            easing: "easeInExpo",
+            duration: 1200,
+            delay: (el, i) => 100 + 30 * i
+        });
+
+        let themeStatus = JSON.parse(localStorage.getItem('REDEFINE-THEME-STATUS'))?.isDark;
+
+        // If the theme status is not found in local storage, check the preferred color scheme
+        if (themeStatus === undefined || themeStatus === null) {
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                themeStatus = 'dark';
+            } else {
+                themeStatus = 'light';
+            }
+        }
+
+        // Now you can use the themeStatus variable in your code
+        if (themeStatus) {
+            document.documentElement.style.setProperty('--preloader-background-color', '#202124');
+            document.documentElement.style.setProperty('--preloader-text-color', '#fff');
+        } else {
+            document.documentElement.style.setProperty('--preloader-background-color', '#fff');
+            document.documentElement.style.setProperty('--preloader-text-color', '#000');
+        }
+
+        window.addEventListener('load', function () {
+            hidePreloaderAfterTimeout(1000); // Hide after 1000 milliseconds once the window has loaded
+        });
+
+        // Backup failsafe: Hide preloader after a maximum of 5000 milliseconds, regardless of the window load event
+        hidePreloaderAfterTimeout(5000);
+
+        function hidePreloaderAfterTimeout(delay) {
+            setTimeout(function () {
+                var preloader = document.querySelector('.preloader');
+                preloader.style.opacity = '0';
+                setTimeout(function () {
+                    preloader.style.display = 'none';
+                }, 200);
+            }, delay);
+        }
+    </script>
+</div>
+    
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+
+    
+        
+<link rel="stylesheet" href="/assets/build/styles.css">
+
+    
+
+    
+<link rel="stylesheet" href="/fonts/fonts.css">
+
+    
+<link rel="stylesheet" href="/fonts/Satoshi/satoshi.css">
+
+    <!--- Font Part-->
+    
+    
+    
+    
+
+
+    <script id="hexo-configurations">
+    window.config = {"hostname":"forestsetyou.github.io","root":"/","language":"en","path":"search.xml"};
+    window.theme = {"articles":{"style":{"font_size":"16px","line_height":1.5,"image_border_radius":"14px","image_alignment":"center","image_caption":false,"link_icon":true,"title_alignment":"left","headings_top_spacing":{"h1":"5rem","h2":"4rem","h3":"2.8rem","h4":"2.5rem","h5":"2.2rem","h6":"2rem"}},"word_count":{"enable":false,"count":true,"min2read":true},"author_label":{"enable":false,"auto":false,"list":[]},"code_block":{"copy":true,"style":"simple","font":{"enable":false,"family":null,"url":null}},"toc":{"enable":true,"max_depth":3,"number":false,"expand":true,"init_open":true},"copyright":{"enable":true,"default":"cc_by_nc_sa"},"lazyload":true,"recommendation":{"enable":false,"title":"推荐阅读","limit":3,"mobile_limit":2,"placeholder":"/images/wallhaven-wqery6-light.webp","skip_dirs":[]}},"colors":{"primary":"#A31F34","secondary":null,"default_mode":"light"},"global":{"fonts":{"chinese":{"enable":false,"family":null,"url":null},"english":{"enable":false,"family":null,"url":null}},"content_max_width":"1000px","sidebar_width":"210px","hover":{"shadow":true,"scale":false},"scroll_progress":{"bar":false,"percentage":true},"website_counter":{"url":"https://cn.vercount.one/js","enable":false,"site_pv":true,"site_uv":true,"post_pv":true},"single_page":true,"preloader":true,"open_graph":true,"google_analytics":{"enable":false,"id":null}},"home_banner":{"enable":true,"style":"fixed","image":{"light":"/hide_imgs/light_banner-5.png","dark":"/hide_imgs/dark_banner.png"},"title":"Festu's Blog","subtitle":{"text":["Life Goes On."],"hitokoto":{"enable":false,"api":"https://v1.hitokoto.cn"},"typing_speed":100,"backing_speed":80,"starting_delay":500,"backing_delay":1500,"loop":false,"smart_backspace":false},"text_color":{"light":"#fff","dark":"#d1d1b6"},"text_style":{"title_size":"2.8rem","subtitle_size":"1.5rem","line_height":1.2},"custom_font":{"enable":false,"family":null,"url":null},"social_links":{"enable":true,"style":"default","links":{"github":"https://github.com/Forestsetyou","instagram":null,"zhihu":null,"twitter":null,"email":null},"qrs":{"weixin":null}}},"plugins":{"feed":{"enable":false},"aplayer":{"enable":false,"type":"fixed","audios":[{"name":null,"artist":null,"url":null,"cover":null,"lrc":null}]},"mermaid":{"enable":false,"version":"9.3.0"}},"version":"2.6.1","navbar":{"auto_hide":false,"color":{"left":"#f78736","right":"#367df7","transparency":35},"width":{"home":"1200px","pages":"1000px"},"links":{"Home":{"path":"/","icon":"fa-regular fa-house"},"Archives":{"path":"/archives","icon":"fa-regular fa-archive"},"categories":{"path":"/categories","icon":"fa-regular fa-folder"},"tags":{"path":"/tags","icon":"fa-regular fa-tags"}},"search":{"enable":true,"preload":true}},"page_templates":{"friends_column":2,"tags_style":"blur"},"home":{"sidebar":{"enable":true,"position":"left","first_item":"menu","announcement":null,"show_on_mobile":true,"links":null},"article_date_format":"auto","categories":{"enable":true,"limit":3},"tags":{"enable":true,"limit":3}},"footerStart":"2024/03/11 03:27:59"};
+    window.lang_ago = {"second":"%s seconds ago","minute":"%s minutes ago","hour":"%s hours ago","day":"%s days ago","week":"%s weeks ago","month":"%s months ago","year":"%s years ago"};
+    window.data = {"masonry":false};
+  </script>
+    
+    <!--- Fontawesome Part-->
+    
+<link rel="stylesheet" href="/fontawesome/fontawesome.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/brands.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/solid.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/regular.min.css">
+
+    
+    
+    
+    
+<meta name="generator" content="Hexo 7.1.1"></head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+
+    
+        <span class="pjax-progress-bar"></span>
+<!--        <span class="swup-progress-icon">-->
+<!--            <i class="fa-solid fa-circle-notch fa-spin"></i>-->
+<!--        </span>-->
+    
+</div>
+
+
+<main class="page-container" id="swup">
+
+    
+
+    <div class="main-content-container">
+
+
+        <div class="main-content-header">
+            <header class="navbar-container px-6 md:px-12">
+
+    <div class="navbar-content ">
+        <div class="left">
+            
+                <a class="logo-image" href="/">
+                    <img src="/hide_imgs/smiling_face.png">
+                </a>
+            
+            <a class="logo-title" href="/">
+                
+                Festu&#39;s Blog
+                
+            </a>
+        </div>
+
+        <div class="right">
+            <!-- PC -->
+            <div class="desktop">
+                <ul class="navbar-list">
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/"
+                                        >
+                                    <i class="fa-regular fa-house fa-fw"></i>
+                                    HOME
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/archives"
+                                        >
+                                    <i class="fa-regular fa-archive fa-fw"></i>
+                                    ARCHIVES
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/categories"
+                                        >
+                                    <i class="fa-regular fa-folder fa-fw"></i>
+                                    CATEGORIES
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/tags"
+                                        >
+                                    <i class="fa-regular fa-tags fa-fw"></i>
+                                    TAGS
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                    
+                        <li class="navbar-item search search-popup-trigger">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </li>
+                    
+                </ul>
+            </div>
+            <!-- Mobile -->
+            <div class="mobile">
+                
+                    <div class="icon-item search search-popup-trigger"><i class="fa-solid fa-magnifying-glass"></i>
+                    </div>
+                
+                <div class="icon-item navbar-bar">
+                    <div class="navbar-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile sheet -->
+    <div class="navbar-drawer h-screen w-full absolute top-0 left-0 bg-background-color flex flex-col justify-between">
+        <ul class="drawer-navbar-list flex flex-col px-4 justify-center items-start">
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/"
+                        >
+                            <span>
+                                HOME
+                            </span>
+                            
+                                <i class="fa-regular fa-house fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/archives"
+                        >
+                            <span>
+                                ARCHIVES
+                            </span>
+                            
+                                <i class="fa-regular fa-archive fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/categories"
+                        >
+                            <span>
+                                CATEGORIES
+                            </span>
+                            
+                                <i class="fa-regular fa-folder fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/tags"
+                        >
+                            <span>
+                                TAGS
+                            </span>
+                            
+                                <i class="fa-regular fa-tags fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+
+            
+            
+        </ul>
+
+        <div class="statistics flex justify-around my-2.5">
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/tags">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">1</div>
+        <div class="label text-third-text-color text-sm">Tags</div>
+    </a>
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/categories">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">10</div>
+        <div class="label text-third-text-color text-sm">Categories</div>
+    </a>
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/archives">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">14</div>
+        <div class="label text-third-text-color text-sm">Posts</div>
+    </a>
+</div>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="main-content-body">
+
+            
+
+            <div class="main-content">
+
+                
+                    <div class="post-page-container flex relative justify-between box-border w-full h-full">
+    <div class="article-content-container">
+
+        <div class="article-title relative w-full">
+            
+                
+                
+                <img src="/hide_imgs/post_thumbnail-2.jpg" alt="认识实习——但是动态规划" class="w-full h-60 sm:h-72 md:h-80 object-cover sm:rounded-t-large dark:brightness-75"/>
+                
+                <div class="w-full flex items-center absolute bottom-0 justify-start">
+                    <h1 class="article-title-cover text-center mx-6 my-6 text-second-text-color bg-background-color-transparent px-4 py-3 text-3xl sm:text-4xl md:text-5xl font-bold backdrop-blur-lg rounded-xl border border-border-color ">认识实习——但是动态规划</h1>
+                </div>
+            
+            </div>
+
+        
+            <div class="article-header flex flex-row gap-2 items-center px-2 sm:px-6 md:px-8">
+                <div class="avatar w-[46px] h-[46px] flex-shrink-0 rounded-medium border border-border-color p-[1px]">
+                    <img src="/hide_imgs/avatar.png">
+                </div>
+                <div class="info flex flex-col justify-between">
+                    <div class="author flex items-center">
+                        <span class="name text-default-text-color text-lg font-semibold">Forestsetyou</span>
+                        
+                    </div>
+                    <div class="meta-info">
+                        <div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fa-regular fa-pen-fancy"></i>&nbsp;
+        <span class="desktop">2022-04-10 16:26</span>
+        <span class="mobile">2022-04-10 16:26</span>
+        <span class="hover-info">Created</span>
+    </span>
+    
+        <span class="article-date article-meta-item">
+            <i class="fa-regular fa-wrench"></i>&nbsp;
+            <span class="desktop">2023-08-03 18:07</span>
+            <span class="mobile">2023-08-03 18:07</span>
+            <span class="hover-info">Updated</span>
+        </span>
+    
+
+    
+        <span class="article-categories article-meta-item">
+            <i class="fa-regular fa-folders"></i>&nbsp;
+            <ul>
+                
+                
+                    
+                        
+                        <li>
+                            <a href="/categories/Development/">Development</a>&nbsp;
+                        </li>
+                    
+                    
+                
+                    
+                        
+                            <li>></li>
+                        
+                        <li>
+                            <a href="/categories/Development/Algorithm/">Algorithm</a>&nbsp;
+                        </li>
+                    
+                    
+                
+            </ul>
+        </span>
+    
+    
+        <span class="article-tags article-meta-item">
+            <i class="fa-regular fa-tags"></i>&nbsp;
+            <ul>
+                
+                    <li>
+                        <a href="/tags/Schoolwork/">Schoolwork</a>&nbsp;
+                    </li>
+                
+            </ul>
+        </span>
+    
+
+    
+    
+    
+    
+</div>
+
+                    </div>
+                </div>
+            </div>
+        
+
+        
+
+
+        <div class="article-content markdown-body px-2 sm:px-6 md:px-8 pb-8">
+            <h1 id="动态规划"><a href="#动态规划" class="headerlink" title="动态规划"></a>动态规划</h1><p>很有价值的博客：<a class="link"   target="_blank" rel="noopener" href="https://blog.csdn.net/zccz14/article/details/51288079" >幺零做点正事吧-动态规划与贪心算法的区别和联系 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+<h2 id="Diluc-and-Kaeya-迪卢克和凯亚？"><a href="#Diluc-and-Kaeya-迪卢克和凯亚？" class="headerlink" title="Diluc and Kaeya(迪卢克和凯亚？)"></a>Diluc and Kaeya(迪卢克和凯亚？)</h2><p>先放一个自己想的比较朴素的想法，因为是归类在DP中，试着抽象了一下，表示了一下状态:</p>
+<div class="highlight-container" data-rel="C++"><figure class="iseeu highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span><span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span><span class="string">&lt;string.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span><span class="string">&lt;string&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"><span class="type">const</span> <span class="type">int</span> MAX_NUM=<span class="number">10000</span>;</span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">woods</span>&#123;</span><br><span class="line">    <span class="type">int</span> D=<span class="number">0</span>;</span><br><span class="line">    <span class="type">int</span> K=<span class="number">0</span>;</span><br><span class="line">    <span class="type">double</span> ratios;</span><br><span class="line">    <span class="type">int</span> MAX_=<span class="number">0</span>;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="type">int</span> n,m;</span><br><span class="line">    string str;</span><br><span class="line">    <span class="built_in">scanf</span>(<span class="string">&quot;%d&quot;</span>,&amp;n);</span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;n;i++)&#123;</span><br><span class="line">        <span class="keyword">if</span>(i) </span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">&quot;\n&quot;</span>);</span><br><span class="line">        <span class="built_in">scanf</span>(<span class="string">&quot;%d&quot;</span>,&amp;m);</span><br><span class="line">        cin.<span class="built_in">get</span>();      <span class="comment">//帮getline函数过滤换行</span></span><br><span class="line">        woods *wd=<span class="keyword">new</span> woods[m+<span class="number">1</span>];</span><br><span class="line">        <span class="built_in">getline</span>(cin,str);</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> j=<span class="number">1</span>;j&lt;=m;j++)&#123;</span><br><span class="line">            <span class="keyword">switch</span>(str[j<span class="number">-1</span>])&#123; </span><br><span class="line">                <span class="keyword">case</span> <span class="string">&#x27;D&#x27;</span>:&#123;</span><br><span class="line">                    wd[j].D=wd[j<span class="number">-1</span>].D+<span class="number">1</span>;</span><br><span class="line">                    wd[j].K=wd[j<span class="number">-1</span>].K;</span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">case</span> <span class="string">&#x27;K&#x27;</span>:&#123;</span><br><span class="line">                    wd[j].K=wd[j<span class="number">-1</span>].K+<span class="number">1</span>;</span><br><span class="line">                    wd[j].D=wd[j<span class="number">-1</span>].D;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> j=<span class="number">1</span>;j&lt;=m;j++)&#123;</span><br><span class="line">          <span class="comment">//  printf(&quot;\nj=%d ,jd=%d ,jk=%d &quot;,j,wd[j].D,wd[j].K);</span></span><br><span class="line">            <span class="keyword">for</span>(<span class="type">int</span> p=<span class="number">0</span>;p&lt;j;p++)&#123;   <span class="comment">//O(n^2)的复杂度</span></span><br><span class="line">                <span class="keyword">if</span>(p==<span class="number">0</span>) &#123;</span><br><span class="line">                    wd[j].MAX_=<span class="number">1</span>;</span><br><span class="line">                    <span class="keyword">if</span>(wd[j].D==<span class="number">0</span>) wd[j].ratios=<span class="number">0</span>;</span><br><span class="line">                    <span class="keyword">else</span></span><br><span class="line">                        <span class="keyword">if</span>(wd[j].K==<span class="number">0</span>) wd[j].ratios=<span class="number">-1</span>;</span><br><span class="line">                        <span class="keyword">else</span></span><br><span class="line">                            wd[j].ratios=<span class="built_in">double</span>(wd[j].D)/wd[j].K;</span><br><span class="line">                    <span class="keyword">continue</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="type">int</span> j_d=wd[j].D-wd[p].D,j_k=wd[j].K-wd[p].K;</span><br><span class="line">              <span class="comment">//  printf(&quot; =&gt;p=%d %d,%d &quot;,p,j_d,j_k);</span></span><br><span class="line">                <span class="type">double</span> ratios;</span><br><span class="line">                <span class="keyword">if</span>(j_d==<span class="number">0</span>) ratios=<span class="number">0</span>;    <span class="comment">//计算比例，分子分母为0的情况分开表示</span></span><br><span class="line">                <span class="keyword">else</span></span><br><span class="line">                    <span class="keyword">if</span>(j_k==<span class="number">0</span>) ratios=<span class="number">-1</span>;</span><br><span class="line">                    <span class="keyword">else</span></span><br><span class="line">                        ratios=<span class="built_in">double</span>(j_d)/j_k;</span><br><span class="line">                <span class="keyword">if</span>(ratios==wd[p].ratios)&#123;</span><br><span class="line">                    <span class="keyword">if</span>(wd[p].MAX_+<span class="number">1</span>&gt;wd[j].MAX_)&#123;</span><br><span class="line">                      <span class="comment">//  printf(&quot; !! %f&lt;-&gt;%f &quot;,ratios,wd[p].ratios);</span></span><br><span class="line">                        wd[j].MAX_=wd[p].MAX_+<span class="number">1</span>;       <span class="comment">//状态转移</span></span><br><span class="line">                        wd[j].ratios=ratios;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> j=<span class="number">1</span>;j&lt;=m;j++)&#123;</span><br><span class="line">            <span class="keyword">if</span>(j&gt;<span class="number">1</span>) <span class="built_in">printf</span>(<span class="string">&quot; &quot;</span>);</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">&quot;%d&quot;</span>,wd[j].MAX_);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">delete</span> []wd;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+
+<p>但实际上这种写法不是最好的，时间复杂度可以降到O(n)</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://img2022.cnblogs.com/blog/2724756/202204/2724756-20220410162700330-570935280.png"
+                     
+                ></p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://img2022.cnblogs.com/blog/2724756/202204/2724756-20220410162717613-1932020107.png"
+                     
+                ></p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://img2022.cnblogs.com/blog/2724756/202204/2724756-20220410162735097-1943064373.png"
+                     
+                ></p>
+<p>不知道为什么CF上跑出来的结果和本地的结果不一样&#x3D; &#x3D;。这是一道假DP，看了网上的题解几乎都用不上DP。自己的思路基本能行，但是复杂度高了，标准解法如下:</p>
+<div class="highlight-container" data-rel="C++"><figure class="iseeu highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;string&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;map&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;utility&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="type">int</span> n,m;</span><br><span class="line">        string str;</span><br><span class="line">        <span class="built_in">scanf</span>(<span class="string">&quot;%d&quot;</span>,&amp;n);</span><br><span class="line">        <span class="keyword">while</span>(n--)&#123;</span><br><span class="line">            map&lt;pair&lt;<span class="type">double</span>,<span class="type">double</span>&gt;,<span class="type">int</span>&gt; mAp;     <span class="comment">//用来存储对应比值的出现次数</span></span><br><span class="line">            <span class="built_in">scanf</span>(<span class="string">&quot;%d&quot;</span>,&amp;m);</span><br><span class="line">            cin.<span class="built_in">get</span>();</span><br><span class="line">            <span class="built_in">getline</span>(cin,str);</span><br><span class="line">            <span class="type">double</span> d=<span class="number">0</span>,k=<span class="number">0</span>;</span><br><span class="line">            pair&lt;<span class="type">double</span>,<span class="type">double</span>&gt; pr;     <span class="comment">//注意这一片变量都是double类型，否则运算会出现问题</span></span><br><span class="line">            <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;m;i++)&#123;</span><br><span class="line">                <span class="keyword">switch</span>(str[i])&#123;</span><br><span class="line">                    <span class="keyword">case</span> <span class="string">&#x27;D&#x27;</span>:&#123;</span><br><span class="line">                        d++;</span><br><span class="line">                        <span class="keyword">if</span>(k==<span class="number">0</span>)&#123;       <span class="comment">//0的特殊情况判定</span></span><br><span class="line">                            pr.first=<span class="number">1</span>; </span><br><span class="line">                            pr.second=<span class="number">0</span>;</span><br><span class="line">                            mAp[pr]++;</span><br><span class="line">                        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                            pr.first=d/(d+k);   <span class="comment">//取比值，效果和取最大公约数做分母是一样的，只是储值变成了double类型</span></span><br><span class="line">                            pr.second=k/(d+k);      <span class="comment">//相当于一种哈希重排序</span></span><br><span class="line">                            mAp[pr]++;  <span class="comment">//计数加一</span></span><br><span class="line">                        &#125;</span><br><span class="line">                        <span class="keyword">break</span>;</span><br><span class="line">                    &#125;</span><br><span class="line">                    <span class="keyword">case</span> <span class="string">&#x27;K&#x27;</span>:&#123;</span><br><span class="line">                        k++;</span><br><span class="line">                        <span class="keyword">if</span>(d==<span class="number">0</span>)&#123;</span><br><span class="line">                            pr.first=<span class="number">0</span>;</span><br><span class="line">                            pr.second=<span class="number">1</span>;</span><br><span class="line">                            mAp[pr]++;</span><br><span class="line">                        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                            pr.first=d/(d+k);</span><br><span class="line">                            pr.second=k/(d+k);</span><br><span class="line">                            mAp[pr]++;</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">if</span>(i) <span class="built_in">printf</span>(<span class="string">&quot; &quot;</span>);</span><br><span class="line">                <span class="built_in">printf</span>(<span class="string">&quot;%d&quot;</span>,mAp[pr]);   <span class="comment">//本次的的比值对应的次数就是本位置可分的最大份数</span></span><br><span class="line">            &#125;	<span class="comment">//正是这种单次遍历即可全部计数的特性使得时间复杂度能够优化为O(n)</span></span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">&quot;\n&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+
+<p>使用 <code>pair</code> 需要包含文件头 <code>utility</code> ，使用 <code>map</code> 需要包含头文件 <code>map</code> 。</p>
+<hr>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://img2022.cnblogs.com/blog/2724756/202204/2724756-20220410162813237-2052597319.png"
+                     
+                ></p>
+<p>反转了，跑出来结果有问题是因为编译器版本不对，加上我用了动态数组..不过这段程序超时了，毕竟是O(n^2)的复杂度&#x3D; &#x3D;</p>
+<p><strong>参考:[</strong></p>
+<p><a class="link"   target="_blank" rel="noopener" href="https://blog.csdn.net/google19890102/article/details/51720305" >C++_Map用法 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+<p><a class="link"   target="_blank" rel="noopener" href="https://blog.csdn.net/m0_55858144/article/details/119035019" >Theiar-Diluc and Kaeya <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+<p><strong>]</strong></p>
+<h2 id="The-Sports-Festival"><a href="#The-Sports-Festival" class="headerlink" title="The Sports Festival"></a>The Sports Festival</h2><p>想了一下没什么很好的思路，又急着交作业，直接看题解，发现是正经DP：</p>
+<div class="highlight-container" data-rel="C++"><figure class="iseeu highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;algorithm&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"><span class="type">const</span> <span class="type">int</span> MAX_LEN=<span class="number">2e3</span>+<span class="number">10</span>;   <span class="comment">//在本地可以先调小一点，确定程序无误后再更改至要求大小。	&lt;?-1</span></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="type">long</span> <span class="type">long</span> s[MAX_LEN][MAX_LEN]=&#123;<span class="number">0</span>&#125;;</span><br><span class="line">    <span class="type">long</span> <span class="type">long</span> n,a[MAX_LEN];   <span class="comment">//有时候可能是int不够长，可以修改成long long试一试</span></span><br><span class="line">    <span class="built_in">scanf</span>(<span class="string">&quot;%d&quot;</span>,&amp;n);</span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;n;i++)&#123;</span><br><span class="line">        <span class="built_in">scanf</span>(<span class="string">&quot;%lld&quot;</span>,&amp;a[i]);  <span class="comment">//使用非&gt;&gt;流记得修改标记类型</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">sort</span>(a+<span class="number">0</span>,a+n);	<span class="comment">//sort(a+n1,a+n2)表示从小到大排序a数组下标范围为[n1,n2)的所有元素</span></span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> lenth=<span class="number">2</span>;lenth&lt;=n;lenth++)&#123;  <span class="comment">//将要探索最优情况的长度</span></span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i+lenth<span class="number">-1</span>&lt;n;i++)&#123;   <span class="comment">//遍历每个符合该长度的子串</span></span><br><span class="line">            <span class="type">int</span> j=i+lenth<span class="number">-1</span>;</span><br><span class="line">            s[i][j]=a[j]-a[i]+<span class="built_in">min</span>(s[i+<span class="number">1</span>][j],s[i][j<span class="number">-1</span>]);   <span class="comment">//状态转移方程</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;%lld&quot;</span>,s[<span class="number">0</span>][n<span class="number">-1</span>]);     <span class="comment">//直接输出计算所得的全串最优情况</span></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+
+<ul>
+<li><code>&lt;?-1</code> 这里有个奇怪的问题，当 <code>MAX_LEN</code> 的值小于30（不准确数字）时裁判机上会在第一组测试数据超时，而本地不会，没搞明白这是为什么</li>
+</ul>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://img2022.cnblogs.com/blog/2724756/202204/2724756-20220410162835378-1306705306.png"
+                     
+                ></p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://img2022.cnblogs.com/blog/2724756/202204/2724756-20220410162901760-1015503738.png"
+                     
+                ></p>
+<p><strong>剖析一下这道DP的思路：</strong></p>
+<p>先将题目理清楚，给定n个运动员的速度分别为a1,a2,a3…an，将速度重新排列后，定义di&#x3D;max(a1,a2…ai)-min(a1,a2…ai)，si&#x3D;sum(d1,d2..di)。</p>
+<p>首先每道DP都可以抽象出一个状态，利用状态转移方程将上一个最优状态转化成下一个最优状态。先观察本题，如果我们定义在所有的a中，最大的差值为dmax，那么dn&#x3D;dn-1 + dmax，道理很简单，如果在前面就出现dmax，那最终结果一定不是最小的，所以它一定是出现在最后面的。我们可以先将运动员按照速度排序，选择的时候为了让速度差之和最小，一定会选择邻近的值，比如有一个排序过的子串：a1,a2,a3,a4,a5。我们第一个选择了a3，那下一个肯定是选择a2，或者a4，假如我们选择了a2，那下一个就在a1与a4中选，会发现添加的元素总是位于两侧，这是因为他们的值与a3相差是最小的。于是我们就可以利用选择的个数，也就是子串的长度 <code>i</code> 来标记状态，而每一个状态的值是选择该子串所得的si。那么状态转移方式就是由si-1得到si。见代码中的状态转移方程：</p>
+<div class="highlight-container" data-rel="C++"><figure class="iseeu highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> j=i+lenth<span class="number">-1</span>;</span><br><span class="line">s[i][j]=a[j]-a[i]+<span class="built_in">min</span>(s[i+<span class="number">1</span>][j],s[i][j<span class="number">-1</span>]);</span><br></pre></td></tr></table></figure></div>
+
+<p><code>s[i][i+lenth-1]</code> 代表的是下标从 <code>i</code> 到 <code>i+lenth-1</code> 的子串，取尾下标为 <code>j=i+lenth-1</code> ，长度为 <code>lenth</code> ，其值是选取该子串所得的<strong>最小的</strong> <code>s</code> 。它是由长度为Lenth-1的子串加上一个元素得来的，前面分析过，添加的元素总是位于两侧，所以该子串是从子串 <code>[i+1,j]</code> 或者 <code>[i,j-1]</code> 变来的，而这个变化过程所加的值是一个定值，即最大减最小： <code>a[j]-a[i]</code> ，所以只要前一个子串的 <code>s</code> 最小，那么该子串的 <code>s</code>就是最小的，这就是方程里 <code>min()</code> 的意义所在：选出掐头的子串和去尾的子串中 <code>s</code> 最小的。这样就实现了DP的一个重要目的：由前一个最优状态转移到后一个最优状态。</p>
+<div class="highlight-container" data-rel="C++"><figure class="iseeu highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span>(<span class="type">int</span> lenth=<span class="number">2</span>;lenth&lt;=n;lenth++)&#123;  <span class="comment">//将要探索最优情况的长度</span></span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i+lenth<span class="number">-1</span>&lt;n;i++)&#123;   <span class="comment">//遍历每个符合该长度的子串</span></span><br><span class="line">            <span class="type">int</span> j=i+lenth<span class="number">-1</span>;</span><br><span class="line">            s[i][j]=a[j]-a[i]+<span class="built_in">min</span>(s[i+<span class="number">1</span>][j],s[i][j<span class="number">-1</span>]);   <span class="comment">//状态转移方程</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></div>
+
+<p>虽然确定了得到si+1最优状态的办法，但是同样长度的子串之间是平行关系，彼此之间还需要比较，所以我们依次遍历长度为2,3,4…n的子串，从左往右将每一个该长度的子串的最优si确定，再将长度加一，由最优的si得到最优的si+1，从而就实现了完整的状态转移，确保最后得到的sn是全局的最优情况。</p>
+<p><strong>参考：[</strong></p>
+<p><a class="link"   target="_blank" rel="noopener" href="https://blog.csdn.net/qq_40486952/article/details/83280212" >Jingyao2021-C++ sort函数用法 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+<p><a class="link"   target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_45724872/article/details/117232239" >荼白777-The Sports Festival题解 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+<p><strong>]</strong></p>
+<h2 id="Say-No-to-Palindromes"><a href="#Say-No-to-Palindromes" class="headerlink" title="Say No to Palindromes"></a>Say No to Palindromes</h2><p>受到前一题的影响一直在思考如何利用长度转移状态，几经尝试后发现不行，实在感觉没思路，就去看了题解，结果发现思考的很朴素，完全是在就事论事，限定字母只有”a”、”b”、”c”，三种，要想不出现回文，加入第一个是a，那么第二个可以是b也可以是c，假如第二个是b，那么第三个只能是c，第四个只能是a，第五个只能是b，第六个只能是c….发现了吗，”abc”在不断循环，总结一下：</p>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">abc</span><br><span class="line">acb</span><br><span class="line">bca</span><br><span class="line">bac</span><br><span class="line">cab</span><br><span class="line">cba</span><br></pre></td></tr></table></figure></div>
+
+<p>只有这六个是可能出现的循环节，那我们只要依次按照这六个修改并计算所需次数就行了。但是这里还没完，每给出一个子串就重新算一遍太麻烦了，也浪费时间，有没有省事也省时一点的办法？有，利用前缀和。也就是记录前n个子串所需修改次数为 <code>dp[n]</code> ，那么子串 <code>i to j</code> 的所需修改次数就为<code>dp[j]-dp[i]</code> ，这个是可以证明的，想明白也不难，某种意义上来说，这才是这道题唯一体现DP思想的地方…因为这个问题的解决核心完全是就事论事，而非利用DP的某些特性去构造一些结构，所以对于一些想偷懒的人（比如我），想找到一般规律轻松解决的人，这题目就突出一个一筹莫展。（其实只是菜&#x3D; &#x3D;） 前缀和帮我们大大优化了时间，我们只需分别存储六种情况的修改次数的前缀和，按区间得出各种情况的值再进行比较并取最小即可，时间复杂度甚至只有O(n)，快的不可思议…</p>
+<p>若是抛开具体事实不谈（啊对对对），这个不让出现回文的规定用长度组合转化很难解决，因为你无法保证修改某个子串的同时不影响到其他子串，更无法保证不出现新的回文子串，而若是一个个尝试…那我不敢想。这题目也体现了一点：DP不是解决问题的主要思路，他是一个优化时间的手段。如何处理回文不是由DP解决的，在有办法处理回文的情况下，通过DP思路保存子问题的解（前缀和）达到空间换时间的目的，这才是DP思想在这题中的作用。而单考虑如何修改字符串使之没有回文子串更像是一个搜索题目…虽然搜索也不好解决就是了。可以看出DP的一大特点就是题目的解决思路是很灵活的，需要各种经验与分析，这也许是因为DP扮演的角色更多是锦上添花，而非雪中送炭，做DP题是在解决各种技巧性的问题，而DP是规划这些技巧使他们快速有序的手段，两者都需要脑子，但不能只有其一。</p>
+<p>放了这么多P话，上代码：</p>
+<div class="highlight-container" data-rel="C++"><figure class="iseeu highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;algorithm&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;vector&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;string&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    string s[<span class="number">6</span>]=&#123;<span class="string">&quot;abc&quot;</span>,<span class="string">&quot;acb&quot;</span>,<span class="string">&quot;bac&quot;</span>,<span class="string">&quot;bca&quot;</span>,<span class="string">&quot;cab&quot;</span>,<span class="string">&quot;cba&quot;</span>&#125;, str;</span><br><span class="line">    <span class="type">int</span> a,b;</span><br><span class="line">    cin&gt;&gt;a&gt;&gt;b;</span><br><span class="line">    cin&gt;&gt;str;</span><br><span class="line">    str=<span class="string">&quot; &quot;</span>+str;    <span class="comment">//输入区间时是从1开始计数的，所以处理数组时尽量从1开始</span></span><br><span class="line">    <span class="type">int</span> k=str.<span class="built_in">length</span>();</span><br><span class="line">    vector&lt; vector&lt;<span class="type">int</span>&gt; &gt; <span class="built_in">dp</span>(<span class="number">6</span>,<span class="built_in">vector</span>&lt;<span class="type">int</span>&gt;(k));     </span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;<span class="number">6</span>;i++)&#123;</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> j=<span class="number">1</span>;j&lt;k;j++)&#123;</span><br><span class="line">            <span class="keyword">if</span>(str[j]==s[i][j%<span class="number">3</span>])&#123;</span><br><span class="line">                dp[i][j]=dp[i][j<span class="number">-1</span>];    <span class="comment">//不需要更改</span></span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span>&#123;</span><br><span class="line">                dp[i][j]=dp[i][j<span class="number">-1</span>]+<span class="number">1</span>;  <span class="comment">//需要更改</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="type">long</span> <span class="type">long</span> k1,k2,ans;</span><br><span class="line">    <span class="keyword">while</span>(b--)&#123;</span><br><span class="line">        ans=<span class="number">2e6</span>;</span><br><span class="line">        cin&gt;&gt;k1&gt;&gt;k2;</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;<span class="number">6</span>;i++)&#123;</span><br><span class="line">          <span class="comment">//  cout&lt;&lt;&quot;i=&quot;&lt;&lt;i&lt;&lt;&quot;,dp=&quot;&lt;&lt;dp[]</span></span><br><span class="line">            ans=<span class="built_in">min</span>(ans,(<span class="type">long</span> <span class="type">long</span>)(dp[i][k2]-dp[i][k1<span class="number">-1</span>]));  <span class="comment">//&lt;!-1</span></span><br><span class="line">            <span class="comment">/* min函数模板中两个参数的类型必须一致，否则无法正常初始化 */</span></span><br><span class="line">        &#125;</span><br><span class="line">        cout&lt;&lt;ans&lt;&lt;endl;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+
+<ul>
+<li><code>&lt;!-1</code> 这里注意左边界要在给出的基础上减一，道理很简单，但是容易忽略，前缀和是计算到当前下标的结果，直接相减给出的下标范围，被减的下标本身的部分是会被减去的，而我们想要的区间时算上这部分的。</li>
+</ul>
+<p><strong>参考：[</strong></p>
+<p><a class="link"   target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_45911397/article/details/119341342?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522164941467116782246450360%2522%252C%2522scm%2522%253A%252220140713.130102334.pc%255Fall.%2522%257D&request_id=164941467116782246450360&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~all~first_rank_ecpm_v1~rank_v31_ecpm-1-119341342.142%5Ev7%5Epc_search_result_cache,157%5Ev4%5Enew_style&utm_term=d.+say+no+to+palindromes&spm=1018.2226.3001.4187" >为最后的荣光-Say No to Palindromes <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+<p><strong>]</strong></p>
+<h2 id="Increase-Subarray-Sums"><a href="#Increase-Subarray-Sums" class="headerlink" title="Increase Subarray Sums"></a>Increase Subarray Sums</h2><p>思考了一番自己的思路，觉得不太好，就去看了题解，一开始对题解的做法又惊讶又疑惑，惊讶是因为它将前缀和的一维进程按照K的变化拓展到了多维，疑惑是因为我很好奇一些比较有特点的情况在具体实现时的进程，简单推演后觉得没问题，编写代码成功AC，时间复杂度是O(n^2)，先放网上的题解代码：</p>
+<div class="highlight-container" data-rel="C++"><figure class="iseeu highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;vector&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;algorithm&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="type">int</span> t;</span><br><span class="line">    cin&gt;&gt;t;</span><br><span class="line">    <span class="keyword">while</span>(t--)&#123;</span><br><span class="line">        <span class="type">int</span> n,x,tmp;</span><br><span class="line">        cin&gt;&gt;n&gt;&gt;x;</span><br><span class="line">        vector&lt; vector&lt;<span class="type">int</span>&gt; &gt; <span class="built_in">dp</span>(n+<span class="number">1</span>,<span class="built_in">vector</span>&lt;<span class="type">int</span>&gt;(n+<span class="number">1</span>));     <span class="comment">//规模为n*n</span></span><br><span class="line">        <span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">s</span><span class="params">(n+<span class="number">1</span>)</span>,<span class="title">ans</span><span class="params">(n+<span class="number">1</span>)</span></span>;   <span class="comment">//已确定规模下方切忌用push_back</span></span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">1</span>;i&lt;=n;i++)&#123;</span><br><span class="line">            cin&gt;&gt;tmp;</span><br><span class="line">            s[i]=tmp;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">1</span>;i&lt;=n;i++)&#123;</span><br><span class="line">         <span class="comment">//   cout&lt;&lt;&quot;then:&quot;;</span></span><br><span class="line">            dp[i][<span class="number">0</span>]=<span class="built_in">max</span>(dp[i<span class="number">-1</span>][<span class="number">0</span>],<span class="number">0</span>)+s[i];</span><br><span class="line">            ans[<span class="number">0</span>]=<span class="built_in">max</span>(ans[<span class="number">0</span>],dp[i][<span class="number">0</span>]);</span><br><span class="line">         <span class="comment">//   cout&lt;&lt;dp[i][0]&lt;&lt;&quot; &quot;;</span></span><br><span class="line">            <span class="keyword">for</span>(<span class="type">int</span> j=<span class="number">1</span>;j&lt;=n;j++)&#123;		<span class="comment">//&lt;!-1</span></span><br><span class="line">                <span class="type">int</span> v1=<span class="built_in">max</span>(dp[i<span class="number">-1</span>][j],<span class="number">0</span>)+s[i];</span><br><span class="line">                <span class="type">int</span> v2=<span class="built_in">max</span>(dp[i<span class="number">-1</span>][j<span class="number">-1</span>],<span class="number">0</span>)+s[i]+x;</span><br><span class="line">                dp[i][j]=<span class="built_in">max</span>(v1,v2);	<span class="comment">//&lt;!-2</span></span><br><span class="line">             <span class="comment">//   cout&lt;&lt;dp[i][j]&lt;&lt;&quot; &quot;;</span></span><br><span class="line">                ans[j]=<span class="built_in">max</span>(ans[j],dp[i][j]);</span><br><span class="line">            &#125;</span><br><span class="line">          <span class="comment">//  cout&lt;&lt;endl;</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;=n;i++)&#123;</span><br><span class="line">            cout&lt;&lt;ans[i]&lt;&lt;<span class="string">&quot; &quot;</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        cout&lt;&lt;endl;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+
+<ul>
+<li><code>&lt;!-1</code> 这是一个让人惊讶的点，直接在一个次序大循环下把多个K的情况都解决了，让我意识到它的实现只依赖前面而不依赖后面，我的直观思路是K为大循环，次序多走两轮，这两者的时间复杂度是一致的，但是推进的大方向是横纵之差，事实上横纵都可以实现。</li>
+<li><code>&lt;!-2</code> 状态方程更是让人惊叹，如果以这个方程为核心，那这道题的解决思路确实是在DP核心思想的引导下能想到，也就是它的方法确实来自于DP，而不是”就事论事+DP省时”的思路。此处v2改成 <code>v2=max(dp[i][j-1])</code> 应该也是完全可行的，留意到它的DP数组值可以为负，在计算下一个DP数组的值时才会去负为零，这里虽没有实际作用，但和存储中直接去负为零的思路在效果上是有细节的不同的。严格来说这里也是遍历了截取某段子串、不同数量的K加在不同位置的所有情况，但是进行了比较从而获得局部最优的一个解，这也是为什么我一开始认为是纵轴推移。但我一开始确实没想到DP方程可以写的这么贴切直观，两维直接取两个变量，这其中的原因是这个DP方程保证了局部的比较能产生局部的最优，而我想不到有类似效果的思路。例如说这里的状态推移是：<code>MAX( DP[i-1][j],DP[i-1][j-1] ) =&gt; DP[i][j]</code> ,前置的两元间的比较既方便遍历又保证合理有效的优化，同时还没有遗漏一些极为特殊的情况，我感觉这是非常厉害的。</li>
+</ul>
+<p>再琢磨了一下自己的思路：</p>
+<ol>
+<li>先跑一遍前缀和，不做dp优化，单纯求和，获得一个数组，区间的和可以用下标之差取得，然后先开一个循环遍历不同的k，再开两重循环遍历所有子串，长度 <code>len&lt;=k</code> 则加上 <code>x*len</code> ，<code>len&gt;=k</code> 则加上 <code>k*x</code> ，最后是能得到最优解的，但是时间复杂度为O(n^3)，大概率超时</li>
+<li>先跑一遍DP优化的前缀和，求出 <code>k=0</code> 时的最大值，并记录该最大值的子串长度len，然后依次遍历不同的k，若 <code>k&lt;=len</code> 那么直接加上 <code>x*k</code> ，若 <code>k&gt;=len</code> 则依次遍历长度 <code>l=len+1,len+2...k</code> 的子串，加上相应的值后求出最大值，显然这个时间复杂度也是O(n^3)，不合格</li>
+</ol>
+<p><strong>参考：[</strong></p>
+<p><a class="link"   target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_43918473/article/details/123141165" >罗gkv-Increase Subarray Sums <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+<p><strong>]</strong></p>
+<h2 id="Just-Eat-It"><a href="#Just-Eat-It" class="headerlink" title="Just Eat It!"></a>Just Eat It!</h2><p>好简单的前缀合，但是有细节问题。</p>
+<div class="highlight-container" data-rel="C++"><figure class="iseeu highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;vector&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;algorithm&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="type">int</span> t,n,l,max_l,max_r;</span><br><span class="line">    cin&gt;&gt;t;</span><br><span class="line">    <span class="keyword">while</span>(t--)&#123;</span><br><span class="line">        cin&gt;&gt;n;</span><br><span class="line">        <span class="type">long</span> <span class="type">long</span> s=<span class="number">0</span>,ss=<span class="number">0</span>,dp=<span class="number">0</span>;</span><br><span class="line">        <span class="function">vector&lt;<span class="type">long</span> <span class="type">long</span>&gt; <span class="title">tmp</span><span class="params">(n)</span></span>;</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;n;i++)&#123;</span><br><span class="line">            cin&gt;&gt;tmp[i];</span><br><span class="line">            s+=tmp[i];</span><br><span class="line">            <span class="keyword">if</span>(dp&lt;=<span class="number">0</span>) l=i;</span><br><span class="line">            dp=<span class="built_in">max</span>(dp,(<span class="type">long</span> <span class="type">long</span>)<span class="number">0</span>)+tmp[i];</span><br><span class="line">            <span class="keyword">if</span>(dp&gt;ss)&#123;</span><br><span class="line">                max_l=l;</span><br><span class="line">                max_r=i;</span><br><span class="line">            &#125;</span><br><span class="line">            ss=<span class="built_in">max</span>(ss,dp);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span>(max_l==<span class="number">0</span> &amp;&amp; max_r==n<span class="number">-1</span>)&#123;		<span class="comment">//检测最佳子串是不是全串 &lt;!-1</span></span><br><span class="line">            ss-=(tmp[<span class="number">0</span>]&lt;tmp[n<span class="number">-1</span>])?tmp[<span class="number">0</span>]:tmp[n<span class="number">-1</span>];	<span class="comment">//若是全串就去掉一个最小的</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span>(ss&gt;=s) cout&lt;&lt;<span class="string">&quot;NO&quot;</span>&lt;&lt;endl;</span><br><span class="line">        <span class="keyword">else</span> cout&lt;&lt;<span class="string">&quot;YES&quot;</span>&lt;&lt;endl;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+
+<p>不知道是最近脑子动太多了还是太少了，思考这个 <code>l</code> <code>r</code> <code>max_l</code> <code>max_r</code> 让我头疼不已…但这题核心思路还是很简单的，就是前缀和求最大子串，只不过多了几步比较与处理。</p>
+<ul>
+<li><code>&lt;!-1</code> 这里很重要的一点是Adel不能选择全串，因此最佳子串要排除全串这个可能，因此要标记最佳子串的头和尾，这里我脑子不太好使想了好久，但其实不算复杂，检测时若dp归零则重置左端点 <code>l</code> ，每次更新最大值时同步 <code>max_l=l</code> ，而右端点直接取当前位置 <code>max_r=r</code> ，单独定义一个 <code>r</code> 的意义不大。最后检查一遍是否为头尾即可。最后注意一下题目要求是严格大于才会输出”YES”</li>
+</ul>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>DP好难（呜呜呜呜），这次是认识实习的作业驱使才来写DP，结果发现DP都是神仙题目，不看题解都找不到最佳思路，而最简单的题目放在了最后…总之加油吧！学习算法还是很重要的，DP虽然难，但是很锻炼也很考验思维能力，它的题目很灵活，像在做数学题，甚至比数学题还要灵活。自我感觉DP分两类，一类核心思路与DP无关，DP只提供优化时间的办法；一类核心思路向着DP考虑，由DP的特点来创建模型解决问题。</p>
+<p>Tip:补充一下认识实习PPT制作的一些收获</p>
+<ol>
+<li>不突兀的橙黄色:(230,187,122)</li>
+<li>舒服的文字藏青:(14,64,90)</li>
+<li>推荐的字体大小24+，PPT上放关键字就行，废话用嘴（开局一段话，内容全靠编！）</li>
+</ol>
+<!-- flag of hidden posts -->
+        </div>
+
+        
+            <div class="post-copyright-info w-full my-8 px-2 sm:px-6 md:px-8">
+                <div class="article-copyright-info-container">
+    <ul>
+        <li><strong>Title:</strong> 认识实习——但是动态规划</li>
+        <li><strong>Author:</strong> Forestsetyou</li>
+        <li><strong>Created at
+                :</strong> 2022-04-10 16:26:00</li>
+        
+            <li>
+                <strong>Updated at
+                    :</strong> 2023-08-03 18:07:00
+            </li>
+        
+        <li>
+            <strong>Link:</strong> https://forestsetyou.github.io/2022/04/10/Development/Algorithm/认识实习——但是动态规划/
+        </li>
+        <li>
+            <strong>
+                License:
+            </strong>
+            
+
+            
+                This work is licensed under <a class="license" target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0">CC BY-NC-SA 4.0</a>.
+            
+        </li>
+    </ul>
+</div>
+
+            </div>
+        
+
+        
+            <ul class="post-tags-box text-lg mt-1.5 flex-wrap justify-center flex md:hidden">
+                
+                    <li class="tag-item mx-0.5">
+                        <a href="/tags/Schoolwork/">#Schoolwork</a>&nbsp;
+                    </li>
+                
+            </ul>
+        
+
+        
+
+        
+
+
+        
+    </div>
+
+    
+        <div class="toc-content-container">
+            <div class="post-toc-wrap">
+    <div class="post-toc">
+        <div class="toc-title">On this page</div>
+        <div class="page-title">认识实习——但是动态规划</div>
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92"><span class="nav-text">动态规划</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Diluc-and-Kaeya-%E8%BF%AA%E5%8D%A2%E5%85%8B%E5%92%8C%E5%87%AF%E4%BA%9A%EF%BC%9F"><span class="nav-text">Diluc and Kaeya(迪卢克和凯亚？)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#The-Sports-Festival"><span class="nav-text">The Sports Festival</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Say-No-to-Palindromes"><span class="nav-text">Say No to Palindromes</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Increase-Subarray-Sums"><span class="nav-text">Increase Subarray Sums</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Just-Eat-It"><span class="nav-text">Just Eat It!</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-text">总结</span></a></li></ol></li></ol>
+
+    </div>
+</div>
+        </div>
+    
+</div>
+
+
+
+                
+
+            </div>
+
+            
+
+        </div>
+
+        <div class="main-content-footer">
+            <footer class="footer mt-5 py-5 h-auto text-base text-third-text-color relative border-t-2 border-t-border-color">
+    <div class="info-container py-3 text-center">
+        
+        <div class="text-center">
+            &copy;
+            
+              <span>2024</span>
+              -
+            
+            2024&nbsp;&nbsp;<i class="fa-solid fa-heart fa-beat" style="--fa-animation-duration: 0.5s; color: #f54545"></i>&nbsp;&nbsp;<a href="/">Forestsetyou</a>
+            
+        </div>
+        
+        <div class="relative text-center lg:absolute lg:left-[20px] lg:top-1/2 lg:-translate-y-1/2 lg:text-left">
+            <span class="lg:block text-sm">POWERED BY <?xml version="1.0" encoding="utf-8"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg class="relative top-[2px] inline-block align-baseline" version="1.1" id="圖層_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="1rem" height="1rem" viewBox="0 0 512 512" enable-background="new 0 0 512 512" xml:space="preserve"><path fill="#0E83CD" d="M256.4,25.8l-200,115.5L56,371.5l199.6,114.7l200-115.5l0.4-230.2L256.4,25.8z M349,354.6l-18.4,10.7l-18.6-11V275H200v79.6l-18.4,10.7l-18.6-11v-197l18.5-10.6l18.5,10.8V237h112v-79.6l18.5-10.6l18.5,10.8V354.6z"/></svg><a target="_blank" class="text-base" href="https://hexo.io">Hexo</a></span>
+            <span class="text-sm lg:block">THEME&nbsp;<a class="text-base" target="_blank" href="https://github.com/EvanNotFound/hexo-theme-redefine">Redefine v2.6.1</a></span>
+        </div>
+        
+        
+        
+        
+        
+    </div>  
+</footer>
+        </div>
+    </div>
+
+    
+        <div class="post-tools">
+            <div class="post-tools-container">
+    <ul class="article-tools-list">
+        <!-- TOC aside toggle -->
+        
+            <li class="right-bottom-tools page-aside-toggle">
+                <i class="fa-regular fa-outdent"></i>
+            </li>
+        
+
+        <!-- go comment -->
+        
+    </ul>
+</div>
+
+        </div>
+    
+
+    <div class="right-side-tools-container">
+        <div class="side-tools-container">
+    <ul class="hidden-tools-list">
+        <li class="right-bottom-tools tool-font-adjust-plus flex justify-center items-center">
+            <i class="fa-regular fa-magnifying-glass-plus"></i>
+        </li>
+
+        <li class="right-bottom-tools tool-font-adjust-minus flex justify-center items-center">
+            <i class="fa-regular fa-magnifying-glass-minus"></i>
+        </li>
+
+        <li class="right-bottom-tools tool-dark-light-toggle flex justify-center items-center">
+            <i class="fa-regular fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        
+
+        <li class="right-bottom-tools tool-scroll-to-bottom flex justify-center items-center">
+            <i class="fa-regular fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="visible-tools-list">
+        <li class="right-bottom-tools toggle-tools-list flex justify-center items-center">
+            <i class="fa-regular fa-cog fa-spin"></i>
+        </li>
+        
+            <li class="right-bottom-tools tool-scroll-to-top flex justify-center items-center">
+                <i class="arrow-up fas fa-arrow-up"></i>
+                <span class="percent"></span>
+            </li>
+        
+        
+    </ul>
+</div>
+
+    </div>
+
+    <div class="image-viewer-container">
+    <img src="">
+</div>
+
+
+    
+        <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-input-field-pre">
+            <i class="fa-solid fa-keyboard"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="Search..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="popup-btn-close">
+                <i class="fa-solid fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fa-solid fa-spinner fa-spin-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+
+</main>
+
+
+    
+<script src="/js/libs/Swup.min.js"></script>
+
+<script src="/js/libs/SwupSlideTheme.min.js"></script>
+
+<script src="/js/libs/SwupScriptsPlugin.min.js"></script>
+
+<script src="/js/libs/SwupProgressPlugin.min.js"></script>
+
+<script src="/js/libs/SwupScrollPlugin.min.js"></script>
+
+<script src="/js/libs/SwupPreloadPlugin.min.js"></script>
+
+<script>
+    const swup = new Swup({
+        plugins: [
+            new SwupScriptsPlugin({
+                optin: true,
+            }),
+            new SwupProgressPlugin(),
+            new SwupScrollPlugin({
+                offset: 80,
+            }),
+            new SwupSlideTheme({
+                mainElement: ".main-content-body",
+            }),
+            new SwupPreloadPlugin(),
+        ],
+        containers: ["#swup"],
+    });
+</script>
+
+
+
+
+
+
+
+<script src="/js/tools/imageViewer.js" type="module"></script>
+
+<script src="/js/utils.js" type="module"></script>
+
+<script src="/js/main.js" type="module"></script>
+
+<script src="/js/layouts/navbarShrink.js" type="module"></script>
+
+<script src="/js/tools/scrollTopBottom.js" type="module"></script>
+
+<script src="/js/tools/lightDarkSwitch.js" type="module"></script>
+
+<script src="/js/layouts/categoryList.js" type="module"></script>
+
+
+
+    
+<script src="/js/tools/localSearch.js" type="module"></script>
+
+
+
+
+    
+<script src="/js/tools/codeBlock.js" type="module"></script>
+
+
+
+
+    
+<script src="/js/layouts/lazyload.js" type="module"></script>
+
+
+
+
+
+
+  
+<script src="/js/libs/Typed.min.js"></script>
+
+  
+<script src="/js/plugins/typed.js" type="module"></script>
+
+
+
+
+
+
+
+
+
+<div class="post-scripts" data-swup-reload-script>
+    
+        
+<script src="/js/tools/tocToggle.js" type="module"></script>
+
+<script src="/js/layouts/toc.js" type="module"></script>
+
+<script src="/js/plugins/tabs.js" type="module"></script>
+
+    
+</div>
+
+
+</body>
+</html>

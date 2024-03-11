@@ -1,0 +1,1234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="keywords" content="ctf, solution, note, blog">
+    
+    <meta name="author" content="Forestsetyou">
+    <!-- preconnect -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    
+    <!--- Seo Part-->
+    
+    <link rel="canonical" href="http://forestsetyou.github.io/2022/11/15/solution/usage/java/"/>
+    <meta name="robots" content="index,follow">
+    <meta name="googlebot" content="index,follow">
+    <meta name="revisit-after" content="1 days">
+    
+        <meta name="description" content="false">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JAVA">
+<meta property="og:url" content="http://forestsetyou.github.io/2022/11/15/Solution/Usage/Java/index.html">
+<meta property="og:site_name" content="Festu&#39;s Blog">
+<meta property="og:description" content="false">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://picturebed-1310517892.file.myqcloud.com/202309231348376.png">
+<meta property="article:published_time" content="2022-11-14T18:27:00.000Z">
+<meta property="article:modified_time" content="2024-03-08T06:30:00.000Z">
+<meta property="article:author" content="Forestsetyou">
+<meta property="article:tag" content="ctf, solution, note, blog">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://picturebed-1310517892.file.myqcloud.com/202309231348376.png">
+    
+    
+    <!--- Icon Part-->
+    <link rel="icon" type="image/png" href="/hide_imgs/smiling_face.png" sizes="192x192">
+    <link rel="apple-touch-icon" sizes="180x180" href="/hide_imgs/smiling_face.png">
+    <meta name="theme-color" content="#A31F34">
+    <link rel="shortcut icon" href="/hide_imgs/smiling_face.png">
+    <!--- Page Info-->
+    
+    <title>
+        
+            JAVA -
+        
+        Festu&#39;s Blog
+    </title><meta name="robots" content="noindex">
+
+    
+<link rel="stylesheet" href="/fonts/Chillax/chillax.css">
+
+
+    <!--- Inject Part-->
+    
+
+    
+        <style>
+    :root {
+        --preloader-background-color: #fff;
+        --preloader-text-color: #000;
+    }
+
+    @media (prefers-color-scheme: dark) {
+        :root {
+            --preloader-background-color: #202124;
+            --preloader-text-color: #fff;
+        }
+    }
+
+    @media (prefers-color-scheme: light) {
+        :root {
+            --preloader-background-color: #fff;
+            --preloader-text-color: #000;
+        }
+    }
+
+    @media (max-width: 600px) {
+        .ml13 {
+            font-size: 2.6rem !important; /* Adjust this value as needed */
+        }
+    }
+
+    .preloader {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem; /* Tailwind 'gap-4' is 1rem */
+        align-items: center;
+        justify-content: center;
+        position: fixed;
+        padding: 12px;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh; /* 'h-screen' is 100% of the viewport height */
+        background-color: var(--preloader-background-color);
+        z-index: 1100; /* 'z-[1100]' sets the z-index */
+        transition: opacity 0.2s ease-in-out;
+    }
+
+    .ml13 {
+        font-size: 3.2rem;
+        /* text-transform: uppercase; */
+        color: var(--preloader-text-color);
+        letter-spacing: -1px;
+        font-weight: 500;
+        font-family: 'Chillax-Variable', sans-serif;
+        text-align: center;
+    }
+
+    .ml13 .word {
+        display: inline-flex;
+        flex-wrap: wrap;
+        white-space: nowrap;
+    }
+
+    .ml13 .letter {
+        display: inline-block;
+        line-height: 1em;
+    }
+</style>
+
+<div class="preloader">
+    
+<script src="/js/libs/anime.min.js"></script>
+
+    <h1 class="ml13">
+        Festu&#39;s Blog
+    </h1>
+    <script>
+        var textWrapper = document.querySelector('.ml13');
+        // Split text into words
+        var words = textWrapper.textContent.trim().split(' ');
+
+        // Clear the existing content
+        textWrapper.innerHTML = '';
+
+        // Wrap each word and its letters in spans
+        words.forEach(function(word) {
+            var wordSpan = document.createElement('span');
+            wordSpan.classList.add('word');
+            wordSpan.innerHTML = word.replace(/\S/g, "<span class='letter'>$&</span>");
+            textWrapper.appendChild(wordSpan);
+            textWrapper.appendChild(document.createTextNode(' ')); // Add space between words
+        });
+
+
+        anime.timeline({loop: true})
+            .add({
+                targets: '.ml13 .letter',
+                translateY: [100,0],
+                translateZ: 0,
+                opacity: [0,1],
+                easing: "easeOutExpo",
+                duration: 1400,
+                delay: (el, i) => 300 + 30 * i
+            }).add({
+            targets: '.ml13 .letter',
+            translateY: [0,-100],
+            opacity: [1,0],
+            easing: "easeInExpo",
+            duration: 1200,
+            delay: (el, i) => 100 + 30 * i
+        });
+
+        let themeStatus = JSON.parse(localStorage.getItem('REDEFINE-THEME-STATUS'))?.isDark;
+
+        // If the theme status is not found in local storage, check the preferred color scheme
+        if (themeStatus === undefined || themeStatus === null) {
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                themeStatus = 'dark';
+            } else {
+                themeStatus = 'light';
+            }
+        }
+
+        // Now you can use the themeStatus variable in your code
+        if (themeStatus) {
+            document.documentElement.style.setProperty('--preloader-background-color', '#202124');
+            document.documentElement.style.setProperty('--preloader-text-color', '#fff');
+        } else {
+            document.documentElement.style.setProperty('--preloader-background-color', '#fff');
+            document.documentElement.style.setProperty('--preloader-text-color', '#000');
+        }
+
+        window.addEventListener('load', function () {
+            hidePreloaderAfterTimeout(1000); // Hide after 1000 milliseconds once the window has loaded
+        });
+
+        // Backup failsafe: Hide preloader after a maximum of 5000 milliseconds, regardless of the window load event
+        hidePreloaderAfterTimeout(5000);
+
+        function hidePreloaderAfterTimeout(delay) {
+            setTimeout(function () {
+                var preloader = document.querySelector('.preloader');
+                preloader.style.opacity = '0';
+                setTimeout(function () {
+                    preloader.style.display = 'none';
+                }, 200);
+            }, delay);
+        }
+    </script>
+</div>
+    
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+
+    
+        
+<link rel="stylesheet" href="/assets/build/styles.css">
+
+    
+
+    
+<link rel="stylesheet" href="/fonts/fonts.css">
+
+    
+<link rel="stylesheet" href="/fonts/Satoshi/satoshi.css">
+
+    <!--- Font Part-->
+    
+    
+    
+    
+
+
+    <script id="hexo-configurations">
+    window.config = {"hostname":"forestsetyou.github.io","root":"/","language":"en","path":"search.xml"};
+    window.theme = {"articles":{"style":{"font_size":"16px","line_height":1.5,"image_border_radius":"14px","image_alignment":"center","image_caption":false,"link_icon":true,"title_alignment":"left","headings_top_spacing":{"h1":"5rem","h2":"4rem","h3":"2.8rem","h4":"2.5rem","h5":"2.2rem","h6":"2rem"}},"word_count":{"enable":false,"count":true,"min2read":true},"author_label":{"enable":false,"auto":false,"list":[]},"code_block":{"copy":true,"style":"simple","font":{"enable":false,"family":null,"url":null}},"toc":{"enable":true,"max_depth":3,"number":false,"expand":true,"init_open":true},"copyright":{"enable":true,"default":"cc_by_nc_sa"},"lazyload":true,"recommendation":{"enable":false,"title":"推荐阅读","limit":3,"mobile_limit":2,"placeholder":"/images/wallhaven-wqery6-light.webp","skip_dirs":[]}},"colors":{"primary":"#A31F34","secondary":null,"default_mode":"light"},"global":{"fonts":{"chinese":{"enable":false,"family":null,"url":null},"english":{"enable":false,"family":null,"url":null}},"content_max_width":"1000px","sidebar_width":"210px","hover":{"shadow":true,"scale":false},"scroll_progress":{"bar":false,"percentage":true},"website_counter":{"url":"https://cn.vercount.one/js","enable":false,"site_pv":true,"site_uv":true,"post_pv":true},"single_page":true,"preloader":true,"open_graph":true,"google_analytics":{"enable":false,"id":null}},"home_banner":{"enable":true,"style":"fixed","image":{"light":"/hide_imgs/light_banner-5.png","dark":"/hide_imgs/dark_banner.png"},"title":"Festu's Blog","subtitle":{"text":["Life Goes On."],"hitokoto":{"enable":false,"api":"https://v1.hitokoto.cn"},"typing_speed":100,"backing_speed":80,"starting_delay":500,"backing_delay":1500,"loop":false,"smart_backspace":false},"text_color":{"light":"#fff","dark":"#d1d1b6"},"text_style":{"title_size":"2.8rem","subtitle_size":"1.5rem","line_height":1.2},"custom_font":{"enable":false,"family":null,"url":null},"social_links":{"enable":true,"style":"default","links":{"github":"https://github.com/Forestsetyou","instagram":null,"zhihu":null,"twitter":null,"email":null},"qrs":{"weixin":null}}},"plugins":{"feed":{"enable":false},"aplayer":{"enable":false,"type":"fixed","audios":[{"name":null,"artist":null,"url":null,"cover":null,"lrc":null}]},"mermaid":{"enable":false,"version":"9.3.0"}},"version":"2.6.1","navbar":{"auto_hide":false,"color":{"left":"#f78736","right":"#367df7","transparency":35},"width":{"home":"1200px","pages":"1000px"},"links":{"Home":{"path":"/","icon":"fa-regular fa-house"},"Archives":{"path":"/archives","icon":"fa-regular fa-archive"},"categories":{"path":"/categories","icon":"fa-regular fa-folder"},"tags":{"path":"/tags","icon":"fa-regular fa-tags"}},"search":{"enable":true,"preload":true}},"page_templates":{"friends_column":2,"tags_style":"blur"},"home":{"sidebar":{"enable":true,"position":"left","first_item":"menu","announcement":null,"show_on_mobile":true,"links":null},"article_date_format":"auto","categories":{"enable":true,"limit":3},"tags":{"enable":true,"limit":3}},"footerStart":"2024/03/11 03:27:59"};
+    window.lang_ago = {"second":"%s seconds ago","minute":"%s minutes ago","hour":"%s hours ago","day":"%s days ago","week":"%s weeks ago","month":"%s months ago","year":"%s years ago"};
+    window.data = {"masonry":false};
+  </script>
+    
+    <!--- Fontawesome Part-->
+    
+<link rel="stylesheet" href="/fontawesome/fontawesome.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/brands.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/solid.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/regular.min.css">
+
+    
+    
+    
+    
+<meta name="generator" content="Hexo 7.1.1"></head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+
+    
+        <span class="pjax-progress-bar"></span>
+<!--        <span class="swup-progress-icon">-->
+<!--            <i class="fa-solid fa-circle-notch fa-spin"></i>-->
+<!--        </span>-->
+    
+</div>
+
+
+<main class="page-container" id="swup">
+
+    
+
+    <div class="main-content-container">
+
+
+        <div class="main-content-header">
+            <header class="navbar-container px-6 md:px-12">
+
+    <div class="navbar-content ">
+        <div class="left">
+            
+                <a class="logo-image" href="/">
+                    <img src="/hide_imgs/smiling_face.png">
+                </a>
+            
+            <a class="logo-title" href="/">
+                
+                Festu&#39;s Blog
+                
+            </a>
+        </div>
+
+        <div class="right">
+            <!-- PC -->
+            <div class="desktop">
+                <ul class="navbar-list">
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/"
+                                        >
+                                    <i class="fa-regular fa-house fa-fw"></i>
+                                    HOME
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/archives"
+                                        >
+                                    <i class="fa-regular fa-archive fa-fw"></i>
+                                    ARCHIVES
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/categories"
+                                        >
+                                    <i class="fa-regular fa-folder fa-fw"></i>
+                                    CATEGORIES
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/tags"
+                                        >
+                                    <i class="fa-regular fa-tags fa-fw"></i>
+                                    TAGS
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                    
+                        <li class="navbar-item search search-popup-trigger">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </li>
+                    
+                </ul>
+            </div>
+            <!-- Mobile -->
+            <div class="mobile">
+                
+                    <div class="icon-item search search-popup-trigger"><i class="fa-solid fa-magnifying-glass"></i>
+                    </div>
+                
+                <div class="icon-item navbar-bar">
+                    <div class="navbar-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile sheet -->
+    <div class="navbar-drawer h-screen w-full absolute top-0 left-0 bg-background-color flex flex-col justify-between">
+        <ul class="drawer-navbar-list flex flex-col px-4 justify-center items-start">
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/"
+                        >
+                            <span>
+                                HOME
+                            </span>
+                            
+                                <i class="fa-regular fa-house fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/archives"
+                        >
+                            <span>
+                                ARCHIVES
+                            </span>
+                            
+                                <i class="fa-regular fa-archive fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/categories"
+                        >
+                            <span>
+                                CATEGORIES
+                            </span>
+                            
+                                <i class="fa-regular fa-folder fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/tags"
+                        >
+                            <span>
+                                TAGS
+                            </span>
+                            
+                                <i class="fa-regular fa-tags fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+
+            
+            
+        </ul>
+
+        <div class="statistics flex justify-around my-2.5">
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/tags">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">1</div>
+        <div class="label text-third-text-color text-sm">Tags</div>
+    </a>
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/categories">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">10</div>
+        <div class="label text-third-text-color text-sm">Categories</div>
+    </a>
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/archives">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">14</div>
+        <div class="label text-third-text-color text-sm">Posts</div>
+    </a>
+</div>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="main-content-body">
+
+            
+
+            <div class="main-content">
+
+                
+                    <div class="post-page-container flex relative justify-between box-border w-full h-full">
+    <div class="article-content-container">
+
+        <div class="article-title relative w-full">
+            
+                
+                
+                <img src="/hide_imgs/post_thumbnail.png" alt="JAVA" class="w-full h-60 sm:h-72 md:h-80 object-cover sm:rounded-t-large dark:brightness-75"/>
+                
+                <div class="w-full flex items-center absolute bottom-0 justify-start">
+                    <h1 class="article-title-cover text-center mx-6 my-6 text-second-text-color bg-background-color-transparent px-4 py-3 text-3xl sm:text-4xl md:text-5xl font-bold backdrop-blur-lg rounded-xl border border-border-color ">JAVA</h1>
+                </div>
+            
+            </div>
+
+        
+            <div class="article-header flex flex-row gap-2 items-center px-2 sm:px-6 md:px-8">
+                <div class="avatar w-[46px] h-[46px] flex-shrink-0 rounded-medium border border-border-color p-[1px]">
+                    <img src="/hide_imgs/avatar.png">
+                </div>
+                <div class="info flex flex-col justify-between">
+                    <div class="author flex items-center">
+                        <span class="name text-default-text-color text-lg font-semibold">Forestsetyou</span>
+                        
+                    </div>
+                    <div class="meta-info">
+                        <div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fa-regular fa-pen-fancy"></i>&nbsp;
+        <span class="desktop">2022-11-15 02:27</span>
+        <span class="mobile">2022-11-15 02:27</span>
+        <span class="hover-info">Created</span>
+    </span>
+    
+        <span class="article-date article-meta-item">
+            <i class="fa-regular fa-wrench"></i>&nbsp;
+            <span class="desktop">2024-03-08 14:30</span>
+            <span class="mobile">2024-03-08 14:30</span>
+            <span class="hover-info">Updated</span>
+        </span>
+    
+
+    
+        <span class="article-categories article-meta-item">
+            <i class="fa-regular fa-folders"></i>&nbsp;
+            <ul>
+                
+                
+                    
+                        
+                        <li>
+                            <a href="/categories/Solution/">Solution</a>&nbsp;
+                        </li>
+                    
+                    
+                
+                    
+                        
+                            <li>></li>
+                        
+                        <li>
+                            <a href="/categories/Solution/Usage/">Usage</a>&nbsp;
+                        </li>
+                    
+                    
+                
+            </ul>
+        </span>
+    
+    
+
+    
+    
+    
+    
+</div>
+
+                    </div>
+                </div>
+            </div>
+        
+
+        
+
+
+        <div class="article-content markdown-body px-2 sm:px-6 md:px-8 pb-8">
+            <h1 id="JAVA学习笔记"><a href="#JAVA学习笔记" class="headerlink" title="JAVA学习笔记"></a>JAVA学习笔记</h1><h2 id="Debris"><a href="#Debris" class="headerlink" title="Debris"></a>Debris</h2><ol>
+<li><p>语句</p>
+<div class="highlight-container" data-rel="Java"><figure class="iseeu highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">FILE f=<span class="keyword">new</span> <span class="title class_">FILE</span>(<span class="string">&quot;Grades.txt&quot;</span>);</span><br></pre></td></tr></table></figure></div>
+
+<p>在IDEA中运行时，读取的目标文件不一定是源码所在目录下的”Grades.txt”，而是源码类所属的父模块中最高级的模块目录下的”Grades.txt”，但直接用系统shell运行时能正确读取源码目录下的文件。</p>
+</li>
+<li><p>“FileOutputStream”等文件流创建语句必须写在”try…catch”语句块中，否则会报错</p>
+</li>
+<li><pre><code class="java">Scanner.useDelimiter(pattern)
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">中的pattern是正则表达式</span><br><span class="line"></span><br></pre></td></tr></table></figure></div>
+pattern=&quot;[...]&quot;
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">   用多个分隔符代替...即可，注意最好加上`\n\r ` (换行回车和空格)</span><br><span class="line"></span><br><span class="line">4. `ObjectOutputStream` 所写入的数据以&quot;ISSO-8859-1&quot;编码</span><br><span class="line"></span><br><span class="line">5. `javac -encoding utf-8 DST` 以UTF-8编码编译目标类。输入内容的正确编码格式取决于输入模块的选择了什么编码进行内容输入，内容能否以正确的编码格式被读取取决于文件以什么编码格式被保存（读取），若是保存格式不对就会出现乱码。</span><br><span class="line"></span><br><span class="line">6. Char 类型数组&quot;a&quot;，使用：</span><br><span class="line"></span><br><span class="line">   ```java</span><br><span class="line">   System.out.printlb(a);</span><br></pre></td></tr></table></figure></div>
+
+不会输出其引用信息，而是会输出数组字符内容。
+
+<div class="highlight-container" data-rel="Java"><figure class="iseeu highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Sytem.out.println(<span class="string">&quot;&quot;</span>+a);</span><br></pre></td></tr></table></figure></div>
+
+与字符串做并置运算（+）时会输出其引用。
+</code></pre>
+</li>
+<li><p>Java 标识符由字母（包括各种语言的常规字符）、美元符号、下划线与数字组成，开头不能为数字。</p>
+</li>
+<li><p>Java 有 8 种基本数据类型：<code>boolean, byte, short, int, long, float, double, char</code> 。</p>
+<p>类型精度从低到高：</p>
+<div class="highlight-container" data-rel="Java"><figure class="iseeu highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">byte</span>&lt;<span class="type">short</span>&lt;<span class="type">char</span>&lt;<span class="type">int</span>&lt;<span class="type">long</span>&lt;<span class="type">float</span>&lt;<span class="type">double</span></span><br></pre></td></tr></table></figure></div>
+</li>
+<li><p>查看表达式结果的类型：</p>
+<div class="highlight-container" data-rel="Java"><figure class="iseeu highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">Object</span> <span class="variable">_obj</span> <span class="operator">=</span> &lt;EXP&gt;;</span><br><span class="line">System.ot.print(_obj.getClass().toString());</span><br></pre></td></tr></table></figure></div>
+</li>
+<li><p>算术表达式的结果类型最低精度为 int，实际结果精度取运算符操作数中的最高。若式子中含有变量则检查类型，若只是常量运算检查数值。自增自减除外。</p>
+<p>因此有如下特性：</p>
+<div class="highlight-container" data-rel="Java"><figure class="iseeu highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> n=<span class="number">1</span>;</span><br><span class="line"><span class="type">short</span> <span class="variable">c</span> <span class="operator">=</span> n+<span class="number">1</span>;	<span class="comment">// Error</span></span><br><span class="line"><span class="type">short</span> <span class="variable">a</span> <span class="operator">=</span> <span class="number">5</span>+<span class="number">4</span>;</span><br><span class="line">a = a-<span class="number">5</span>;	<span class="comment">// Error</span></span><br><span class="line">a = --a;</span><br></pre></td></tr></table></figure></div>
+</li>
+<li><p><code>var</code> 局部类型推断：</p>
+<div class="highlight-container" data-rel="Java"><figure class="iseeu highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Test</span>&#123;</span><br><span class="line">	Test()&#123;</span><br><span class="line">        <span class="keyword">var</span> a=<span class="number">14</span>;	<span class="comment">// 推断为 int</span></span><br><span class="line">        <span class="keyword">var</span> b=<span class="number">1.20f</span>;	<span class="comment">// 推断为 float</span></span><br><span class="line">        <span class="keyword">var</span> c=<span class="string">&#x27;c&#x27;</span>;	<span class="comment">// Error，无法推断</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+</li>
+<li><p>无名包的类只要放在同一个目录下，可被视为在同一个包下。但无名包的类无法被不同包的其他类引用。</p>
+</li>
+<li><p>可变参数：</p>
+<div class="highlight-container" data-rel="Java"><figure class="iseeu highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">void</span> <span class="title function_">my_print</span><span class="params">(<span class="type">int</span> ... x)</span>&#123;</span><br><span class="line">	<span class="keyword">for</span>(<span class="type">int</span> t:x)&#123;</span><br><span class="line">		System.out.print(t);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>; i&lt;x.length; i++)&#123;</span><br><span class="line">	 	System.out.print(x[i]);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+</li>
+<li><p>静态块：</p>
+<div class="highlight-container" data-rel="Java"><figure class="iseeu highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">AAA</span>&#123;</span><br><span class="line">	<span class="keyword">static</span> &#123;</span><br><span class="line">		System.out.println(<span class="string">&quot;I&#x27;m the static block in the Class AAA.&quot;</span>);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">E</span>&#123;</span><br><span class="line">	<span class="keyword">static</span>&#123;</span><br><span class="line">		System.out.println(<span class="string">&quot;I&#x27;m the static block which is called first.&quot;</span>);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String args[])</span>&#123;</span><br><span class="line">        <span class="type">AAA</span> <span class="variable">a</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">AAA</span>();	<span class="comment">// AAA 的字节码进入内存</span></span><br><span class="line">        System.out.println(<span class="string">&quot;I&#x27;m trying to understand the concept of static block.&quot;</span>);</span><br><span class="line">    &#125;	</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+</li>
+<li><p>只有 abstract 类中可以有 abstract 方法；</p>
+<p>不允许同时用 <code>final,abstract</code> 修饰一个方法或类；</p>
+<p>不允许用 <code>static, private</code> 修饰 abstract 方法，其权限必须高于 <code>private</code> 。 </p>
+</li>
+<li><p>对于类继承中的『上转型对象』而言，如果子类重写了父类的静态方法，则上转型对象只能调用父类的静态方法，不能调用子类重写的静态方法。如果子类重写的是非静态方法，则上转型对象会调用其重写后的方法。</p>
+<p>子类在重写父类方法时，不能把类方法（静态方法）重写成实例方法，或者把实例方法重写为类方法。但可以把父类的非抽象方法重写成抽象方法（什么？）。</p>
+<p>子类在重写父类方法时，方法的权限只能提高不能降低。</p>
+</li>
+<li><p><code>super</code> 也无法调用所继承父类的 <code>private</code> 方法，这意味着一个构造函数全是 <code>private</code> 权限的类不能有子类。</p>
+</li>
+<li><p><code>instanceof</code> 为双目运算符，判断左侧的对象是否为右侧的类（或者其子类或者实现了接口的类）实例化获得的。</p>
+</li>
+</ol>
+<h2 id="Solution"><a href="#Solution" class="headerlink" title="Solution"></a>Solution</h2><h3 id="0-4-无限循环小数"><a href="#0-4-无限循环小数" class="headerlink" title="0.4 无限循环小数"></a>0.4 无限循环小数</h3><p>由于 0.4 用二进制表示时是无限循环小数，因此有以下特性：</p>
+<div class="highlight-container" data-rel="Java"><figure class="iseeu highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">float</span> <span class="variable">x</span> <span class="operator">=</span> <span class="number">0.4f</span>;</span><br><span class="line"><span class="type">double</span> <span class="variable">y</span> <span class="operator">=</span> <span class="number">0.4</span>;</span><br></pre></td></tr></table></figure></div>
+
+<p>x 中实际存储的是 Float 类型的常数 0.4000000059604654（保留16位），存储在 y 中的是 Double 类型的常数 4e-16，因此 y 中的值小于 x 中的值。</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://picturebed-1310517892.file.myqcloud.com/202309231348376.png"
+                      alt="image-20230908143010977"
+                ></p>
+<blockquote>
+<p>Qst：Float 只保存 8 位有效数字，而 5 出现在第 9 位，那为什么与 y 比较时还是大于 y？四舍五入？</p>
+<p>Ans：Float 与 Double 比较时，前者被转换成 Double 类型，由于保存的是 0.4f 也就是 FLoat 常数，因此转换时进行了精确的计算，将第九位开始的小数也保存了下来，再与 Double 类型的常数 0.4 进行比较。所以有：</p>
+<div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">jshell&gt; 0.4f - 0.4;</span><br><span class="line"><span class="variable">$33</span> ==&gt; 5.960464455334602E-9</span><br><span class="line">jshell&gt; 0.4f - 0.4f;</span><br><span class="line"><span class="variable">$34</span> ==&gt; 0.0</span><br></pre></td></tr></table></figure></div>
+</blockquote>
+<h3 id="访问权限"><a href="#访问权限" class="headerlink" title="访问权限"></a>访问权限</h3><table>
+<thead>
+<tr>
+<th></th>
+<th>public</th>
+<th>protected</th>
+<th>default</th>
+<th>private</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>同类的其他成员</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr>
+<td>同包其他类（包括子类）</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td></td>
+</tr>
+<tr>
+<td>不同包的子类</td>
+<td>1</td>
+<td>1</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>不同包的非子类</td>
+<td>1</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody></table>
+<p>1 表示可以访问。</p>
+<p>对于构造函数，也可以有以上四种访问权限。<code>new Object()</code> 可以看作是显式访问并调用了类 Object 的某个构造函数，由此可以判断其应用场合与类的成员方法并无区别。如果设置为 private，则只能在本类中调用。</p>
+<h3 id="常用类"><a href="#常用类" class="headerlink" title="常用类"></a>常用类</h3><h4 id="String"><a href="#String" class="headerlink" title="String"></a>String</h4><p>常用函数</p>
+<div class="highlight-container" data-rel="Java"><figure class="iseeu highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">&quot;小鸟fly&quot;</span>.length() == <span class="number">5</span>;	<span class="comment">// true</span></span><br><span class="line">&lt;String-<span class="number">1</span>&gt;.equals(&lt;String-<span class="number">2</span>&gt;);	<span class="comment">// 比较实体是否相等</span></span><br><span class="line">	.equalsIgnoreCase();	<span class="comment">// 比较时忽略大小写区别</span></span><br><span class="line">&lt;String-<span class="number">1</span>&gt;.startsWith(<span class="string">&quot;abc&quot;</span>);	<span class="comment">// 判断字符串前缀，是则 True</span></span><br><span class="line">    .endsWith(<span class="string">&quot;&quot;</span>);	<span class="comment">// 判断字符串后缀</span></span><br><span class="line">&lt;String-<span class="number">1</span>&gt;.compareTo(&lt;String-<span class="number">2</span>&gt;);	<span class="comment">// 按照字典序比大小，若大于 &lt;String-2&gt; 返回正值。</span></span><br><span class="line">    .compareToIgnoreCase();	<span class="comment">//	忽略大小写</span></span><br><span class="line">	.contains();	<span class="comment">// 是否包含子串</span></span><br><span class="line">    .indexOf(&lt;String&gt;, &lt;StartPoint&gt;);	<span class="comment">// 检索字符串首次出现的开始下标</span></span><br><span class="line">	.lastIndexOf(...);	<span class="comment">// 检索字符串最后一次出现的开始下标</span></span><br><span class="line">	.substring(&lt;startPoint&gt;, &lt;endPoint&gt;);	<span class="comment">// 获取子串，注意参数二是结束下标</span></span><br><span class="line">	.trim();	<span class="comment">// 返回一个新的 String，去掉前后空格</span></span><br><span class="line">&lt;String-<span class="number">1</span>&gt;.replaceAll(&lt;regex&gt;, &lt;String-<span class="number">2</span>&gt;);	<span class="comment">// 根据正则表达式替换整个字符串, 会返回新的 String</span></span><br><span class="line"><span class="type">String</span> <span class="variable">split_str</span> <span class="operator">=</span> &lt;String&gt;.split(&lt;regex&gt;);	<span class="comment">// 根据正则表达式匹配分隔符，分割字符串并返回字符串数组；分隔符左侧可为空，右侧不行</span></span><br></pre></td></tr></table></figure></div>
+
+<p>类型转换：</p>
+<div class="highlight-container" data-rel="Java"><figure class="iseeu highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//　String -&gt; Integer, Double...</span></span><br><span class="line">Integer.parseInt(<span class="string">&quot;5&quot;</span>);</span><br><span class="line">Double.parseDouble(<span class="string">&quot;5.5&quot;</span>);</span><br><span class="line"><span class="comment">//	Intger,Double... -&gt; String</span></span><br><span class="line">String.valueOf(<span class="number">5</span>);</span><br><span class="line"><span class="string">&quot;&quot;</span>+<span class="number">23</span>;	<span class="comment">// 并置运算</span></span><br></pre></td></tr></table></figure></div>
+
+<p>进制转换：</p>
+<div class="highlight-container" data-rel="Java"><figure class="iseeu highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 二进制、八进制、十六进制</span></span><br><span class="line">Integer.toBinaryString(<span class="number">15</span>);	<span class="comment">// &quot;1111&quot;</span></span><br><span class="line">Integer.toOctalString(<span class="type">int</span>);</span><br><span class="line">Integer.toHexString(<span class="type">int</span>);</span><br><span class="line">Long.toBinaryString(Long);</span><br><span class="line">Long.toOctalString(Long);</span><br><span class="line">Long.toHexString(Long);</span><br></pre></td></tr></table></figure></div>
+
+<p>字符串与字符数组的转换</p>
+<div class="highlight-container" data-rel="Java"><figure class="iseeu highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">String</span> <span class="variable">s</span> <span class="operator">=</span> <span class="string">&quot;一二三四五六七八九&quot;</span>;</span><br><span class="line"><span class="type">char</span> [] a,c;</span><br><span class="line">a = <span class="keyword">new</span> <span class="title class_">char</span>[<span class="number">4</span>];</span><br><span class="line">s.getChars(<span class="number">3</span>,<span class="number">6</span>,a,<span class="number">0</span>);	<span class="comment">// 将 s 中 3-5 处的字符放到 a 数组中从 0 开始的位置上</span></span><br><span class="line">c = <span class="string">&quot;你说得对，但是&quot;</span>.toCharArray();	<span class="comment">// 直接将字符串转换为数组。</span></span><br></pre></td></tr></table></figure></div>
+
+<p>字符串与字节数组的转换</p>
+<div class="highlight-container" data-rel="Java"><figure class="iseeu highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">byte</span>[] d = <span class="string">&quot;你好&quot;</span>.getBytes(<span class="string">&quot;utf-8&quot;</span>);	<span class="comment">// [ -60, -29, -70, -61 ]</span></span><br><span class="line">d.length;	<span class="comment">// 4</span></span><br><span class="line"><span class="type">String</span> <span class="variable">hao</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">String</span>(d,<span class="number">2</span>,<span class="number">2</span>);	<span class="comment">// &quot;好&quot;</span></span><br><span class="line"><span class="type">String</span> <span class="variable">highBytes</span> <span class="operator">=</span> Integer.toBinaryString(d[<span class="number">3</span>]);</span><br><span class="line">highBytes = highBytes.substring(highBytes.length()-<span class="number">8</span>);	<span class="comment">// 取后 8 位</span></span><br><span class="line"><span class="type">String</span> <span class="variable">lowBytes</span> <span class="operator">=</span> Integer.toBinaryString(d[<span class="number">2</span>]);</span><br><span class="line">lowBytes = lowBytes.substring(lowBytes.length()-<span class="number">8</span>);</span><br><span class="line">System.out.println(highBytes+<span class="string">&quot; &quot;</span>+LowBytes);	<span class="comment">// 11000011 10111010</span></span><br></pre></td></tr></table></figure></div>
+
+<p>正则表达式</p>
+<table>
+<thead>
+<tr>
+<th align="center">元字符</th>
+<th align="center">意义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center"><code>.</code></td>
+<td align="center">任何字符</td>
+</tr>
+<tr>
+<td align="center"><code>\.</code></td>
+<td align="center"><code>.</code> 字符</td>
+</tr>
+<tr>
+<td align="center"><code>\d</code></td>
+<td align="center"><code>0~9</code> 中任何一个数字</td>
+</tr>
+<tr>
+<td align="center"><code>\D</code></td>
+<td align="center">任何一个非数字</td>
+</tr>
+<tr>
+<td align="center"><code>\s</code></td>
+<td align="center">空各类字符，<code>\t, \n, \x0B, \f, \r, \x20</code></td>
+</tr>
+<tr>
+<td align="center"><code>\S</code></td>
+<td align="center">非空格类字符</td>
+</tr>
+<tr>
+<td align="center"><code>\w</code></td>
+<td align="center">可用于标识符的字符，不包括美元符号和非 ASCII 码字符</td>
+</tr>
+<tr>
+<td align="center"><code>\W</code></td>
+<td align="center">不能用于标识符的字符</td>
+</tr>
+<tr>
+<td align="center"><code>\p&#123;Lower&#125;</code></td>
+<td align="center">小写字母 <code>a~z</code></td>
+</tr>
+<tr>
+<td align="center"><code>\p&#123;Upper&#125;</code></td>
+<td align="center">大写字母 <code>A~Z</code></td>
+</tr>
+<tr>
+<td align="center"><code>\p&#123;ASCII&#125;</code></td>
+<td align="center">ASCII 码字符</td>
+</tr>
+<tr>
+<td align="center"><code>\p&#123;Alpha&#125;</code></td>
+<td align="center">字母</td>
+</tr>
+<tr>
+<td align="center"><code>\p&#123;Digit&#125;</code></td>
+<td align="center">数字字符，<code>0~9</code></td>
+</tr>
+<tr>
+<td align="center"><code>\p&#123;Alnum&#125;</code></td>
+<td align="center">字母或者数字</td>
+</tr>
+<tr>
+<td align="center"><code>\p&#123;Punct&#125;</code></td>
+<td align="center">标点符号，&#96;&#96;! , “ # $ % &amp; ‘ ( ) * + - . &#x2F; : ; &lt; &#x3D; &gt; ? @ [ ] \ ^ _ &#96; {</td>
+</tr>
+<tr>
+<td align="center"><code>\p&#123;Graph&#125;</code></td>
+<td align="center">可视字符：<code>\p&#123;Alnum&#125;</code> ，<code>\p&#123;Punct&#125;</code></td>
+</tr>
+<tr>
+<td align="center"><code>\p&#123;Print&#125;</code></td>
+<td align="center">可打印字符</td>
+</tr>
+<tr>
+<td align="center"><code>\p&#123;Blank&#125;</code></td>
+<td align="center">空格或制表符：<code>\t</code></td>
+</tr>
+<tr>
+<td align="center"><code>\p&#123;Cntrl&#125;</code></td>
+<td align="center">控制字符：<code>[\x00-\x1F\x7F]</code></td>
+</tr>
+</tbody></table>
+<p>允许嵌套方括号，进行差、并、交运算：<code>[a-z&amp;&amp;[^bc]]</code> ，<code>[a-d[m-p]]</code> ，<code>[a-z&amp;&amp;[def]]</code></p>
+<p>限定修饰符</p>
+<table>
+<thead>
+<tr>
+<th>带限定修饰符的模式</th>
+<th>意义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>X?</code></td>
+<td><code>X</code> 出现一次或零次</td>
+</tr>
+<tr>
+<td><code>X*</code></td>
+<td><code>X</code> 出现零次或多次</td>
+</tr>
+<tr>
+<td><code>X+</code></td>
+<td><code>X</code> 出现一次或多次</td>
+</tr>
+<tr>
+<td><code>X&#123;n&#125;</code></td>
+<td><code>X</code> 恰好出现 n 次</td>
+</tr>
+<tr>
+<td><code>X&#123;n,&#125;</code></td>
+<td><code>X</code> 至少出现 n 次</td>
+</tr>
+<tr>
+<td><code>X&#123;n,m&#125;</code></td>
+<td><code>X</code> 出现 n 次至 m 次</td>
+</tr>
+</tbody></table>
+<p>常用正则表达式</p>
+<table>
+<thead>
+<tr>
+<th>正则表达式（字面量）</th>
+<th>意义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>-?[1-9]\\d*</code></td>
+<td>整数字符序列</td>
+</tr>
+<tr>
+<td><code>-?[0-9][0-9]*[.][0-9]+</code><br />&#96;-?(0?</td>
+<td>[1-9]\d*)[.]\d*&#96;</td>
+</tr>
+<tr>
+<td><code>\\w+@\\w+(\\.[a-z]+)+</code></td>
+<td>邮箱</td>
+</tr>
+<tr>
+<td><code>[1-9]\\d&#123;16&#125;\p&#123;Alnum&#125;</code></td>
+<td>中国公民身份证</td>
+</tr>
+<tr>
+<td>&#96;[1-9]\d{3}[-.&#x2F;](0?[1-9]</td>
+<td>1[012])[-.&#x2F;](0?[1-9]</td>
+</tr>
+</tbody></table>
+<h4 id="Exception"><a href="#Exception" class="headerlink" title="Exception"></a>Exception</h4><div class="highlight-container" data-rel="Java"><figure class="iseeu highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">NumberFormatException	<span class="comment">// 非法数字字符 - Double.parseDouble(&lt;String&gt;); | new BigInteger(&lt;String&gt;&gt;);</span></span><br><span class="line">UnsupportedEncodingException	<span class="comment">// 不支持的编码格式 - String.getBytes()</span></span><br><span class="line">InputMismatchException	<span class="comment">// 读入内容类型不匹配 - &lt;Scanner&gt;.nextInt()</span></span><br><span class="line"></span><br></pre></td></tr></table></figure></div>
+
+
+
+<h3 id="JAVA-常用包"><a href="#JAVA-常用包" class="headerlink" title="JAVA 常用包"></a>JAVA 常用包</h3><h4 id="总览"><a href="#总览" class="headerlink" title="总览"></a>总览</h4><p><code>java.util</code></p>
+<div class="highlight-container" data-rel="Java"><figure class="iseeu highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">HashMap</span><br><span class="line">regex.</span><br><span class="line">    Pattern</span><br><span class="line">    Matcher</span><br><span class="line">Random</span><br></pre></td></tr></table></figure></div>
+
+<p><code>java.io</code></p>
+<div class="highlight-container" data-rel="Java"><figure class="iseeu highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">FileInputStream, FileOutputStream</span><br><span class="line">ObjectInputStream, ObjectOutputStream</span><br><span class="line">IOException</span><br></pre></td></tr></table></figure></div>
+
+<p><code>java.net</code></p>
+<div class="highlight-container" data-rel="Java"><figure class="iseeu highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">URL</span><br></pre></td></tr></table></figure></div>
+
+<p><code>java.lang</code> （自动被 JAVA 导入）</p>
+<div class="highlight-container" data-rel="Java"><figure class="iseeu highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">reflect.</span><br><span class="line">	Field</span><br><span class="line">System</span><br><span class="line">Math</span><br></pre></td></tr></table></figure></div>
+
+<p><code>java.math</code></p>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">BigInteger</span><br></pre></td></tr></table></figure></div>
+
+<p><code>java.time</code></p>
+<div class="highlight-container" data-rel="Java"><figure class="iseeu highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">LocalDate</span><br><span class="line">LocalTime</span><br><span class="line">LocalDateTime</span><br></pre></td></tr></table></figure></div>
+
+<h4 id="详情"><a href="#详情" class="headerlink" title="详情"></a>详情</h4><ol>
+<li><p><code>StringTokenizer</code></p>
+<div class="highlight-container" data-rel="Java"><figure class="iseeu highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">StringTokenizer</span> <span class="variable">st</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">StringTokenizer</span>(&lt;String&gt;, &lt;delim-String&gt;)</span><br><span class="line">st.hasMoreTokens();</span><br><span class="line">st.countTokens();</span><br><span class="line">st.nextToken();</span><br></pre></td></tr></table></figure></div>
+
+<p><code>&lt;delim-String&gt;</code> 传入分隔符，以所有分隔符任意长的任意排列为单词分隔符。</p>
+</li>
+<li><p><code>Scanner</code> </p>
+<div class="highlight-container" data-rel="Java"><figure class="iseeu highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">Scanner</span> <span class="variable">scanner</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Scanner</span>(&lt;String&gt;);</span><br><span class="line">scanner.useDelimiter(&lt;regex-string&gt;);	<span class="comment">// 以正则表达式为分隔符，分割字符串</span></span><br><span class="line">scanner.hasNext();</span><br><span class="line">scanner.next();		<span class="comment">// 返回字符串|浮点数|整数</span></span><br><span class="line">	.nextDouble();</span><br><span class="line">	.nextInt();</span><br></pre></td></tr></table></figure></div>
+</li>
+<li><p><code>StringBuffer</code> 可变字符串</p>
+<div class="highlight-container" data-rel="Java"><figure class="iseeu highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">new</span> <span class="title class_">StringBuffer</span>(&lt;String&gt;);</span><br><span class="line">&lt;StringBuffer&gt;.append();	<span class="comment">// 连接字符串</span></span><br><span class="line">	.charAt(&lt;<span class="type">int</span>-n&gt;);	<span class="comment">// 返回 char</span></span><br><span class="line">	.reverse();		<span class="comment">// 返回 StringBuffer</span></span><br><span class="line">	.delete(&lt;<span class="type">int</span>-startIdx&gt;, &lt;<span class="type">int</span>-endIdx&gt;);		</span><br></pre></td></tr></table></figure></div>
+</li>
+<li><p><code>Pattern, Matcher</code></p>
+<div class="highlight-container" data-rel="Java"><figure class="iseeu highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">Pattern</span> <span class="variable">p</span> <span class="operator">=</span> Pattern.compile(&lt;regex-string&gt;); <span class="comment">// 生成正则匹配模式</span></span><br><span class="line"><span class="type">Matcher</span> <span class="variable">m</span> <span class="operator">=</span> p.matcher(&lt;source-string&gt;);	<span class="comment">// 输入数据源</span></span><br><span class="line"><span class="keyword">while</span>(m.find())&#123;	<span class="comment">// 寻找下一个匹配的字符串</span></span><br><span class="line">    <span class="type">String</span> <span class="variable">item</span> <span class="operator">=</span> m.item();	<span class="comment">// 获取找到的字符串</span></span><br><span class="line">    <span class="type">int</span> <span class="variable">beg</span> <span class="operator">=</span> m.start();</span><br><span class="line">    <span class="type">int</span> <span class="variable">end</span> <span class="operator">=</span> m.end();	<span class="comment">// 返回找到字符的开始位置和结束位置</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+</li>
+<li><p><code>LocalDate, LocalDateTime, LocalTime</code> </p>
+<p><code>localDate</code> 为完整日期：</p>
+<div class="highlight-container" data-rel="Java"><figure class="iseeu highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">LocalDate.now();	<span class="comment">// 返回当前时间</span></span><br><span class="line">LocalDate.of(<span class="number">1988</span>, <span class="number">12</span>, <span class="number">16</span>);		<span class="comment">// 返回指定时间</span></span><br><span class="line">&lt;LocalDate&gt;.getDayOfMon();	<span class="comment">// 月中的日期号码，如16号</span></span><br><span class="line">	.getMonthValue();	<span class="comment">// 月号数值</span></span><br><span class="line">	.getMonth();	<span class="comment">// 月的枚举值，FEBRUARY</span></span><br><span class="line">	.getDayOfWeek();	<span class="comment">// 星期枚举值，SUNDAY</span></span><br><span class="line">	.isLeapYear();	<span class="comment">// 是否为闰年</span></span><br><span class="line">	.plusMonths();	<span class="comment">// 返回一个新的日期对象，为当前日期加上指定月数后的新日期</span></span><br><span class="line">	.compareTo();	<span class="comment">// 按年月日顺序比较，当某项不同时直接返回该项的差值，正大负小</span></span><br><span class="line">	.until(&lt;end-date&gt;, &lt;unit&gt;);	<span class="comment">// 计算到&lt;end-date&gt;的日期差，&lt;unit&gt;传入枚举类型来标记差值的单位，如 ChronoUnit.DAYS 是天数 </span></span><br><span class="line">	.isBefore(&lt;date-<span class="number">1</span>&gt;);	<span class="comment">// 判断是否在指定日期之前</span></span><br></pre></td></tr></table></figure></div>
+
+<p><code>LocalTime</code> 为完整时间，<code>LocalDateTime</code> 为完整日期+时间。</p>
+<p>格式化</p>
+<div class="highlight-container" data-rel="Java"><figure class="iseeu highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">String.format(<span class="string">&quot;%ty 年 %tm 月 %td 日&quot;</span>, &lt;LocalDate&gt;,&lt;LocalDate&gt;,&lt;LocalDate&gt;);</span><br><span class="line"><span class="comment">// 结果为 2022 年 02 月 17 日</span></span><br><span class="line">String.format(<span class="string">&quot;%ta-%&lt;tm-%td&quot;</span>, &lt;LocalDate&gt;);</span><br><span class="line"><span class="comment">// 2022-02-17，	%&lt; 为前缀表示与前一个格式符处理同一个变量</span></span><br><span class="line"><span class="comment">// %tA-Sunday %tH-24小时 %tM-分 %tS-秒</span></span><br></pre></td></tr></table></figure></div>
+
+<p>更换不同地区的风格</p>
+<div class="highlight-container" data-rel="Java"><figure class="iseeu highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">format(Local locale, &lt;String-pattern&gt;, &lt;LocalDate--list&gt;);</span><br><span class="line"><span class="comment">// 对于 Locale 表示地域，US-美国</span></span><br></pre></td></tr></table></figure></div>
+</li>
+<li><p><code>java.lang.Math</code></p>
+<div class="highlight-container" data-rel="Java"><figure class="iseeu highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">Math.E		<span class="comment">// 自然对数</span></span><br><span class="line">	.PI		<span class="comment">// 圆周率</span></span><br><span class="line">    .abs(&lt;<span class="type">double</span>&gt;);</span><br><span class="line">	.max();</span><br><span class="line">	.random();	<span class="comment">// [0,1)的随机数</span></span><br><span class="line">	.pow(a,b);	<span class="comment">// a的b次方</span></span><br><span class="line">	.sqrt();</span><br><span class="line">	.log();</span><br><span class="line">	.sin();</span><br><span class="line">	.asin();</span><br><span class="line">	.ceil();	<span class="comment">// 向上取整，返回Double</span></span><br><span class="line">	.floor();	<span class="comment">// 向下取整，返回Double</span></span><br><span class="line">	.round();	<span class="comment">// 四舍五入</span></span><br></pre></td></tr></table></figure></div>
+</li>
+<li><p><code>java.math.BigInteger</code> 大整数类。</p>
+</li>
+<li><p><code>java.util.Random</code> 随机数类</p>
+<div class="highlight-container" data-rel="Java"><figure class="iseeu highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">new</span> <span class="title class_">Random</span>(&lt;Long-seed&gt;);</span><br><span class="line">&lt;Random&gt;.</span><br><span class="line">    <span class="type">int</span> <span class="title function_">nextInt</span><span class="params">()</span>;	<span class="comment">// 随机整数</span></span><br><span class="line">	<span class="type">int</span> <span class="title function_">nextInt</span><span class="params">(&lt;<span class="type">int</span>-n&gt;)</span>;	<span class="comment">// [0,n)的随机整数</span></span><br><span class="line">	Double <span class="title function_">nextDouble</span><span class="params">()</span>;	<span class="comment">// [0,1.0)</span></span><br><span class="line">	Boolean <span class="title function_">nextBoolean</span><span class="params">()</span>;</span><br></pre></td></tr></table></figure></div>
+</li>
+<li><p>数字格式化</p>
+<div class="highlight-container" data-rel="Java"><figure class="iseeu highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">%d - 十进制整数</span><br><span class="line">%o - 八进制整数</span><br><span class="line">%x - 小写十六进制整数</span><br><span class="line">%X - 大写 Hex</span><br><span class="line">%f - 十进制浮点数，默认<span class="number">6</span>位小数</span><br><span class="line">%e - 科学计数法</span><br><span class="line">%E - E 大写</span><br><span class="line">%mf|%-mf - 输出宽度为m，在左侧|右侧补空格</span><br><span class="line">    %% - 转义 %</span><br></pre></td></tr></table></figure></div>
+</li>
+<li><p><code>java.lang.Class</code> 类</p>
+</li>
+</ol>
+   <div class="highlight-container" data-rel="Java"><figure class="iseeu highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">&lt;Object&gt;.</span><br><span class="line">	<span class="keyword">class</span> <span class="title class_">getClass</span>();	<span class="comment">// 获取存放当前类相关信息的 class 类</span></span><br><span class="line">&lt;Class&gt;.</span><br><span class="line">    String <span class="title function_">getName</span><span class="params">()</span>;</span><br><span class="line">	java.lang.reflect.Constructor[] getDeclaredConstructors();	<span class="comment">// 全部构造方法</span></span><br><span class="line">	Constructor&lt;?&gt; getDeclaredConstructor();	<span class="comment">// 获取默认无参构造函数</span></span><br><span class="line">	java.lang.reflect.Field[] getDeclaredFields();	<span class="comment">// 全部成员变量</span></span><br><span class="line">	java.lang.reflect.Method[] getDeclaredMethods();	<span class="comment">// 全部方法</span></span><br><span class="line">Class.</span><br><span class="line">    Class&lt;?&gt; forName(&lt;String&gt;);	<span class="comment">// 返回指定类，传入带包名的完整类名</span></span><br><span class="line">&lt;Constructor&gt;.</span><br><span class="line">    Object <span class="title function_">newInstance</span><span class="params">()</span>;	<span class="comment">// 返回一个新对象实例</span></span><br></pre></td></tr></table></figure></div>
+
+<p>11. </p>
+<!-- flag of hidden posts -->
+        </div>
+
+        
+            <div class="post-copyright-info w-full my-8 px-2 sm:px-6 md:px-8">
+                <div class="article-copyright-info-container">
+    <ul>
+        <li><strong>Title:</strong> JAVA</li>
+        <li><strong>Author:</strong> Forestsetyou</li>
+        <li><strong>Created at
+                :</strong> 2022-11-15 02:27:00</li>
+        
+            <li>
+                <strong>Updated at
+                    :</strong> 2024-03-08 14:30:00
+            </li>
+        
+        <li>
+            <strong>Link:</strong> https://forestsetyou.github.io/2022/11/15/Solution/Usage/Java/
+        </li>
+        <li>
+            <strong>
+                License:
+            </strong>
+            
+
+            
+                This work is licensed under <a class="license" target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0">CC BY-NC-SA 4.0</a>.
+            
+        </li>
+    </ul>
+</div>
+
+            </div>
+        
+
+        
+
+        
+
+        
+
+
+        
+    </div>
+
+    
+        <div class="toc-content-container">
+            <div class="post-toc-wrap">
+    <div class="post-toc">
+        <div class="toc-title">On this page</div>
+        <div class="page-title">JAVA</div>
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#JAVA%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0"><span class="nav-text">JAVA学习笔记</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Debris"><span class="nav-text">Debris</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Solution"><span class="nav-text">Solution</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#0-4-%E6%97%A0%E9%99%90%E5%BE%AA%E7%8E%AF%E5%B0%8F%E6%95%B0"><span class="nav-text">0.4 无限循环小数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AE%BF%E9%97%AE%E6%9D%83%E9%99%90"><span class="nav-text">访问权限</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B8%B8%E7%94%A8%E7%B1%BB"><span class="nav-text">常用类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#JAVA-%E5%B8%B8%E7%94%A8%E5%8C%85"><span class="nav-text">JAVA 常用包</span></a></li></ol></li></ol></li></ol>
+
+    </div>
+</div>
+        </div>
+    
+</div>
+
+
+
+                
+
+            </div>
+
+            
+
+        </div>
+
+        <div class="main-content-footer">
+            <footer class="footer mt-5 py-5 h-auto text-base text-third-text-color relative border-t-2 border-t-border-color">
+    <div class="info-container py-3 text-center">
+        
+        <div class="text-center">
+            &copy;
+            
+              <span>2024</span>
+              -
+            
+            2024&nbsp;&nbsp;<i class="fa-solid fa-heart fa-beat" style="--fa-animation-duration: 0.5s; color: #f54545"></i>&nbsp;&nbsp;<a href="/">Forestsetyou</a>
+            
+        </div>
+        
+        <div class="relative text-center lg:absolute lg:left-[20px] lg:top-1/2 lg:-translate-y-1/2 lg:text-left">
+            <span class="lg:block text-sm">POWERED BY <?xml version="1.0" encoding="utf-8"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg class="relative top-[2px] inline-block align-baseline" version="1.1" id="圖層_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="1rem" height="1rem" viewBox="0 0 512 512" enable-background="new 0 0 512 512" xml:space="preserve"><path fill="#0E83CD" d="M256.4,25.8l-200,115.5L56,371.5l199.6,114.7l200-115.5l0.4-230.2L256.4,25.8z M349,354.6l-18.4,10.7l-18.6-11V275H200v79.6l-18.4,10.7l-18.6-11v-197l18.5-10.6l18.5,10.8V237h112v-79.6l18.5-10.6l18.5,10.8V354.6z"/></svg><a target="_blank" class="text-base" href="https://hexo.io">Hexo</a></span>
+            <span class="text-sm lg:block">THEME&nbsp;<a class="text-base" target="_blank" href="https://github.com/EvanNotFound/hexo-theme-redefine">Redefine v2.6.1</a></span>
+        </div>
+        
+        
+        
+        
+        
+    </div>  
+</footer>
+        </div>
+    </div>
+
+    
+        <div class="post-tools">
+            <div class="post-tools-container">
+    <ul class="article-tools-list">
+        <!-- TOC aside toggle -->
+        
+            <li class="right-bottom-tools page-aside-toggle">
+                <i class="fa-regular fa-outdent"></i>
+            </li>
+        
+
+        <!-- go comment -->
+        
+    </ul>
+</div>
+
+        </div>
+    
+
+    <div class="right-side-tools-container">
+        <div class="side-tools-container">
+    <ul class="hidden-tools-list">
+        <li class="right-bottom-tools tool-font-adjust-plus flex justify-center items-center">
+            <i class="fa-regular fa-magnifying-glass-plus"></i>
+        </li>
+
+        <li class="right-bottom-tools tool-font-adjust-minus flex justify-center items-center">
+            <i class="fa-regular fa-magnifying-glass-minus"></i>
+        </li>
+
+        <li class="right-bottom-tools tool-dark-light-toggle flex justify-center items-center">
+            <i class="fa-regular fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        
+
+        <li class="right-bottom-tools tool-scroll-to-bottom flex justify-center items-center">
+            <i class="fa-regular fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="visible-tools-list">
+        <li class="right-bottom-tools toggle-tools-list flex justify-center items-center">
+            <i class="fa-regular fa-cog fa-spin"></i>
+        </li>
+        
+            <li class="right-bottom-tools tool-scroll-to-top flex justify-center items-center">
+                <i class="arrow-up fas fa-arrow-up"></i>
+                <span class="percent"></span>
+            </li>
+        
+        
+    </ul>
+</div>
+
+    </div>
+
+    <div class="image-viewer-container">
+    <img src="">
+</div>
+
+
+    
+        <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-input-field-pre">
+            <i class="fa-solid fa-keyboard"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="Search..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="popup-btn-close">
+                <i class="fa-solid fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fa-solid fa-spinner fa-spin-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+
+</main>
+
+
+    
+<script src="/js/libs/Swup.min.js"></script>
+
+<script src="/js/libs/SwupSlideTheme.min.js"></script>
+
+<script src="/js/libs/SwupScriptsPlugin.min.js"></script>
+
+<script src="/js/libs/SwupProgressPlugin.min.js"></script>
+
+<script src="/js/libs/SwupScrollPlugin.min.js"></script>
+
+<script src="/js/libs/SwupPreloadPlugin.min.js"></script>
+
+<script>
+    const swup = new Swup({
+        plugins: [
+            new SwupScriptsPlugin({
+                optin: true,
+            }),
+            new SwupProgressPlugin(),
+            new SwupScrollPlugin({
+                offset: 80,
+            }),
+            new SwupSlideTheme({
+                mainElement: ".main-content-body",
+            }),
+            new SwupPreloadPlugin(),
+        ],
+        containers: ["#swup"],
+    });
+</script>
+
+
+
+
+
+
+
+<script src="/js/tools/imageViewer.js" type="module"></script>
+
+<script src="/js/utils.js" type="module"></script>
+
+<script src="/js/main.js" type="module"></script>
+
+<script src="/js/layouts/navbarShrink.js" type="module"></script>
+
+<script src="/js/tools/scrollTopBottom.js" type="module"></script>
+
+<script src="/js/tools/lightDarkSwitch.js" type="module"></script>
+
+<script src="/js/layouts/categoryList.js" type="module"></script>
+
+
+
+    
+<script src="/js/tools/localSearch.js" type="module"></script>
+
+
+
+
+    
+<script src="/js/tools/codeBlock.js" type="module"></script>
+
+
+
+
+    
+<script src="/js/layouts/lazyload.js" type="module"></script>
+
+
+
+
+
+
+  
+<script src="/js/libs/Typed.min.js"></script>
+
+  
+<script src="/js/plugins/typed.js" type="module"></script>
+
+
+
+
+
+
+
+
+
+<div class="post-scripts" data-swup-reload-script>
+    
+        
+<script src="/js/tools/tocToggle.js" type="module"></script>
+
+<script src="/js/layouts/toc.js" type="module"></script>
+
+<script src="/js/plugins/tabs.js" type="module"></script>
+
+    
+</div>
+
+
+</body>
+</html>

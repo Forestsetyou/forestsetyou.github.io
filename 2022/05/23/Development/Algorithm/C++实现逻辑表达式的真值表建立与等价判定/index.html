@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="keywords" content="ctf, solution, note, blog">
+    
+    <meta name="author" content="Forestsetyou">
+    <!-- preconnect -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    
+    <!--- Seo Part-->
+    
+    <link rel="canonical" href="http://forestsetyou.github.io/2022/05/23/development/algorithm/c++实现逻辑表达式的真值表建立与等价判定/"/>
+    <meta name="robots" content="index,follow">
+    <meta name="googlebot" content="index,follow">
+    <meta name="revisit-after" content="1 days">
+    
+        <meta name="description" content="false">
+<meta property="og:type" content="article">
+<meta property="og:title" content="C++实现逻辑表达式的真值表建立与等价判定">
+<meta property="og:url" content="http://forestsetyou.github.io/2022/05/23/Development/Algorithm/C++%E5%AE%9E%E7%8E%B0%E9%80%BB%E8%BE%91%E8%A1%A8%E8%BE%BE%E5%BC%8F%E7%9A%84%E7%9C%9F%E5%80%BC%E8%A1%A8%E5%BB%BA%E7%AB%8B%E4%B8%8E%E7%AD%89%E4%BB%B7%E5%88%A4%E5%AE%9A/index.html">
+<meta property="og:site_name" content="Festu&#39;s Blog">
+<meta property="og:description" content="false">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2022-05-23T15:04:00.000Z">
+<meta property="article:modified_time" content="2023-08-03T10:07:00.000Z">
+<meta property="article:author" content="Forestsetyou">
+<meta property="article:tag" content="Schoolwork">
+<meta name="twitter:card" content="summary">
+    
+    
+    <!--- Icon Part-->
+    <link rel="icon" type="image/png" href="/hide_imgs/smiling_face.png" sizes="192x192">
+    <link rel="apple-touch-icon" sizes="180x180" href="/hide_imgs/smiling_face.png">
+    <meta name="theme-color" content="#A31F34">
+    <link rel="shortcut icon" href="/hide_imgs/smiling_face.png">
+    <!--- Page Info-->
+    
+    <title>
+        
+            C++实现逻辑表达式的真值表建立与等价判定 -
+        
+        Festu&#39;s Blog
+    </title><meta name="robots" content="noindex">
+
+    
+<link rel="stylesheet" href="/fonts/Chillax/chillax.css">
+
+
+    <!--- Inject Part-->
+    
+
+    
+        <style>
+    :root {
+        --preloader-background-color: #fff;
+        --preloader-text-color: #000;
+    }
+
+    @media (prefers-color-scheme: dark) {
+        :root {
+            --preloader-background-color: #202124;
+            --preloader-text-color: #fff;
+        }
+    }
+
+    @media (prefers-color-scheme: light) {
+        :root {
+            --preloader-background-color: #fff;
+            --preloader-text-color: #000;
+        }
+    }
+
+    @media (max-width: 600px) {
+        .ml13 {
+            font-size: 2.6rem !important; /* Adjust this value as needed */
+        }
+    }
+
+    .preloader {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem; /* Tailwind 'gap-4' is 1rem */
+        align-items: center;
+        justify-content: center;
+        position: fixed;
+        padding: 12px;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh; /* 'h-screen' is 100% of the viewport height */
+        background-color: var(--preloader-background-color);
+        z-index: 1100; /* 'z-[1100]' sets the z-index */
+        transition: opacity 0.2s ease-in-out;
+    }
+
+    .ml13 {
+        font-size: 3.2rem;
+        /* text-transform: uppercase; */
+        color: var(--preloader-text-color);
+        letter-spacing: -1px;
+        font-weight: 500;
+        font-family: 'Chillax-Variable', sans-serif;
+        text-align: center;
+    }
+
+    .ml13 .word {
+        display: inline-flex;
+        flex-wrap: wrap;
+        white-space: nowrap;
+    }
+
+    .ml13 .letter {
+        display: inline-block;
+        line-height: 1em;
+    }
+</style>
+
+<div class="preloader">
+    
+<script src="/js/libs/anime.min.js"></script>
+
+    <h1 class="ml13">
+        Festu&#39;s Blog
+    </h1>
+    <script>
+        var textWrapper = document.querySelector('.ml13');
+        // Split text into words
+        var words = textWrapper.textContent.trim().split(' ');
+
+        // Clear the existing content
+        textWrapper.innerHTML = '';
+
+        // Wrap each word and its letters in spans
+        words.forEach(function(word) {
+            var wordSpan = document.createElement('span');
+            wordSpan.classList.add('word');
+            wordSpan.innerHTML = word.replace(/\S/g, "<span class='letter'>$&</span>");
+            textWrapper.appendChild(wordSpan);
+            textWrapper.appendChild(document.createTextNode(' ')); // Add space between words
+        });
+
+
+        anime.timeline({loop: true})
+            .add({
+                targets: '.ml13 .letter',
+                translateY: [100,0],
+                translateZ: 0,
+                opacity: [0,1],
+                easing: "easeOutExpo",
+                duration: 1400,
+                delay: (el, i) => 300 + 30 * i
+            }).add({
+            targets: '.ml13 .letter',
+            translateY: [0,-100],
+            opacity: [1,0],
+            easing: "easeInExpo",
+            duration: 1200,
+            delay: (el, i) => 100 + 30 * i
+        });
+
+        let themeStatus = JSON.parse(localStorage.getItem('REDEFINE-THEME-STATUS'))?.isDark;
+
+        // If the theme status is not found in local storage, check the preferred color scheme
+        if (themeStatus === undefined || themeStatus === null) {
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                themeStatus = 'dark';
+            } else {
+                themeStatus = 'light';
+            }
+        }
+
+        // Now you can use the themeStatus variable in your code
+        if (themeStatus) {
+            document.documentElement.style.setProperty('--preloader-background-color', '#202124');
+            document.documentElement.style.setProperty('--preloader-text-color', '#fff');
+        } else {
+            document.documentElement.style.setProperty('--preloader-background-color', '#fff');
+            document.documentElement.style.setProperty('--preloader-text-color', '#000');
+        }
+
+        window.addEventListener('load', function () {
+            hidePreloaderAfterTimeout(1000); // Hide after 1000 milliseconds once the window has loaded
+        });
+
+        // Backup failsafe: Hide preloader after a maximum of 5000 milliseconds, regardless of the window load event
+        hidePreloaderAfterTimeout(5000);
+
+        function hidePreloaderAfterTimeout(delay) {
+            setTimeout(function () {
+                var preloader = document.querySelector('.preloader');
+                preloader.style.opacity = '0';
+                setTimeout(function () {
+                    preloader.style.display = 'none';
+                }, 200);
+            }, delay);
+        }
+    </script>
+</div>
+    
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+
+    
+        
+<link rel="stylesheet" href="/assets/build/styles.css">
+
+    
+
+    
+<link rel="stylesheet" href="/fonts/fonts.css">
+
+    
+<link rel="stylesheet" href="/fonts/Satoshi/satoshi.css">
+
+    <!--- Font Part-->
+    
+    
+    
+    
+
+
+    <script id="hexo-configurations">
+    window.config = {"hostname":"forestsetyou.github.io","root":"/","language":"en","path":"search.xml"};
+    window.theme = {"articles":{"style":{"font_size":"16px","line_height":1.5,"image_border_radius":"14px","image_alignment":"center","image_caption":false,"link_icon":true,"title_alignment":"left","headings_top_spacing":{"h1":"5rem","h2":"4rem","h3":"2.8rem","h4":"2.5rem","h5":"2.2rem","h6":"2rem"}},"word_count":{"enable":false,"count":true,"min2read":true},"author_label":{"enable":false,"auto":false,"list":[]},"code_block":{"copy":true,"style":"simple","font":{"enable":false,"family":null,"url":null}},"toc":{"enable":true,"max_depth":3,"number":false,"expand":true,"init_open":true},"copyright":{"enable":true,"default":"cc_by_nc_sa"},"lazyload":true,"recommendation":{"enable":false,"title":"推荐阅读","limit":3,"mobile_limit":2,"placeholder":"/images/wallhaven-wqery6-light.webp","skip_dirs":[]}},"colors":{"primary":"#A31F34","secondary":null,"default_mode":"light"},"global":{"fonts":{"chinese":{"enable":false,"family":null,"url":null},"english":{"enable":false,"family":null,"url":null}},"content_max_width":"1000px","sidebar_width":"210px","hover":{"shadow":true,"scale":false},"scroll_progress":{"bar":false,"percentage":true},"website_counter":{"url":"https://cn.vercount.one/js","enable":false,"site_pv":true,"site_uv":true,"post_pv":true},"single_page":true,"preloader":true,"open_graph":true,"google_analytics":{"enable":false,"id":null}},"home_banner":{"enable":true,"style":"fixed","image":{"light":"/hide_imgs/light_banner-5.png","dark":"/hide_imgs/dark_banner.png"},"title":"Festu's Blog","subtitle":{"text":["Life Goes On."],"hitokoto":{"enable":false,"api":"https://v1.hitokoto.cn"},"typing_speed":100,"backing_speed":80,"starting_delay":500,"backing_delay":1500,"loop":false,"smart_backspace":false},"text_color":{"light":"#fff","dark":"#d1d1b6"},"text_style":{"title_size":"2.8rem","subtitle_size":"1.5rem","line_height":1.2},"custom_font":{"enable":false,"family":null,"url":null},"social_links":{"enable":true,"style":"default","links":{"github":"https://github.com/Forestsetyou","instagram":null,"zhihu":null,"twitter":null,"email":null},"qrs":{"weixin":null}}},"plugins":{"feed":{"enable":false},"aplayer":{"enable":false,"type":"fixed","audios":[{"name":null,"artist":null,"url":null,"cover":null,"lrc":null}]},"mermaid":{"enable":false,"version":"9.3.0"}},"version":"2.6.1","navbar":{"auto_hide":false,"color":{"left":"#f78736","right":"#367df7","transparency":35},"width":{"home":"1200px","pages":"1000px"},"links":{"Home":{"path":"/","icon":"fa-regular fa-house"},"Archives":{"path":"/archives","icon":"fa-regular fa-archive"},"categories":{"path":"/categories","icon":"fa-regular fa-folder"},"tags":{"path":"/tags","icon":"fa-regular fa-tags"}},"search":{"enable":true,"preload":true}},"page_templates":{"friends_column":2,"tags_style":"blur"},"home":{"sidebar":{"enable":true,"position":"left","first_item":"menu","announcement":null,"show_on_mobile":true,"links":null},"article_date_format":"auto","categories":{"enable":true,"limit":3},"tags":{"enable":true,"limit":3}},"footerStart":"2024/03/11 03:27:59"};
+    window.lang_ago = {"second":"%s seconds ago","minute":"%s minutes ago","hour":"%s hours ago","day":"%s days ago","week":"%s weeks ago","month":"%s months ago","year":"%s years ago"};
+    window.data = {"masonry":false};
+  </script>
+    
+    <!--- Fontawesome Part-->
+    
+<link rel="stylesheet" href="/fontawesome/fontawesome.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/brands.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/solid.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/regular.min.css">
+
+    
+    
+    
+    
+<meta name="generator" content="Hexo 7.1.1"></head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+
+    
+        <span class="pjax-progress-bar"></span>
+<!--        <span class="swup-progress-icon">-->
+<!--            <i class="fa-solid fa-circle-notch fa-spin"></i>-->
+<!--        </span>-->
+    
+</div>
+
+
+<main class="page-container" id="swup">
+
+    
+
+    <div class="main-content-container">
+
+
+        <div class="main-content-header">
+            <header class="navbar-container px-6 md:px-12">
+
+    <div class="navbar-content ">
+        <div class="left">
+            
+                <a class="logo-image" href="/">
+                    <img src="/hide_imgs/smiling_face.png">
+                </a>
+            
+            <a class="logo-title" href="/">
+                
+                Festu&#39;s Blog
+                
+            </a>
+        </div>
+
+        <div class="right">
+            <!-- PC -->
+            <div class="desktop">
+                <ul class="navbar-list">
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/"
+                                        >
+                                    <i class="fa-regular fa-house fa-fw"></i>
+                                    HOME
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/archives"
+                                        >
+                                    <i class="fa-regular fa-archive fa-fw"></i>
+                                    ARCHIVES
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/categories"
+                                        >
+                                    <i class="fa-regular fa-folder fa-fw"></i>
+                                    CATEGORIES
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/tags"
+                                        >
+                                    <i class="fa-regular fa-tags fa-fw"></i>
+                                    TAGS
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                    
+                        <li class="navbar-item search search-popup-trigger">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </li>
+                    
+                </ul>
+            </div>
+            <!-- Mobile -->
+            <div class="mobile">
+                
+                    <div class="icon-item search search-popup-trigger"><i class="fa-solid fa-magnifying-glass"></i>
+                    </div>
+                
+                <div class="icon-item navbar-bar">
+                    <div class="navbar-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile sheet -->
+    <div class="navbar-drawer h-screen w-full absolute top-0 left-0 bg-background-color flex flex-col justify-between">
+        <ul class="drawer-navbar-list flex flex-col px-4 justify-center items-start">
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/"
+                        >
+                            <span>
+                                HOME
+                            </span>
+                            
+                                <i class="fa-regular fa-house fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/archives"
+                        >
+                            <span>
+                                ARCHIVES
+                            </span>
+                            
+                                <i class="fa-regular fa-archive fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/categories"
+                        >
+                            <span>
+                                CATEGORIES
+                            </span>
+                            
+                                <i class="fa-regular fa-folder fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/tags"
+                        >
+                            <span>
+                                TAGS
+                            </span>
+                            
+                                <i class="fa-regular fa-tags fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+
+            
+            
+        </ul>
+
+        <div class="statistics flex justify-around my-2.5">
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/tags">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">1</div>
+        <div class="label text-third-text-color text-sm">Tags</div>
+    </a>
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/categories">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">10</div>
+        <div class="label text-third-text-color text-sm">Categories</div>
+    </a>
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/archives">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">14</div>
+        <div class="label text-third-text-color text-sm">Posts</div>
+    </a>
+</div>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="main-content-body">
+
+            
+
+            <div class="main-content">
+
+                
+                    <div class="post-page-container flex relative justify-between box-border w-full h-full">
+    <div class="article-content-container">
+
+        <div class="article-title relative w-full">
+            
+                
+                
+                <img src="/hide_imgs/post_thumbnail-2.jpg" alt="C++实现逻辑表达式的真值表建立与等价判定" class="w-full h-60 sm:h-72 md:h-80 object-cover sm:rounded-t-large dark:brightness-75"/>
+                
+                <div class="w-full flex items-center absolute bottom-0 justify-start">
+                    <h1 class="article-title-cover text-center mx-6 my-6 text-second-text-color bg-background-color-transparent px-4 py-3 text-3xl sm:text-4xl md:text-5xl font-bold backdrop-blur-lg rounded-xl border border-border-color ">C++实现逻辑表达式的真值表建立与等价判定</h1>
+                </div>
+            
+            </div>
+
+        
+            <div class="article-header flex flex-row gap-2 items-center px-2 sm:px-6 md:px-8">
+                <div class="avatar w-[46px] h-[46px] flex-shrink-0 rounded-medium border border-border-color p-[1px]">
+                    <img src="/hide_imgs/avatar.png">
+                </div>
+                <div class="info flex flex-col justify-between">
+                    <div class="author flex items-center">
+                        <span class="name text-default-text-color text-lg font-semibold">Forestsetyou</span>
+                        
+                    </div>
+                    <div class="meta-info">
+                        <div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fa-regular fa-pen-fancy"></i>&nbsp;
+        <span class="desktop">2022-05-23 23:04</span>
+        <span class="mobile">2022-05-23 23:04</span>
+        <span class="hover-info">Created</span>
+    </span>
+    
+        <span class="article-date article-meta-item">
+            <i class="fa-regular fa-wrench"></i>&nbsp;
+            <span class="desktop">2023-08-03 18:07</span>
+            <span class="mobile">2023-08-03 18:07</span>
+            <span class="hover-info">Updated</span>
+        </span>
+    
+
+    
+        <span class="article-categories article-meta-item">
+            <i class="fa-regular fa-folders"></i>&nbsp;
+            <ul>
+                
+                
+                    
+                        
+                        <li>
+                            <a href="/categories/Development/">Development</a>&nbsp;
+                        </li>
+                    
+                    
+                
+                    
+                        
+                            <li>></li>
+                        
+                        <li>
+                            <a href="/categories/Development/Algorithm/">Algorithm</a>&nbsp;
+                        </li>
+                    
+                    
+                
+            </ul>
+        </span>
+    
+    
+        <span class="article-tags article-meta-item">
+            <i class="fa-regular fa-tags"></i>&nbsp;
+            <ul>
+                
+                    <li>
+                        <a href="/tags/Schoolwork/">Schoolwork</a>&nbsp;
+                    </li>
+                
+            </ul>
+        </span>
+    
+
+    
+    
+    
+    
+</div>
+
+                    </div>
+                </div>
+            </div>
+        
+
+        
+
+
+        <div class="article-content markdown-body px-2 sm:px-6 md:px-8 pb-8">
+            <h1 id="逻辑表达式真值表的建立与等价判断"><a href="#逻辑表达式真值表的建立与等价判断" class="headerlink" title="逻辑表达式真值表的建立与等价判断"></a>逻辑表达式真值表的建立与等价判断</h1><p>首先设计<strong>真值表</strong>的ADT：</p>
+<div class="highlight-container" data-rel="C++"><figure class="iseeu highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">trueTable</span>&#123;</span><br><span class="line">    vector&lt;string&gt; logicElement;    <span class="comment">//组成元素</span></span><br><span class="line">    vector&lt;vector&lt;<span class="type">int</span>&gt;&gt; table;      <span class="comment">//真值表</span></span><br><span class="line">    <span class="type">int</span> basicNum;</span><br><span class="line">    <span class="type">int</span> column;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">bool</span> <span class="title">cmp</span><span class="params">(trueTable T)</span></span>&#123;</span><br><span class="line">        <span class="type">int</span> k1=<span class="keyword">this</span>-&gt;logicElement.<span class="built_in">size</span>(),k2=T.logicElement.<span class="built_in">size</span>();</span><br><span class="line">        <span class="keyword">if</span>(T.column!=<span class="keyword">this</span>-&gt;column) <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">        <span class="type">int</span> n1=<span class="keyword">this</span>-&gt;basicNum,n2=T.basicNum;</span><br><span class="line">        <span class="keyword">if</span>(n1!=n2) <span class="keyword">return</span> <span class="number">0</span>;  </span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;n1;i++)&#123;  <span class="comment">//基本元素不同</span></span><br><span class="line">            <span class="keyword">if</span>(<span class="keyword">this</span>-&gt;logicElement[i]!=T.logicElement[i])&#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;column;i++)&#123;</span><br><span class="line">            <span class="keyword">if</span>(<span class="keyword">this</span>-&gt;table[i][k1<span class="number">-1</span>]!=T.table[i][k2<span class="number">-1</span>]) <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">cal_not</span><span class="params">(string s)</span></span>&#123;     <span class="comment">//!</span></span><br><span class="line">        logicElement.<span class="built_in">push_back</span>(<span class="string">&quot;!&quot;</span>+s);  <span class="comment">//推入新元素名称</span></span><br><span class="line">        <span class="type">int</span> n=<span class="built_in">search</span>(s);</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;column;i++)&#123;  <span class="comment">//做非运算</span></span><br><span class="line">            table[i].<span class="built_in">push_back</span>(<span class="number">1</span>-table[i][n]);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">And</span><span class="params">(<span class="type">int</span> a,<span class="type">int</span> b)</span></span>&#123;   <span class="comment">//与运算</span></span><br><span class="line">        <span class="keyword">if</span>(a==<span class="number">1</span> &amp;&amp; b==<span class="number">1</span>) <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">cal_and</span><span class="params">(string s1,string s2)</span></span>&#123;  <span class="comment">//&amp;</span></span><br><span class="line">        logicElement.<span class="built_in">push_back</span>(s1+<span class="string">&quot;&amp;&quot;</span>+s2);</span><br><span class="line">        <span class="type">int</span> n1=<span class="built_in">search</span>(s1),n2=<span class="built_in">search</span>(s2);</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;column;i++)&#123;</span><br><span class="line">            table[i].<span class="built_in">push_back</span>(<span class="built_in">And</span>(table[i][n1],table[i][n2]));</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> ;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">Or</span><span class="params">(<span class="type">int</span> a,<span class="type">int</span> b)</span></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> !(a==<span class="number">0</span> &amp;&amp; b==<span class="number">0</span>); </span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">cal_or</span><span class="params">(string s1,string s2)</span></span>&#123;  <span class="comment">//|</span></span><br><span class="line">        logicElement.<span class="built_in">push_back</span>(s1+<span class="string">&quot;|&quot;</span>+s2);</span><br><span class="line">        <span class="type">int</span> n1=<span class="built_in">search</span>(s1),n2=<span class="built_in">search</span>(s2);</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;column;i++)&#123;</span><br><span class="line">            table[i].<span class="built_in">push_back</span>(<span class="built_in">Or</span>(table[i][n1],table[i][n2]));</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> ;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">If</span><span class="params">(<span class="type">int</span> a,<span class="type">int</span> b)</span></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> !(a==<span class="number">1</span> &amp;&amp; b==<span class="number">0</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">cal_if</span><span class="params">(string s1,string s2)</span></span>&#123;   <span class="comment">//-&gt;</span></span><br><span class="line">        logicElement.<span class="built_in">push_back</span>(s1+<span class="string">&quot;-&gt;&quot;</span>+s2);</span><br><span class="line">        <span class="type">int</span> n1=<span class="built_in">search</span>(s1),n2=<span class="built_in">search</span>(s2);</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;column;i++)&#123;</span><br><span class="line">            table[i].<span class="built_in">push_back</span>(<span class="built_in">If</span>(table[i][n1],table[i][n2]));</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> ;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="type">bool</span> <span class="title">add</span><span class="params">(string s)</span></span>&#123; <span class="comment">//添加初始元素</span></span><br><span class="line">        <span class="keyword">if</span>(<span class="number">-1</span>==<span class="built_in">search</span>(s))&#123;</span><br><span class="line">            logicElement.<span class="built_in">push_back</span>(s);</span><br><span class="line">            <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">search</span><span class="params">(string s)</span></span>&#123;   <span class="comment">//按名称查找下标,注意排除外括号</span></span><br><span class="line">        <span class="type">int</span> k=logicElement.<span class="built_in">size</span>();</span><br><span class="line">        <span class="keyword">if</span>(s[<span class="number">0</span>]==<span class="string">&#x27;(&#x27;</span>)&#123;</span><br><span class="line">            <span class="type">bool</span> f=<span class="number">1</span>;</span><br><span class="line">            <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">1</span>;i&lt;k &amp;&amp; f;i++)&#123;</span><br><span class="line">                <span class="keyword">if</span>(s[i]==<span class="string">&#x27;)&#x27;</span> &amp;&amp; i!=k<span class="number">-1</span>) f=<span class="number">0</span>;  <span class="comment">//说明不是外括号</span></span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span>(f)&#123;    <span class="comment">//去掉外括号</span></span><br><span class="line">                s=s.<span class="built_in">substr</span>(<span class="number">1</span>,s.<span class="built_in">size</span>()<span class="number">-2</span>);</span><br><span class="line">            &#125; </span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;k;i++)&#123;</span><br><span class="line">            <span class="keyword">if</span>(s==logicElement[i]) <span class="keyword">return</span> i;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">reOrder</span><span class="params">()</span></span>&#123;     <span class="comment">//基本元素重排序</span></span><br><span class="line">        <span class="type">int</span> k=logicElement.<span class="built_in">size</span>();</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;k<span class="number">-1</span>;i++)&#123;</span><br><span class="line">            <span class="keyword">for</span>(<span class="type">int</span> j=k<span class="number">-1</span>;j&gt;i;j--)&#123;</span><br><span class="line">                <span class="keyword">if</span>(logicElement[j]&lt;logicElement[j<span class="number">-1</span>])&#123;      <span class="comment">//冒泡排成字符表序</span></span><br><span class="line">                    string tmp=logicElement[j];</span><br><span class="line">                    logicElement[j]=logicElement[j<span class="number">-1</span>];</span><br><span class="line">                    logicElement[j<span class="number">-1</span>]=tmp;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> ;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">initialLise</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="type">int</span> k=logicElement.<span class="built_in">size</span>();</span><br><span class="line">        <span class="keyword">this</span>-&gt;basicNum=k;</span><br><span class="line">        <span class="keyword">this</span>-&gt;column=<span class="number">1</span>;</span><br><span class="line">        <span class="keyword">if</span>(k==<span class="number">0</span>) <span class="keyword">this</span>-&gt;column=<span class="number">0</span>;</span><br><span class="line">        <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;k;i++)&#123;</span><br><span class="line">                <span class="keyword">this</span>-&gt;column*=<span class="number">2</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        vector&lt;<span class="type">int</span>&gt; v;</span><br><span class="line">        <span class="built_in">initialLise_r</span>(v,k);     <span class="comment">//初始化基本元素的真值表</span></span><br><span class="line">        <span class="built_in">reOrder</span>();</span><br><span class="line">        <span class="keyword">return</span> ;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">initialLise_r</span><span class="params">(vector&lt;<span class="type">int</span>&gt; v,<span class="type">int</span> k)</span></span>&#123;</span><br><span class="line">        vector&lt;<span class="type">int</span>&gt; v1=v;</span><br><span class="line">        <span class="keyword">if</span>(k==<span class="number">1</span>)&#123;</span><br><span class="line">            <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;<span class="number">2</span>;i++)&#123;</span><br><span class="line">                v1.<span class="built_in">push_back</span>(i);</span><br><span class="line">                <span class="keyword">this</span>-&gt;table.<span class="built_in">push_back</span>(v1);</span><br><span class="line">                v1=v;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> ;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;<span class="number">2</span>;i++)&#123;</span><br><span class="line">                v1.<span class="built_in">push_back</span>(i);</span><br><span class="line">                <span class="built_in">initialLise_r</span>(v1,k<span class="number">-1</span>);</span><br><span class="line">                v1=v;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> ;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">printTable</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="type">int</span> k=logicElement.<span class="built_in">size</span>();</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;<span class="keyword">this</span>-&gt;column+<span class="number">1</span>;i++)&#123;</span><br><span class="line">            <span class="keyword">for</span>(<span class="type">int</span> j=<span class="number">0</span>;j&lt;k;j++)&#123;</span><br><span class="line">                <span class="keyword">if</span>(!i)&#123;</span><br><span class="line">                    cout&lt;&lt;logicElement[j]&lt;&lt;<span class="string">&quot; &quot;</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">else</span>&#123;</span><br><span class="line">                    cout&lt;&lt;table[i<span class="number">-1</span>][j]&lt;&lt;<span class="string">&quot; &quot;</span>;</span><br><span class="line">                    <span class="type">int</span> len=logicElement[j].<span class="built_in">size</span>()<span class="number">-1</span>;</span><br><span class="line">                    <span class="keyword">if</span>(len)</span><br><span class="line">                        <span class="keyword">for</span>(<span class="type">int</span> p=<span class="number">0</span>;p&lt;len;p++)&#123;</span><br><span class="line">                            cout&lt;&lt;<span class="string">&quot; &quot;</span>;</span><br><span class="line">                        &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            cout&lt;&lt;endl;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></div>
+
+<p>封装了相应的功能，放弃了<strong>将命题本身封装为一个类</strong>，这样做的好处是直观且易于维护，编写起来效率高，但还不是最好的选择，还能再进行高度封装。</p>
+<p>主程序部分：</p>
+<div class="highlight-container" data-rel="C++"><figure class="iseeu highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br><span class="line">240</span><br><span class="line">241</span><br><span class="line">242</span><br><span class="line">243</span><br><span class="line">244</span><br><span class="line">245</span><br><span class="line">246</span><br><span class="line">247</span><br><span class="line">248</span><br><span class="line">249</span><br><span class="line">250</span><br><span class="line">251</span><br><span class="line">252</span><br><span class="line">253</span><br><span class="line">254</span><br><span class="line">255</span><br><span class="line">256</span><br><span class="line">257</span><br><span class="line">258</span><br><span class="line">259</span><br><span class="line">260</span><br><span class="line">261</span><br><span class="line">262</span><br><span class="line">263</span><br><span class="line">264</span><br><span class="line">265</span><br><span class="line">266</span><br><span class="line">267</span><br><span class="line">268</span><br><span class="line">269</span><br><span class="line">270</span><br><span class="line">271</span><br><span class="line">272</span><br><span class="line">273</span><br><span class="line">274</span><br><span class="line">275</span><br><span class="line">276</span><br><span class="line">277</span><br><span class="line">278</span><br><span class="line">279</span><br><span class="line">280</span><br><span class="line">281</span><br><span class="line">282</span><br><span class="line">283</span><br><span class="line">284</span><br><span class="line">285</span><br><span class="line">286</span><br><span class="line">287</span><br><span class="line">288</span><br><span class="line">289</span><br><span class="line">290</span><br><span class="line">291</span><br><span class="line">292</span><br><span class="line">293</span><br><span class="line">294</span><br><span class="line">295</span><br><span class="line">296</span><br><span class="line">297</span><br><span class="line">298</span><br><span class="line">299</span><br><span class="line">300</span><br><span class="line">301</span><br><span class="line">302</span><br><span class="line">303</span><br><span class="line">304</span><br><span class="line">305</span><br><span class="line">306</span><br><span class="line">307</span><br><span class="line">308</span><br><span class="line">309</span><br><span class="line">310</span><br><span class="line">311</span><br><span class="line">312</span><br><span class="line">313</span><br><span class="line">314</span><br><span class="line">315</span><br><span class="line">316</span><br><span class="line">317</span><br><span class="line">318</span><br><span class="line">319</span><br><span class="line">320</span><br><span class="line">321</span><br><span class="line">322</span><br><span class="line">323</span><br><span class="line">324</span><br><span class="line">325</span><br><span class="line">326</span><br><span class="line">327</span><br><span class="line">328</span><br><span class="line">329</span><br><span class="line">330</span><br><span class="line">331</span><br><span class="line">332</span><br><span class="line">333</span><br><span class="line">334</span><br><span class="line">335</span><br><span class="line">336</span><br><span class="line">337</span><br><span class="line">338</span><br><span class="line">339</span><br><span class="line">340</span><br><span class="line">341</span><br><span class="line">342</span><br><span class="line">343</span><br><span class="line">344</span><br><span class="line">345</span><br><span class="line">346</span><br><span class="line">347</span><br><span class="line">348</span><br><span class="line">349</span><br><span class="line">350</span><br><span class="line">351</span><br><span class="line">352</span><br><span class="line">353</span><br><span class="line">354</span><br><span class="line">355</span><br><span class="line">356</span><br><span class="line">357</span><br><span class="line">358</span><br><span class="line">359</span><br><span class="line">360</span><br><span class="line">361</span><br><span class="line">362</span><br><span class="line">363</span><br><span class="line">364</span><br><span class="line">365</span><br><span class="line">366</span><br><span class="line">367</span><br><span class="line">368</span><br><span class="line">369</span><br><span class="line">370</span><br><span class="line">371</span><br><span class="line">372</span><br><span class="line">373</span><br><span class="line">374</span><br><span class="line">375</span><br><span class="line">376</span><br><span class="line">377</span><br><span class="line">378</span><br><span class="line">379</span><br><span class="line">380</span><br><span class="line">381</span><br><span class="line">382</span><br><span class="line">383</span><br><span class="line">384</span><br><span class="line">385</span><br><span class="line">386</span><br><span class="line">387</span><br><span class="line">388</span><br><span class="line">389</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;string&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stack&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sstream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;vector&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;cmath&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stack&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"><span class="type">char</span> test;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">trueTable</span>&#123;</span><br><span class="line">    vector&lt;string&gt; logicElement;    <span class="comment">//组成元素</span></span><br><span class="line">    vector&lt;vector&lt;<span class="type">int</span>&gt;&gt; table;      <span class="comment">//真值表</span></span><br><span class="line">    <span class="type">int</span> basicNum;</span><br><span class="line">    <span class="type">int</span> column;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">bool</span> <span class="title">cmp</span><span class="params">(trueTable T)</span></span>&#123;</span><br><span class="line">        <span class="type">int</span> k1=<span class="keyword">this</span>-&gt;logicElement.<span class="built_in">size</span>(),k2=T.logicElement.<span class="built_in">size</span>();</span><br><span class="line">        <span class="keyword">if</span>(T.column!=<span class="keyword">this</span>-&gt;column) <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">        <span class="type">int</span> n1=<span class="keyword">this</span>-&gt;basicNum,n2=T.basicNum;</span><br><span class="line">        <span class="keyword">if</span>(n1!=n2) <span class="keyword">return</span> <span class="number">0</span>;  </span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;n1;i++)&#123;  <span class="comment">//基本元素不同</span></span><br><span class="line">            <span class="keyword">if</span>(<span class="keyword">this</span>-&gt;logicElement[i]!=T.logicElement[i])&#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;column;i++)&#123;</span><br><span class="line">            <span class="keyword">if</span>(<span class="keyword">this</span>-&gt;table[i][k1<span class="number">-1</span>]!=T.table[i][k2<span class="number">-1</span>]) <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">cal_not</span><span class="params">(string s)</span></span>&#123;     <span class="comment">//!</span></span><br><span class="line">        logicElement.<span class="built_in">push_back</span>(<span class="string">&quot;!&quot;</span>+s);  <span class="comment">//推入新元素名称</span></span><br><span class="line">        <span class="type">int</span> n=<span class="built_in">search</span>(s);</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;column;i++)&#123;  <span class="comment">//做非运算</span></span><br><span class="line">            table[i].<span class="built_in">push_back</span>(<span class="number">1</span>-table[i][n]);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">And</span><span class="params">(<span class="type">int</span> a,<span class="type">int</span> b)</span></span>&#123;   <span class="comment">//与运算</span></span><br><span class="line">        <span class="keyword">if</span>(a==<span class="number">1</span> &amp;&amp; b==<span class="number">1</span>) <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">cal_and</span><span class="params">(string s1,string s2)</span></span>&#123;  <span class="comment">//&amp;</span></span><br><span class="line">        logicElement.<span class="built_in">push_back</span>(s1+<span class="string">&quot;&amp;&quot;</span>+s2);</span><br><span class="line">        <span class="type">int</span> n1=<span class="built_in">search</span>(s1),n2=<span class="built_in">search</span>(s2);</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;column;i++)&#123;</span><br><span class="line">            table[i].<span class="built_in">push_back</span>(<span class="built_in">And</span>(table[i][n1],table[i][n2]));</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> ;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">Or</span><span class="params">(<span class="type">int</span> a,<span class="type">int</span> b)</span></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> !(a==<span class="number">0</span> &amp;&amp; b==<span class="number">0</span>); </span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">cal_or</span><span class="params">(string s1,string s2)</span></span>&#123;  <span class="comment">//|</span></span><br><span class="line">        logicElement.<span class="built_in">push_back</span>(s1+<span class="string">&quot;|&quot;</span>+s2);</span><br><span class="line">        <span class="type">int</span> n1=<span class="built_in">search</span>(s1),n2=<span class="built_in">search</span>(s2);</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;column;i++)&#123;</span><br><span class="line">            table[i].<span class="built_in">push_back</span>(<span class="built_in">Or</span>(table[i][n1],table[i][n2]));</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> ;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">If</span><span class="params">(<span class="type">int</span> a,<span class="type">int</span> b)</span></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> !(a==<span class="number">0</span> &amp;&amp; b==<span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">cal_if</span><span class="params">(string s1,string s2)</span></span>&#123;   <span class="comment">//-&gt;</span></span><br><span class="line">        logicElement.<span class="built_in">push_back</span>(s1+<span class="string">&quot;-&gt;&quot;</span>+s2);</span><br><span class="line">        <span class="type">int</span> n1=<span class="built_in">search</span>(s1),n2=<span class="built_in">search</span>(s2);</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;column;i++)&#123;</span><br><span class="line">            table[i].<span class="built_in">push_back</span>(<span class="built_in">If</span>(table[i][n1],table[i][n2]));</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> ;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="type">bool</span> <span class="title">add</span><span class="params">(string s)</span></span>&#123; <span class="comment">//添加初始元素</span></span><br><span class="line">        <span class="keyword">if</span>(<span class="number">-1</span>==<span class="built_in">search</span>(s))&#123;</span><br><span class="line">            logicElement.<span class="built_in">push_back</span>(s);</span><br><span class="line">            <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">search</span><span class="params">(string s)</span></span>&#123;   <span class="comment">//按名称查找下标,注意排除外括号</span></span><br><span class="line">        <span class="type">int</span> k=logicElement.<span class="built_in">size</span>();</span><br><span class="line">        <span class="keyword">if</span>(s[<span class="number">0</span>]==<span class="string">&#x27;(&#x27;</span>)&#123;</span><br><span class="line">            <span class="type">bool</span> f=<span class="number">1</span>;</span><br><span class="line">            <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">1</span>;i&lt;k &amp;&amp; f;i++)&#123;</span><br><span class="line">                <span class="keyword">if</span>(s[i]==<span class="string">&#x27;)&#x27;</span> &amp;&amp; i!=k<span class="number">-1</span>) f=<span class="number">0</span>;  <span class="comment">//说明不是外括号</span></span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span>(f)&#123;    <span class="comment">//去掉外括号</span></span><br><span class="line">                s=s.<span class="built_in">substr</span>(<span class="number">1</span>,s.<span class="built_in">size</span>()<span class="number">-2</span>);</span><br><span class="line">            &#125; </span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;k;i++)&#123;</span><br><span class="line">            <span class="keyword">if</span>(s==logicElement[i]) <span class="keyword">return</span> i;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">reOrder</span><span class="params">()</span></span>&#123;     <span class="comment">//基本元素重排序</span></span><br><span class="line">        <span class="type">int</span> k=logicElement.<span class="built_in">size</span>();</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;k<span class="number">-1</span>;i++)&#123;</span><br><span class="line">            <span class="keyword">for</span>(<span class="type">int</span> j=k<span class="number">-1</span>;j&gt;i;j--)&#123;</span><br><span class="line">                <span class="keyword">if</span>(logicElement[j]&lt;logicElement[j<span class="number">-1</span>])&#123;      <span class="comment">//冒泡排成字符表序</span></span><br><span class="line">                    string tmp=logicElement[j];</span><br><span class="line">                    logicElement[j]=logicElement[j<span class="number">-1</span>];</span><br><span class="line">                    logicElement[j<span class="number">-1</span>]=tmp;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> ;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">initialLise</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="type">int</span> k=logicElement.<span class="built_in">size</span>();</span><br><span class="line">        <span class="keyword">this</span>-&gt;basicNum=k;</span><br><span class="line">        <span class="keyword">this</span>-&gt;column=<span class="number">1</span>;</span><br><span class="line">        <span class="keyword">if</span>(k==<span class="number">0</span>) <span class="keyword">this</span>-&gt;column=<span class="number">0</span>;</span><br><span class="line">        <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;k;i++)&#123;</span><br><span class="line">                <span class="keyword">this</span>-&gt;column*=<span class="number">2</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        vector&lt;<span class="type">int</span>&gt; v;</span><br><span class="line">        <span class="built_in">initialLise_r</span>(v,k);     <span class="comment">//初始化基本元素的真值表</span></span><br><span class="line">        <span class="built_in">reOrder</span>();</span><br><span class="line">        <span class="keyword">return</span> ;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">initialLise_r</span><span class="params">(vector&lt;<span class="type">int</span>&gt; v,<span class="type">int</span> k)</span></span>&#123;</span><br><span class="line">        vector&lt;<span class="type">int</span>&gt; v1=v;</span><br><span class="line">        <span class="keyword">if</span>(k==<span class="number">1</span>)&#123;</span><br><span class="line">            <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;<span class="number">2</span>;i++)&#123;</span><br><span class="line">                v1.<span class="built_in">push_back</span>(i);</span><br><span class="line">                <span class="keyword">this</span>-&gt;table.<span class="built_in">push_back</span>(v1);</span><br><span class="line">                v1=v;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> ;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;<span class="number">2</span>;i++)&#123;</span><br><span class="line">                v1.<span class="built_in">push_back</span>(i);</span><br><span class="line">                <span class="built_in">initialLise_r</span>(v1,k<span class="number">-1</span>);</span><br><span class="line">                v1=v;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> ;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">printTable</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="type">int</span> k=logicElement.<span class="built_in">size</span>();</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;<span class="keyword">this</span>-&gt;column+<span class="number">1</span>;i++)&#123;</span><br><span class="line">            <span class="keyword">for</span>(<span class="type">int</span> j=<span class="number">0</span>;j&lt;k;j++)&#123;</span><br><span class="line">                <span class="keyword">if</span>(!i)&#123;</span><br><span class="line">                    cout&lt;&lt;logicElement[j]&lt;&lt;<span class="string">&quot; &quot;</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">else</span>&#123;</span><br><span class="line">                    cout&lt;&lt;table[i<span class="number">-1</span>][j]&lt;&lt;<span class="string">&quot; &quot;</span>;</span><br><span class="line">                    <span class="type">int</span> len=logicElement[j].<span class="built_in">size</span>()<span class="number">-1</span>;</span><br><span class="line">                    <span class="keyword">if</span>(len)</span><br><span class="line">                        <span class="keyword">for</span>(<span class="type">int</span> p=<span class="number">0</span>;p&lt;len;p++)&#123;</span><br><span class="line">                            cout&lt;&lt;<span class="string">&quot; &quot;</span>;</span><br><span class="line">                        &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            cout&lt;&lt;endl;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="type">const</span> <span class="type">int</span> opt[<span class="number">7</span>][<span class="number">7</span>]=&#123;<span class="number">0</span>,<span class="number">2</span>,<span class="number">2</span>,<span class="number">2</span>,<span class="number">2</span>,<span class="number">2</span>,<span class="number">2</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">2</span>,<span class="number">2</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">2</span>,<span class="number">1</span>,<span class="number">2</span>,<span class="number">2</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">2</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">3</span>,<span class="number">2</span>,<span class="number">2</span>,<span class="number">2</span>,<span class="number">2</span>,<span class="number">0</span>,<span class="number">2</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">3</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">2</span>,<span class="number">2</span>,<span class="number">2</span>,<span class="number">2</span>,<span class="number">1</span>,<span class="number">1</span>&#125;;     <span class="comment">//运算符优先级,1是大于，0是等于，2是小于,3是error</span></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">   # &amp; | ! ( ) -&gt;</span></span><br><span class="line"><span class="comment">#  0 2 2 2 2 2 2</span></span><br><span class="line"><span class="comment">&amp;  1 1 1 2 2 1 1</span></span><br><span class="line"><span class="comment">|  1 2 1 2 2 1 1</span></span><br><span class="line"><span class="comment">!  1 1 1 1 2 1 1</span></span><br><span class="line"><span class="comment">(  3 2 2 2 2 0 2</span></span><br><span class="line"><span class="comment">)  1 1 1 1 3 1 1</span></span><br><span class="line"><span class="comment">-&gt; 1 2 2 2 2 1 1</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">searchFor</span><span class="params">(string s)</span></span>&#123;    <span class="comment">//返回符号的数组下标</span></span><br><span class="line">    <span class="keyword">if</span>(s==<span class="string">&quot;#&quot;</span>) <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">if</span>(s==<span class="string">&quot;&amp;&quot;</span>) <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">if</span>(s==<span class="string">&quot;|&quot;</span>) <span class="keyword">return</span> <span class="number">2</span>;</span><br><span class="line">    <span class="keyword">if</span>(s==<span class="string">&quot;!&quot;</span>) <span class="keyword">return</span> <span class="number">3</span>;</span><br><span class="line">    <span class="keyword">if</span>(s==<span class="string">&quot;(&quot;</span>) <span class="keyword">return</span> <span class="number">4</span>;</span><br><span class="line">    <span class="keyword">if</span>(s==<span class="string">&quot;)&quot;</span>) <span class="keyword">return</span> <span class="number">5</span>;</span><br><span class="line">    <span class="keyword">if</span>(s==<span class="string">&quot;-&gt;&quot;</span> || s==<span class="string">&quot;-&quot;</span>) <span class="keyword">return</span> <span class="number">6</span>;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">logicConstruct</span><span class="params">(string s,trueTable &amp;T)</span></span>&#123;</span><br><span class="line">    stack&lt;string&gt; ele;</span><br><span class="line">    stack&lt;string&gt; op;</span><br><span class="line">    op.<span class="built_in">push</span>(<span class="string">&quot;#&quot;</span>);</span><br><span class="line">    s=s+<span class="string">&quot;#&quot;</span>;</span><br><span class="line">    <span class="type">int</span> k=s.<span class="built_in">length</span>();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;k;i++)&#123;   <span class="comment">//初始化</span></span><br><span class="line">        <span class="keyword">switch</span>(s[i])&#123;</span><br><span class="line">            <span class="keyword">case</span> <span class="string">&#x27;#&#x27;</span>:</span><br><span class="line">            <span class="keyword">case</span> <span class="string">&#x27;&amp;&#x27;</span>:</span><br><span class="line">            <span class="keyword">case</span> <span class="string">&#x27;|&#x27;</span>:</span><br><span class="line">            <span class="keyword">case</span> <span class="string">&#x27;!&#x27;</span>:</span><br><span class="line">            <span class="keyword">case</span> <span class="string">&#x27;-&#x27;</span>:</span><br><span class="line">            <span class="keyword">case</span> <span class="string">&#x27;&gt;&#x27;</span>:</span><br><span class="line">            <span class="keyword">case</span> <span class="string">&#x27;(&#x27;</span>:</span><br><span class="line">            <span class="keyword">case</span> <span class="string">&#x27;)&#x27;</span>:</span><br><span class="line">            <span class="keyword">case</span> <span class="string">&#x27; &#x27;</span>:<span class="keyword">break</span>;</span><br><span class="line">            <span class="keyword">default</span>:&#123;   <span class="comment">//添入基本元素</span></span><br><span class="line">                T.<span class="built_in">add</span>(s.<span class="built_in">substr</span>(i,<span class="number">1</span>));</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    T.<span class="built_in">initialLise</span>();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;k;i++)&#123;</span><br><span class="line">        <span class="keyword">if</span>(s[i]==<span class="string">&#x27; &#x27;</span>) <span class="keyword">continue</span>;</span><br><span class="line">    </span><br><span class="line">        string tmp=op.<span class="built_in">top</span>();</span><br><span class="line">        <span class="keyword">if</span>(<span class="built_in">searchFor</span>(s.<span class="built_in">substr</span>(i,<span class="number">1</span>))==<span class="number">-1</span>)&#123;</span><br><span class="line">            ele.<span class="built_in">push</span>(s.<span class="built_in">substr</span>(i,<span class="number">1</span>));</span><br><span class="line">        &#125; <span class="keyword">else</span> </span><br><span class="line">            <span class="keyword">switch</span>(tmp[<span class="number">0</span>])&#123;</span><br><span class="line">                <span class="keyword">case</span> <span class="string">&#x27;#&#x27;</span>:&#123;</span><br><span class="line">                    <span class="keyword">switch</span>(opt[<span class="number">0</span>][<span class="built_in">searchFor</span>(s.<span class="built_in">substr</span>(i,<span class="number">1</span>))])&#123;</span><br><span class="line">                        <span class="keyword">case</span> <span class="number">0</span>:&#123;</span><br><span class="line">                            op.<span class="built_in">pop</span>();</span><br><span class="line">                            <span class="keyword">break</span>;</span><br><span class="line">                        &#125;;</span><br><span class="line">                        <span class="keyword">case</span> <span class="number">2</span>:&#123;</span><br><span class="line">                            <span class="keyword">if</span>(s[i]==<span class="string">&#x27;-&#x27;</span>)&#123;</span><br><span class="line">                                op.<span class="built_in">push</span>(s.<span class="built_in">substr</span>(i,<span class="number">2</span>));</span><br><span class="line">                                i+=<span class="number">1</span>;</span><br><span class="line">                            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                                op.<span class="built_in">push</span>(s.<span class="built_in">substr</span>(i,<span class="number">1</span>));</span><br><span class="line">                            &#125;</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">                &#125;;</span><br><span class="line">                <span class="keyword">case</span> <span class="string">&#x27;&amp;&#x27;</span>:&#123;</span><br><span class="line">                    <span class="keyword">switch</span>(opt[<span class="number">1</span>][<span class="built_in">searchFor</span>(s.<span class="built_in">substr</span>(i,<span class="number">1</span>))])&#123;</span><br><span class="line">                        <span class="keyword">case</span> <span class="number">1</span>:&#123;</span><br><span class="line">                            op.<span class="built_in">pop</span>();</span><br><span class="line">                            string str[<span class="number">2</span>];</span><br><span class="line">                            str[<span class="number">1</span>]=ele.<span class="built_in">top</span>();</span><br><span class="line">                            ele.<span class="built_in">pop</span>();</span><br><span class="line">                            str[<span class="number">0</span>]=ele.<span class="built_in">top</span>();</span><br><span class="line">                            ele.<span class="built_in">pop</span>();</span><br><span class="line">                            T.<span class="built_in">cal_and</span>(str[<span class="number">0</span>],str[<span class="number">1</span>]);</span><br><span class="line">                            ele.<span class="built_in">push</span>(str[<span class="number">0</span>]+<span class="string">&quot;&amp;&quot;</span>+str[<span class="number">1</span>]);</span><br><span class="line">                            i=i<span class="number">-1</span>;</span><br><span class="line">                            <span class="keyword">break</span>;</span><br><span class="line">                        &#125;;</span><br><span class="line">                        <span class="keyword">case</span> <span class="number">2</span>:&#123;</span><br><span class="line">                            <span class="keyword">if</span>(s[i]==<span class="string">&#x27;-&#x27;</span>)&#123;</span><br><span class="line">                                op.<span class="built_in">push</span>(s.<span class="built_in">substr</span>(i,<span class="number">2</span>));</span><br><span class="line">                                i+=<span class="number">1</span>;</span><br><span class="line">                            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                                op.<span class="built_in">push</span>(s.<span class="built_in">substr</span>(i,<span class="number">1</span>));</span><br><span class="line">                            &#125;</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">                &#125;;</span><br><span class="line">                <span class="keyword">case</span> <span class="string">&#x27;|&#x27;</span>:&#123;</span><br><span class="line">                    <span class="keyword">switch</span>(opt[<span class="number">2</span>][<span class="built_in">searchFor</span>(s.<span class="built_in">substr</span>(i,<span class="number">1</span>))])&#123;</span><br><span class="line">                        <span class="keyword">case</span> <span class="number">1</span>:&#123;</span><br><span class="line">                            op.<span class="built_in">pop</span>();</span><br><span class="line">                            string str[<span class="number">2</span>];</span><br><span class="line">                            str[<span class="number">1</span>]=ele.<span class="built_in">top</span>();</span><br><span class="line">                            ele.<span class="built_in">pop</span>();</span><br><span class="line">                            str[<span class="number">0</span>]=ele.<span class="built_in">top</span>();</span><br><span class="line">                            ele.<span class="built_in">pop</span>();</span><br><span class="line">                            T.<span class="built_in">cal_or</span>(str[<span class="number">0</span>],str[<span class="number">1</span>]);</span><br><span class="line">                            ele.<span class="built_in">push</span>(str[<span class="number">0</span>]+<span class="string">&quot;|&quot;</span>+str[<span class="number">1</span>]);</span><br><span class="line">                            i=i<span class="number">-1</span>;</span><br><span class="line">                            <span class="keyword">break</span>;</span><br><span class="line">                        &#125;;</span><br><span class="line">                        <span class="keyword">case</span> <span class="number">2</span>:&#123;</span><br><span class="line">                            <span class="keyword">if</span>(s[i]==<span class="string">&#x27;-&#x27;</span>)&#123;</span><br><span class="line">                                op.<span class="built_in">push</span>(s.<span class="built_in">substr</span>(i,<span class="number">2</span>));</span><br><span class="line">                                i+=<span class="number">1</span>;</span><br><span class="line">                            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                                op.<span class="built_in">push</span>(s.<span class="built_in">substr</span>(i,<span class="number">1</span>));</span><br><span class="line">                            &#125;</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">case</span> <span class="string">&#x27;!&#x27;</span>:&#123;</span><br><span class="line">                    <span class="keyword">switch</span>(opt[<span class="number">3</span>][<span class="built_in">searchFor</span>(s.<span class="built_in">substr</span>(i,<span class="number">1</span>))])&#123;</span><br><span class="line">                        <span class="keyword">case</span> <span class="number">1</span>:&#123;</span><br><span class="line">                            op.<span class="built_in">pop</span>();</span><br><span class="line">                            string str;</span><br><span class="line">                            str=ele.<span class="built_in">top</span>();</span><br><span class="line">                            ele.<span class="built_in">pop</span>();</span><br><span class="line">                            T.<span class="built_in">cal_not</span>(str);</span><br><span class="line">                            ele.<span class="built_in">push</span>(<span class="string">&quot;!&quot;</span>+str);</span><br><span class="line">                            i=i<span class="number">-1</span>;</span><br><span class="line">                            <span class="keyword">break</span>;</span><br><span class="line">                        &#125;;</span><br><span class="line">                        <span class="keyword">case</span> <span class="number">2</span>:&#123;</span><br><span class="line">                            <span class="keyword">if</span>(s[i]==<span class="string">&#x27;-&#x27;</span>)&#123;</span><br><span class="line">                                op.<span class="built_in">push</span>(s.<span class="built_in">substr</span>(i,<span class="number">2</span>));</span><br><span class="line">                                i+=<span class="number">1</span>;</span><br><span class="line">                            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                                op.<span class="built_in">push</span>(s.<span class="built_in">substr</span>(i,<span class="number">1</span>));</span><br><span class="line">                            &#125;</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">case</span> <span class="string">&#x27;-&#x27;</span>:&#123;</span><br><span class="line">                    <span class="keyword">switch</span>(opt[<span class="number">6</span>][<span class="built_in">searchFor</span>(s.<span class="built_in">substr</span>(i,<span class="number">1</span>))])&#123;</span><br><span class="line">                        <span class="keyword">case</span> <span class="number">1</span>:&#123;</span><br><span class="line">                            op.<span class="built_in">pop</span>();</span><br><span class="line">                            string str[<span class="number">2</span>];</span><br><span class="line">                            str[<span class="number">1</span>]=ele.<span class="built_in">top</span>();</span><br><span class="line">                            ele.<span class="built_in">pop</span>();</span><br><span class="line">                            str[<span class="number">0</span>]=ele.<span class="built_in">top</span>();</span><br><span class="line">                            ele.<span class="built_in">pop</span>();</span><br><span class="line">                            T.<span class="built_in">cal_if</span>(str[<span class="number">0</span>],str[<span class="number">1</span>]);</span><br><span class="line">                            ele.<span class="built_in">push</span>(str[<span class="number">0</span>]+<span class="string">&quot;-&gt;&quot;</span>+str[<span class="number">1</span>]);</span><br><span class="line">                            i=i<span class="number">-1</span>;</span><br><span class="line">                            <span class="keyword">break</span>;</span><br><span class="line">                        &#125;;</span><br><span class="line">                        <span class="keyword">case</span> <span class="number">2</span>:&#123;</span><br><span class="line">                            <span class="keyword">if</span>(s[i]==<span class="string">&#x27;-&#x27;</span>)&#123;</span><br><span class="line">                                op.<span class="built_in">push</span>(s.<span class="built_in">substr</span>(i,<span class="number">2</span>));</span><br><span class="line">                                i+=<span class="number">1</span>;</span><br><span class="line">                            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                                op.<span class="built_in">push</span>(s.<span class="built_in">substr</span>(i,<span class="number">1</span>));</span><br><span class="line">                            &#125;</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">case</span> <span class="string">&#x27;(&#x27;</span>:&#123;</span><br><span class="line">                    <span class="keyword">switch</span>(opt[<span class="number">4</span>][<span class="built_in">searchFor</span>(s.<span class="built_in">substr</span>(i,<span class="number">1</span>))])&#123;</span><br><span class="line">                        <span class="keyword">case</span> <span class="number">0</span>:&#123;</span><br><span class="line">                            op.<span class="built_in">pop</span>();</span><br><span class="line">                            string s=ele.<span class="built_in">top</span>();</span><br><span class="line">                            ele.<span class="built_in">pop</span>();</span><br><span class="line">                            ele.<span class="built_in">push</span>(<span class="string">&quot;(&quot;</span>+s+<span class="string">&quot;)&quot;</span>);</span><br><span class="line">                            <span class="keyword">break</span>;</span><br><span class="line">                        &#125;;</span><br><span class="line">                        <span class="keyword">case</span> <span class="number">2</span>:&#123;</span><br><span class="line">                            <span class="keyword">if</span>(s[i]==<span class="string">&#x27;-&#x27;</span>)&#123;</span><br><span class="line">                                op.<span class="built_in">push</span>(s.<span class="built_in">substr</span>(i,<span class="number">2</span>));</span><br><span class="line">                                i+=<span class="number">1</span>;</span><br><span class="line">                            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                                op.<span class="built_in">push</span>(s.<span class="built_in">substr</span>(i,<span class="number">1</span>));</span><br><span class="line">                            &#125;</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">case</span> <span class="string">&#x27;)&#x27;</span>:&#123;</span><br><span class="line"></span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">case</span> <span class="string">&#x27; &#x27;</span>:<span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    trueTable tableP,tableQ;</span><br><span class="line">    string s;</span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;请输入表达式p:&quot;</span>;</span><br><span class="line">    <span class="built_in">getline</span>(cin,s);</span><br><span class="line">    <span class="built_in">logicConstruct</span>(s,tableP);</span><br><span class="line">    tableP.<span class="built_in">printTable</span>();</span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;请输入表达式q:&quot;</span>;</span><br><span class="line">    <span class="built_in">getline</span>(cin,s);</span><br><span class="line">    <span class="built_in">logicConstruct</span>(s,tableQ);</span><br><span class="line">    tableQ.<span class="built_in">printTable</span>();</span><br><span class="line">    <span class="keyword">if</span>(tableP.<span class="built_in">cmp</span>(tableQ)) cout&lt;&lt;<span class="string">&quot;逻辑等价&quot;</span>;</span><br><span class="line">    <span class="keyword">else</span> cout&lt;&lt;<span class="string">&quot;逻辑不等价&quot;</span>;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+
+<h2 id="ADT建立的主要思路"><a href="#ADT建立的主要思路" class="headerlink" title="ADT建立的主要思路"></a>ADT建立的主要思路</h2><p>首先确定将命题与真值分开存储到两个动态数组中，先扫一遍输入的逻辑表达式，将其中的基本命题添加至真值表中并进行排序，方便后续比较。</p>
+<p>再根据基本命题的个数确定真值表的行数 <code>column</code> ，同时利用递归函数代替循环的嵌套初始化真值表，将基本命题的真值表构造出来。利用 <code>initialLise</code> 函数初始化该真值表即可。</p>
+<p>然后编写各种逻辑运算的处理函数，处理完毕后将新的组合命题和真值添加至表中，真值只需要在原有数组的某尾直接添加即可，行数不变，列数随着命题数量的增加而增加。</p>
+<p>表达式的分析运用到了栈处理运算符与中缀表达式的思路，因此最后一个完成计算的命题一定是输入的复合命题，比较真值表时只需要比较最后一列即可。</p>
+<p>处理真值与命题的对应关系运用的是搜索函数，但由于有括号的存在，被存储的命题最外层是没有括号的，这就会导致括号包裹后的命题无法被识别，因此搜索函数需要处理最外层的括号（如果存在的话）。同样运算符的优先级用到了矩阵来表示。</p>
+<p>由于条件运算符 <code>-&gt;</code> 的程度为2，C++不能用 <code>switch</code> 处理字符串，因此处理运算符在矩阵的下标时需要额外关照 <code>-&gt;</code> ，为其设置一个额外的判准 <code>-</code> ，同时处理的如果是条件运算符则用于遍历的指针 <code>i</code> 需要跳跃两格，因此要在末尾额外加一。</p>
+<p><code>switch</code> 的处理逻辑不同会导致程序的编写思路不同，如果用于分类栈顶符号，好处是可以避免二次分类判断需要调用的逻辑运算函数，坏处是要额外判断当前读到的符号是否特殊，如占两位的”-&gt;” 需要指针额外前进一格，空格需要被忽略，是否非运算符而是命题的名称（这里小偷一个懒默认命题的名称长度为1）；若用于分类当前读到的符号 <code>s[i]</code> 则需要二次分类判定调用的逻辑运算函数，比较优先级时由于视角不同设定的判准也会有所改变，如遇到右括号在默认语法合法的情况下（其实是懒得写出错）可以给栈顶命题加上括号（这个很重要，会影响输出命题名称的严谨性），而在前一种情况中是不可能分类出右括号的。</p>
+<p>当遇到括号时右括号始终不推入栈，而是一直比较直到碰到左括号消除为止。</p>
+<p>运算符的优先级矩阵是非严格等级排列的，而只有一个相对等级，这是因为从左向右运算也是一个潜在的优先级判准，以及界限符的一些特殊性质也有所影响。</p>
+<p><code>string[i]</code> 的写法在C++中会返回一个 <code>char</code> 类型的数据，不能直接用于栈，因此需要用到 <code>string.substr(pos,n)</code>  返回从下标”pos”开始的n个字母组成的子串。同时C++中的类编写没有JS那么方便，键值对的键不是字符串而是变量，要想通过字符串检索下标只能通过STL的 <code>map</code> 或者编写分类函数来实现，不是很方便。</p>
+<!-- flag of hidden posts -->
+        </div>
+
+        
+            <div class="post-copyright-info w-full my-8 px-2 sm:px-6 md:px-8">
+                <div class="article-copyright-info-container">
+    <ul>
+        <li><strong>Title:</strong> C++实现逻辑表达式的真值表建立与等价判定</li>
+        <li><strong>Author:</strong> Forestsetyou</li>
+        <li><strong>Created at
+                :</strong> 2022-05-23 23:04:00</li>
+        
+            <li>
+                <strong>Updated at
+                    :</strong> 2023-08-03 18:07:00
+            </li>
+        
+        <li>
+            <strong>Link:</strong> https://forestsetyou.github.io/2022/05/23/Development/Algorithm/C++实现逻辑表达式的真值表建立与等价判定/
+        </li>
+        <li>
+            <strong>
+                License:
+            </strong>
+            
+
+            
+                This work is licensed under <a class="license" target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0">CC BY-NC-SA 4.0</a>.
+            
+        </li>
+    </ul>
+</div>
+
+            </div>
+        
+
+        
+            <ul class="post-tags-box text-lg mt-1.5 flex-wrap justify-center flex md:hidden">
+                
+                    <li class="tag-item mx-0.5">
+                        <a href="/tags/Schoolwork/">#Schoolwork</a>&nbsp;
+                    </li>
+                
+            </ul>
+        
+
+        
+
+        
+
+
+        
+    </div>
+
+    
+        <div class="toc-content-container">
+            <div class="post-toc-wrap">
+    <div class="post-toc">
+        <div class="toc-title">On this page</div>
+        <div class="page-title">C++实现逻辑表达式的真值表建立与等价判定</div>
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%80%BB%E8%BE%91%E8%A1%A8%E8%BE%BE%E5%BC%8F%E7%9C%9F%E5%80%BC%E8%A1%A8%E7%9A%84%E5%BB%BA%E7%AB%8B%E4%B8%8E%E7%AD%89%E4%BB%B7%E5%88%A4%E6%96%AD"><span class="nav-text">逻辑表达式真值表的建立与等价判断</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#ADT%E5%BB%BA%E7%AB%8B%E7%9A%84%E4%B8%BB%E8%A6%81%E6%80%9D%E8%B7%AF"><span class="nav-text">ADT建立的主要思路</span></a></li></ol></li></ol>
+
+    </div>
+</div>
+        </div>
+    
+</div>
+
+
+
+                
+
+            </div>
+
+            
+
+        </div>
+
+        <div class="main-content-footer">
+            <footer class="footer mt-5 py-5 h-auto text-base text-third-text-color relative border-t-2 border-t-border-color">
+    <div class="info-container py-3 text-center">
+        
+        <div class="text-center">
+            &copy;
+            
+              <span>2024</span>
+              -
+            
+            2024&nbsp;&nbsp;<i class="fa-solid fa-heart fa-beat" style="--fa-animation-duration: 0.5s; color: #f54545"></i>&nbsp;&nbsp;<a href="/">Forestsetyou</a>
+            
+        </div>
+        
+        <div class="relative text-center lg:absolute lg:left-[20px] lg:top-1/2 lg:-translate-y-1/2 lg:text-left">
+            <span class="lg:block text-sm">POWERED BY <?xml version="1.0" encoding="utf-8"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg class="relative top-[2px] inline-block align-baseline" version="1.1" id="圖層_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="1rem" height="1rem" viewBox="0 0 512 512" enable-background="new 0 0 512 512" xml:space="preserve"><path fill="#0E83CD" d="M256.4,25.8l-200,115.5L56,371.5l199.6,114.7l200-115.5l0.4-230.2L256.4,25.8z M349,354.6l-18.4,10.7l-18.6-11V275H200v79.6l-18.4,10.7l-18.6-11v-197l18.5-10.6l18.5,10.8V237h112v-79.6l18.5-10.6l18.5,10.8V354.6z"/></svg><a target="_blank" class="text-base" href="https://hexo.io">Hexo</a></span>
+            <span class="text-sm lg:block">THEME&nbsp;<a class="text-base" target="_blank" href="https://github.com/EvanNotFound/hexo-theme-redefine">Redefine v2.6.1</a></span>
+        </div>
+        
+        
+        
+        
+        
+    </div>  
+</footer>
+        </div>
+    </div>
+
+    
+        <div class="post-tools">
+            <div class="post-tools-container">
+    <ul class="article-tools-list">
+        <!-- TOC aside toggle -->
+        
+            <li class="right-bottom-tools page-aside-toggle">
+                <i class="fa-regular fa-outdent"></i>
+            </li>
+        
+
+        <!-- go comment -->
+        
+    </ul>
+</div>
+
+        </div>
+    
+
+    <div class="right-side-tools-container">
+        <div class="side-tools-container">
+    <ul class="hidden-tools-list">
+        <li class="right-bottom-tools tool-font-adjust-plus flex justify-center items-center">
+            <i class="fa-regular fa-magnifying-glass-plus"></i>
+        </li>
+
+        <li class="right-bottom-tools tool-font-adjust-minus flex justify-center items-center">
+            <i class="fa-regular fa-magnifying-glass-minus"></i>
+        </li>
+
+        <li class="right-bottom-tools tool-dark-light-toggle flex justify-center items-center">
+            <i class="fa-regular fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        
+
+        <li class="right-bottom-tools tool-scroll-to-bottom flex justify-center items-center">
+            <i class="fa-regular fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="visible-tools-list">
+        <li class="right-bottom-tools toggle-tools-list flex justify-center items-center">
+            <i class="fa-regular fa-cog fa-spin"></i>
+        </li>
+        
+            <li class="right-bottom-tools tool-scroll-to-top flex justify-center items-center">
+                <i class="arrow-up fas fa-arrow-up"></i>
+                <span class="percent"></span>
+            </li>
+        
+        
+    </ul>
+</div>
+
+    </div>
+
+    <div class="image-viewer-container">
+    <img src="">
+</div>
+
+
+    
+        <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-input-field-pre">
+            <i class="fa-solid fa-keyboard"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="Search..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="popup-btn-close">
+                <i class="fa-solid fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fa-solid fa-spinner fa-spin-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+
+</main>
+
+
+    
+<script src="/js/libs/Swup.min.js"></script>
+
+<script src="/js/libs/SwupSlideTheme.min.js"></script>
+
+<script src="/js/libs/SwupScriptsPlugin.min.js"></script>
+
+<script src="/js/libs/SwupProgressPlugin.min.js"></script>
+
+<script src="/js/libs/SwupScrollPlugin.min.js"></script>
+
+<script src="/js/libs/SwupPreloadPlugin.min.js"></script>
+
+<script>
+    const swup = new Swup({
+        plugins: [
+            new SwupScriptsPlugin({
+                optin: true,
+            }),
+            new SwupProgressPlugin(),
+            new SwupScrollPlugin({
+                offset: 80,
+            }),
+            new SwupSlideTheme({
+                mainElement: ".main-content-body",
+            }),
+            new SwupPreloadPlugin(),
+        ],
+        containers: ["#swup"],
+    });
+</script>
+
+
+
+
+
+
+
+<script src="/js/tools/imageViewer.js" type="module"></script>
+
+<script src="/js/utils.js" type="module"></script>
+
+<script src="/js/main.js" type="module"></script>
+
+<script src="/js/layouts/navbarShrink.js" type="module"></script>
+
+<script src="/js/tools/scrollTopBottom.js" type="module"></script>
+
+<script src="/js/tools/lightDarkSwitch.js" type="module"></script>
+
+<script src="/js/layouts/categoryList.js" type="module"></script>
+
+
+
+    
+<script src="/js/tools/localSearch.js" type="module"></script>
+
+
+
+
+    
+<script src="/js/tools/codeBlock.js" type="module"></script>
+
+
+
+
+    
+<script src="/js/layouts/lazyload.js" type="module"></script>
+
+
+
+
+
+
+  
+<script src="/js/libs/Typed.min.js"></script>
+
+  
+<script src="/js/plugins/typed.js" type="module"></script>
+
+
+
+
+
+
+
+
+
+<div class="post-scripts" data-swup-reload-script>
+    
+        
+<script src="/js/tools/tocToggle.js" type="module"></script>
+
+<script src="/js/layouts/toc.js" type="module"></script>
+
+<script src="/js/plugins/tabs.js" type="module"></script>
+
+    
+</div>
+
+
+</body>
+</html>

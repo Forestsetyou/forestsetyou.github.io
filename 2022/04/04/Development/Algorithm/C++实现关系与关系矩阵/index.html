@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="keywords" content="ctf, solution, note, blog">
+    
+    <meta name="author" content="Forestsetyou">
+    <!-- preconnect -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    
+    <!--- Seo Part-->
+    
+    <link rel="canonical" href="http://forestsetyou.github.io/2022/04/04/development/algorithm/c++实现关系与关系矩阵/"/>
+    <meta name="robots" content="index,follow">
+    <meta name="googlebot" content="index,follow">
+    <meta name="revisit-after" content="1 days">
+    
+        <meta name="description" content="false">
+<meta property="og:type" content="article">
+<meta property="og:title" content="C++实现关系与关系矩阵">
+<meta property="og:url" content="http://forestsetyou.github.io/2022/04/04/Development/Algorithm/C++%E5%AE%9E%E7%8E%B0%E5%85%B3%E7%B3%BB%E4%B8%8E%E5%85%B3%E7%B3%BB%E7%9F%A9%E9%98%B5/index.html">
+<meta property="og:site_name" content="Festu&#39;s Blog">
+<meta property="og:description" content="false">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2022-04-03T19:12:00.000Z">
+<meta property="article:modified_time" content="2023-08-03T10:07:00.000Z">
+<meta property="article:author" content="Forestsetyou">
+<meta property="article:tag" content="Schoolwork">
+<meta name="twitter:card" content="summary">
+    
+    
+    <!--- Icon Part-->
+    <link rel="icon" type="image/png" href="/hide_imgs/smiling_face.png" sizes="192x192">
+    <link rel="apple-touch-icon" sizes="180x180" href="/hide_imgs/smiling_face.png">
+    <meta name="theme-color" content="#A31F34">
+    <link rel="shortcut icon" href="/hide_imgs/smiling_face.png">
+    <!--- Page Info-->
+    
+    <title>
+        
+            C++实现关系与关系矩阵 -
+        
+        Festu&#39;s Blog
+    </title><meta name="robots" content="noindex">
+
+    
+<link rel="stylesheet" href="/fonts/Chillax/chillax.css">
+
+
+    <!--- Inject Part-->
+    
+
+    
+        <style>
+    :root {
+        --preloader-background-color: #fff;
+        --preloader-text-color: #000;
+    }
+
+    @media (prefers-color-scheme: dark) {
+        :root {
+            --preloader-background-color: #202124;
+            --preloader-text-color: #fff;
+        }
+    }
+
+    @media (prefers-color-scheme: light) {
+        :root {
+            --preloader-background-color: #fff;
+            --preloader-text-color: #000;
+        }
+    }
+
+    @media (max-width: 600px) {
+        .ml13 {
+            font-size: 2.6rem !important; /* Adjust this value as needed */
+        }
+    }
+
+    .preloader {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem; /* Tailwind 'gap-4' is 1rem */
+        align-items: center;
+        justify-content: center;
+        position: fixed;
+        padding: 12px;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh; /* 'h-screen' is 100% of the viewport height */
+        background-color: var(--preloader-background-color);
+        z-index: 1100; /* 'z-[1100]' sets the z-index */
+        transition: opacity 0.2s ease-in-out;
+    }
+
+    .ml13 {
+        font-size: 3.2rem;
+        /* text-transform: uppercase; */
+        color: var(--preloader-text-color);
+        letter-spacing: -1px;
+        font-weight: 500;
+        font-family: 'Chillax-Variable', sans-serif;
+        text-align: center;
+    }
+
+    .ml13 .word {
+        display: inline-flex;
+        flex-wrap: wrap;
+        white-space: nowrap;
+    }
+
+    .ml13 .letter {
+        display: inline-block;
+        line-height: 1em;
+    }
+</style>
+
+<div class="preloader">
+    
+<script src="/js/libs/anime.min.js"></script>
+
+    <h1 class="ml13">
+        Festu&#39;s Blog
+    </h1>
+    <script>
+        var textWrapper = document.querySelector('.ml13');
+        // Split text into words
+        var words = textWrapper.textContent.trim().split(' ');
+
+        // Clear the existing content
+        textWrapper.innerHTML = '';
+
+        // Wrap each word and its letters in spans
+        words.forEach(function(word) {
+            var wordSpan = document.createElement('span');
+            wordSpan.classList.add('word');
+            wordSpan.innerHTML = word.replace(/\S/g, "<span class='letter'>$&</span>");
+            textWrapper.appendChild(wordSpan);
+            textWrapper.appendChild(document.createTextNode(' ')); // Add space between words
+        });
+
+
+        anime.timeline({loop: true})
+            .add({
+                targets: '.ml13 .letter',
+                translateY: [100,0],
+                translateZ: 0,
+                opacity: [0,1],
+                easing: "easeOutExpo",
+                duration: 1400,
+                delay: (el, i) => 300 + 30 * i
+            }).add({
+            targets: '.ml13 .letter',
+            translateY: [0,-100],
+            opacity: [1,0],
+            easing: "easeInExpo",
+            duration: 1200,
+            delay: (el, i) => 100 + 30 * i
+        });
+
+        let themeStatus = JSON.parse(localStorage.getItem('REDEFINE-THEME-STATUS'))?.isDark;
+
+        // If the theme status is not found in local storage, check the preferred color scheme
+        if (themeStatus === undefined || themeStatus === null) {
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                themeStatus = 'dark';
+            } else {
+                themeStatus = 'light';
+            }
+        }
+
+        // Now you can use the themeStatus variable in your code
+        if (themeStatus) {
+            document.documentElement.style.setProperty('--preloader-background-color', '#202124');
+            document.documentElement.style.setProperty('--preloader-text-color', '#fff');
+        } else {
+            document.documentElement.style.setProperty('--preloader-background-color', '#fff');
+            document.documentElement.style.setProperty('--preloader-text-color', '#000');
+        }
+
+        window.addEventListener('load', function () {
+            hidePreloaderAfterTimeout(1000); // Hide after 1000 milliseconds once the window has loaded
+        });
+
+        // Backup failsafe: Hide preloader after a maximum of 5000 milliseconds, regardless of the window load event
+        hidePreloaderAfterTimeout(5000);
+
+        function hidePreloaderAfterTimeout(delay) {
+            setTimeout(function () {
+                var preloader = document.querySelector('.preloader');
+                preloader.style.opacity = '0';
+                setTimeout(function () {
+                    preloader.style.display = 'none';
+                }, 200);
+            }, delay);
+        }
+    </script>
+</div>
+    
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+
+    
+        
+<link rel="stylesheet" href="/assets/build/styles.css">
+
+    
+
+    
+<link rel="stylesheet" href="/fonts/fonts.css">
+
+    
+<link rel="stylesheet" href="/fonts/Satoshi/satoshi.css">
+
+    <!--- Font Part-->
+    
+    
+    
+    
+
+
+    <script id="hexo-configurations">
+    window.config = {"hostname":"forestsetyou.github.io","root":"/","language":"en","path":"search.xml"};
+    window.theme = {"articles":{"style":{"font_size":"16px","line_height":1.5,"image_border_radius":"14px","image_alignment":"center","image_caption":false,"link_icon":true,"title_alignment":"left","headings_top_spacing":{"h1":"5rem","h2":"4rem","h3":"2.8rem","h4":"2.5rem","h5":"2.2rem","h6":"2rem"}},"word_count":{"enable":false,"count":true,"min2read":true},"author_label":{"enable":false,"auto":false,"list":[]},"code_block":{"copy":true,"style":"simple","font":{"enable":false,"family":null,"url":null}},"toc":{"enable":true,"max_depth":3,"number":false,"expand":true,"init_open":true},"copyright":{"enable":true,"default":"cc_by_nc_sa"},"lazyload":true,"recommendation":{"enable":false,"title":"推荐阅读","limit":3,"mobile_limit":2,"placeholder":"/images/wallhaven-wqery6-light.webp","skip_dirs":[]}},"colors":{"primary":"#A31F34","secondary":null,"default_mode":"light"},"global":{"fonts":{"chinese":{"enable":false,"family":null,"url":null},"english":{"enable":false,"family":null,"url":null}},"content_max_width":"1000px","sidebar_width":"210px","hover":{"shadow":true,"scale":false},"scroll_progress":{"bar":false,"percentage":true},"website_counter":{"url":"https://cn.vercount.one/js","enable":false,"site_pv":true,"site_uv":true,"post_pv":true},"single_page":true,"preloader":true,"open_graph":true,"google_analytics":{"enable":false,"id":null}},"home_banner":{"enable":true,"style":"fixed","image":{"light":"/hide_imgs/light_banner-5.png","dark":"/hide_imgs/dark_banner.png"},"title":"Festu's Blog","subtitle":{"text":["Life Goes On."],"hitokoto":{"enable":false,"api":"https://v1.hitokoto.cn"},"typing_speed":100,"backing_speed":80,"starting_delay":500,"backing_delay":1500,"loop":false,"smart_backspace":false},"text_color":{"light":"#fff","dark":"#d1d1b6"},"text_style":{"title_size":"2.8rem","subtitle_size":"1.5rem","line_height":1.2},"custom_font":{"enable":false,"family":null,"url":null},"social_links":{"enable":true,"style":"default","links":{"github":"https://github.com/Forestsetyou","instagram":null,"zhihu":null,"twitter":null,"email":null},"qrs":{"weixin":null}}},"plugins":{"feed":{"enable":false},"aplayer":{"enable":false,"type":"fixed","audios":[{"name":null,"artist":null,"url":null,"cover":null,"lrc":null}]},"mermaid":{"enable":false,"version":"9.3.0"}},"version":"2.6.1","navbar":{"auto_hide":false,"color":{"left":"#f78736","right":"#367df7","transparency":35},"width":{"home":"1200px","pages":"1000px"},"links":{"Home":{"path":"/","icon":"fa-regular fa-house"},"Archives":{"path":"/archives","icon":"fa-regular fa-archive"},"categories":{"path":"/categories","icon":"fa-regular fa-folder"},"tags":{"path":"/tags","icon":"fa-regular fa-tags"}},"search":{"enable":true,"preload":true}},"page_templates":{"friends_column":2,"tags_style":"blur"},"home":{"sidebar":{"enable":true,"position":"left","first_item":"menu","announcement":null,"show_on_mobile":true,"links":null},"article_date_format":"auto","categories":{"enable":true,"limit":3},"tags":{"enable":true,"limit":3}},"footerStart":"2024/03/11 03:27:59"};
+    window.lang_ago = {"second":"%s seconds ago","minute":"%s minutes ago","hour":"%s hours ago","day":"%s days ago","week":"%s weeks ago","month":"%s months ago","year":"%s years ago"};
+    window.data = {"masonry":false};
+  </script>
+    
+    <!--- Fontawesome Part-->
+    
+<link rel="stylesheet" href="/fontawesome/fontawesome.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/brands.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/solid.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/regular.min.css">
+
+    
+    
+    
+    
+<meta name="generator" content="Hexo 7.1.1"></head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+
+    
+        <span class="pjax-progress-bar"></span>
+<!--        <span class="swup-progress-icon">-->
+<!--            <i class="fa-solid fa-circle-notch fa-spin"></i>-->
+<!--        </span>-->
+    
+</div>
+
+
+<main class="page-container" id="swup">
+
+    
+
+    <div class="main-content-container">
+
+
+        <div class="main-content-header">
+            <header class="navbar-container px-6 md:px-12">
+
+    <div class="navbar-content ">
+        <div class="left">
+            
+                <a class="logo-image" href="/">
+                    <img src="/hide_imgs/smiling_face.png">
+                </a>
+            
+            <a class="logo-title" href="/">
+                
+                Festu&#39;s Blog
+                
+            </a>
+        </div>
+
+        <div class="right">
+            <!-- PC -->
+            <div class="desktop">
+                <ul class="navbar-list">
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/"
+                                        >
+                                    <i class="fa-regular fa-house fa-fw"></i>
+                                    HOME
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/archives"
+                                        >
+                                    <i class="fa-regular fa-archive fa-fw"></i>
+                                    ARCHIVES
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/categories"
+                                        >
+                                    <i class="fa-regular fa-folder fa-fw"></i>
+                                    CATEGORIES
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/tags"
+                                        >
+                                    <i class="fa-regular fa-tags fa-fw"></i>
+                                    TAGS
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                    
+                        <li class="navbar-item search search-popup-trigger">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </li>
+                    
+                </ul>
+            </div>
+            <!-- Mobile -->
+            <div class="mobile">
+                
+                    <div class="icon-item search search-popup-trigger"><i class="fa-solid fa-magnifying-glass"></i>
+                    </div>
+                
+                <div class="icon-item navbar-bar">
+                    <div class="navbar-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile sheet -->
+    <div class="navbar-drawer h-screen w-full absolute top-0 left-0 bg-background-color flex flex-col justify-between">
+        <ul class="drawer-navbar-list flex flex-col px-4 justify-center items-start">
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/"
+                        >
+                            <span>
+                                HOME
+                            </span>
+                            
+                                <i class="fa-regular fa-house fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/archives"
+                        >
+                            <span>
+                                ARCHIVES
+                            </span>
+                            
+                                <i class="fa-regular fa-archive fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/categories"
+                        >
+                            <span>
+                                CATEGORIES
+                            </span>
+                            
+                                <i class="fa-regular fa-folder fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/tags"
+                        >
+                            <span>
+                                TAGS
+                            </span>
+                            
+                                <i class="fa-regular fa-tags fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+
+            
+            
+        </ul>
+
+        <div class="statistics flex justify-around my-2.5">
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/tags">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">1</div>
+        <div class="label text-third-text-color text-sm">Tags</div>
+    </a>
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/categories">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">10</div>
+        <div class="label text-third-text-color text-sm">Categories</div>
+    </a>
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/archives">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">14</div>
+        <div class="label text-third-text-color text-sm">Posts</div>
+    </a>
+</div>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="main-content-body">
+
+            
+
+            <div class="main-content">
+
+                
+                    <div class="post-page-container flex relative justify-between box-border w-full h-full">
+    <div class="article-content-container">
+
+        <div class="article-title relative w-full">
+            
+                
+                
+                <img src="/hide_imgs/post_thumbnail-2.jpg" alt="C++实现关系与关系矩阵" class="w-full h-60 sm:h-72 md:h-80 object-cover sm:rounded-t-large dark:brightness-75"/>
+                
+                <div class="w-full flex items-center absolute bottom-0 justify-start">
+                    <h1 class="article-title-cover text-center mx-6 my-6 text-second-text-color bg-background-color-transparent px-4 py-3 text-3xl sm:text-4xl md:text-5xl font-bold backdrop-blur-lg rounded-xl border border-border-color ">C++实现关系与关系矩阵</h1>
+                </div>
+            
+            </div>
+
+        
+            <div class="article-header flex flex-row gap-2 items-center px-2 sm:px-6 md:px-8">
+                <div class="avatar w-[46px] h-[46px] flex-shrink-0 rounded-medium border border-border-color p-[1px]">
+                    <img src="/hide_imgs/avatar.png">
+                </div>
+                <div class="info flex flex-col justify-between">
+                    <div class="author flex items-center">
+                        <span class="name text-default-text-color text-lg font-semibold">Forestsetyou</span>
+                        
+                    </div>
+                    <div class="meta-info">
+                        <div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fa-regular fa-pen-fancy"></i>&nbsp;
+        <span class="desktop">2022-04-04 03:12</span>
+        <span class="mobile">2022-04-04 03:12</span>
+        <span class="hover-info">Created</span>
+    </span>
+    
+        <span class="article-date article-meta-item">
+            <i class="fa-regular fa-wrench"></i>&nbsp;
+            <span class="desktop">2023-08-03 18:07</span>
+            <span class="mobile">2023-08-03 18:07</span>
+            <span class="hover-info">Updated</span>
+        </span>
+    
+
+    
+        <span class="article-categories article-meta-item">
+            <i class="fa-regular fa-folders"></i>&nbsp;
+            <ul>
+                
+                
+                    
+                        
+                        <li>
+                            <a href="/categories/Development/">Development</a>&nbsp;
+                        </li>
+                    
+                    
+                
+                    
+                        
+                            <li>></li>
+                        
+                        <li>
+                            <a href="/categories/Development/Algorithm/">Algorithm</a>&nbsp;
+                        </li>
+                    
+                    
+                
+            </ul>
+        </span>
+    
+    
+        <span class="article-tags article-meta-item">
+            <i class="fa-regular fa-tags"></i>&nbsp;
+            <ul>
+                
+                    <li>
+                        <a href="/tags/Schoolwork/">Schoolwork</a>&nbsp;
+                    </li>
+                
+            </ul>
+        </span>
+    
+
+    
+    
+    
+    
+</div>
+
+                    </div>
+                </div>
+            </div>
+        
+
+        
+
+
+        <div class="article-content markdown-body px-2 sm:px-6 md:px-8 pb-8">
+            <h1 id="C-实现关系与关系矩阵"><a href="#C-实现关系与关系矩阵" class="headerlink" title="C++实现关系与关系矩阵"></a>C++实现关系与关系矩阵</h1><p>其实C++有内置的Set模板的…</p>
+<h2 id="ADT"><a href="#ADT" class="headerlink" title="ADT"></a>ADT</h2><h3 id="集合"><a href="#集合" class="headerlink" title="集合"></a>集合</h3><div class="highlight-container" data-rel="C++"><figure class="iseeu highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">class</span> <span class="title class_">Type</span>&gt;    <span class="comment">//集合的元素类型</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Set</span>&#123;  <span class="comment">//集合ADT</span></span><br><span class="line">    <span class="type">int</span> size;   <span class="comment">//基数</span></span><br><span class="line">    vector&lt;Type&gt; p;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">public</span>:</span><br><span class="line">    <span class="built_in">Set</span>():<span class="built_in">size</span>(<span class="number">0</span>)&#123;&#125;</span><br><span class="line">    <span class="built_in">Set</span>(<span class="type">int</span> s):<span class="built_in">size</span>(s)&#123;</span><br><span class="line">        p.<span class="built_in">resize</span>(s);    <span class="comment">//重置大小</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">getSize</span><span class="params">()</span><span class="type">const</span></span>&#123; <span class="keyword">return</span> size; &#125;</span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">push</span><span class="params">(Type e)</span></span>&#123;  <span class="comment">//添加元素</span></span><br><span class="line">        size++;</span><br><span class="line">        p.<span class="built_in">push_back</span>(e);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">set</span><span class="params">(<span class="type">int</span> pos,Type e)</span></span>&#123;   <span class="comment">//设置元素值</span></span><br><span class="line">        p[pos]=e;</span><br><span class="line">    &#125;</span><br><span class="line">    Type <span class="keyword">operator</span>[](<span class="type">int</span> i)&#123; <span class="keyword">return</span> p[i]; &#125;  <span class="comment">//下标读取</span></span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">findElem</span><span class="params">(Type e)</span></span>&#123;   <span class="comment">//返回指定元素的下标</span></span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;size;i++)&#123;</span><br><span class="line">            <span class="keyword">if</span>(p[i]==e) <span class="keyword">return</span> i;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></div>
+
+<h3 id="关系"><a href="#关系" class="headerlink" title="关系"></a>关系</h3><div class="highlight-container" data-rel="C++"><figure class="iseeu highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">class</span> <span class="title class_">Type</span>&gt;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Relation</span>&#123;</span><br><span class="line">    Set&lt;Type&gt; dom;    <span class="comment">//定义域</span></span><br><span class="line">    Set&lt;Type&gt; ran;    <span class="comment">//值域</span></span><br><span class="line">    </span><br><span class="line">    <span class="keyword">public</span>:</span><br><span class="line">    <span class="built_in">Relation</span>():<span class="built_in">dom</span>(),<span class="built_in">ran</span>()&#123;&#125;  <span class="comment">//无规模的初始化</span></span><br><span class="line">    <span class="built_in">Relation</span>(<span class="type">int</span> r_,<span class="type">int</span> c_):<span class="built_in">dom</span>(r_),<span class="built_in">ran</span>(c_)&#123;&#125;   <span class="comment">//有规模的初始化</span></span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">getR</span><span class="params">()</span><span class="type">const</span> </span>&#123; <span class="keyword">return</span> dom.<span class="built_in">getSize</span>(); &#125;     <span class="comment">//返回行，基类私有成员只可调用基类非私有函数获得</span></span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">getC</span><span class="params">()</span><span class="type">const</span> </span>&#123; <span class="keyword">return</span> ran.<span class="built_in">getSize</span>(); &#125;     <span class="comment">//返回列</span></span><br><span class="line">    <span class="function">Set&lt;Type&gt; <span class="title">getDom</span><span class="params">()</span><span class="type">const</span> </span>&#123; <span class="keyword">return</span> dom; &#125;     <span class="comment">//返回定义域</span></span><br><span class="line">    <span class="function">Set&lt;Type&gt; <span class="title">getRan</span><span class="params">()</span><span class="type">const</span> </span>&#123; <span class="keyword">return</span> ran; &#125;     <span class="comment">//返回值域</span></span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">pushDom</span><span class="params">(Type e)</span></span>&#123; dom.<span class="built_in">push</span>(e); &#125;    <span class="comment">//给定义域添加元素</span></span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">pushRan</span><span class="params">(Type e)</span></span>&#123; ran.<span class="built_in">push</span>(e); &#125;        <span class="comment">//给值域添加元素</span></span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">findDom</span><span class="params">(Type e)</span></span>&#123;    <span class="comment">//寻找定义域中元素的位置</span></span><br><span class="line">        <span class="keyword">return</span> dom.<span class="built_in">findElem</span>(e);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">findRan</span><span class="params">(Type e)</span></span>&#123;    <span class="comment">//寻找值域中元素的位置</span></span><br><span class="line">        <span class="keyword">return</span> ran.<span class="built_in">findElem</span>(e);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></div>
+
+<h3 id="关系矩阵"><a href="#关系矩阵" class="headerlink" title="关系矩阵"></a>关系矩阵</h3><div class="highlight-container" data-rel="C++"><figure class="iseeu highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">class</span> <span class="title class_">Type</span>&gt;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">RMatrix</span>:<span class="keyword">public</span> Relation&lt;Type&gt;&#123;</span><br><span class="line">    vector&lt; vector&lt;<span class="type">short</span>&gt; &gt; m;  <span class="comment">//二维矩阵用vector实现,注意不能使用bool类型，它有很高的特殊性</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span>:</span><br><span class="line">    <span class="built_in">RMatrix</span>(<span class="type">int</span> r_,<span class="type">int</span> c_):<span class="built_in">Relation</span>&lt;Type&gt;(r_,c_)&#123;</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;r_;i++)&#123;</span><br><span class="line">            <span class="function">vector&lt;<span class="type">short</span>&gt; <span class="title">v</span><span class="params">(c_,<span class="number">0</span>)</span></span>;</span><br><span class="line">            m.<span class="built_in">push_back</span>(v);     <span class="comment">//推入r_个长度为c_的vector数组构成一个r*c的二维数组</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">RMatrix</span>():<span class="built_in">Relation</span>&lt;Type&gt;()&#123;   <span class="comment">//不输入矩阵大小时</span></span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;MAX_NUM;i++)&#123;</span><br><span class="line">            <span class="function">vector&lt;<span class="type">short</span>&gt; <span class="title">v</span><span class="params">(MAX_NUM,<span class="number">0</span>)</span></span>;</span><br><span class="line">            m.<span class="built_in">push_back</span>(v);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">RMatrix</span>(<span class="type">const</span> RMatrix&lt;Type&gt; &amp;M)&#123;  <span class="comment">//复制构造函数</span></span><br><span class="line">       <span class="comment">// printf(&quot;here!&quot;);</span></span><br><span class="line">        Set&lt;Type&gt; Dom=M.<span class="built_in">getDom</span>(),Ran=M.<span class="built_in">getRan</span>();</span><br><span class="line">        <span class="type">int</span> k1=Dom.<span class="built_in">getSize</span>(),k2=Ran.<span class="built_in">getSize</span>();</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;k1;i++)&#123;</span><br><span class="line">            Relation&lt;Type&gt;::<span class="built_in">pushDom</span>(Dom[i]);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;k2;i++)&#123;</span><br><span class="line">            Relation&lt;Type&gt;::<span class="built_in">pushRan</span>(Ran[i]);</span><br><span class="line">        &#125;</span><br><span class="line">        m.<span class="built_in">resize</span>(k1);</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;k1;i++)&#123;</span><br><span class="line">            m[i].<span class="built_in">resize</span>(<span class="number">0</span>);</span><br><span class="line">            <span class="keyword">for</span>(<span class="type">int</span> j=<span class="number">0</span>;j&lt;k2;j++)&#123;</span><br><span class="line">                m[i].<span class="built_in">push_back</span>(M[i][j]);</span><br><span class="line">              <span class="comment">//  printf(&quot;%d&quot;,m[i][j]);</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">updateSize</span><span class="params">()</span></span>&#123;   <span class="comment">//根据定义域和值域的基数设置矩阵规模</span></span><br><span class="line">        <span class="type">int</span> row=Relation&lt;Type&gt;::<span class="built_in">getDom</span>().<span class="built_in">getSize</span>();  <span class="comment">//在子类中调用基类函数需要制定基类</span></span><br><span class="line">        <span class="type">int</span> col=Relation&lt;Type&gt;::<span class="built_in">getRan</span>().<span class="built_in">getSize</span>();    </span><br><span class="line">     <span class="comment">//   printf(&quot;row=%d,col=%d&quot;,row,col);</span></span><br><span class="line">        m.<span class="built_in">resize</span>(row);</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;row;i++)&#123;</span><br><span class="line">            m[i].<span class="built_in">resize</span>(<span class="number">0</span>);</span><br><span class="line">            <span class="keyword">for</span>(<span class="type">int</span> j=<span class="number">0</span>;j&lt;col;j++)&#123;</span><br><span class="line">                m[i].<span class="built_in">push_back</span>(<span class="built_in">short</span>(<span class="number">0</span>));</span><br><span class="line">             <span class="comment">//   printf(&quot;%d&quot;,m[i][j]);</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    vector&lt;<span class="type">short</span>&gt; <span class="keyword">operator</span>[](<span class="type">int</span> p1)<span class="type">const</span> &#123; <span class="keyword">return</span> m[p1]; &#125;    <span class="comment">//可以直接双括号使用!</span></span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">set</span><span class="params">(<span class="type">int</span> p1,<span class="type">int</span> p2,<span class="type">short</span> e)</span></span>&#123;     <span class="comment">//设置矩阵值</span></span><br><span class="line">        m[p1][p2]=e;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">push</span><span class="params">(vector&lt;<span class="type">short</span>&gt; v)</span></span>&#123;  <span class="comment">//添加矩阵的行</span></span><br><span class="line">        m.<span class="built_in">push_back</span>(v);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">/* 将两个关系矩阵合成，括号内的在右 */</span></span><br><span class="line">    <span class="function">RMatrix&lt;Type&gt; <span class="title">matrixSynthesis</span><span class="params">(<span class="type">const</span> RMatrix&lt;Type&gt; &amp;M1)</span><span class="type">const</span> </span>&#123;</span><br><span class="line">        RMatrix&lt;Type&gt; M;    <span class="comment">//此处的M是临时变量，必定被销毁，无法作为引用被返回	(&lt;!-1)</span></span><br><span class="line">        Set&lt;Type&gt; d=Relation&lt;Type&gt;::<span class="built_in">getDom</span>(),r=M1.<span class="built_in">getRan</span>();	<span class="comment">//矩阵合成的行列关系差点弄错!</span></span><br><span class="line">        <span class="type">int</span> k1=d.<span class="built_in">getSize</span>(),k2=r.<span class="built_in">getSize</span>(),k3=M1.<span class="built_in">getR</span>();</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;k1;i++)&#123;</span><br><span class="line">            M.<span class="built_in">pushDom</span>(d[i]);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;k2;i++)&#123;</span><br><span class="line">            M.<span class="built_in">pushRan</span>(r[i]);</span><br><span class="line">        &#125;</span><br><span class="line">        M.<span class="built_in">updateSize</span>();</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;k1;i++)&#123;</span><br><span class="line">            <span class="keyword">for</span>(<span class="type">int</span> j=<span class="number">0</span>;j&lt;k2;j++)&#123;</span><br><span class="line">                <span class="type">bool</span> f=<span class="number">0</span>;</span><br><span class="line">                <span class="keyword">for</span>(<span class="type">int</span> p=<span class="number">0</span>;p&lt;k3;p++)&#123;</span><br><span class="line">                    <span class="keyword">if</span>(m[i][p] &amp;&amp; M1[p][j]) f=<span class="number">1</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">if</span>(f) M.<span class="built_in">set</span>(i,j,f);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> M;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">randomRelation</span><span class="params">()</span></span>&#123;  <span class="comment">//随机生成一段关系,需要放在updatesize之后</span></span><br><span class="line">      <span class="comment">//  printf(&quot;time=%d\n&quot;,time(0));       //伪随机的实现需要新添加两个文件头</span></span><br><span class="line">        <span class="built_in">srand</span>(<span class="built_in">time</span>(<span class="number">0</span>));     <span class="comment">//初始化随机数</span></span><br><span class="line">        <span class="type">int</span> r=Relation&lt;Type&gt;::<span class="built_in">getR</span>(),c=Relation&lt;Type&gt;::<span class="built_in">getC</span>();</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;r;i++)&#123;</span><br><span class="line">            <span class="keyword">for</span>(<span class="type">int</span> j=<span class="number">0</span>;j&lt;c;j++)&#123;</span><br><span class="line">                m[i][j]=<span class="built_in">rand</span>()%<span class="number">2</span>;   <span class="comment">//生成0或1</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> ;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="type">bool</span> <span class="title">isSelf</span><span class="params">()</span><span class="type">const</span> </span>&#123;  <span class="comment">//自反性检测</span></span><br><span class="line">        <span class="type">int</span> r=Relation&lt;Type&gt;::<span class="built_in">getR</span>();</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;r;i++)&#123;</span><br><span class="line">            <span class="keyword">if</span>(!m[i][i]) <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="type">bool</span> <span class="title">antiSelf</span><span class="params">()</span><span class="type">const</span> </span>&#123;  <span class="comment">//反自反性检测</span></span><br><span class="line">        <span class="type">int</span> r=Relation&lt;Type&gt;::<span class="built_in">getR</span>();</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;r;i++)&#123;</span><br><span class="line">            <span class="keyword">if</span>(m[i][i]) <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="type">bool</span> <span class="title">isSymmetric</span><span class="params">()</span><span class="type">const</span> </span>&#123; <span class="comment">//对称性</span></span><br><span class="line">        <span class="type">int</span> r=Relation&lt;Type&gt;::<span class="built_in">getR</span>();</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;r;i++)&#123;</span><br><span class="line">            <span class="keyword">for</span>(<span class="type">int</span> j=i+<span class="number">1</span>;j&lt;r;j++)&#123;</span><br><span class="line">                <span class="keyword">if</span>(m[i][j]!=m[j][i]) <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="type">bool</span> <span class="title">antiSymmetric</span><span class="params">()</span><span class="type">const</span> </span>&#123; <span class="comment">//反对称性,注意都为0不违反反对称性!</span></span><br><span class="line">        <span class="type">int</span> r=Relation&lt;Type&gt;::<span class="built_in">getR</span>();</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;r;i++)&#123;</span><br><span class="line">            <span class="keyword">for</span>(<span class="type">int</span> j=i+<span class="number">1</span>;j&lt;r;j++)&#123;</span><br><span class="line">                <span class="keyword">if</span>(m[i][j] &amp;&amp; m[i][j]==m[j][i]) <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="type">bool</span> <span class="title">isPassing</span><span class="params">()</span><span class="type">const</span> </span>&#123;   <span class="comment">//传递性</span></span><br><span class="line">        RMatrix&lt;Type&gt; M_=<span class="built_in">matrixSynthesis</span>(*<span class="keyword">this</span>);	<span class="comment">//const函数只能调用const函数 &lt;!-2</span></span><br><span class="line">        <span class="type">int</span> r=Relation&lt;Type&gt;::<span class="built_in">getR</span>();</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;r;i++)&#123;</span><br><span class="line">            <span class="keyword">for</span>(<span class="type">int</span> j=<span class="number">0</span>;j&lt;r;j++)&#123;</span><br><span class="line">                <span class="keyword">if</span>(m[i][j]==<span class="number">0</span> &amp;&amp; M_[i][j]==<span class="number">1</span>) <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></div>
+
+<ul>
+<li><code>&lt;!-1</code> 处若是给函数返回值加上引用会报一个警告，调用函数后集合ADT处会出现一个内存错误，这是因为M此处是临时变量，是一定被销毁的，所以作为引用被返回当然就出了问题，而此处不用引用是完全可行的。如果一定要用引用，也许可以考虑把M定义为静态变量。</li>
+<li><code>&lt;!-2</code> 处曾有过一个报错:”passing ‘const RMatrix&lt;char&gt;‘ as ‘this’ argument discards qualifiers”，原因是当时我只将 <code>isPassing</code> 函数设为const，却没把其中调用的 <code>matrixSynthesis</code> 函数设为const。</li>
+</ul>
+<h2 id="功能实现"><a href="#功能实现" class="headerlink" title="功能实现"></a>功能实现</h2><h3 id="关系的矩阵表示"><a href="#关系的矩阵表示" class="headerlink" title="关系的矩阵表示"></a>关系的矩阵表示</h3><p>根据关系输出矩阵：</p>
+<div class="highlight-container" data-rel="C++"><figure class="iseeu highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">inputRelation</span><span class="params">(RMatrix&lt;<span class="type">char</span>&gt; &amp;M1)</span></span>&#123;    <span class="comment">//输入关系</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;请输入集合A的元素:\n&quot;</span>);</span><br><span class="line">    string str;</span><br><span class="line">   <span class="comment">// cin.get();  //这里不能直接这样写，因为前面有可能是没有换行符的，那你就会少读一个字符，所以只能灵活加</span></span><br><span class="line">    <span class="built_in">getline</span>(cin,str);</span><br><span class="line">    <span class="function">stringstream <span class="title">ss1</span><span class="params">(str)</span></span>;</span><br><span class="line">    <span class="type">char</span> inp;</span><br><span class="line">    <span class="keyword">while</span>(ss1&gt;&gt;inp)&#123;</span><br><span class="line">        M1.<span class="built_in">pushDom</span>(inp);</span><br><span class="line">        M1.<span class="built_in">pushRan</span>(inp);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">/*</span></span><br><span class="line"><span class="comment">    printf(&quot;请输入集合B的元素:\n&quot;);</span></span><br><span class="line"><span class="comment">    getline(cin,str);</span></span><br><span class="line"><span class="comment">    stringstream ss2(str);</span></span><br><span class="line"><span class="comment">    while(ss2&gt;&gt;inp)&#123;</span></span><br><span class="line"><span class="comment">        M1.pushRan(inp);</span></span><br><span class="line"><span class="comment">    &#125;</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">    int k1=M1.getR(),k2=M1.getC();</span></span><br><span class="line"><span class="comment">    Set&lt;char&gt; A=M1.getDom(),B=M1.getRan();</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">    M1.<span class="built_in">updateSize</span>();</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;请输入关系R:(格式为\&#x27;a,b\&#x27;并用空格分割)\n&quot;</span>);</span><br><span class="line">    <span class="built_in">getline</span>(cin,str);</span><br><span class="line">    <span class="function">stringstream <span class="title">ss</span><span class="params">(str)</span></span>;</span><br><span class="line">    <span class="type">int</span> a,b;</span><br><span class="line">    <span class="type">int</span> isA=<span class="number">1</span>;</span><br><span class="line">    <span class="keyword">while</span>(ss&gt;&gt;inp)&#123;     <span class="comment">//使用&quot;&gt;&gt;&quot;流输入字符类型会自动忽略空格...抽象了，printf是读取空格的</span></span><br><span class="line">    <span class="comment">//    printf(&quot;%c&quot;,inp);</span></span><br><span class="line">        <span class="keyword">if</span>(inp==<span class="string">&#x27;,&#x27;</span>)</span><br><span class="line">            isA=<span class="number">0</span>;</span><br><span class="line">        <span class="keyword">else</span>&#123;</span><br><span class="line">            <span class="keyword">if</span>(isA)</span><br><span class="line">                a=M1.<span class="built_in">findDom</span>(inp);</span><br><span class="line">            <span class="keyword">else</span>&#123;</span><br><span class="line">                b=M1.<span class="built_in">findRan</span>(inp);</span><br><span class="line">                isA=<span class="number">1</span>;</span><br><span class="line">                M1.<span class="built_in">set</span>(a,b,<span class="number">1</span>);</span><br><span class="line">            &#125;</span><br><span class="line">                </span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;\n&quot;</span>);</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">outputMatrix</span><span class="params">(<span class="type">const</span> RMatrix&lt;<span class="type">char</span>&gt; &amp;M1)</span></span>&#123;    <span class="comment">//格式化输出矩阵,要定义常量成员函数</span></span><br><span class="line">    <span class="type">int</span> k1=M1.<span class="built_in">getR</span>(),k2=M1.<span class="built_in">getC</span>();</span><br><span class="line">    Set&lt;<span class="type">char</span>&gt; Dom=M1.<span class="built_in">getDom</span>(),Ran=M1.<span class="built_in">getRan</span>();</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;关系矩阵如下：\n&quot;</span>);</span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;=k1;i++)&#123;</span><br><span class="line">     <span class="comment">//   printf(&quot;here?&quot;);    //手动断点</span></span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> j=<span class="number">0</span>;j&lt;=k2;j++)&#123;</span><br><span class="line">            <span class="keyword">if</span>(i==<span class="number">0</span> &amp;&amp; j==<span class="number">0</span>) <span class="built_in">printf</span>(<span class="string">&quot;  &quot;</span>);</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">                <span class="keyword">if</span>(j==<span class="number">0</span>) <span class="built_in">printf</span>(<span class="string">&quot;%c &quot;</span>,Dom[i<span class="number">-1</span>]);</span><br><span class="line">                <span class="keyword">else</span></span><br><span class="line">                    <span class="keyword">if</span>(i==<span class="number">0</span>) <span class="built_in">printf</span>(<span class="string">&quot;%c &quot;</span>,Ran[j<span class="number">-1</span>]);</span><br><span class="line">                    <span class="keyword">else</span>&#123;</span><br><span class="line">                        <span class="built_in">printf</span>(<span class="string">&quot;%d &quot;</span>,M1[i<span class="number">-1</span>][j<span class="number">-1</span>]);</span><br><span class="line">                    &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;\n&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    RMatrix&lt;<span class="type">char</span>&gt; M1;   <span class="comment">//设置集合的元素为字符类型</span></span><br><span class="line">    <span class="built_in">inputRelation</span>(M1);</span><br><span class="line">    <span class="built_in">outputMatrix</span>(M1);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+
+<p>根据矩阵输出关系序偶：</p>
+<div class="highlight-container" data-rel="C++"><figure class="iseeu highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">inputMatrix</span><span class="params">(RMatrix&lt;<span class="type">char</span>&gt; &amp;M1)</span></span>&#123;    <span class="comment">//输入矩阵</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;请输入集合A的元素:\n&quot;</span>);</span><br><span class="line">    string str;</span><br><span class="line">    <span class="built_in">getline</span>(cin,str);</span><br><span class="line">    <span class="function">stringstream <span class="title">ss1</span><span class="params">(str)</span></span>;</span><br><span class="line">    <span class="type">char</span> inp;</span><br><span class="line">    <span class="keyword">while</span>(ss1&gt;&gt;inp)&#123;</span><br><span class="line">        M1.<span class="built_in">pushDom</span>(inp);</span><br><span class="line">        M1.<span class="built_in">pushRan</span>(inp);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">/*</span></span><br><span class="line"><span class="comment">    printf(&quot;请输入集合B的元素:\n&quot;);</span></span><br><span class="line"><span class="comment">    getline(cin,str);</span></span><br><span class="line"><span class="comment">    stringstream ss2(str);</span></span><br><span class="line"><span class="comment">    while(ss2&gt;&gt;inp)&#123;</span></span><br><span class="line"><span class="comment">        M1.pushRan(inp);</span></span><br><span class="line"><span class="comment">    &#125;</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">    int k1=M1.getR(),k2=M1.getC();</span></span><br><span class="line"><span class="comment">    Set&lt;char&gt; A=M1.getDom(),B=M1.getRan();</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">    M1.<span class="built_in">updateSize</span>();</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;请输入关系矩阵:(空格分隔)\n&quot;</span>);</span><br><span class="line">    <span class="type">int</span> k=M1.<span class="built_in">getC</span>(),tmp;</span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;k;i++)&#123;</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> j=<span class="number">0</span>;j&lt;k;j++)&#123;</span><br><span class="line">            <span class="built_in">scanf</span>(<span class="string">&quot;%d&quot;</span>,&amp;tmp);</span><br><span class="line">            <span class="keyword">if</span>(tmp) M1.<span class="built_in">set</span>(i,j,tmp);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;\n&quot;</span>);</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">outputRelation</span><span class="params">(<span class="type">const</span> RMatrix&lt;<span class="type">char</span>&gt; &amp;M1)</span></span>&#123;    <span class="comment">//格式化输出序偶,记得定义常量成员函数</span></span><br><span class="line">    <span class="type">int</span> k1=M1.<span class="built_in">getR</span>(),k2=M1.<span class="built_in">getC</span>();</span><br><span class="line">    Set&lt;<span class="type">char</span>&gt; Dom=M1.<span class="built_in">getDom</span>(),Ran=M1.<span class="built_in">getRan</span>();</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;关系序偶如下：\n&quot;</span>);</span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;k1;i++)&#123;</span><br><span class="line">     <span class="comment">//   printf(&quot;here?&quot;);    //手动断点</span></span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> j=<span class="number">0</span>;j&lt;k2;j++)&#123;</span><br><span class="line">            <span class="keyword">if</span>(M1[i][j])&#123;</span><br><span class="line">              <span class="comment">//  printf(&quot;i=%d,j=%d-&gt;&quot;,i,j);</span></span><br><span class="line">                <span class="built_in">printf</span>(<span class="string">&quot;(%c,%c) &quot;</span>,Dom[i],Ran[j]);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;\n&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    RMatrix&lt;<span class="type">char</span>&gt; M1;   <span class="comment">//设置集合的元素为字符类型</span></span><br><span class="line">    <span class="built_in">inputMatrix</span>(M1);</span><br><span class="line">    <span class="built_in">outputRelation</span>(M1);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+
+<h3 id="关系的性质判断"><a href="#关系的性质判断" class="headerlink" title="关系的性质判断"></a>关系的性质判断</h3><p>I. 输入一个包含n个元素的集合A，要求随机产生3个定义在集合A上的不同的关系R1，R2，R3，其中，R1和R2是自反且对称的，R3是反对称的，并显示R1，R2，R3的关系矩阵表示。</p>
+<p>先上一个尝试用伪随机实现的算法</p>
+<div class="highlight-container" data-rel="C++"><figure class="iseeu highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">inputSet</span><span class="params">(RMatrix&lt;<span class="type">char</span>&gt; &amp;M1)</span></span>&#123;    <span class="comment">//输入集合</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;请输入集合A的元素:\n&quot;</span>);</span><br><span class="line">    string str;</span><br><span class="line">    <span class="built_in">getline</span>(cin,str);</span><br><span class="line">    <span class="function">stringstream <span class="title">ss1</span><span class="params">(str)</span></span>;</span><br><span class="line">    <span class="type">char</span> inp;</span><br><span class="line">    <span class="keyword">while</span>(ss1&gt;&gt;inp)&#123;</span><br><span class="line">        M1.<span class="built_in">pushDom</span>(inp);</span><br><span class="line">        M1.<span class="built_in">pushRan</span>(inp);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">/*</span></span><br><span class="line"><span class="comment">    printf(&quot;请输入集合B的元素:\n&quot;);</span></span><br><span class="line"><span class="comment">    getline(cin,str);</span></span><br><span class="line"><span class="comment">    stringstream ss2(str);</span></span><br><span class="line"><span class="comment">    while(ss2&gt;&gt;inp)&#123;</span></span><br><span class="line"><span class="comment">        M1.pushRan(inp);</span></span><br><span class="line"><span class="comment">    &#125;</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">    int k1=M1.getR(),k2=M1.getC();</span></span><br><span class="line"><span class="comment">    Set&lt;char&gt; A=M1.getDom(),B=M1.getRan();</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">    M1.<span class="built_in">updateSize</span>();</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;\n&quot;</span>);</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">outputMatrix</span><span class="params">(<span class="type">const</span> RMatrix&lt;<span class="type">char</span>&gt; &amp;M1)</span></span>&#123;    <span class="comment">//格式化输出矩阵,要定义常量成员函数</span></span><br><span class="line">    <span class="type">int</span> k1=M1.<span class="built_in">getR</span>(),k2=M1.<span class="built_in">getC</span>();</span><br><span class="line">    Set&lt;<span class="type">char</span>&gt; Dom=M1.<span class="built_in">getDom</span>(),Ran=M1.<span class="built_in">getRan</span>();</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;关系矩阵如下：\n&quot;</span>);</span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;=k1;i++)&#123;</span><br><span class="line">     <span class="comment">//   printf(&quot;here?&quot;);    //手动断点</span></span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> j=<span class="number">0</span>;j&lt;=k2;j++)&#123;</span><br><span class="line">            <span class="keyword">if</span>(i==<span class="number">0</span> &amp;&amp; j==<span class="number">0</span>) <span class="built_in">printf</span>(<span class="string">&quot;  &quot;</span>);</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">                <span class="keyword">if</span>(j==<span class="number">0</span>) <span class="built_in">printf</span>(<span class="string">&quot;%c &quot;</span>,Dom[i<span class="number">-1</span>]);</span><br><span class="line">                <span class="keyword">else</span></span><br><span class="line">                    <span class="keyword">if</span>(i==<span class="number">0</span>) <span class="built_in">printf</span>(<span class="string">&quot;%c &quot;</span>,Ran[j<span class="number">-1</span>]);</span><br><span class="line">                    <span class="keyword">else</span>&#123;</span><br><span class="line">                        <span class="built_in">printf</span>(<span class="string">&quot;%d &quot;</span>,M1[i<span class="number">-1</span>][j<span class="number">-1</span>]);</span><br><span class="line">                    &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;\n&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">getRandom</span><span class="params">(RMatrix&lt;<span class="type">char</span>&gt; &amp;M,<span class="type">bool</span> isSelf,<span class="type">bool</span> isSymmetric,<span class="type">bool</span> antiSymmetric)</span></span>&#123;   <span class="comment">//后三个参数标记函数性质,分别为自反性，对称性，反对称性</span></span><br><span class="line">    <span class="keyword">while</span>(<span class="number">1</span>)&#123;</span><br><span class="line">        M.<span class="built_in">randomRelation</span>();</span><br><span class="line">        <span class="keyword">if</span>(M.<span class="built_in">isSelf</span>()==isSelf &amp;&amp; M.<span class="built_in">isSymmetric</span>()==isSymmetric &amp;&amp; M.<span class="built_in">antiSymmetric</span>()==antiSymmetric) <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    RMatrix&lt;<span class="type">char</span>&gt; M1;   <span class="comment">//设置集合的元素为字符类型</span></span><br><span class="line">    <span class="built_in">inputSet</span>(M1);</span><br><span class="line">    <span class="function">RMatrix&lt;<span class="type">char</span>&gt; <span class="title">M2</span><span class="params">(M1)</span>,<span class="title">M3</span><span class="params">(M1)</span></span>;</span><br><span class="line">    <span class="built_in">getRandom</span>(M1,<span class="number">1</span>,<span class="number">1</span>,<span class="number">0</span>);</span><br><span class="line">    <span class="built_in">getRandom</span>(M2,<span class="number">1</span>,<span class="number">1</span>,<span class="number">0</span>);</span><br><span class="line">    <span class="built_in">getRandom</span>(M3,<span class="number">0</span>,<span class="number">0</span>,<span class="number">1</span>);</span><br><span class="line">    <span class="built_in">outputMatrix</span>(M1);</span><br><span class="line">    <span class="built_in">outputMatrix</span>(M2);</span><br><span class="line">    <span class="built_in">outputMatrix</span>(M3);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+
+<p>构想是挺美好的，但是伪随机的效果让这个方法行不通，因为随机的效率太低，是按秒变化的，除非直接写在成员函数中根据一个seed一直随机，否则程序不可能通畅，但写在成员函数也不好，太特殊。</p>
+<p>以下是后手加工版本：</p>
+<div class="highlight-container" data-rel="C++"><figure class="iseeu highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">inputSet</span><span class="params">(RMatrix&lt;<span class="type">char</span>&gt; &amp;M1)</span></span>&#123;    <span class="comment">//输入集合</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;请输入集合A的元素:\n&quot;</span>);</span><br><span class="line">    string str;</span><br><span class="line">    <span class="built_in">getline</span>(cin,str);</span><br><span class="line">    <span class="function">stringstream <span class="title">ss1</span><span class="params">(str)</span></span>;</span><br><span class="line">    <span class="type">char</span> inp;</span><br><span class="line">    <span class="keyword">while</span>(ss1&gt;&gt;inp)&#123;</span><br><span class="line">        M1.<span class="built_in">pushDom</span>(inp);</span><br><span class="line">        M1.<span class="built_in">pushRan</span>(inp);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">/*</span></span><br><span class="line"><span class="comment">    printf(&quot;请输入集合B的元素:\n&quot;);</span></span><br><span class="line"><span class="comment">    getline(cin,str);</span></span><br><span class="line"><span class="comment">    stringstream ss2(str);</span></span><br><span class="line"><span class="comment">    while(ss2&gt;&gt;inp)&#123;</span></span><br><span class="line"><span class="comment">        M1.pushRan(inp);</span></span><br><span class="line"><span class="comment">    &#125;</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">    int k1=M1.getR(),k2=M1.getC();</span></span><br><span class="line"><span class="comment">    Set&lt;char&gt; A=M1.getDom(),B=M1.getRan();</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">    M1.<span class="built_in">updateSize</span>();</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;\n&quot;</span>);</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">outputMatrix</span><span class="params">(<span class="type">const</span> RMatrix&lt;<span class="type">char</span>&gt; &amp;M1,string str=<span class="string">&quot;&quot;</span>)</span></span>&#123;    <span class="comment">//格式化输出矩阵,要定义常量成员函数</span></span><br><span class="line">    <span class="type">int</span> k1=M1.<span class="built_in">getR</span>(),k2=M1.<span class="built_in">getC</span>();</span><br><span class="line">    Set&lt;<span class="type">char</span>&gt; Dom=M1.<span class="built_in">getDom</span>(),Ran=M1.<span class="built_in">getRan</span>();</span><br><span class="line">    str=str+<span class="string">&quot;关系矩阵如下：\n&quot;</span>;     <span class="comment">//连接矩阵名称</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;%s&quot;</span>,str.<span class="built_in">c_str</span>());</span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;=k1;i++)&#123;</span><br><span class="line">     <span class="comment">//   printf(&quot;here?&quot;);    //手动断点</span></span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> j=<span class="number">0</span>;j&lt;=k2;j++)&#123;</span><br><span class="line">            <span class="keyword">if</span>(i==<span class="number">0</span> &amp;&amp; j==<span class="number">0</span>) <span class="built_in">printf</span>(<span class="string">&quot;  &quot;</span>);</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">                <span class="keyword">if</span>(j==<span class="number">0</span>) <span class="built_in">printf</span>(<span class="string">&quot;%c &quot;</span>,Dom[i<span class="number">-1</span>]);</span><br><span class="line">                <span class="keyword">else</span></span><br><span class="line">                    <span class="keyword">if</span>(i==<span class="number">0</span>) <span class="built_in">printf</span>(<span class="string">&quot;%c &quot;</span>,Ran[j<span class="number">-1</span>]);</span><br><span class="line">                    <span class="keyword">else</span>&#123;</span><br><span class="line">                        <span class="built_in">printf</span>(<span class="string">&quot;%d &quot;</span>,M1[i<span class="number">-1</span>][j<span class="number">-1</span>]);</span><br><span class="line">                    &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;\n&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">getRandom</span><span class="params">(RMatrix&lt;<span class="type">char</span>&gt; &amp;M,<span class="type">bool</span> isSelf,<span class="type">bool</span> isSymmetric,<span class="type">bool</span> antiSymmetric)</span></span>&#123;   <span class="comment">//后三个参数标记函数性质,分别为自反性，对称性，反对称性</span></span><br><span class="line">    M.<span class="built_in">randomRelation</span>();     <span class="comment">//先基础随机化处理</span></span><br><span class="line">    <span class="type">int</span> r=M.<span class="built_in">getC</span>();</span><br><span class="line">    <span class="keyword">if</span>(isSelf)&#123;     <span class="comment">//补足自反性</span></span><br><span class="line">        <span class="keyword">if</span>(!M.<span class="built_in">isSelf</span>())&#123;</span><br><span class="line">            <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;r;i++)&#123;</span><br><span class="line">                M.<span class="built_in">set</span>(i,i,<span class="number">1</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span>(isSymmetric)&#123;        <span class="comment">//补足对称性</span></span><br><span class="line">        <span class="keyword">if</span>(!M.<span class="built_in">isSymmetric</span>())&#123;</span><br><span class="line">            <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;r;i++)&#123;</span><br><span class="line">                <span class="keyword">for</span>(<span class="type">int</span> j=i+<span class="number">1</span>;j&lt;r;j++)&#123;</span><br><span class="line">                    <span class="keyword">if</span>(M[i][j]!=M[j][i]) M.<span class="built_in">set</span>(j,i,M[i][j]);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span>(antiSymmetric)&#123;      <span class="comment">//补足反对称性</span></span><br><span class="line">        <span class="keyword">if</span>(!M.<span class="built_in">antiSymmetric</span>())&#123;</span><br><span class="line">            <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;r;i++)&#123;</span><br><span class="line">                <span class="keyword">for</span>(<span class="type">int</span> j=i+<span class="number">1</span>;j&lt;r;j++)&#123;</span><br><span class="line">                    <span class="keyword">if</span>(M[i][j] &amp;&amp; M[i][j]==M[j][i]) M.<span class="built_in">set</span>(j,i,<span class="number">0</span>);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    RMatrix&lt;<span class="type">char</span>&gt; M1;   <span class="comment">//设置集合的元素为字符类型</span></span><br><span class="line">    <span class="built_in">inputSet</span>(M1);</span><br><span class="line">    <span class="function">RMatrix&lt;<span class="type">char</span>&gt; <span class="title">M2</span><span class="params">(M1)</span>,<span class="title">M3</span><span class="params">(M1)</span></span>;</span><br><span class="line">    <span class="built_in">getRandom</span>(M1,<span class="number">1</span>,<span class="number">1</span>,<span class="number">0</span>);</span><br><span class="line">    <span class="built_in">getRandom</span>(M2,<span class="number">1</span>,<span class="number">1</span>,<span class="number">0</span>);</span><br><span class="line">    <span class="built_in">getRandom</span>(M3,<span class="number">0</span>,<span class="number">0</span>,<span class="number">1</span>);</span><br><span class="line">    <span class="built_in">outputMatrix</span>(M1,<span class="string">&quot;R1&quot;</span>);</span><br><span class="line">    <span class="built_in">outputMatrix</span>(M2,<span class="string">&quot;R2&quot;</span>);</span><br><span class="line">    <span class="built_in">outputMatrix</span>(M3,<span class="string">&quot;R3&quot;</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+
+<p>输出函数优化了一下，可以输出矩阵名称了。</p>
+<p>II.给定一个矩阵判断其性质，并输出结果</p>
+<div class="highlight-container" data-rel="C++"><figure class="iseeu highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">inputMatrix</span><span class="params">(RMatrix&lt;<span class="type">char</span>&gt; &amp;M1)</span></span>&#123;    <span class="comment">//输入矩阵</span></span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;<span class="number">6</span>;i++)&#123;</span><br><span class="line">        M1.<span class="built_in">setDom</span>(i,<span class="string">&#x27; &#x27;</span>);</span><br><span class="line">        M1.<span class="built_in">setRan</span>(i,<span class="string">&#x27; &#x27;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;请输入关系矩阵:(空格分隔)\n&quot;</span>);</span><br><span class="line">    <span class="type">int</span> k=<span class="number">6</span>,tmp;</span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;k;i++)&#123;</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> j=<span class="number">0</span>;j&lt;k;j++)&#123;</span><br><span class="line">            <span class="built_in">scanf</span>(<span class="string">&quot;%d&quot;</span>,&amp;tmp);</span><br><span class="line">            <span class="keyword">if</span>(tmp) M1.<span class="built_in">set</span>(i,j,tmp);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;\n&quot;</span>);</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">judgeMatrix</span><span class="params">(<span class="type">const</span> RMatrix&lt;<span class="type">char</span>&gt; &amp;M1)</span></span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(M1.<span class="built_in">isSelf</span>()) <span class="built_in">printf</span>(<span class="string">&quot;具有自反性\n&quot;</span>);</span><br><span class="line">    <span class="keyword">if</span>(M1.<span class="built_in">isSymmetric</span>()) <span class="built_in">printf</span>(<span class="string">&quot;具有对称性\n&quot;</span>);</span><br><span class="line">    <span class="keyword">if</span>(M1.<span class="built_in">antiSymmetric</span>()) <span class="built_in">printf</span>(<span class="string">&quot;具有反对称性\n&quot;</span>);</span><br><span class="line">    <span class="keyword">if</span>(M1.<span class="built_in">isPassing</span>()) <span class="built_in">printf</span>(<span class="string">&quot;具有传递性\n&quot;</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="function">RMatrix&lt;<span class="type">char</span>&gt; <span class="title">M1</span><span class="params">(<span class="number">6</span>,<span class="number">6</span>)</span></span>;</span><br><span class="line">    <span class="built_in">inputMatrix</span>(M1);</span><br><span class="line">    <span class="built_in">judgeMatrix</span>(M1);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+
+<h3 id="关系的合成"><a href="#关系的合成" class="headerlink" title="关系的合成"></a>关系的合成</h3><p>关系合成运算：</p>
+<div class="highlight-container" data-rel="C++"><figure class="iseeu highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">outputMatrix</span><span class="params">(<span class="type">const</span> RMatrix&lt;<span class="type">char</span>&gt; &amp;M1)</span></span>&#123;    <span class="comment">//格式化输出矩阵,要定义常量成员函数</span></span><br><span class="line">    <span class="type">int</span> k1=M1.<span class="built_in">getR</span>(),k2=M1.<span class="built_in">getC</span>();</span><br><span class="line">    Set&lt;<span class="type">char</span>&gt; Dom=M1.<span class="built_in">getDom</span>(),Ran=M1.<span class="built_in">getRan</span>();</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;关系矩阵如下：\n&quot;</span>);</span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;=k1;i++)&#123;</span><br><span class="line">     <span class="comment">//   printf(&quot;here?&quot;);    //手动断点</span></span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> j=<span class="number">0</span>;j&lt;=k2;j++)&#123;</span><br><span class="line">            <span class="keyword">if</span>(i==<span class="number">0</span> &amp;&amp; j==<span class="number">0</span>) <span class="built_in">printf</span>(<span class="string">&quot;  &quot;</span>);</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">                <span class="keyword">if</span>(j==<span class="number">0</span>) <span class="built_in">printf</span>(<span class="string">&quot;%c &quot;</span>,Dom[i<span class="number">-1</span>]);</span><br><span class="line">                <span class="keyword">else</span></span><br><span class="line">                    <span class="keyword">if</span>(i==<span class="number">0</span>) <span class="built_in">printf</span>(<span class="string">&quot;%c &quot;</span>,Ran[j<span class="number">-1</span>]);</span><br><span class="line">                    <span class="keyword">else</span>&#123;</span><br><span class="line">                        <span class="built_in">printf</span>(<span class="string">&quot;%d &quot;</span>,M1[i<span class="number">-1</span>][j<span class="number">-1</span>]);</span><br><span class="line">                    &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;\n&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">inputRelation</span><span class="params">(RMatrix&lt;<span class="type">char</span>&gt; &amp;M1,RMatrix&lt;<span class="type">char</span>&gt; &amp;M2)</span></span>&#123;    <span class="comment">//输入关系</span></span><br><span class="line"></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;请输入集合A的元素:\n&quot;</span>);</span><br><span class="line">    string str;</span><br><span class="line">    <span class="built_in">getline</span>(cin,str);</span><br><span class="line">    <span class="function">stringstream <span class="title">ss1</span><span class="params">(str)</span></span>;</span><br><span class="line">    <span class="type">char</span> inp;</span><br><span class="line">    <span class="keyword">while</span>(ss1&gt;&gt;inp)&#123;</span><br><span class="line">        M1.<span class="built_in">pushDom</span>(inp);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;请输入集合B的元素:\n&quot;</span>);</span><br><span class="line">    <span class="built_in">getline</span>(cin,str);</span><br><span class="line">    <span class="function">stringstream <span class="title">ss2</span><span class="params">(str)</span></span>;</span><br><span class="line">    <span class="keyword">while</span>(ss2&gt;&gt;inp)&#123;</span><br><span class="line">        M1.<span class="built_in">pushRan</span>(inp);</span><br><span class="line">        M2.<span class="built_in">pushDom</span>(inp);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;请输入集合C的元素:\n&quot;</span>);</span><br><span class="line">    <span class="built_in">getline</span>(cin,str);</span><br><span class="line">    <span class="function">stringstream <span class="title">ss3</span><span class="params">(str)</span></span>;</span><br><span class="line">    <span class="keyword">while</span>(ss3&gt;&gt;inp)&#123;</span><br><span class="line">        M2.<span class="built_in">pushRan</span>(inp);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    M1.<span class="built_in">updateSize</span>();</span><br><span class="line">    M2.<span class="built_in">updateSize</span>();</span><br><span class="line">    </span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;请输入关系R1:(格式为\&#x27;a,b\&#x27;并用空格分割)\n&quot;</span>);</span><br><span class="line">    <span class="built_in">getline</span>(cin,str);</span><br><span class="line">    <span class="function">stringstream <span class="title">ss</span><span class="params">(str)</span></span>;</span><br><span class="line">    <span class="type">int</span> a,b;</span><br><span class="line">    <span class="type">int</span> isA=<span class="number">1</span>;</span><br><span class="line">    <span class="keyword">while</span>(ss&gt;&gt;inp)&#123;     <span class="comment">//使用&quot;&gt;&gt;&quot;流输入字符类型会自动忽略空格...抽象了，printf是读取空格的</span></span><br><span class="line">    <span class="comment">//    printf(&quot;%c&quot;,inp);</span></span><br><span class="line">        <span class="keyword">if</span>(inp==<span class="string">&#x27;,&#x27;</span>)</span><br><span class="line">            isA=<span class="number">0</span>;</span><br><span class="line">        <span class="keyword">else</span>&#123;</span><br><span class="line">            <span class="keyword">if</span>(isA)</span><br><span class="line">                a=M1.<span class="built_in">findDom</span>(inp);</span><br><span class="line">            <span class="keyword">else</span>&#123;</span><br><span class="line">                b=M1.<span class="built_in">findRan</span>(inp);</span><br><span class="line">                isA=<span class="number">1</span>;</span><br><span class="line">                M1.<span class="built_in">set</span>(a,b,<span class="number">1</span>);</span><br><span class="line">            &#125;</span><br><span class="line">                </span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;R1&quot;</span>);</span><br><span class="line">    <span class="built_in">outputMatrix</span>(M1);</span><br><span class="line"></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;请输入关系R2:(格式为\&#x27;a,b\&#x27;并用空格分割)\n&quot;</span>);</span><br><span class="line">    <span class="built_in">getline</span>(cin,str);</span><br><span class="line">    <span class="function">stringstream <span class="title">ss_</span><span class="params">(str)</span></span>;</span><br><span class="line">    isA=<span class="number">1</span>;</span><br><span class="line">    <span class="keyword">while</span>(ss_&gt;&gt;inp)&#123;     <span class="comment">//使用&quot;&gt;&gt;&quot;流输入字符类型会自动忽略空格...抽象了，printf是读取空格的</span></span><br><span class="line">    <span class="comment">//    printf(&quot;%c&quot;,inp);</span></span><br><span class="line">        <span class="keyword">if</span>(inp==<span class="string">&#x27;,&#x27;</span>)</span><br><span class="line">            isA=<span class="number">0</span>;</span><br><span class="line">        <span class="keyword">else</span>&#123;</span><br><span class="line">            <span class="keyword">if</span>(isA)</span><br><span class="line">                a=M2.<span class="built_in">findDom</span>(inp);</span><br><span class="line">            <span class="keyword">else</span>&#123;</span><br><span class="line">                b=M2.<span class="built_in">findRan</span>(inp);</span><br><span class="line">                isA=<span class="number">1</span>;</span><br><span class="line">                M2.<span class="built_in">set</span>(a,b,<span class="number">1</span>);</span><br><span class="line">            &#125;</span><br><span class="line">                </span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;R2&quot;</span>);</span><br><span class="line">    <span class="built_in">outputMatrix</span>(M2);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;\n&quot;</span>);</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function">RMatrix&lt;<span class="type">char</span>&gt; <span class="title">multiplyMatrix</span><span class="params">(<span class="type">const</span> RMatrix&lt;<span class="type">char</span>&gt; &amp;M1,<span class="type">const</span> RMatrix&lt;<span class="type">char</span>&gt; &amp;M2)</span></span>&#123;  <span class="comment">//默认集合元素就是char类型~</span></span><br><span class="line">    RMatrix&lt;<span class="type">char</span>&gt; M;</span><br><span class="line">        Set&lt;<span class="type">char</span>&gt; d=M1.<span class="built_in">getDom</span>(),r=M2.<span class="built_in">getRan</span>();</span><br><span class="line">        <span class="type">int</span> k1=d.<span class="built_in">getSize</span>(),k2=r.<span class="built_in">getSize</span>(),k3=M2.<span class="built_in">getR</span>();</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;k1;i++)&#123;</span><br><span class="line">            M.<span class="built_in">pushDom</span>(d[i]);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;k2;i++)&#123;</span><br><span class="line">            M.<span class="built_in">pushRan</span>(r[i]);</span><br><span class="line">        &#125;</span><br><span class="line">        M.<span class="built_in">updateSize</span>();</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;k1;i++)&#123;</span><br><span class="line">            <span class="keyword">for</span>(<span class="type">int</span> j=<span class="number">0</span>;j&lt;k2;j++)&#123;</span><br><span class="line">                <span class="type">int</span> f=<span class="number">0</span>;</span><br><span class="line">                <span class="keyword">for</span>(<span class="type">int</span> p=<span class="number">0</span>;p&lt;k3;p++)&#123;</span><br><span class="line">                    <span class="keyword">if</span>(M1[i][p] &amp;&amp; M2[p][j]) f+=<span class="number">1</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">if</span>(f) M.<span class="built_in">set</span>(i,j,f);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> M;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">outputRelation</span><span class="params">(<span class="type">const</span> RMatrix&lt;<span class="type">char</span>&gt; &amp;M1)</span></span>&#123;    <span class="comment">//格式化输出序偶,记得定义常量成员函数</span></span><br><span class="line">    <span class="type">int</span> k1=M1.<span class="built_in">getR</span>(),k2=M1.<span class="built_in">getC</span>();</span><br><span class="line">    Set&lt;<span class="type">char</span>&gt; Dom=M1.<span class="built_in">getDom</span>(),Ran=M1.<span class="built_in">getRan</span>();</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;关系序偶如下：\n&quot;</span>);</span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;k1;i++)&#123;</span><br><span class="line">     <span class="comment">//   printf(&quot;here?&quot;);    //手动断点</span></span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> j=<span class="number">0</span>;j&lt;k2;j++)&#123;</span><br><span class="line">            <span class="keyword">if</span>(M1[i][j])&#123;</span><br><span class="line">              <span class="comment">//  printf(&quot;i=%d,j=%d-&gt;&quot;,i,j);</span></span><br><span class="line">                <span class="built_in">printf</span>(<span class="string">&quot;(%c,%c) &quot;</span>,Dom[i],Ran[j]);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;\n&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">getCalculate</span><span class="params">(<span class="type">const</span> RMatrix&lt;<span class="type">char</span>&gt; &amp;M1,<span class="type">const</span> RMatrix&lt;<span class="type">char</span>&gt; &amp;M2)</span></span>&#123;</span><br><span class="line">    RMatrix&lt;<span class="type">char</span>&gt; M=M1.<span class="built_in">matrixSynthesis</span>(M2);     <span class="comment">//布尔积运算</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;布尔积运算所得的&quot;</span>);</span><br><span class="line">    <span class="built_in">outputMatrix</span>(M);    <span class="comment">//输出布尔积结果</span></span><br><span class="line">    RMatrix&lt;<span class="type">char</span>&gt; M_=<span class="built_in">multiplyMatrix</span>(M1,M2);     <span class="comment">//矩阵乘积运算</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;矩阵乘积所得的&quot;</span>);</span><br><span class="line">    <span class="built_in">outputMatrix</span>(M_);</span><br><span class="line">    <span class="built_in">outputRelation</span>(M);</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    RMatrix&lt;<span class="type">char</span>&gt; M1,M2;   <span class="comment">//设置集合的元素为字符类型</span></span><br><span class="line">    <span class="built_in">inputRelation</span>(M1,M2);</span><br><span class="line">    <span class="built_in">getCalculate</span>(M1,M2);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+
+<p>缝合并优化了几个函数。</p>
+<p>关系的n次运算:</p>
+<div class="highlight-container" data-rel="C++"><figure class="iseeu highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">outputMatrix</span><span class="params">(<span class="type">const</span> RMatrix&lt;<span class="type">char</span>&gt; &amp;M1)</span></span>&#123;    <span class="comment">//格式化输出矩阵,要定义常量成员函数</span></span><br><span class="line">    <span class="type">int</span> k1=M1.<span class="built_in">getR</span>(),k2=M1.<span class="built_in">getC</span>();</span><br><span class="line">    Set&lt;<span class="type">char</span>&gt; Dom=M1.<span class="built_in">getDom</span>(),Ran=M1.<span class="built_in">getRan</span>();</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;关系矩阵如下：\n&quot;</span>);</span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;=k1;i++)&#123;</span><br><span class="line">     <span class="comment">//   printf(&quot;here?&quot;);    //手动断点</span></span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> j=<span class="number">0</span>;j&lt;=k2;j++)&#123;</span><br><span class="line">            <span class="keyword">if</span>(i==<span class="number">0</span> &amp;&amp; j==<span class="number">0</span>) <span class="built_in">printf</span>(<span class="string">&quot;  &quot;</span>);</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">                <span class="keyword">if</span>(j==<span class="number">0</span>) <span class="built_in">printf</span>(<span class="string">&quot;%c &quot;</span>,Dom[i<span class="number">-1</span>]);</span><br><span class="line">                <span class="keyword">else</span></span><br><span class="line">                    <span class="keyword">if</span>(i==<span class="number">0</span>) <span class="built_in">printf</span>(<span class="string">&quot;%c &quot;</span>,Ran[j<span class="number">-1</span>]);</span><br><span class="line">                    <span class="keyword">else</span>&#123;</span><br><span class="line">                        <span class="built_in">printf</span>(<span class="string">&quot;%d &quot;</span>,M1[i<span class="number">-1</span>][j<span class="number">-1</span>]);</span><br><span class="line">                    &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;\n&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">inputRelation</span><span class="params">(RMatrix&lt;<span class="type">char</span>&gt; &amp;M1)</span></span>&#123;    <span class="comment">//输入关系</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;请输入集合A的元素:\n&quot;</span>);</span><br><span class="line">    string str;</span><br><span class="line">   <span class="comment">// cin.get();  //这里不能直接这样写，因为前面有可能是没有换行符的，那你就会少读一个字符，所以只能灵活加</span></span><br><span class="line">    <span class="built_in">getline</span>(cin,str);</span><br><span class="line">    <span class="function">stringstream <span class="title">ss1</span><span class="params">(str)</span></span>;</span><br><span class="line">    <span class="type">char</span> inp;</span><br><span class="line">    <span class="keyword">while</span>(ss1&gt;&gt;inp)&#123;</span><br><span class="line">        M1.<span class="built_in">pushDom</span>(inp);</span><br><span class="line">        M1.<span class="built_in">pushRan</span>(inp);</span><br><span class="line">    &#125;</span><br><span class="line">    M1.<span class="built_in">updateSize</span>();</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;请输入关系R:(格式为\&#x27;a,b\&#x27;并用空格分割)\n&quot;</span>);</span><br><span class="line">    <span class="built_in">getline</span>(cin,str);</span><br><span class="line">    <span class="function">stringstream <span class="title">ss</span><span class="params">(str)</span></span>;</span><br><span class="line">    <span class="type">int</span> a,b;</span><br><span class="line">    <span class="type">int</span> isA=<span class="number">1</span>;</span><br><span class="line">    <span class="keyword">while</span>(ss&gt;&gt;inp)&#123;     <span class="comment">//使用&quot;&gt;&gt;&quot;流输入字符类型会自动忽略空格...抽象了，printf是读取空格的</span></span><br><span class="line">    <span class="comment">//    printf(&quot;%c&quot;,inp);</span></span><br><span class="line">        <span class="keyword">if</span>(inp==<span class="string">&#x27;,&#x27;</span>)</span><br><span class="line">            isA=<span class="number">0</span>;</span><br><span class="line">        <span class="keyword">else</span>&#123;</span><br><span class="line">            <span class="keyword">if</span>(isA)</span><br><span class="line">                a=M1.<span class="built_in">findDom</span>(inp);</span><br><span class="line">            <span class="keyword">else</span>&#123;</span><br><span class="line">                b=M1.<span class="built_in">findRan</span>(inp);</span><br><span class="line">                isA=<span class="number">1</span>;</span><br><span class="line">                M1.<span class="built_in">set</span>(a,b,<span class="number">1</span>);</span><br><span class="line">            &#125;</span><br><span class="line">                </span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;已知R&quot;</span>);</span><br><span class="line">    <span class="built_in">outputMatrix</span>(M1);</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">nR</span><span class="params">(<span class="type">const</span> RMatrix&lt;<span class="type">char</span>&gt; &amp;M1,<span class="type">int</span> n)</span></span>&#123;</span><br><span class="line">    <span class="function">RMatrix&lt;<span class="type">char</span>&gt; <span class="title">M</span><span class="params">(M1)</span></span>;</span><br><span class="line">    <span class="type">int</span> n_=n;</span><br><span class="line">    n--;</span><br><span class="line">    <span class="keyword">while</span>(n--)</span><br><span class="line">        M=M.<span class="built_in">matrixSynthesis</span>(M);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;得出 R^%d&quot;</span>,n_);</span><br><span class="line">    <span class="built_in">outputMatrix</span>(M);</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    RMatrix&lt;<span class="type">char</span>&gt; M1;   <span class="comment">//设置集合的元素为字符类型</span></span><br><span class="line">    <span class="built_in">inputRelation</span>(M1);</span><br><span class="line">    <span class="type">int</span> n;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;请输入n:&quot;</span>);</span><br><span class="line">    <span class="built_in">scanf</span>(<span class="string">&quot;%d&quot;</span>,&amp;n);</span><br><span class="line">    <span class="built_in">nR</span>(M1,n);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+
+
+
+<p><strong>参考:[</strong></p>
+<p><a class="link"   target="_blank" rel="noopener" href="https://www.zhihu.com/question/23367698" >知乎-vector&lt;bool&gt; <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+<p><a class="link"   target="_blank" rel="noopener" href="https://blog.csdn.net/onion23/article/details/118558454" >新世纪debug战士-C++实现伪随机 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+<p><strong>]</strong></p>
+<!-- flag of hidden posts -->
+        </div>
+
+        
+            <div class="post-copyright-info w-full my-8 px-2 sm:px-6 md:px-8">
+                <div class="article-copyright-info-container">
+    <ul>
+        <li><strong>Title:</strong> C++实现关系与关系矩阵</li>
+        <li><strong>Author:</strong> Forestsetyou</li>
+        <li><strong>Created at
+                :</strong> 2022-04-04 03:12:00</li>
+        
+            <li>
+                <strong>Updated at
+                    :</strong> 2023-08-03 18:07:00
+            </li>
+        
+        <li>
+            <strong>Link:</strong> https://forestsetyou.github.io/2022/04/04/Development/Algorithm/C++实现关系与关系矩阵/
+        </li>
+        <li>
+            <strong>
+                License:
+            </strong>
+            
+
+            
+                This work is licensed under <a class="license" target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0">CC BY-NC-SA 4.0</a>.
+            
+        </li>
+    </ul>
+</div>
+
+            </div>
+        
+
+        
+            <ul class="post-tags-box text-lg mt-1.5 flex-wrap justify-center flex md:hidden">
+                
+                    <li class="tag-item mx-0.5">
+                        <a href="/tags/Schoolwork/">#Schoolwork</a>&nbsp;
+                    </li>
+                
+            </ul>
+        
+
+        
+
+        
+
+
+        
+    </div>
+
+    
+        <div class="toc-content-container">
+            <div class="post-toc-wrap">
+    <div class="post-toc">
+        <div class="toc-title">On this page</div>
+        <div class="page-title">C++实现关系与关系矩阵</div>
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#C-%E5%AE%9E%E7%8E%B0%E5%85%B3%E7%B3%BB%E4%B8%8E%E5%85%B3%E7%B3%BB%E7%9F%A9%E9%98%B5"><span class="nav-text">C++实现关系与关系矩阵</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#ADT"><span class="nav-text">ADT</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%9B%86%E5%90%88"><span class="nav-text">集合</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B3%E7%B3%BB"><span class="nav-text">关系</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B3%E7%B3%BB%E7%9F%A9%E9%98%B5"><span class="nav-text">关系矩阵</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8A%9F%E8%83%BD%E5%AE%9E%E7%8E%B0"><span class="nav-text">功能实现</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B3%E7%B3%BB%E7%9A%84%E7%9F%A9%E9%98%B5%E8%A1%A8%E7%A4%BA"><span class="nav-text">关系的矩阵表示</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B3%E7%B3%BB%E7%9A%84%E6%80%A7%E8%B4%A8%E5%88%A4%E6%96%AD"><span class="nav-text">关系的性质判断</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B3%E7%B3%BB%E7%9A%84%E5%90%88%E6%88%90"><span class="nav-text">关系的合成</span></a></li></ol></li></ol></li></ol>
+
+    </div>
+</div>
+        </div>
+    
+</div>
+
+
+
+                
+
+            </div>
+
+            
+
+        </div>
+
+        <div class="main-content-footer">
+            <footer class="footer mt-5 py-5 h-auto text-base text-third-text-color relative border-t-2 border-t-border-color">
+    <div class="info-container py-3 text-center">
+        
+        <div class="text-center">
+            &copy;
+            
+              <span>2024</span>
+              -
+            
+            2024&nbsp;&nbsp;<i class="fa-solid fa-heart fa-beat" style="--fa-animation-duration: 0.5s; color: #f54545"></i>&nbsp;&nbsp;<a href="/">Forestsetyou</a>
+            
+        </div>
+        
+        <div class="relative text-center lg:absolute lg:left-[20px] lg:top-1/2 lg:-translate-y-1/2 lg:text-left">
+            <span class="lg:block text-sm">POWERED BY <?xml version="1.0" encoding="utf-8"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg class="relative top-[2px] inline-block align-baseline" version="1.1" id="圖層_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="1rem" height="1rem" viewBox="0 0 512 512" enable-background="new 0 0 512 512" xml:space="preserve"><path fill="#0E83CD" d="M256.4,25.8l-200,115.5L56,371.5l199.6,114.7l200-115.5l0.4-230.2L256.4,25.8z M349,354.6l-18.4,10.7l-18.6-11V275H200v79.6l-18.4,10.7l-18.6-11v-197l18.5-10.6l18.5,10.8V237h112v-79.6l18.5-10.6l18.5,10.8V354.6z"/></svg><a target="_blank" class="text-base" href="https://hexo.io">Hexo</a></span>
+            <span class="text-sm lg:block">THEME&nbsp;<a class="text-base" target="_blank" href="https://github.com/EvanNotFound/hexo-theme-redefine">Redefine v2.6.1</a></span>
+        </div>
+        
+        
+        
+        
+        
+    </div>  
+</footer>
+        </div>
+    </div>
+
+    
+        <div class="post-tools">
+            <div class="post-tools-container">
+    <ul class="article-tools-list">
+        <!-- TOC aside toggle -->
+        
+            <li class="right-bottom-tools page-aside-toggle">
+                <i class="fa-regular fa-outdent"></i>
+            </li>
+        
+
+        <!-- go comment -->
+        
+    </ul>
+</div>
+
+        </div>
+    
+
+    <div class="right-side-tools-container">
+        <div class="side-tools-container">
+    <ul class="hidden-tools-list">
+        <li class="right-bottom-tools tool-font-adjust-plus flex justify-center items-center">
+            <i class="fa-regular fa-magnifying-glass-plus"></i>
+        </li>
+
+        <li class="right-bottom-tools tool-font-adjust-minus flex justify-center items-center">
+            <i class="fa-regular fa-magnifying-glass-minus"></i>
+        </li>
+
+        <li class="right-bottom-tools tool-dark-light-toggle flex justify-center items-center">
+            <i class="fa-regular fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        
+
+        <li class="right-bottom-tools tool-scroll-to-bottom flex justify-center items-center">
+            <i class="fa-regular fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="visible-tools-list">
+        <li class="right-bottom-tools toggle-tools-list flex justify-center items-center">
+            <i class="fa-regular fa-cog fa-spin"></i>
+        </li>
+        
+            <li class="right-bottom-tools tool-scroll-to-top flex justify-center items-center">
+                <i class="arrow-up fas fa-arrow-up"></i>
+                <span class="percent"></span>
+            </li>
+        
+        
+    </ul>
+</div>
+
+    </div>
+
+    <div class="image-viewer-container">
+    <img src="">
+</div>
+
+
+    
+        <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-input-field-pre">
+            <i class="fa-solid fa-keyboard"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="Search..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="popup-btn-close">
+                <i class="fa-solid fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fa-solid fa-spinner fa-spin-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+
+</main>
+
+
+    
+<script src="/js/libs/Swup.min.js"></script>
+
+<script src="/js/libs/SwupSlideTheme.min.js"></script>
+
+<script src="/js/libs/SwupScriptsPlugin.min.js"></script>
+
+<script src="/js/libs/SwupProgressPlugin.min.js"></script>
+
+<script src="/js/libs/SwupScrollPlugin.min.js"></script>
+
+<script src="/js/libs/SwupPreloadPlugin.min.js"></script>
+
+<script>
+    const swup = new Swup({
+        plugins: [
+            new SwupScriptsPlugin({
+                optin: true,
+            }),
+            new SwupProgressPlugin(),
+            new SwupScrollPlugin({
+                offset: 80,
+            }),
+            new SwupSlideTheme({
+                mainElement: ".main-content-body",
+            }),
+            new SwupPreloadPlugin(),
+        ],
+        containers: ["#swup"],
+    });
+</script>
+
+
+
+
+
+
+
+<script src="/js/tools/imageViewer.js" type="module"></script>
+
+<script src="/js/utils.js" type="module"></script>
+
+<script src="/js/main.js" type="module"></script>
+
+<script src="/js/layouts/navbarShrink.js" type="module"></script>
+
+<script src="/js/tools/scrollTopBottom.js" type="module"></script>
+
+<script src="/js/tools/lightDarkSwitch.js" type="module"></script>
+
+<script src="/js/layouts/categoryList.js" type="module"></script>
+
+
+
+    
+<script src="/js/tools/localSearch.js" type="module"></script>
+
+
+
+
+    
+<script src="/js/tools/codeBlock.js" type="module"></script>
+
+
+
+
+    
+<script src="/js/layouts/lazyload.js" type="module"></script>
+
+
+
+
+
+
+  
+<script src="/js/libs/Typed.min.js"></script>
+
+  
+<script src="/js/plugins/typed.js" type="module"></script>
+
+
+
+
+
+
+
+
+
+<div class="post-scripts" data-swup-reload-script>
+    
+        
+<script src="/js/tools/tocToggle.js" type="module"></script>
+
+<script src="/js/layouts/toc.js" type="module"></script>
+
+<script src="/js/plugins/tabs.js" type="module"></script>
+
+    
+</div>
+
+
+</body>
+</html>

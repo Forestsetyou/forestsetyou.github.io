@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="keywords" content="ctf, solution, note, blog">
+    
+    <meta name="author" content="Forestsetyou">
+    <!-- preconnect -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    
+    <!--- Seo Part-->
+    
+    <link rel="canonical" href="http://forestsetyou.github.io/2022/04/30/development/project/pokemonmaster!/"/>
+    <meta name="robots" content="index,follow">
+    <meta name="googlebot" content="index,follow">
+    <meta name="revisit-after" content="1 days">
+    
+        <meta name="description" content="false">
+<meta property="og:type" content="article">
+<meta property="og:title" content="PokemonMaster!">
+<meta property="og:url" content="http://forestsetyou.github.io/2022/04/30/Development/Project/PokemonMaster!/index.html">
+<meta property="og:site_name" content="Festu&#39;s Blog">
+<meta property="og:description" content="false">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="e:\PictureBed\image-20220429061520372.png">
+<meta property="article:published_time" content="2022-04-30T07:34:00.000Z">
+<meta property="article:modified_time" content="2023-08-03T09:45:00.000Z">
+<meta property="article:author" content="Forestsetyou">
+<meta property="article:tag" content="ctf, solution, note, blog">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="e:\PictureBed\image-20220429061520372.png">
+    
+    
+    <!--- Icon Part-->
+    <link rel="icon" type="image/png" href="/hide_imgs/smiling_face.png" sizes="192x192">
+    <link rel="apple-touch-icon" sizes="180x180" href="/hide_imgs/smiling_face.png">
+    <meta name="theme-color" content="#A31F34">
+    <link rel="shortcut icon" href="/hide_imgs/smiling_face.png">
+    <!--- Page Info-->
+    
+    <title>
+        
+            PokemonMaster! -
+        
+        Festu&#39;s Blog
+    </title><meta name="robots" content="noindex">
+
+    
+<link rel="stylesheet" href="/fonts/Chillax/chillax.css">
+
+
+    <!--- Inject Part-->
+    
+
+    
+        <style>
+    :root {
+        --preloader-background-color: #fff;
+        --preloader-text-color: #000;
+    }
+
+    @media (prefers-color-scheme: dark) {
+        :root {
+            --preloader-background-color: #202124;
+            --preloader-text-color: #fff;
+        }
+    }
+
+    @media (prefers-color-scheme: light) {
+        :root {
+            --preloader-background-color: #fff;
+            --preloader-text-color: #000;
+        }
+    }
+
+    @media (max-width: 600px) {
+        .ml13 {
+            font-size: 2.6rem !important; /* Adjust this value as needed */
+        }
+    }
+
+    .preloader {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem; /* Tailwind 'gap-4' is 1rem */
+        align-items: center;
+        justify-content: center;
+        position: fixed;
+        padding: 12px;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh; /* 'h-screen' is 100% of the viewport height */
+        background-color: var(--preloader-background-color);
+        z-index: 1100; /* 'z-[1100]' sets the z-index */
+        transition: opacity 0.2s ease-in-out;
+    }
+
+    .ml13 {
+        font-size: 3.2rem;
+        /* text-transform: uppercase; */
+        color: var(--preloader-text-color);
+        letter-spacing: -1px;
+        font-weight: 500;
+        font-family: 'Chillax-Variable', sans-serif;
+        text-align: center;
+    }
+
+    .ml13 .word {
+        display: inline-flex;
+        flex-wrap: wrap;
+        white-space: nowrap;
+    }
+
+    .ml13 .letter {
+        display: inline-block;
+        line-height: 1em;
+    }
+</style>
+
+<div class="preloader">
+    
+<script src="/js/libs/anime.min.js"></script>
+
+    <h1 class="ml13">
+        Festu&#39;s Blog
+    </h1>
+    <script>
+        var textWrapper = document.querySelector('.ml13');
+        // Split text into words
+        var words = textWrapper.textContent.trim().split(' ');
+
+        // Clear the existing content
+        textWrapper.innerHTML = '';
+
+        // Wrap each word and its letters in spans
+        words.forEach(function(word) {
+            var wordSpan = document.createElement('span');
+            wordSpan.classList.add('word');
+            wordSpan.innerHTML = word.replace(/\S/g, "<span class='letter'>$&</span>");
+            textWrapper.appendChild(wordSpan);
+            textWrapper.appendChild(document.createTextNode(' ')); // Add space between words
+        });
+
+
+        anime.timeline({loop: true})
+            .add({
+                targets: '.ml13 .letter',
+                translateY: [100,0],
+                translateZ: 0,
+                opacity: [0,1],
+                easing: "easeOutExpo",
+                duration: 1400,
+                delay: (el, i) => 300 + 30 * i
+            }).add({
+            targets: '.ml13 .letter',
+            translateY: [0,-100],
+            opacity: [1,0],
+            easing: "easeInExpo",
+            duration: 1200,
+            delay: (el, i) => 100 + 30 * i
+        });
+
+        let themeStatus = JSON.parse(localStorage.getItem('REDEFINE-THEME-STATUS'))?.isDark;
+
+        // If the theme status is not found in local storage, check the preferred color scheme
+        if (themeStatus === undefined || themeStatus === null) {
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                themeStatus = 'dark';
+            } else {
+                themeStatus = 'light';
+            }
+        }
+
+        // Now you can use the themeStatus variable in your code
+        if (themeStatus) {
+            document.documentElement.style.setProperty('--preloader-background-color', '#202124');
+            document.documentElement.style.setProperty('--preloader-text-color', '#fff');
+        } else {
+            document.documentElement.style.setProperty('--preloader-background-color', '#fff');
+            document.documentElement.style.setProperty('--preloader-text-color', '#000');
+        }
+
+        window.addEventListener('load', function () {
+            hidePreloaderAfterTimeout(1000); // Hide after 1000 milliseconds once the window has loaded
+        });
+
+        // Backup failsafe: Hide preloader after a maximum of 5000 milliseconds, regardless of the window load event
+        hidePreloaderAfterTimeout(5000);
+
+        function hidePreloaderAfterTimeout(delay) {
+            setTimeout(function () {
+                var preloader = document.querySelector('.preloader');
+                preloader.style.opacity = '0';
+                setTimeout(function () {
+                    preloader.style.display = 'none';
+                }, 200);
+            }, delay);
+        }
+    </script>
+</div>
+    
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+
+    
+        
+<link rel="stylesheet" href="/assets/build/styles.css">
+
+    
+
+    
+<link rel="stylesheet" href="/fonts/fonts.css">
+
+    
+<link rel="stylesheet" href="/fonts/Satoshi/satoshi.css">
+
+    <!--- Font Part-->
+    
+    
+    
+    
+
+
+    <script id="hexo-configurations">
+    window.config = {"hostname":"forestsetyou.github.io","root":"/","language":"en","path":"search.xml"};
+    window.theme = {"articles":{"style":{"font_size":"16px","line_height":1.5,"image_border_radius":"14px","image_alignment":"center","image_caption":false,"link_icon":true,"title_alignment":"left","headings_top_spacing":{"h1":"5rem","h2":"4rem","h3":"2.8rem","h4":"2.5rem","h5":"2.2rem","h6":"2rem"}},"word_count":{"enable":false,"count":true,"min2read":true},"author_label":{"enable":false,"auto":false,"list":[]},"code_block":{"copy":true,"style":"simple","font":{"enable":false,"family":null,"url":null}},"toc":{"enable":true,"max_depth":3,"number":false,"expand":true,"init_open":true},"copyright":{"enable":true,"default":"cc_by_nc_sa"},"lazyload":true,"recommendation":{"enable":false,"title":"推荐阅读","limit":3,"mobile_limit":2,"placeholder":"/images/wallhaven-wqery6-light.webp","skip_dirs":[]}},"colors":{"primary":"#A31F34","secondary":null,"default_mode":"light"},"global":{"fonts":{"chinese":{"enable":false,"family":null,"url":null},"english":{"enable":false,"family":null,"url":null}},"content_max_width":"1000px","sidebar_width":"210px","hover":{"shadow":true,"scale":false},"scroll_progress":{"bar":false,"percentage":true},"website_counter":{"url":"https://cn.vercount.one/js","enable":false,"site_pv":true,"site_uv":true,"post_pv":true},"single_page":true,"preloader":true,"open_graph":true,"google_analytics":{"enable":false,"id":null}},"home_banner":{"enable":true,"style":"fixed","image":{"light":"/hide_imgs/light_banner-5.png","dark":"/hide_imgs/dark_banner.png"},"title":"Festu's Blog","subtitle":{"text":["Life Goes On."],"hitokoto":{"enable":false,"api":"https://v1.hitokoto.cn"},"typing_speed":100,"backing_speed":80,"starting_delay":500,"backing_delay":1500,"loop":false,"smart_backspace":false},"text_color":{"light":"#fff","dark":"#d1d1b6"},"text_style":{"title_size":"2.8rem","subtitle_size":"1.5rem","line_height":1.2},"custom_font":{"enable":false,"family":null,"url":null},"social_links":{"enable":true,"style":"default","links":{"github":"https://github.com/Forestsetyou","instagram":null,"zhihu":null,"twitter":null,"email":null},"qrs":{"weixin":null}}},"plugins":{"feed":{"enable":false},"aplayer":{"enable":false,"type":"fixed","audios":[{"name":null,"artist":null,"url":null,"cover":null,"lrc":null}]},"mermaid":{"enable":false,"version":"9.3.0"}},"version":"2.6.1","navbar":{"auto_hide":false,"color":{"left":"#f78736","right":"#367df7","transparency":35},"width":{"home":"1200px","pages":"1000px"},"links":{"Home":{"path":"/","icon":"fa-regular fa-house"},"Archives":{"path":"/archives","icon":"fa-regular fa-archive"},"categories":{"path":"/categories","icon":"fa-regular fa-folder"},"tags":{"path":"/tags","icon":"fa-regular fa-tags"}},"search":{"enable":true,"preload":true}},"page_templates":{"friends_column":2,"tags_style":"blur"},"home":{"sidebar":{"enable":true,"position":"left","first_item":"menu","announcement":null,"show_on_mobile":true,"links":null},"article_date_format":"auto","categories":{"enable":true,"limit":3},"tags":{"enable":true,"limit":3}},"footerStart":"2024/03/11 03:27:59"};
+    window.lang_ago = {"second":"%s seconds ago","minute":"%s minutes ago","hour":"%s hours ago","day":"%s days ago","week":"%s weeks ago","month":"%s months ago","year":"%s years ago"};
+    window.data = {"masonry":false};
+  </script>
+    
+    <!--- Fontawesome Part-->
+    
+<link rel="stylesheet" href="/fontawesome/fontawesome.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/brands.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/solid.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/regular.min.css">
+
+    
+    
+    
+    
+<meta name="generator" content="Hexo 7.1.1"></head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+
+    
+        <span class="pjax-progress-bar"></span>
+<!--        <span class="swup-progress-icon">-->
+<!--            <i class="fa-solid fa-circle-notch fa-spin"></i>-->
+<!--        </span>-->
+    
+</div>
+
+
+<main class="page-container" id="swup">
+
+    
+
+    <div class="main-content-container">
+
+
+        <div class="main-content-header">
+            <header class="navbar-container px-6 md:px-12">
+
+    <div class="navbar-content ">
+        <div class="left">
+            
+                <a class="logo-image" href="/">
+                    <img src="/hide_imgs/smiling_face.png">
+                </a>
+            
+            <a class="logo-title" href="/">
+                
+                Festu&#39;s Blog
+                
+            </a>
+        </div>
+
+        <div class="right">
+            <!-- PC -->
+            <div class="desktop">
+                <ul class="navbar-list">
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/"
+                                        >
+                                    <i class="fa-regular fa-house fa-fw"></i>
+                                    HOME
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/archives"
+                                        >
+                                    <i class="fa-regular fa-archive fa-fw"></i>
+                                    ARCHIVES
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/categories"
+                                        >
+                                    <i class="fa-regular fa-folder fa-fw"></i>
+                                    CATEGORIES
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/tags"
+                                        >
+                                    <i class="fa-regular fa-tags fa-fw"></i>
+                                    TAGS
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                    
+                        <li class="navbar-item search search-popup-trigger">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </li>
+                    
+                </ul>
+            </div>
+            <!-- Mobile -->
+            <div class="mobile">
+                
+                    <div class="icon-item search search-popup-trigger"><i class="fa-solid fa-magnifying-glass"></i>
+                    </div>
+                
+                <div class="icon-item navbar-bar">
+                    <div class="navbar-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile sheet -->
+    <div class="navbar-drawer h-screen w-full absolute top-0 left-0 bg-background-color flex flex-col justify-between">
+        <ul class="drawer-navbar-list flex flex-col px-4 justify-center items-start">
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/"
+                        >
+                            <span>
+                                HOME
+                            </span>
+                            
+                                <i class="fa-regular fa-house fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/archives"
+                        >
+                            <span>
+                                ARCHIVES
+                            </span>
+                            
+                                <i class="fa-regular fa-archive fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/categories"
+                        >
+                            <span>
+                                CATEGORIES
+                            </span>
+                            
+                                <i class="fa-regular fa-folder fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/tags"
+                        >
+                            <span>
+                                TAGS
+                            </span>
+                            
+                                <i class="fa-regular fa-tags fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+
+            
+            
+        </ul>
+
+        <div class="statistics flex justify-around my-2.5">
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/tags">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">1</div>
+        <div class="label text-third-text-color text-sm">Tags</div>
+    </a>
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/categories">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">10</div>
+        <div class="label text-third-text-color text-sm">Categories</div>
+    </a>
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/archives">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">14</div>
+        <div class="label text-third-text-color text-sm">Posts</div>
+    </a>
+</div>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="main-content-body">
+
+            
+
+            <div class="main-content">
+
+                
+                    <div class="post-page-container flex relative justify-between box-border w-full h-full">
+    <div class="article-content-container">
+
+        <div class="article-title relative w-full">
+            
+                
+                
+                <img src="/hide_imgs/post_thumbnail-1.png" alt="PokemonMaster!" class="w-full h-60 sm:h-72 md:h-80 object-cover sm:rounded-t-large dark:brightness-75"/>
+                
+                <div class="w-full flex items-center absolute bottom-0 justify-start">
+                    <h1 class="article-title-cover text-center mx-6 my-6 text-second-text-color bg-background-color-transparent px-4 py-3 text-3xl sm:text-4xl md:text-5xl font-bold backdrop-blur-lg rounded-xl border border-border-color ">PokemonMaster!</h1>
+                </div>
+            
+            </div>
+
+        
+            <div class="article-header flex flex-row gap-2 items-center px-2 sm:px-6 md:px-8">
+                <div class="avatar w-[46px] h-[46px] flex-shrink-0 rounded-medium border border-border-color p-[1px]">
+                    <img src="/hide_imgs/avatar.png">
+                </div>
+                <div class="info flex flex-col justify-between">
+                    <div class="author flex items-center">
+                        <span class="name text-default-text-color text-lg font-semibold">Forestsetyou</span>
+                        
+                    </div>
+                    <div class="meta-info">
+                        <div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fa-regular fa-pen-fancy"></i>&nbsp;
+        <span class="desktop">2022-04-30 15:34</span>
+        <span class="mobile">2022-04-30 15:34</span>
+        <span class="hover-info">Created</span>
+    </span>
+    
+        <span class="article-date article-meta-item">
+            <i class="fa-regular fa-wrench"></i>&nbsp;
+            <span class="desktop">2023-08-03 17:45</span>
+            <span class="mobile">2023-08-03 17:45</span>
+            <span class="hover-info">Updated</span>
+        </span>
+    
+
+    
+        <span class="article-categories article-meta-item">
+            <i class="fa-regular fa-folders"></i>&nbsp;
+            <ul>
+                
+                
+                    
+                        
+                        <li>
+                            <a href="/categories/Development/">Development</a>&nbsp;
+                        </li>
+                    
+                    
+                
+                    
+                        
+                            <li>></li>
+                        
+                        <li>
+                            <a href="/categories/Development/Project/">Project</a>&nbsp;
+                        </li>
+                    
+                    
+                
+            </ul>
+        </span>
+    
+    
+
+    
+    
+    
+    
+</div>
+
+                    </div>
+                </div>
+            </div>
+        
+
+        
+
+
+        <div class="article-content markdown-body px-2 sm:px-6 md:px-8 pb-8">
+            <h1 id="PokemonMaster"><a href="#PokemonMaster" class="headerlink" title="PokemonMaster."></a>PokemonMaster.</h1><p>留存一下制作该项目的思路和笔记</p>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">喷火龙努力值分配:&#123;</span><br><span class="line">	At:252,</span><br><span class="line">	HP:252,</span><br><span class="line">	Sp:6,</span><br><span class="line">&#125;</span><br><span class="line">甲贺忍蛙努力值分配:&#123;</span><br><span class="line">	Sa:252,</span><br><span class="line">	</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+
+
+
+<p><strong>加密通话</strong></p>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">接下来是来自小智的朋友们的提示哦~</span><br><span class="line">小刚说：要想成为宝可梦大师，首先得了解宝可梦的知识哦（https://wiki.52poke.com/wiki/%E4%B8%BB%E9%A1%B5）</span><br><span class="line">小霞说：阿岚的喷火龙有着储水特性，水系技能会让他回血呢，正因如此，他根本不屑于躲水系技能</span><br><span class="line">小胜说：小智的忍蛙有很特殊的特性‘牵绊变身’，别的精灵可以窃取该特性，但是拥有该特性的精灵不能窃取别的特性</span><br><span class="line">小光说：阿岚的喷火龙会一个很特殊的技能叫模仿，会使用对方精灵上回合用过的技能</span><br><span class="line">小茂说：小智的忍蛙很强，他能学会好多技能</span><br><span class="line">爱丽丝说：小智的忍蛙因为有‘牵绊变身’的特性，可以使用飞水手里剑的升级版——黄金手里剑！它必定先手攻击，如果命中的话必定击中三次！</span><br><span class="line">瑟蕾娜说：小智的忍蛙拥有独一无二的必杀技&#x27;挣扎&#x27;</span><br></pre></td></tr></table></figure></div>
+
+
+
+<h2 id="More-Problems"><a href="#More-Problems" class="headerlink" title="More Problems"></a>More Problems</h2><h3 id="JS"><a href="#JS" class="headerlink" title="JS"></a>JS</h3><p>对象：普通的 <code>obj</code> 的键会被自动视为字符串，当某参数 <code>typeof(num)===number</code> 时，给对象左</p>
+<p>注释：<code>//</code> </p>
+<p>模块：<code>export</code> 标记可导出元素，<code>import</code> 导入模块元素，如下导入了’.&#x2F;sayHi.js’中的函数 <code>sayHi()</code> :</p>
+<div class="highlight-container" data-rel="Js"><figure class="iseeu highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123;sayHi&#125; <span class="keyword">from</span> <span class="string">&#x27;./sayHi.js&#x27;</span>;</span><br></pre></td></tr></table></figure></div>
+
+<p>非函数的导入只会被解析一次，创建出一个所有模块共享的变量。</p>
+<p>函数传参是复制行为，因此除了对象其他参数的函数内部的修改不影响外部。对象的复制行为实质上是对原对象的引用，复制内容是引用地址，因此会起到传入地址的效果。复制行为例如：<code>obj1=obj2</code></p>
+<p><strong>参考：[</strong></p>
+<p><a class="link"   target="_blank" rel="noopener" href="https://zh.javascript.info/" >现代 JavaScript 教程 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+<p><strong>]</strong></p>
+<h3 id="HTML-CSS"><a href="#HTML-CSS" class="headerlink" title="HTML &amp; CSS"></a>HTML &amp; CSS</h3><p><code>&lt;font color=&quot;red&quot;&gt; &lt;/font&gt;</code> 字体标签可设置字体颜色，也可以直接设置 <code>color:red</code> 来设置文本颜色</p>
+<p>CSS中后出现的规则优先级更高</p>
+<p><code>border-radius</code> 为元素添加圆角边框</p>
+<p>如果一个box的设置为 <code>display:inline</code> ，那么它的width与height将不再起作用；使用 <code>display:inline-block</code> 可以使得box既不换行，又可设置宽高</p>
+<p><code>&lt;span&gt;</code> 内联元素，不换行；<code>&lt;p&gt;</code> 块级元素，换行，有时会忽略空格；当标签被竖置，则不精确读取内容（忽略空白字符），但可以精确读取引号中的内容（自然就无法读取引号本身）</p>
+<p><code>&lt;input&gt;</code> 必须为空标签，当 <code>type=&#39;submit&#39;</code> 时设置 <code>value=&#39;提交&#39;</code> 来创建一个内容为”提交”的上传按钮</p>
+<p><code>&lt;form&gt;</code> 的提交必定会刷新页面，因此要靠 <code>onChange</code> 来实现</p>
+<h4 id="内联盒子并排塌陷问题"><a href="#内联盒子并排塌陷问题" class="headerlink" title="内联盒子并排塌陷问题"></a>内联盒子并排塌陷问题</h4><p>设置合适的 <code>vertical-align</code> 可以改变内联盒子的参考基线，所有盒子都沿着参考基线向下生长，若想从上方对齐，则设置 <code>vertical-align:top</code> 。</p>
+<h4 id="button上方出现多于空隙问题"><a href="#button上方出现多于空隙问题" class="headerlink" title="button上方出现多于空隙问题"></a>button上方出现多于空隙问题</h4><p>当时用如下Button：</p>
+<div class="highlight-container" data-rel="Html"><figure class="iseeu highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">button</span> <span class="attr">className</span>=<span class="string">&quot;rightBut&quot;</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">span</span> <span class="attr">color</span>=<span class="string">&#x27;red&#x27;</span>&gt;</span>一般<span class="tag">&lt;/<span class="name">span</span>&gt;</span><span class="tag">&lt;<span class="name">span</span>&gt;</span> 拍击<span class="tag">&lt;/<span class="name">span</span>&gt;</span><span class="tag">&lt;<span class="name">br</span> /&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">span</span>&gt;</span>PP:20 威力:40<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br></pre></td></tr></table></figure></div>
+
+<p>如果使用如下CSS：</p>
+<div class="highlight-container" data-rel="Css"><figure class="iseeu highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">body</span> &#123;</span><br><span class="line">	<span class="attribute">font-size</span>: <span class="built_in">calc</span>(<span class="number">10px</span> + <span class="number">2vmin</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+
+<p>则button上方会出现多于空隙，并且调整浏览器的大小会改变其间隙大小，这也许是因为 <code>&lt;button&gt;</code> 也是内联元素的关系，受到了字体大小的影响（?），但实践结果表明即便 <code>&lt;button&gt;</code> 内部无任何文字，仍会出现这一段多于的距离，目前仍未清楚原因；</p>
+<h4 id="插入自适应背景图片"><a href="#插入自适应背景图片" class="headerlink" title="插入自适应背景图片"></a>插入自适应背景图片</h4><div class="highlight-container" data-rel="Css"><figure class="iseeu highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">body</span> &#123;</span><br><span class="line">    <span class="attribute">margin</span>: <span class="number">0</span>;	<span class="comment">/* 不影响background */</span></span><br><span class="line">    <span class="attribute">background</span>: <span class="built_in">url</span>(<span class="string">./PK.jpeg</span>);</span><br><span class="line">    <span class="attribute">background-size</span>: cover;	 <span class="comment">/* 背景图片自适应大小 */</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+
+<p><strong>vmin:视口高度 vw 和宽度 vh 两者之间的最小值。</strong></p>
+<div class="highlight-container" data-rel="Css"><figure class="iseeu highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">height</span>: <span class="number">100vmin</span>;</span><br><span class="line"><span class="attribute">width</span>: <span class="number">100vw</span>;</span><br></pre></td></tr></table></figure></div>
+
+<p>图片存在最大尺寸，根据所在盒子的大小，取较大的边长、保持长宽比、变化尺寸。</p>
+<p><strong>参考：[</strong></p>
+<p><a class="link"   target="_blank" rel="noopener" href="https://blog.csdn.net/qq_51379218/article/details/121174508" >YOLO8899-HTML常用长度单位 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+<p><strong>]</strong></p>
+<h4 id="npm"><a href="#npm" class="headerlink" title="npm"></a>npm</h4><p><strong>全局安装npm:</strong></p>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm i -g npm</span><br></pre></td></tr></table></figure></div>
+
+
+
+<h2 id="React"><a href="#React" class="headerlink" title="React"></a>React</h2><p><code>Ctrl + C</code> 可以退出终端批处理</p>
+<p>规则上采用小驼峰命名法，不采用HTML默认的命名规则</p>
+<p><code>ReactDOM.render()</code>：主渲染函数</p>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">function Welcome(props)&#123;	//传入的参数被放在props中</span><br><span class="line">    return &lt;h1&gt;Hello, &#123;props.name&#125;&lt;/h1&gt;;	//大括号可以传入表达式的值</span><br><span class="line">&#125;	//这是一个函数组件</span><br><span class="line">ReactDOM.render(	// Welcome传入一个自定义组件与参数</span><br><span class="line">	&lt;Welcome name=&quot;Sara&quot; /&gt;	//首字母大写用于区分HTML默认标签</span><br><span class="line">);</span><br></pre></td></tr></table></figure></div>
+
+<p>在 <code>map()</code> 方法中需要为标签指定 <code>key</code> 属性，默认为索引 <code>index</code> .（参考 <a class="link"   target="_blank" rel="noopener" href="https://react.docschina.org/docs/lists-and-keys.html" >React文档-列表 &amp; Key <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a>）</p>
+<h4 id="导入-cloneDeep-obj-模块"><a href="#导入-cloneDeep-obj-模块" class="headerlink" title="导入 _.cloneDeep(obj) 模块"></a>导入 <code>_.cloneDeep(obj)</code> 模块</h4><div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm i --save lodash.clonedeep</span><br></pre></td></tr></table></figure></div>
+
+<p>安装lodash包</p>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">import _,&#123; set &#125; from &#x27;lodash&#x27;;</span><br></pre></td></tr></table></figure></div>
+
+<p>使用非node.js语法导入</p>
+<p>也可以不导入直接使用函数 <code>._cloneDeep(obj)</code></p>
+<h4 id="setState"><a href="#setState" class="headerlink" title="setState()"></a>setState()</h4><p>解决 <code>this.props</code> <code>this.state</code> 异步更新导致合并失败问题：</p>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">this.setState((state, props)=&gt;(&#123;	//传入并执行函数</span><br><span class="line">	counter: state.counter + props.increment</span><br><span class="line">&#125;));	//返回一个新对象用于更新state</span><br></pre></td></tr></table></figure></div>
+
+
+
+<p>如果出现 <code>this.setState() is not a function</code> 的报错说明 <code>setState</code> 不小心被赋值了</p>
+<h4 id="State修改"><a href="#State修改" class="headerlink" title="State修改"></a>State修改</h4><p><strong>在state中写入修改state的函数，修改效果其实是有效的。</strong>但是react更新结点的判定是根据是否<strong>调用</strong>了 <code>setState()</code>  函数并且<strong>更新</strong>了state对象，因此若只是调用修改state的内部函数，则其值修改了，但DOM结点不会及时更新。<br>因此，为了方便的修改state（内部函数比 <code>setState()</code> 要快捷），可以选择将内部函数装入一个大函数中，然后调用 <code>setState()</code> 随意修改一个无用的属性，起到一个DOM结点更新的作用。如下：</p>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">ability&#123;</span><br><span class="line">	change()&#123;</span><br><span class="line">          this.nowHP-=1;</span><br><span class="line">          console.log(&#x27;test!&#x27;+ this?.nowHP);</span><br><span class="line">    &#125;,</span><br><span class="line">&#125;</span><br><span class="line">// ...</span><br><span class="line">handleHP()&#123;</span><br><span class="line">    this.state.player.monster[1].ability.change();</span><br><span class="line">    console.log(this.state.player.monster[1].ability.nowHP);</span><br><span class="line">    // this.props.handlePage();</span><br><span class="line">    this.setState(&#123;</span><br><span class="line">      number:this.state.number+1,</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure></div>
+
+<p>当然了，别忘记绑定一下 <code>this</code> ；先给 <code>change</code> 绑上 <code>ability</code> ，再给 <code>handleHP</code> 绑定是不会出现冲突的，这一操作推荐在构造函数中完成。</p>
+<p>另一方面，<strong>执行 <code>ReactDOM.render()</code> 函数也能更新DOM结点</strong>，你可以将其放在函数中，通过<strong>调度办法</strong>，多次调用函数来实现结点的更新，但那显然不是一个好选择。</p>
+<p><code>setState()</code> 函数会将新旧state进行合并，但只做潜合并，也就是只合并第一层，更深的对象是覆盖的。</p>
+<h4 id="传参"><a href="#传参" class="headerlink" title="传参"></a>传参</h4><div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">for(var num=1;num&lt;=4;++num)&#123;</span><br><span class="line">            console.log(num);</span><br><span class="line">                skill[num]=</span><br><span class="line">                &lt;form key=&#123;num.toString()&#125; onSubmit=&#123;this.handleSubmit&#125;&gt;</span><br><span class="line">                    &lt;label&gt;技能栏&#123;toChi[num]&#125;：&#123;this.props.PP[num].name&#125;&lt;/label&gt;&lt;br /&gt;</span><br><span class="line">                    &lt;input list=&#x27;skill&#x27; type=&#x27;text&#x27;&gt;&lt;/input&gt;</span><br><span class="line">                    &lt;datalist id=&#x27;skill&#x27;&gt;</span><br><span class="line">                        &#123;skillList&#125;</span><br><span class="line">                    &lt;/datalist&gt;</span><br><span class="line">                     &lt;input type=&#x27;submit&#x27; value=&#x27;选择一个新技能&#x27;&gt;&lt;/input&gt;</span><br><span class="line">                &lt;/form&gt;</span><br><span class="line">        &#125;</span><br><span class="line">// ...</span><br><span class="line">handleSkill(number,name)&#123;</span><br><span class="line">    console.log(name);</span><br><span class="line">    console.log(skillIndex[name]);</span><br><span class="line">    console.log(number);</span><br><span class="line">    console.log(this.state.player.monster[1].PP[1].name);</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure></div>
+
+<p>上述函数登记的number等于5，而将 <code>var</code> 换为 <code>let</code> 后则为正常的数字，原因暂且不明</p>
+<p><code>setState()</code> 有延迟，若执行后立刻输出其内容则有很大可能尚未更新</p>
+<h4 id="给JSX设置style属性"><a href="#给JSX设置style属性" class="headerlink" title="给JSX设置style属性"></a>给JSX设置style属性</h4><p><code>style</code> 接受一个小驼峰命名属性的JS对象，而非CSS字符串。</p>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">const divStyle=&#123;</span><br><span class="line">	color: &#x27;blue&#x27;,</span><br><span class="line">	backgroundImage: &#x27;url(&#x27; + imgUrl + &#x27;)&#x27;,</span><br><span class="line">    border: &#x27;1px solid&#x27;,</span><br><span class="line">&#125;</span><br><span class="line">function HelloWorldComponent()&#123;</span><br><span class="line">	return &lt;div style=&#123;divStyle&#125;&gt;Hello World!&lt;/div&gt;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+
+<p>如下语句段，将”inlineBlock”换成”inline-block”也有用，但前者更正常一点，理由不明</p>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">let hpText2=&#123;</span><br><span class="line">            display:&#x27;inlineBlock&#x27;,</span><br><span class="line">            backgroundColor: &#x27;red&#x27;,</span><br><span class="line">            width:&#x27;80px&#x27;,</span><br><span class="line">            height:&#x27;24.5px&#x27;,</span><br><span class="line">            margin:0,</span><br><span class="line">            paidding:0,</span><br><span class="line">        &#125;;</span><br></pre></td></tr></table></figure></div>
+
+<h4 id="实现文本显示动画："><a href="#实现文本显示动画：" class="headerlink" title="实现文本显示动画："></a>实现文本显示动画：</h4><div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">handlePage()&#123;</span><br><span class="line">   var timeID=setInterval(</span><br><span class="line">     ()=&gt;&#123;</span><br><span class="line">       // var text=this.state.text;</span><br><span class="line">       this.setState(&#123;</span><br><span class="line">         text:this.state.text+&quot;嗷呜!&quot;,</span><br><span class="line">       &#125;)</span><br><span class="line">     &#125;,</span><br><span class="line">     500,</span><br><span class="line">   );</span><br><span class="line">   setTimeout(() =&gt; &#123;clearInterval(timeID)&#125;,2000);</span><br><span class="line">   console.log(this.state.text);</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure></div>
+
+<p>该代码能让输出的text每隔0.5秒多输出一个”嗷呜!”，并总共多输出了4个，需要注意计时器传入函数的引用而非调用，因此带参数最好使用箭头函数；另一方面若是将参数放在后面，如下：</p>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">var timeID=setInterval(</span><br><span class="line">      this.setState,</span><br><span class="line">      500,</span><br><span class="line">      &#123;</span><br><span class="line">      	text:this.state.text+&#x27;嗷呜!&#x27;,</span><br><span class="line">      &#125;</span><br><span class="line">    );</span><br></pre></td></tr></table></figure></div>
+
+<p>则需要注意参数被固定了！所以只会多输出一个嗷呜。正确写法应该同第一种，或者新建一个text变量读取state，再用来更新state也是可以的。</p>
+<p>动画的成功实现还说明一个问题：不论函数是否在进行中，只要调用了有效的 <code>setState()</code> 就会更新DOM，这可太棒了。</p>
+<h4 id="箭头函数"><a href="#箭头函数" class="headerlink" title="箭头函数"></a>箭头函数</h4><p>比较下列两段语句：</p>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">return(</span><br><span class="line">	&lt;div&gt;</span><br><span class="line">		&lt;p&gt; Page1 &lt;/p&gt;</span><br><span class="line">		&lt;button onClick=&#123;(this.props.monster) =&gt; this.props.handleTest()&#125;&gt;				&#123;this.props.HP&#125;	</span><br><span class="line">		&lt;/button&gt;</span><br><span class="line">	&lt;/div&gt;</span><br><span class="line">)</span><br></pre></td></tr></table></figure></div>
+
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">return (      //渲染按钮与PP信息</span><br><span class="line">	&lt;button className=&quot;Button&quot; onClick=&#123;() =&gt; this.props.onClick(ply, n, this.props.num.ord, ply_)&#125;&gt;</span><br><span class="line">		233</span><br><span class="line">	&lt;/button&gt;</span><br><span class="line">)</span><br></pre></td></tr></table></figure></div>
+
+<p>上方的语句会报错，参数需要直接传入到箭头函数的函数体中；可以理解为左侧参数是会被赋值的变量，该语句在组成了一个函数，而不是在调用某个语句，右侧的函数才是在调用语句；可以把左参付给右侧的函数，也可以把更大环境下的变量参数付给右侧函数。</p>
+<p>比较下列两段语句：</p>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">return(</span><br><span class="line">	&lt;div&gt;</span><br><span class="line">		&lt;p&gt; Page1 &lt;/p&gt;</span><br><span class="line">		&lt;button onClick=&#123;() =&gt; alert(&#x27;xixi?&#x27;)&#125;&gt;&#123;this.props.HP&#125;&lt;/button&gt;</span><br><span class="line">	&lt;/div&gt;</span><br><span class="line">)</span><br></pre></td></tr></table></figure></div>
+
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">return(</span><br><span class="line">	&lt;div&gt;</span><br><span class="line">		&lt;p&gt; Page1 &lt;/p&gt;</span><br><span class="line">		&lt;button onClick=&#123;alert(&#x27;xixi?&#x27;)&#125;&gt;&#123;this.props.HP&#125;&lt;/button&gt;</span><br><span class="line">	&lt;/div&gt;</span><br><span class="line">)</span><br></pre></td></tr></table></figure></div>
+
+<p>上方的语句会在单机按钮后弹出窗口，而下方语句则无论有无单机按钮都会不停弹出窗口，这是因为我们需要传入的应该是函数的引用，而非具体函数的调用，所以如果需要带上参数则必须嵌套函数，以此来新建一个函数</p>
+<p>已知 <code>handleSubmit()</code> 函数如下：</p>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">handleSubmit(event)&#123;</span><br><span class="line">        alert(this===undefined);</span><br><span class="line">        // this.props.handleSkill(event.target.value);</span><br><span class="line">        event.preventDefault();</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></div>
+
+<p>比较下列两段语句：</p>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;form key=&#123;num.toString()&#125; onSubmit=&#123;this.handleSubmit&#125;&gt;</span><br></pre></td></tr></table></figure></div>
+
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;form key=&#123;num.toString()&#125; onSubmit=&#123;(event) =&gt; this.handleSubmit(event)&#125;&gt;</span><br></pre></td></tr></table></figure></div>
+
+<p>上方的语句会弹出’true’，下方的语句会弹出’false’，此处传给onSubmit的一个函数的引用，当调用函数 <code>onSubmit()</code> 的时候 <code>this</code> 指针若没有绑定就为 <code>undefined</code> ，而箭头函数暗含绑定的效果（代价是较高的渲染负担），因此下方的语句 <code>this</code> 有上下文。</p>
+<h4 id="挂载与卸载"><a href="#挂载与卸载" class="headerlink" title="挂载与卸载"></a>挂载与卸载</h4><div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">class Clock extends React.Component&#123;</span><br><span class="line">    constructor(props)&#123;</span><br><span class="line">        super(props);	//向父组件的构造函数传递参数</span><br><span class="line">        this.state=&#123;data:new Date()&#125;;</span><br><span class="line">    &#125;</span><br><span class="line">    componentDidMount()&#123;	//组件被添入DOM时</span><br><span class="line">        this.timerID=setInterval(	//挂载计时器</span><br><span class="line">        	()=&gt;this.tick(), 1000</span><br><span class="line">        );</span><br><span class="line">    &#125;</span><br><span class="line">    componentWillUnmount()&#123;		//组件被删除时</span><br><span class="line">        clearInterval(this.timerID);	//卸载计时器</span><br><span class="line">    &#125;</span><br><span class="line">    tick()&#123;</span><br><span class="line">        this.setState(&#123;		//更新时间</span><br><span class="line">            date: new Date()</span><br><span class="line">        &#125;);		//构造函数外只能使用setState</span><br><span class="line">    &#125;</span><br><span class="line">    render()&#123;</span><br><span class="line">        return(		//渲染时钟</span><br><span class="line">        	&lt;h1&gt;It is &#123;this.state.date.toLocaleTimeString()&#125;.&lt;/h1&gt;</span><br><span class="line">        );</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+
+<h4 id="超棒的血条形状"><a href="#超棒的血条形状" class="headerlink" title="超棒的血条形状:"></a>超棒的血条形状:</h4><div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">let hpText=&#123;</span><br><span class="line">    margin: 0,</span><br><span class="line">    marginTop: &#x27;3px&#x27;,</span><br><span class="line">    border: &#x27;2.5px solid #8B5A00&#x27;,</span><br><span class="line">    paddingLeft: &#x27;0.5px&#x27;,</span><br><span class="line">    paddingTop:&#x27;0.5px&#x27;,</span><br><span class="line">    paddingBottom: &#x27;0.5px&#x27;,</span><br><span class="line">    width:&#x27;230px&#x27;,</span><br><span class="line">    height:&#x27;15px&#x27;,</span><br><span class="line">    backgroundColor: &#x27;white&#x27;,</span><br><span class="line">    borderRadius: &#x27;10% / 100%&#x27;,</span><br><span class="line">&#125;;</span><br><span class="line">let hpText2=&#123;</span><br><span class="line">    display:&#x27;inlineBlock&#x27;,</span><br><span class="line">    backgroundColor: hpColor,</span><br><span class="line">    width: hpCal+&#x27;px&#x27;,</span><br><span class="line">    height:&#x27;14.5px&#x27;,</span><br><span class="line">    margin:0,</span><br><span class="line">    paidding:0,</span><br><span class="line">    borderRadius: &#x27;10% / 100%&#x27;,</span><br><span class="line">&#125;;</span><br><span class="line">let HPStream=&lt;div style=&#123;hpText&#125;&gt;</span><br><span class="line">    &lt;div style=&#123;hpText2&#125;&gt;&lt;/div&gt;</span><br><span class="line">&lt;/div&gt;;</span><br></pre></td></tr></table></figure></div>
+
+<h4 id="奇怪的对象类BUG"><a href="#奇怪的对象类BUG" class="headerlink" title="奇怪的对象类BUG"></a>奇怪的对象类BUG</h4><p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="E:\PictureBed\image-20220429061520372.png"
+                      alt="image-20220429061520372"
+                ></p>
+<p>看到这个诡异的 <code>checks</code> 了嘛，它是以下代码的产物：</p>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">block:&#123;	  //守住状态</span><br><span class="line">      discount()&#123;</span><br><span class="line">        if(this.checks===true)</span><br><span class="line">        	this.checks=false;</span><br><span class="line">      &#125;,</span><br><span class="line">      checks:false,</span><br><span class="line">    &#125;,</span><br></pre></td></tr></table></figure></div>
+
+<p>首先说明这个 <code>discount()</code> 函数在控制台返回的上下文是没有被调用的，根据前后文此处的 <code>checks</code> 应该是true，而事实也正是如此，但它在控制台就是会有这种奇怪的BUG，这里稍微改一下都没事，哪怕直接写成 <code>this.checks=false</code> 而不加if，上面的 <code>checks</code> 都是正常的，但就是这个写法让控制台返回的被包装的 <code>checks</code> 永远都是 <code>false</code> ，除了你直接访问它本身的时候是 <code>true</code> 。	</p>
+<h4 id="Deploy部署问题"><a href="#Deploy部署问题" class="headerlink" title="Deploy部署问题"></a>Deploy部署问题</h4><p>首先我之前不知道有工具叫React Developer Tools、Redux DevTools，他们可以轻松的分解React项目的参数…所以需要一些手段来解决这个工具问题。我们希望当项目处在生产模式的时候开发者工具被禁用，因此我们需要新建一个禁用函数，并在生产模式下调用，详情参考：<a class="link"   target="_blank" rel="noopener" href="https://blog.csdn.net/u010377383/article/details/98476995" >Justin0223-React生产模式下禁止React Developer Tools、RedU型 DevTools <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a>，其思路大致是将挂载的工具读取的信息全部清空为 <code>null</code> 或 <code>undefined</code> ，其中具体调用的判定可以如下：</p>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">if(process.env.NODE_ENV === &#x27;production&#x27;)&#123;</span><br><span class="line">	disableReactDevTools();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+
+<p>生产模式：即 <code>process.env.NODE_ENV === &#39;production&#39;</code> ，<code>process.env.NODE_ENV</code> 可在任意地方被访问，在 <code>npm start</code> 下值为 <code>development</code> ，在 <code>npm run build</code> 后的文件中值为 <code>production</code> ；</p>
+<p>当项目被 <code>npm run build</code> 打包后会生成一个 <code>build</code> 文件夹，在CLI中输入 <code>npm install -g serve</code> 先安装serve服务，再输入 <code>serve -s build</code> 即可将build文件夹的在本地服务器挂起来。事实上 <code>build</code> 文件夹已经可以提供完整的服务，因此直接在该文件夹下启动CLI，并输入 <code>serve -s</code> 即可启动服务，要关闭服务可以使用 <code>Ctrl+C</code> 。</p>
+<h4 id="npm-run-build-吞注释"><a href="#npm-run-build-吞注释" class="headerlink" title="npm run build 吞注释"></a>npm run build 吞注释</h4><p>这个暂时没有解决办法，无论是JSX中的注释 <code>&#123;/* */&#125;</code> 还是网页入口的注释都会被过滤掉，只能选择设置透明文字来代替。</p>
+<p><strong>参考：[</strong></p>
+<p><a class="link"   target="_blank" rel="noopener" href="https://react.docschina.org/docs/getting-started.html" >React文档 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+<p><strong>]</strong></p>
+<h2 id="English-Test"><a href="#English-Test" class="headerlink" title="English Test"></a>English Test</h2><div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line">Attribute:属性</span><br><span class="line">    attributes-复数</span><br><span class="line">	attribution:属性</span><br><span class="line"></span><br><span class="line">characteristic:特性</span><br><span class="line"></span><br><span class="line">Avatar:头像</span><br><span class="line"></span><br><span class="line">mount:挂载</span><br><span class="line">    unmount:卸载</span><br><span class="line"></span><br><span class="line">camelCase：小驼峰</span><br><span class="line"></span><br><span class="line">Cyber:电脑的，网络的</span><br><span class="line"></span><br><span class="line">endpoint:终点，端点</span><br><span class="line"></span><br><span class="line">berry:浆果</span><br><span class="line"></span><br><span class="line">slack:松散的</span><br><span class="line"></span><br><span class="line">Cli:命令行接口</span><br><span class="line"></span><br><span class="line">dashboard:仪表盘</span><br><span class="line"></span><br><span class="line">multiple:多重的</span><br><span class="line"></span><br><span class="line">critical hit:会心一击</span><br><span class="line"></span><br><span class="line">psychic:超能</span><br><span class="line"></span><br><span class="line">duration:持续时间</span><br><span class="line"></span><br><span class="line">priority:优先级</span><br><span class="line"></span><br><span class="line">existence:存在</span><br><span class="line"></span><br><span class="line">paralysis:麻痹</span><br><span class="line"></span><br><span class="line">substitute:替身</span><br><span class="line"></span><br><span class="line">Flinch:畏缩</span><br><span class="line"></span><br><span class="line">pixel:像素</span><br><span class="line"></span><br><span class="line">preserve:保护</span><br><span class="line"></span><br><span class="line">immune:免疫</span><br><span class="line"></span><br><span class="line">manifest:显示</span><br></pre></td></tr></table></figure></div>
+<!-- flag of hidden posts -->
+        </div>
+
+        
+            <div class="post-copyright-info w-full my-8 px-2 sm:px-6 md:px-8">
+                <div class="article-copyright-info-container">
+    <ul>
+        <li><strong>Title:</strong> PokemonMaster!</li>
+        <li><strong>Author:</strong> Forestsetyou</li>
+        <li><strong>Created at
+                :</strong> 2022-04-30 15:34:00</li>
+        
+            <li>
+                <strong>Updated at
+                    :</strong> 2023-08-03 17:45:00
+            </li>
+        
+        <li>
+            <strong>Link:</strong> https://forestsetyou.github.io/2022/04/30/Development/Project/PokemonMaster!/
+        </li>
+        <li>
+            <strong>
+                License:
+            </strong>
+            
+
+            
+                This work is licensed under <a class="license" target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0">CC BY-NC-SA 4.0</a>.
+            
+        </li>
+    </ul>
+</div>
+
+            </div>
+        
+
+        
+
+        
+
+        
+
+
+        
+    </div>
+
+    
+        <div class="toc-content-container">
+            <div class="post-toc-wrap">
+    <div class="post-toc">
+        <div class="toc-title">On this page</div>
+        <div class="page-title">PokemonMaster!</div>
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#PokemonMaster"><span class="nav-text">PokemonMaster.</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#More-Problems"><span class="nav-text">More Problems</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#JS"><span class="nav-text">JS</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#HTML-CSS"><span class="nav-text">HTML &amp; CSS</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#React"><span class="nav-text">React</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#English-Test"><span class="nav-text">English Test</span></a></li></ol></li></ol>
+
+    </div>
+</div>
+        </div>
+    
+</div>
+
+
+
+                
+
+            </div>
+
+            
+
+        </div>
+
+        <div class="main-content-footer">
+            <footer class="footer mt-5 py-5 h-auto text-base text-third-text-color relative border-t-2 border-t-border-color">
+    <div class="info-container py-3 text-center">
+        
+        <div class="text-center">
+            &copy;
+            
+              <span>2024</span>
+              -
+            
+            2024&nbsp;&nbsp;<i class="fa-solid fa-heart fa-beat" style="--fa-animation-duration: 0.5s; color: #f54545"></i>&nbsp;&nbsp;<a href="/">Forestsetyou</a>
+            
+        </div>
+        
+        <div class="relative text-center lg:absolute lg:left-[20px] lg:top-1/2 lg:-translate-y-1/2 lg:text-left">
+            <span class="lg:block text-sm">POWERED BY <?xml version="1.0" encoding="utf-8"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg class="relative top-[2px] inline-block align-baseline" version="1.1" id="圖層_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="1rem" height="1rem" viewBox="0 0 512 512" enable-background="new 0 0 512 512" xml:space="preserve"><path fill="#0E83CD" d="M256.4,25.8l-200,115.5L56,371.5l199.6,114.7l200-115.5l0.4-230.2L256.4,25.8z M349,354.6l-18.4,10.7l-18.6-11V275H200v79.6l-18.4,10.7l-18.6-11v-197l18.5-10.6l18.5,10.8V237h112v-79.6l18.5-10.6l18.5,10.8V354.6z"/></svg><a target="_blank" class="text-base" href="https://hexo.io">Hexo</a></span>
+            <span class="text-sm lg:block">THEME&nbsp;<a class="text-base" target="_blank" href="https://github.com/EvanNotFound/hexo-theme-redefine">Redefine v2.6.1</a></span>
+        </div>
+        
+        
+        
+        
+        
+    </div>  
+</footer>
+        </div>
+    </div>
+
+    
+        <div class="post-tools">
+            <div class="post-tools-container">
+    <ul class="article-tools-list">
+        <!-- TOC aside toggle -->
+        
+            <li class="right-bottom-tools page-aside-toggle">
+                <i class="fa-regular fa-outdent"></i>
+            </li>
+        
+
+        <!-- go comment -->
+        
+    </ul>
+</div>
+
+        </div>
+    
+
+    <div class="right-side-tools-container">
+        <div class="side-tools-container">
+    <ul class="hidden-tools-list">
+        <li class="right-bottom-tools tool-font-adjust-plus flex justify-center items-center">
+            <i class="fa-regular fa-magnifying-glass-plus"></i>
+        </li>
+
+        <li class="right-bottom-tools tool-font-adjust-minus flex justify-center items-center">
+            <i class="fa-regular fa-magnifying-glass-minus"></i>
+        </li>
+
+        <li class="right-bottom-tools tool-dark-light-toggle flex justify-center items-center">
+            <i class="fa-regular fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        
+
+        <li class="right-bottom-tools tool-scroll-to-bottom flex justify-center items-center">
+            <i class="fa-regular fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="visible-tools-list">
+        <li class="right-bottom-tools toggle-tools-list flex justify-center items-center">
+            <i class="fa-regular fa-cog fa-spin"></i>
+        </li>
+        
+            <li class="right-bottom-tools tool-scroll-to-top flex justify-center items-center">
+                <i class="arrow-up fas fa-arrow-up"></i>
+                <span class="percent"></span>
+            </li>
+        
+        
+    </ul>
+</div>
+
+    </div>
+
+    <div class="image-viewer-container">
+    <img src="">
+</div>
+
+
+    
+        <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-input-field-pre">
+            <i class="fa-solid fa-keyboard"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="Search..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="popup-btn-close">
+                <i class="fa-solid fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fa-solid fa-spinner fa-spin-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+
+</main>
+
+
+    
+<script src="/js/libs/Swup.min.js"></script>
+
+<script src="/js/libs/SwupSlideTheme.min.js"></script>
+
+<script src="/js/libs/SwupScriptsPlugin.min.js"></script>
+
+<script src="/js/libs/SwupProgressPlugin.min.js"></script>
+
+<script src="/js/libs/SwupScrollPlugin.min.js"></script>
+
+<script src="/js/libs/SwupPreloadPlugin.min.js"></script>
+
+<script>
+    const swup = new Swup({
+        plugins: [
+            new SwupScriptsPlugin({
+                optin: true,
+            }),
+            new SwupProgressPlugin(),
+            new SwupScrollPlugin({
+                offset: 80,
+            }),
+            new SwupSlideTheme({
+                mainElement: ".main-content-body",
+            }),
+            new SwupPreloadPlugin(),
+        ],
+        containers: ["#swup"],
+    });
+</script>
+
+
+
+
+
+
+
+<script src="/js/tools/imageViewer.js" type="module"></script>
+
+<script src="/js/utils.js" type="module"></script>
+
+<script src="/js/main.js" type="module"></script>
+
+<script src="/js/layouts/navbarShrink.js" type="module"></script>
+
+<script src="/js/tools/scrollTopBottom.js" type="module"></script>
+
+<script src="/js/tools/lightDarkSwitch.js" type="module"></script>
+
+<script src="/js/layouts/categoryList.js" type="module"></script>
+
+
+
+    
+<script src="/js/tools/localSearch.js" type="module"></script>
+
+
+
+
+    
+<script src="/js/tools/codeBlock.js" type="module"></script>
+
+
+
+
+    
+<script src="/js/layouts/lazyload.js" type="module"></script>
+
+
+
+
+
+
+  
+<script src="/js/libs/Typed.min.js"></script>
+
+  
+<script src="/js/plugins/typed.js" type="module"></script>
+
+
+
+
+
+
+
+
+
+<div class="post-scripts" data-swup-reload-script>
+    
+        
+<script src="/js/tools/tocToggle.js" type="module"></script>
+
+<script src="/js/layouts/toc.js" type="module"></script>
+
+<script src="/js/plugins/tabs.js" type="module"></script>
+
+    
+</div>
+
+
+</body>
+</html>

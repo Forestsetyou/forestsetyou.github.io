@@ -1,0 +1,1034 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="keywords" content="ctf, solution, note, blog">
+    
+    <meta name="author" content="Forestsetyou">
+    <!-- preconnect -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    
+    <!--- Seo Part-->
+    
+    <link rel="canonical" href="http://forestsetyou.github.io/2022/08/25/solution/usage/mysql/"/>
+    <meta name="robots" content="index,follow">
+    <meta name="googlebot" content="index,follow">
+    <meta name="revisit-after" content="1 days">
+    
+        <meta name="description" content="false">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MySql">
+<meta property="og:url" content="http://forestsetyou.github.io/2022/08/25/Solution/Usage/MySql/index.html">
+<meta property="og:site_name" content="Festu&#39;s Blog">
+<meta property="og:description" content="false">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2022-08-25T02:15:00.000Z">
+<meta property="article:modified_time" content="2023-09-25T12:26:00.000Z">
+<meta property="article:author" content="Forestsetyou">
+<meta property="article:tag" content="ctf, solution, note, blog">
+<meta name="twitter:card" content="summary">
+    
+    
+    <!--- Icon Part-->
+    <link rel="icon" type="image/png" href="/hide_imgs/smiling_face.png" sizes="192x192">
+    <link rel="apple-touch-icon" sizes="180x180" href="/hide_imgs/smiling_face.png">
+    <meta name="theme-color" content="#A31F34">
+    <link rel="shortcut icon" href="/hide_imgs/smiling_face.png">
+    <!--- Page Info-->
+    
+    <title>
+        
+            MySql -
+        
+        Festu&#39;s Blog
+    </title><meta name="robots" content="noindex">
+
+    
+<link rel="stylesheet" href="/fonts/Chillax/chillax.css">
+
+
+    <!--- Inject Part-->
+    
+
+    
+        <style>
+    :root {
+        --preloader-background-color: #fff;
+        --preloader-text-color: #000;
+    }
+
+    @media (prefers-color-scheme: dark) {
+        :root {
+            --preloader-background-color: #202124;
+            --preloader-text-color: #fff;
+        }
+    }
+
+    @media (prefers-color-scheme: light) {
+        :root {
+            --preloader-background-color: #fff;
+            --preloader-text-color: #000;
+        }
+    }
+
+    @media (max-width: 600px) {
+        .ml13 {
+            font-size: 2.6rem !important; /* Adjust this value as needed */
+        }
+    }
+
+    .preloader {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem; /* Tailwind 'gap-4' is 1rem */
+        align-items: center;
+        justify-content: center;
+        position: fixed;
+        padding: 12px;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh; /* 'h-screen' is 100% of the viewport height */
+        background-color: var(--preloader-background-color);
+        z-index: 1100; /* 'z-[1100]' sets the z-index */
+        transition: opacity 0.2s ease-in-out;
+    }
+
+    .ml13 {
+        font-size: 3.2rem;
+        /* text-transform: uppercase; */
+        color: var(--preloader-text-color);
+        letter-spacing: -1px;
+        font-weight: 500;
+        font-family: 'Chillax-Variable', sans-serif;
+        text-align: center;
+    }
+
+    .ml13 .word {
+        display: inline-flex;
+        flex-wrap: wrap;
+        white-space: nowrap;
+    }
+
+    .ml13 .letter {
+        display: inline-block;
+        line-height: 1em;
+    }
+</style>
+
+<div class="preloader">
+    
+<script src="/js/libs/anime.min.js"></script>
+
+    <h1 class="ml13">
+        Festu&#39;s Blog
+    </h1>
+    <script>
+        var textWrapper = document.querySelector('.ml13');
+        // Split text into words
+        var words = textWrapper.textContent.trim().split(' ');
+
+        // Clear the existing content
+        textWrapper.innerHTML = '';
+
+        // Wrap each word and its letters in spans
+        words.forEach(function(word) {
+            var wordSpan = document.createElement('span');
+            wordSpan.classList.add('word');
+            wordSpan.innerHTML = word.replace(/\S/g, "<span class='letter'>$&</span>");
+            textWrapper.appendChild(wordSpan);
+            textWrapper.appendChild(document.createTextNode(' ')); // Add space between words
+        });
+
+
+        anime.timeline({loop: true})
+            .add({
+                targets: '.ml13 .letter',
+                translateY: [100,0],
+                translateZ: 0,
+                opacity: [0,1],
+                easing: "easeOutExpo",
+                duration: 1400,
+                delay: (el, i) => 300 + 30 * i
+            }).add({
+            targets: '.ml13 .letter',
+            translateY: [0,-100],
+            opacity: [1,0],
+            easing: "easeInExpo",
+            duration: 1200,
+            delay: (el, i) => 100 + 30 * i
+        });
+
+        let themeStatus = JSON.parse(localStorage.getItem('REDEFINE-THEME-STATUS'))?.isDark;
+
+        // If the theme status is not found in local storage, check the preferred color scheme
+        if (themeStatus === undefined || themeStatus === null) {
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                themeStatus = 'dark';
+            } else {
+                themeStatus = 'light';
+            }
+        }
+
+        // Now you can use the themeStatus variable in your code
+        if (themeStatus) {
+            document.documentElement.style.setProperty('--preloader-background-color', '#202124');
+            document.documentElement.style.setProperty('--preloader-text-color', '#fff');
+        } else {
+            document.documentElement.style.setProperty('--preloader-background-color', '#fff');
+            document.documentElement.style.setProperty('--preloader-text-color', '#000');
+        }
+
+        window.addEventListener('load', function () {
+            hidePreloaderAfterTimeout(1000); // Hide after 1000 milliseconds once the window has loaded
+        });
+
+        // Backup failsafe: Hide preloader after a maximum of 5000 milliseconds, regardless of the window load event
+        hidePreloaderAfterTimeout(5000);
+
+        function hidePreloaderAfterTimeout(delay) {
+            setTimeout(function () {
+                var preloader = document.querySelector('.preloader');
+                preloader.style.opacity = '0';
+                setTimeout(function () {
+                    preloader.style.display = 'none';
+                }, 200);
+            }, delay);
+        }
+    </script>
+</div>
+    
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+
+    
+        
+<link rel="stylesheet" href="/assets/build/styles.css">
+
+    
+
+    
+<link rel="stylesheet" href="/fonts/fonts.css">
+
+    
+<link rel="stylesheet" href="/fonts/Satoshi/satoshi.css">
+
+    <!--- Font Part-->
+    
+    
+    
+    
+
+
+    <script id="hexo-configurations">
+    window.config = {"hostname":"forestsetyou.github.io","root":"/","language":"en","path":"search.xml"};
+    window.theme = {"articles":{"style":{"font_size":"16px","line_height":1.5,"image_border_radius":"14px","image_alignment":"center","image_caption":false,"link_icon":true,"title_alignment":"left","headings_top_spacing":{"h1":"5rem","h2":"4rem","h3":"2.8rem","h4":"2.5rem","h5":"2.2rem","h6":"2rem"}},"word_count":{"enable":false,"count":true,"min2read":true},"author_label":{"enable":false,"auto":false,"list":[]},"code_block":{"copy":true,"style":"simple","font":{"enable":false,"family":null,"url":null}},"toc":{"enable":true,"max_depth":3,"number":false,"expand":true,"init_open":true},"copyright":{"enable":true,"default":"cc_by_nc_sa"},"lazyload":true,"recommendation":{"enable":false,"title":"推荐阅读","limit":3,"mobile_limit":2,"placeholder":"/images/wallhaven-wqery6-light.webp","skip_dirs":[]}},"colors":{"primary":"#A31F34","secondary":null,"default_mode":"light"},"global":{"fonts":{"chinese":{"enable":false,"family":null,"url":null},"english":{"enable":false,"family":null,"url":null}},"content_max_width":"1000px","sidebar_width":"210px","hover":{"shadow":true,"scale":false},"scroll_progress":{"bar":false,"percentage":true},"website_counter":{"url":"https://cn.vercount.one/js","enable":false,"site_pv":true,"site_uv":true,"post_pv":true},"single_page":true,"preloader":true,"open_graph":true,"google_analytics":{"enable":false,"id":null}},"home_banner":{"enable":true,"style":"fixed","image":{"light":"/hide_imgs/light_banner-5.png","dark":"/hide_imgs/dark_banner.png"},"title":"Festu's Blog","subtitle":{"text":["Life Goes On."],"hitokoto":{"enable":false,"api":"https://v1.hitokoto.cn"},"typing_speed":100,"backing_speed":80,"starting_delay":500,"backing_delay":1500,"loop":false,"smart_backspace":false},"text_color":{"light":"#fff","dark":"#d1d1b6"},"text_style":{"title_size":"2.8rem","subtitle_size":"1.5rem","line_height":1.2},"custom_font":{"enable":false,"family":null,"url":null},"social_links":{"enable":true,"style":"default","links":{"github":"https://github.com/Forestsetyou","instagram":null,"zhihu":null,"twitter":null,"email":null},"qrs":{"weixin":null}}},"plugins":{"feed":{"enable":false},"aplayer":{"enable":false,"type":"fixed","audios":[{"name":null,"artist":null,"url":null,"cover":null,"lrc":null}]},"mermaid":{"enable":false,"version":"9.3.0"}},"version":"2.6.1","navbar":{"auto_hide":false,"color":{"left":"#f78736","right":"#367df7","transparency":35},"width":{"home":"1200px","pages":"1000px"},"links":{"Home":{"path":"/","icon":"fa-regular fa-house"},"Archives":{"path":"/archives","icon":"fa-regular fa-archive"},"categories":{"path":"/categories","icon":"fa-regular fa-folder"},"tags":{"path":"/tags","icon":"fa-regular fa-tags"}},"search":{"enable":true,"preload":true}},"page_templates":{"friends_column":2,"tags_style":"blur"},"home":{"sidebar":{"enable":true,"position":"left","first_item":"menu","announcement":null,"show_on_mobile":true,"links":null},"article_date_format":"auto","categories":{"enable":true,"limit":3},"tags":{"enable":true,"limit":3}},"footerStart":"2024/03/11 03:27:59"};
+    window.lang_ago = {"second":"%s seconds ago","minute":"%s minutes ago","hour":"%s hours ago","day":"%s days ago","week":"%s weeks ago","month":"%s months ago","year":"%s years ago"};
+    window.data = {"masonry":false};
+  </script>
+    
+    <!--- Fontawesome Part-->
+    
+<link rel="stylesheet" href="/fontawesome/fontawesome.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/brands.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/solid.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/regular.min.css">
+
+    
+    
+    
+    
+<meta name="generator" content="Hexo 7.1.1"></head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+
+    
+        <span class="pjax-progress-bar"></span>
+<!--        <span class="swup-progress-icon">-->
+<!--            <i class="fa-solid fa-circle-notch fa-spin"></i>-->
+<!--        </span>-->
+    
+</div>
+
+
+<main class="page-container" id="swup">
+
+    
+
+    <div class="main-content-container">
+
+
+        <div class="main-content-header">
+            <header class="navbar-container px-6 md:px-12">
+
+    <div class="navbar-content ">
+        <div class="left">
+            
+                <a class="logo-image" href="/">
+                    <img src="/hide_imgs/smiling_face.png">
+                </a>
+            
+            <a class="logo-title" href="/">
+                
+                Festu&#39;s Blog
+                
+            </a>
+        </div>
+
+        <div class="right">
+            <!-- PC -->
+            <div class="desktop">
+                <ul class="navbar-list">
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/"
+                                        >
+                                    <i class="fa-regular fa-house fa-fw"></i>
+                                    HOME
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/archives"
+                                        >
+                                    <i class="fa-regular fa-archive fa-fw"></i>
+                                    ARCHIVES
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/categories"
+                                        >
+                                    <i class="fa-regular fa-folder fa-fw"></i>
+                                    CATEGORIES
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/tags"
+                                        >
+                                    <i class="fa-regular fa-tags fa-fw"></i>
+                                    TAGS
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                    
+                        <li class="navbar-item search search-popup-trigger">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </li>
+                    
+                </ul>
+            </div>
+            <!-- Mobile -->
+            <div class="mobile">
+                
+                    <div class="icon-item search search-popup-trigger"><i class="fa-solid fa-magnifying-glass"></i>
+                    </div>
+                
+                <div class="icon-item navbar-bar">
+                    <div class="navbar-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile sheet -->
+    <div class="navbar-drawer h-screen w-full absolute top-0 left-0 bg-background-color flex flex-col justify-between">
+        <ul class="drawer-navbar-list flex flex-col px-4 justify-center items-start">
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/"
+                        >
+                            <span>
+                                HOME
+                            </span>
+                            
+                                <i class="fa-regular fa-house fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/archives"
+                        >
+                            <span>
+                                ARCHIVES
+                            </span>
+                            
+                                <i class="fa-regular fa-archive fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/categories"
+                        >
+                            <span>
+                                CATEGORIES
+                            </span>
+                            
+                                <i class="fa-regular fa-folder fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/tags"
+                        >
+                            <span>
+                                TAGS
+                            </span>
+                            
+                                <i class="fa-regular fa-tags fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+
+            
+            
+        </ul>
+
+        <div class="statistics flex justify-around my-2.5">
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/tags">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">1</div>
+        <div class="label text-third-text-color text-sm">Tags</div>
+    </a>
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/categories">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">10</div>
+        <div class="label text-third-text-color text-sm">Categories</div>
+    </a>
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/archives">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">14</div>
+        <div class="label text-third-text-color text-sm">Posts</div>
+    </a>
+</div>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="main-content-body">
+
+            
+
+            <div class="main-content">
+
+                
+                    <div class="post-page-container flex relative justify-between box-border w-full h-full">
+    <div class="article-content-container">
+
+        <div class="article-title relative w-full">
+            
+                
+                
+                <img src="/hide_imgs/post_thumbnail-3.jpg" alt="MySql" class="w-full h-60 sm:h-72 md:h-80 object-cover sm:rounded-t-large dark:brightness-75"/>
+                
+                <div class="w-full flex items-center absolute bottom-0 justify-start">
+                    <h1 class="article-title-cover text-center mx-6 my-6 text-second-text-color bg-background-color-transparent px-4 py-3 text-3xl sm:text-4xl md:text-5xl font-bold backdrop-blur-lg rounded-xl border border-border-color ">MySql</h1>
+                </div>
+            
+            </div>
+
+        
+            <div class="article-header flex flex-row gap-2 items-center px-2 sm:px-6 md:px-8">
+                <div class="avatar w-[46px] h-[46px] flex-shrink-0 rounded-medium border border-border-color p-[1px]">
+                    <img src="/hide_imgs/avatar.png">
+                </div>
+                <div class="info flex flex-col justify-between">
+                    <div class="author flex items-center">
+                        <span class="name text-default-text-color text-lg font-semibold">Forestsetyou</span>
+                        
+                    </div>
+                    <div class="meta-info">
+                        <div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fa-regular fa-pen-fancy"></i>&nbsp;
+        <span class="desktop">2022-08-25 10:15</span>
+        <span class="mobile">2022-08-25 10:15</span>
+        <span class="hover-info">Created</span>
+    </span>
+    
+        <span class="article-date article-meta-item">
+            <i class="fa-regular fa-wrench"></i>&nbsp;
+            <span class="desktop">2023-09-25 20:26</span>
+            <span class="mobile">2023-09-25 20:26</span>
+            <span class="hover-info">Updated</span>
+        </span>
+    
+
+    
+        <span class="article-categories article-meta-item">
+            <i class="fa-regular fa-folders"></i>&nbsp;
+            <ul>
+                
+                
+                    
+                        
+                        <li>
+                            <a href="/categories/Solution/">Solution</a>&nbsp;
+                        </li>
+                    
+                    
+                
+                    
+                        
+                            <li>></li>
+                        
+                        <li>
+                            <a href="/categories/Solution/Usage/">Usage</a>&nbsp;
+                        </li>
+                    
+                    
+                
+            </ul>
+        </span>
+    
+    
+
+    
+    
+    
+    
+</div>
+
+                    </div>
+                </div>
+            </div>
+        
+
+        
+
+
+        <div class="article-content markdown-body px-2 sm:px-6 md:px-8 pb-8">
+            <h2 id="Mysql常用命令"><a href="#Mysql常用命令" class="headerlink" title="Mysql常用命令"></a>Mysql常用命令</h2><div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">use [table_schema]</span><br><span class="line"><span class="keyword">set</span> names utf8 # 设置编码</span><br><span class="line"><span class="keyword">show</span> databases # 展示所有数据库</span><br><span class="line"><span class="keyword">show</span> tables # 展示制定数据库的所有表</span><br><span class="line"><span class="keyword">show</span> columns(index) <span class="keyword">from</span> [table_name] # 展示制定数据表的列信息(以及主键信息)</span><br><span class="line"><span class="keyword">show</span> <span class="keyword">table</span> status [<span class="keyword">from</span> db_name] [<span class="keyword">like</span> <span class="string">&#x27;pattern&#x27;</span>] [\G] # 输出性能及统计信息，查看表类型（引擎），<span class="keyword">from</span> 选取库来源，可用正则表达式选取表来源，\G 将按列打印信息</span><br><span class="line">## <span class="keyword">show</span> <span class="keyword">table</span> status <span class="keyword">from</span> mysql <span class="keyword">like</span> <span class="string">&#x27;mysql%&#x27;</span> \G;</span><br><span class="line">exit # 退出</span><br><span class="line"><span class="keyword">create</span> <span class="keyword">table</span>(database) [name] [name type]# 创建表或数据库，前者需要制定字段与类型</span><br><span class="line"><span class="keyword">drop</span> <span class="keyword">table</span>(database) [name] # 删除数据库或表</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> table_name ( field1, field2,...fieldN ) <span class="keyword">VALUES</span> ( value1, value2,...valueN ); # 插入新的行，分别指定除了id之外的特定字段与值，如果数据是字符型则必须有引号</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> table_name <span class="keyword">VALUES</span> ( value1, value2,...valueN ); # 插入新的行，默认所有列都添加数据，第一列为主键，若主键自增(<span class="keyword">PRIMARY</span> KEY AUTO_INCREMENT)则添加<span class="number">0</span>或者<span class="keyword">null</span>即可</span><br><span class="line"><span class="keyword">UPDATE</span> [table_name] <span class="keyword">SET</span> [name]<span class="operator">=</span><span class="string">&#x27;&#x27;</span> [<span class="keyword">WHERE</span>] # 更新表数据</span><br><span class="line">## <span class="keyword">UPDATE</span> runoob_tbl <span class="keyword">SET</span> runoob_title <span class="operator">=</span> REPLACE(runoob_title, <span class="string">&#x27;C++&#x27;</span>, <span class="string">&#x27;Python&#x27;</span>) <span class="keyword">where</span> runoob_id <span class="operator">=</span> <span class="number">3</span>; # 批量将C<span class="operator">+</span><span class="operator">+</span>替换为Python</span><br><span class="line"><span class="keyword">DELETE</span> <span class="keyword">FROM</span> [table_name] [<span class="keyword">WHERE</span>] # 删除表记录，不指定<span class="keyword">WHERE</span>则删除所有记录</span><br><span class="line"><span class="keyword">ALTER</span> <span class="keyword">TABLE</span> [table_name] <span class="keyword">DROP</span> [name] # 删除表的某个字段</span><br><span class="line">						 Engine <span class="operator">=</span> [engine] # 修改数据表类型</span><br><span class="line">						 <span class="keyword">ADD</span> name type [<span class="keyword">FIRST</span>[AFTER NAME]] # 给表添加字段,<span class="keyword">FIRST</span>表名字段位置位于首位，AFTER表示在某字段之后</span><br><span class="line">						 INDEX [index_name] (column_name) # 添加索引，若是添加唯一索引则将INDEX改为<span class="keyword">UNIQUE</span></span><br><span class="line">						 <span class="keyword">PRIMARY</span> KEY ([field_name]) # 添加主键</span><br><span class="line">						 RENAME <span class="keyword">TO</span> [name] # 重命名</span><br><span class="line">						 <span class="keyword">ALTER</span> [name] <span class="keyword">DROP</span> <span class="keyword">DEFAULT</span> # 删除默认数值</span><br><span class="line">						 			  <span class="keyword">SET</span> <span class="keyword">DEFAULT</span> [number] # 更改默认数值</span><br></pre></td></tr></table></figure></div>
+
+<ul>
+<li><p><a class="link"   target="_blank" rel="noopener" href="https://www.runoob.com/mysql/mysql-functions.html" >Mysql函数查询 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+</li>
+<li><p><code>WHERE BINARY</code> 后面的字符串区分大小写</p>
+</li>
+<li><p><code>WHERE field LIKE condition</code> 实现模糊匹配，”condition”中”%”表示0个或多个的任意字符，”_”表示单个任意字符，”[]”表示所列字符中的一个，”[^]”表示不在所列字符中的字符。”[]”括起特殊符号可以避免通配符的二义性</p>
+</li>
+<li><p><code>UNION ALL</code> 会输出重复内容</p>
+</li>
+<li><p><code>ORDER BY field1 [ASC[DESC]], field2 [ASC]</code>  “ASC”升序，”DESC”降序，默认ASC。按拼音排序时，若使用GBK编码，则直接使用字段排序；若使用UTF-8编码，则需要先转码成GBK再排序</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> [table_name] <span class="keyword">ORDER</span> <span class="keyword">BY</span> <span class="keyword">CONVERT</span>(field <span class="keyword">using</span> gbk)</span><br></pre></td></tr></table></figure></div>
+</li>
+<li><p><code>INNER JOIN</code></p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">mysql<span class="operator">&gt;</span> <span class="keyword">SELECT</span> a.runoob_id, a.runoob_author, b.runoob_count <span class="keyword">FROM</span> runoob_tbl a <span class="keyword">INNER</span> <span class="keyword">JOIN</span> tcount_tbl b <span class="keyword">ON</span> a.runoob_author <span class="operator">=</span> b.runoob_author;</span><br><span class="line"><span class="operator">+</span><span class="comment">-------------+-----------------+----------------+</span></span><br><span class="line"><span class="operator">|</span> a.runoob_id <span class="operator">|</span> a.runoob_author <span class="operator">|</span> b.runoob_count <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">-------------+-----------------+----------------+</span></span><br><span class="line"><span class="operator">|</span> <span class="number">1</span>           <span class="operator">|</span> 菜鸟教程    <span class="operator">|</span> <span class="number">10</span>             <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span> <span class="number">2</span>           <span class="operator">|</span> 菜鸟教程    <span class="operator">|</span> <span class="number">10</span>             <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span> <span class="number">3</span>           <span class="operator">|</span> RUNOOB.COM      <span class="operator">|</span> <span class="number">20</span>             <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span> <span class="number">4</span>           <span class="operator">|</span> RUNOOB.COM      <span class="operator">|</span> <span class="number">20</span>             <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">-------------+-----------------+----------------+</span></span><br><span class="line"><span class="number">4</span> <span class="keyword">rows</span> <span class="keyword">in</span> <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br></pre></td></tr></table></figure></div>
+
+<p><code>LEFT JOIN</code> 会读取左边数据表的全部数据，即使右边无对应数据</p>
+</li>
+<li><p>NULL值处理运算符</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">IS</span> <span class="keyword">NULL</span> #是<span class="keyword">NULL</span>则返回<span class="literal">true</span></span><br><span class="line"><span class="keyword">IS</span> <span class="keyword">NOT</span> <span class="keyword">NULL</span></span><br><span class="line"><span class="operator">&lt;=&gt;</span> # 两个值相等或都为<span class="keyword">NULL</span>时返回<span class="literal">true</span></span><br></pre></td></tr></table></figure></div>
+
+<p>使用其他比较运算符永远返回NULL</p>
+<p><code>ifnull(columnName2,0)</code> 把 columnName2 中 null 值转为 0</p>
+</li>
+<li><p><code>ALTER</code> 修改中，<code>MODIFY</code> 只修改字段类型：<code>MODIFY j BIGINT NOT NULL DEFAULT 100;</code> 。<code>CHANGE</code> 同时修改字段名称和类型：<code>CHANGE j j INT;</code> 。</p>
+</li>
+<li><p>字段类型”DECIMAL”：<code>DECIMAL(m,n)</code> 表示浮点数，最大位数为m，小数点右侧的位数最多为n。</p>
+</li>
+<li><p>完整拷贝表：<br><strong>方法一：</strong>先查看被复制表的结构信息：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SHOW</span> <span class="keyword">CREATE</span> <span class="keyword">TABLE</span> test1 \G;</span><br></pre></td></tr></table></figure></div>
+
+<p>会得到创建该结构的语句，复制粘贴后创建相同结构的新表(注意改名)。随后将原表内容拷贝至新的表：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> test1 (id,title,content) <span class="keyword">SELECT</span> id,title,content <span class="keyword">from</span> test;</span><br></pre></td></tr></table></figure></div>
+
+<p><strong>方法二：</strong></p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> targetTable <span class="keyword">LIKE</span> sourceTable;</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> targetTable <span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> sourceTable;</span><br></pre></td></tr></table></figure></div>
+
+<p><strong>方法三：</strong></p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> targetTable <span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> sourceTable</span><br></pre></td></tr></table></figure></div>
+
+
+</li>
+<li><p>拷贝表的部分字段：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> test3 <span class="keyword">AS</span>(</span><br><span class="line">	<span class="keyword">SELECT</span> title,content <span class="keyword">FROM</span> test2</span><br><span class="line">)</span><br></pre></td></tr></table></figure></div>
+</li>
+<li><p>服务器元信息：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> VERSION() # 服务器版本</span><br><span class="line"><span class="keyword">SELECT</span> DATABASE() # 当前数据库名称</span><br><span class="line"><span class="keyword">SELECT</span> <span class="keyword">USER</span>() # 当前用户名</span><br><span class="line"><span class="keyword">SHOW</span> STATUS	# 服务器状态</span><br><span class="line"><span class="keyword">SHOW</span> VARIABLES # 服务器配置信息</span><br></pre></td></tr></table></figure></div>
+</li>
+<li><p>查询最后的插入表中的自增列的值：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> LAST_INSERT_ID();</span><br></pre></td></tr></table></figure></div>
+</li>
+<li><p>对自增id重新排列(删除记录会导致不连续)：</p>
+<p>可以删除字段后重新添加</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">ALTER</span> <span class="keyword">TABLE</span> [table_name] <span class="keyword">DROP</span> id;</span><br><span class="line"><span class="keyword">ALTER</span> <span class="keyword">TABLE</span> [table_name] <span class="keyword">ADD</span> id <span class="type">INT</span> UNSIGNED <span class="keyword">NOT</span> <span class="keyword">NULL</span> AUTO_INCREMENT <span class="keyword">FIRST</span>;</span><br><span class="line"><span class="keyword">ALTER</span> <span class="keyword">TABLE</span> [table_name] <span class="keyword">ADD</span> <span class="keyword">PRIMARY</span> KEY (id);</span><br></pre></td></tr></table></figure></div>
+
+<p>新建表时在末尾添加 <code>AUTO_INCREMENT=100</code> 可将初始值定为100，或者使用一下语句：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">ALTER</span> <span class="keyword">TABLE</span> [table_name] AUTO_INCREMENT<span class="operator">=</span><span class="number">100</span>;</span><br></pre></td></tr></table></figure></div>
+</li>
+<li><p><code>SELECT DISTINCT</code> 自动省略重复数据</p>
+<p>查询重复数据：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> column_name1,column_name2,<span class="built_in">count</span>(<span class="number">1</span>) <span class="keyword">AS</span> COUNT <span class="keyword">FROM</span> [table_name] <span class="keyword">GROUP</span> <span class="keyword">BY</span> column_name1,column_name2 <span class="keyword">HAVING</span> count<span class="operator">&gt;</span><span class="number">1</span>;</span><br><span class="line"># <span class="keyword">GROUP</span> <span class="keyword">BY</span>后加括号会有别的意义</span><br></pre></td></tr></table></figure></div>
+</li>
+<li><p><code>DESC tableName | Describe tableName</code> 展示表结构</p>
+</li>
+<li><p><code>select distinct column from tableName</code> 显示表中column字段唯一的值（过滤重复）</p>
+</li>
+<li><p><code>select colA &quot;A&quot;, colB &quot;B&quot;, colC &quot;c&quot; from tableName</code> 利用 “sql*plus” 语句定制列名</p>
+</li>
+<li><p><code>select concat(colA, ’, ‘, colB) as alias from tableName</code> 拼接得到 <code>colA, colB</code> 作为列的内容，以”alias”为列名展示。要求内部的字符串必须使用单引号 <code>&#39;, &#39;</code>   </p>
+</li>
+<li><p>设置密码：<br><code>ALTER USER root@localhost IDENTIFIED WITH mysql_native_password BY &quot;123456&quot;;</code><br><code>SET PASSWORD FOR &#39;root&#39;@&#39;localhost&#39; = &#39;123456&#39;;</code> </p>
+<p><code>mysqladmin -u root -p password 123456</code></p>
+</li>
+<li><p>修改表字段顺序：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">ALTER</span> <span class="keyword">TABLE</span> lytable <span class="keyword">ADD</span> <span class="type">date</span> datetime AFTER userId;</span><br><span class="line"></span><br><span class="line"><span class="keyword">ALTER</span> <span class="keyword">TABLE</span> lytable CHANGER <span class="type">date</span> datetime AFTER userId;</span><br></pre></td></tr></table></figure></div></li>
+</ul>
+<h3 id="Mysql在PHP中的应用模板"><a href="#Mysql在PHP中的应用模板" class="headerlink" title="Mysql在PHP中的应用模板"></a>Mysql在PHP中的应用模板</h3><div class="highlight-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="variable">$dbhost</span> = <span class="string">&#x27;localhost&#x27;</span>;  <span class="comment">// mysql服务器主机地址</span></span><br><span class="line"><span class="variable">$dbuser</span> = <span class="string">&#x27;root&#x27;</span>;            <span class="comment">// mysql用户名</span></span><br><span class="line"><span class="variable">$dbpass</span> = <span class="string">&#x27;123456&#x27;</span>;          <span class="comment">// mysql用户名密码</span></span><br><span class="line"><span class="variable">$conn</span> = <span class="title function_ invoke__">mysqli_connect</span>(<span class="variable">$dbhost</span>, <span class="variable">$dbuser</span>, <span class="variable">$dbpass</span>);</span><br><span class="line"><span class="keyword">if</span>(! <span class="variable">$conn</span> )</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">die</span>(<span class="string">&#x27;连接失败: &#x27;</span> . <span class="title function_ invoke__">mysqli_error</span>(<span class="variable">$conn</span>));</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 设置编码，防止中文乱码</span></span><br><span class="line"><span class="title function_ invoke__">mysqli_query</span>(<span class="variable">$conn</span> , <span class="string">&quot;set names utf8&quot;</span>);</span><br><span class="line"> </span><br><span class="line"><span class="keyword">if</span>( <span class="keyword">isset</span>(<span class="variable">$runoob_count</span> ))</span><br><span class="line">&#123;</span><br><span class="line">   <span class="variable">$sql</span> = <span class="string">&quot;SELECT runoob_author, runoob_count</span></span><br><span class="line"><span class="string">           FROM  runoob_test_tbl</span></span><br><span class="line"><span class="string">           WHERE runoob_count = <span class="subst">$runoob_count</span>&quot;</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">&#123;</span><br><span class="line">   <span class="variable">$sql</span> = <span class="string">&quot;SELECT runoob_author, runoob_count</span></span><br><span class="line"><span class="string">           FROM  runoob_test_tbl</span></span><br><span class="line"><span class="string">           WHERE runoob_count IS NULL&quot;</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="title function_ invoke__">mysqli_select_db</span>( <span class="variable">$conn</span>, <span class="string">&#x27;RUNOOB&#x27;</span> );</span><br><span class="line"></span><br><span class="line"><span class="title function_ invoke__">mysqli_begin_transaction</span>(<span class="variable">$conn</span>);            <span class="comment">// 开始事务定义</span></span><br><span class="line"><span class="keyword">if</span>(!<span class="title function_ invoke__">mysqli_query</span>(<span class="variable">$conn</span>, <span class="string">&quot;insert into runoob_transaction_test (id) values(8)&quot;</span>))</span><br><span class="line">&#123;</span><br><span class="line">    <span class="title function_ invoke__">mysqli_query</span>(<span class="variable">$conn</span>, <span class="string">&quot;ROLLBACK&quot;</span>);     <span class="comment">// 判断当执行失败时回滚</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="variable">$seq</span> = <span class="title function_ invoke__">mysql_insert_id</span> (<span class="variable">$conn_id</span>);	<span class="comment">// 获取最后插入的自增列的值</span></span><br><span class="line"><span class="variable">$count</span> = <span class="title function_ invoke__">mysqli_affected_rows</span> (<span class="variable">$conn_id</span>);	<span class="comment">// 读取受影响的记录数量</span></span><br><span class="line"><span class="keyword">print</span> (<span class="string">&quot;<span class="subst">$count</span> 条数据被影响\n&quot;</span>);</span><br><span class="line"><span class="title function_ invoke__">mysqli_query</span>(<span class="variable">$conn</span>, <span class="string">&quot;COMMIT&quot;</span>)；	<span class="comment">//执行成功后提交</span></span><br><span class="line"></span><br><span class="line"><span class="variable">$retval</span> = <span class="title function_ invoke__">mysqli_query</span>( <span class="variable">$conn</span>, <span class="variable">$sql</span> );</span><br><span class="line"><span class="keyword">if</span>(! <span class="variable">$retval</span> )</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">die</span>(<span class="string">&#x27;无法读取数据: &#x27;</span> . <span class="title function_ invoke__">mysqli_error</span>(<span class="variable">$conn</span>));</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">echo</span> <span class="string">&#x27;&lt;h2&gt;菜鸟教程 IS NULL 测试&lt;h2&gt;&#x27;</span>;</span><br><span class="line"><span class="keyword">echo</span> <span class="string">&#x27;&lt;table border=&quot;1&quot;&gt;&lt;tr&gt;&lt;td&gt;作者&lt;/td&gt;&lt;td&gt;登陆次数&lt;/td&gt;&lt;/tr&gt;&#x27;</span>;</span><br><span class="line"><span class="keyword">while</span>(<span class="variable">$row</span> = <span class="title function_ invoke__">mysqli_fetch_array</span>(<span class="variable">$retval</span>, MYSQL_ASSOC))</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">&quot;&lt;tr&gt;&quot;</span>.</span><br><span class="line">         <span class="string">&quot;&lt;td&gt;<span class="subst">&#123;$row[&#x27;runoob_author&#x27;]&#125;</span> &lt;/td&gt; &quot;</span>.</span><br><span class="line">         <span class="string">&quot;&lt;td&gt;<span class="subst">&#123;$row[&#x27;runoob_count&#x27;]&#125;</span> &lt;/td&gt; &quot;</span>.</span><br><span class="line">         <span class="string">&quot;&lt;/tr&gt;&quot;</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">echo</span> <span class="string">&#x27;&lt;/table&gt;&#x27;</span>;</span><br><span class="line"><span class="title function_ invoke__">mysqli_close</span>(<span class="variable">$conn</span>);</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure></div>
+
+<p>参考：[</p>
+<p><a class="link"   target="_blank" rel="noopener" href="https://www.runoob.com/mysql/mysql-tutorial.html" >Runoob-Mysql教程 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+<p>]</p>
+<hr>
+<p>2022&#x2F;8&#x2F;21：今天在安装mysql时出现了问题，记录一下解决过程</p>
+<h3 id="问题汇总"><a href="#问题汇总" class="headerlink" title="问题汇总"></a>问题汇总</h3><h4 id="问题一：无法启动mysql服务"><a href="#问题一：无法启动mysql服务" class="headerlink" title="问题一：无法启动mysql服务"></a>问题一：无法启动mysql服务</h4><p>下载并解压mysql社区版后cd到根目录创建”my.ini”文件</p>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">[client]</span><br><span class="line"># 设置mysql客户端默认字符集</span><br><span class="line">default-character-set=utf8</span><br><span class="line"> </span><br><span class="line">[mysqld]</span><br><span class="line"># 设置3306端口</span><br><span class="line">port = 3306</span><br><span class="line"># 设置mysql的安装目录</span><br><span class="line">basedir=C:\\web\\mysql-8.0.11</span><br><span class="line"># 设置 mysql数据库的数据的存放目录，MySQL 8+ 不需要以下配置，系统自己生成即可，否则有可能报错</span><br><span class="line"># datadir=C:\\web\\sqldata</span><br><span class="line"># 允许最大连接数</span><br><span class="line">max_connections=20</span><br><span class="line"># 服务端使用的字符集默认为8比特编码的latin1字符集</span><br><span class="line">character-set-server=utf8</span><br><span class="line"># 创建新表时将使用的默认存储引擎</span><br><span class="line">default-storage-engine=INNODB</span><br></pre></td></tr></table></figure></div>
+
+<p>注意里面是有安装目录路径需要设置的，一开始没看到路径出错导致数据库初始化一直不成功，<code>--console</code> 回显中出现许多error。设置好my.ini后安装mysql</p>
+<div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">.\mysqld --install</span><br><span class="line">.\mysqld install</span><br><span class="line"><span class="comment"># 安装mysql，有无--都可</span></span><br><span class="line">.\mysqld --remove</span><br><span class="line">.\mysqld remove</span><br><span class="line"><span class="comment"># 卸载mysql</span></span><br></pre></td></tr></table></figure></div>
+
+<p>不知道为什么网上的教程很多命令行都是没有 <code>.\</code> 的，除此之外命令功能基本一致，安装mysql后初始化</p>
+<div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">.\mysqld --initialize --console</span><br><span class="line"><span class="comment"># --console 会输出初始化信息，其中包括数据库的初始密码</span></span><br><span class="line">.\mysqld --initialize-insecure</span><br><span class="line"><span class="comment"># 初始化的同时数据库初始无密码</span></span><br></pre></td></tr></table></figure></div>
+
+<p>初始化数据库就是在创建data文件夹，若是步骤出错需要重新初始化，可以手动删除data文件夹再重新初始化（不可以直接初始化，会出现报错），重新初始化可用于重置密码</p>
+<p>初始化完毕后启动mysql程序即可，这里本地出现了报错</p>
+<div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">PS F:\Mysql\mysql-8.0.28-winx64\bin&gt; net start mysql</span><br><span class="line">MySQL 服务正在启动 .</span><br><span class="line">MySQL 服务无法启动。</span><br><span class="line"></span><br><span class="line">服务没有报告任何错误。</span><br><span class="line"></span><br><span class="line">请键入 NET HELPMSG 3534 以获得更多的帮助。</span><br></pre></td></tr></table></figure></div>
+
+<p>原因是端口3306被占用了，参考了博客：<a class="link"   target="_blank" rel="noopener" href="https://blog.csdn.net/ks_1998/article/details/103384795" >解决方案 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a> </p>
+<div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">netstat -ano</span><br><span class="line"><span class="comment"># 查看进程，根据PID从任务管理器的详情中管理进程</span></span><br></pre></td></tr></table></figure></div>
+
+<p>查看本地进程时发现3306端口运行的就是mysql程序，但是那是phpstudy集成的mysql，我忘记关闭了导致端口被其占用，关闭后再次启动mysql任务，成功启动</p>
+<div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">net start mysql</span><br><span class="line"><span class="comment"># 启动mysql</span></span><br><span class="line">net stop mysql</span><br><span class="line"><span class="comment"># 关闭mysql</span></span><br></pre></td></tr></table></figure></div>
+
+<h4 id="问题二：同时存在phpstudy的mysql与自己装的mysql，兼容问题"><a href="#问题二：同时存在phpstudy的mysql与自己装的mysql，兼容问题" class="headerlink" title="问题二：同时存在phpstudy的mysql与自己装的mysql，兼容问题"></a>问题二：同时存在phpstudy的mysql与自己装的mysql，兼容问题</h4><p>自己装的mysql若是安装了，则phpstudy中的mysql就无法一键启动，前者一旦卸载则后者恢复正常</p>
+<p>phpstudy中的mysql分为两种情况，一种是在extension&#x2F;下手动安装mysql，一种是不做任何手动处理直接一键启动，两种情况互不兼容</p>
+<p>进入phpstudy的extensions文件夹中的mysql，使用命令行将mysql安装后，phpstudy将无法一键启动该数据库，但可以使用 <code>net start mysql</code> 启动mysql服务；卸载mysql后phpstudy可正常一键启动，无法使用命令行启动服务。</p>
+<p>phpstudy一键启动mysql后，可以在bin目录下使用命令 <code>mysql -u root -p</code> 正常登录并使用mysql</p>
+<p>命令行安装mysql只能选择一个版本，且一旦安装则phpstudy无法一键启动mysql服务。</p>
+<hr>
+<p>phpstudy 的 mysql 命令行使用需要配置 bin 目录的环境变量（直接在 bin 目录下输入 <code>mysql</code> 可能会提示找不到命令）</p>
+<h4 id="问题三：mysql创建表有语法错误"><a href="#问题三：mysql创建表有语法错误" class="headerlink" title="问题三：mysql创建表有语法错误"></a>问题三：mysql创建表有语法错误</h4><div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">mysql<span class="operator">&gt;</span> <span class="keyword">CREATE</span> <span class="keyword">TABLE</span> testing(</span><br><span class="line">    <span class="operator">-</span><span class="operator">&gt;</span> id <span class="type">int</span> <span class="keyword">not</span> <span class="keyword">null</span> auto_increment,</span><br><span class="line">    <span class="operator">-</span><span class="operator">&gt;</span> title <span class="type">varchar</span>(<span class="number">100</span>) <span class="keyword">not</span> <span class="keyword">null</span>,</span><br><span class="line">    <span class="operator">-</span><span class="operator">&gt;</span> <span class="keyword">primary</span> key ( id ),</span><br><span class="line">    <span class="operator">-</span><span class="operator">&gt;</span> )ENGINE<span class="operator">=</span>InnoDB <span class="keyword">DEFAULT</span> CHARSET<span class="operator">=</span>uft8;</span><br><span class="line">ERROR <span class="number">1064</span> (<span class="number">42000</span>): You have an error <span class="keyword">in</span> your <span class="keyword">SQL</span> syntax; <span class="keyword">check</span> the manual that corresponds <span class="keyword">to</span> your MySQL server version <span class="keyword">for</span> the <span class="keyword">right</span> syntax <span class="keyword">to</span> use near <span class="string">&#x27;)engine=innodb default charset=utf8&#x27;</span> <span class="keyword">at</span> line <span class="number">7</span></span><br></pre></td></tr></table></figure></div>
+
+<p>选取主键的语句后多了一个逗号，不同于一些高级语言对象中的多个键值对可以挂载逗号，这里多了一个逗号会导致语法错误，删除后即可正常创建数据表</p>
+<h4 id="问题四：执行事务回滚无效"><a href="#问题四：执行事务回滚无效" class="headerlink" title="问题四：执行事务回滚无效"></a>问题四：执行事务回滚无效</h4><p>方法一：数据库引擎需要更换成InnoDB，在”my.ini”中更改 <code>default-storage-engine=INNODB</code> ,默认是MyISAM，只有InnoDB可以执行事务。修改后重启mysql，然后新建一张表（原来的表是在MyISAM引擎下创建的，仍然不能使用事务），即可执行事务。</p>
+<p>方法二：新建表时带上引擎参数：<code>CREATE TABLE test (id int(5)) engine=innodb;</code> ，仅限该表格可执行事务。</p>
+<p>参考：[</p>
+<p><a class="link"   target="_blank" rel="noopener" href="https://blog.csdn.net/qq_27461747/article/details/88694885" >驰愿-mysql事务回滚无效 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+<p>]</p>
+<h4 id="问题五：Install-Remove-of-the-Service-Denied"><a href="#问题五：Install-Remove-of-the-Service-Denied" class="headerlink" title="问题五：Install&#x2F;Remove of the Service Denied!"></a>问题五：Install&#x2F;Remove of the Service Denied!</h4><p>权限不够进行操作，使用管理员权限打开shell即可</p>
+<h4 id="问题六：mysql8安装"><a href="#问题六：mysql8安装" class="headerlink" title="问题六：mysql8安装"></a>问题六：mysql8安装</h4><p>mysql8默认开启ssl密码验证，缺少文件时登录会一直失败，需要在ini文件中配置：</p>
+<div class="highlight-container" data-rel="Ini"><figure class="iseeu highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[mysqld]</span></span><br><span class="line">skip-ssl</span><br></pre></td></tr></table></figure></div>
+
+<p>来跳过ssl认证，或者使用：</p>
+<div class="highlight-container" data-rel="Powershell"><figure class="iseeu highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql <span class="literal">-h</span> localhost <span class="literal">-u</span> root <span class="literal">--ssl-mode</span>=DISABLED</span><br></pre></td></tr></table></figure></div>
+
+<p>需要指定登录用户为root，否则会有：</p>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ERROR 1045 (28000): Access denied for user &#x27;ODBC&#x27;@&#x27;localhost&#x27; (using password: NO)</span><br></pre></td></tr></table></figure></div>
+
+<p>初始化时带上 <code>--initialize-insecure</code> 即可不带密码初始化，从而直接登录。</p>
+<p>进去后 <code>select user,host,plugin from mysql.user;</code> 查看密码策略</p>
+<hr>
+<p>若要使用密码登录，上述步骤完成后仍会出现：</p>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ERROR 2061 (HY000): Authentication plugin &#x27;caching_sha2_password&#x27; reported error: Authentication requires secure connection.</span><br></pre></td></tr></table></figure></div>
+
+<p>网上提示修改默认插件：</p>
+<div class="highlight-container" data-rel="Ini"><figure class="iseeu highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[mysqld]</span></span><br><span class="line"><span class="comment"># 更改默认密码验证方式为原始方式</span></span><br><span class="line"><span class="attr">default_authentication_plugin</span>=mysql_native_password</span><br></pre></td></tr></table></figure></div>
+
+<p>实测下来没用。后来发现他可能是在初始化时生效的，只是重启服务是不够的。</p>
+<p>问题解释：<a class="link"   target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/579623722" >MySQL:caching_sha2_password快速问答 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+<p><a class="link"   target="_blank" rel="noopener" href="https://blog.csdn.net/qq_41538097/article/details/106905416" >远程连接MySQL错误“plugin caching_sha2_password could not be loaded”的解决办法 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a> 不适用于我的情况，一是不用软件连接，而是此时登录不进去无法修改。目前不知道如何解决上述问题。</p>
+<h3 id="Tips"><a href="#Tips" class="headerlink" title="Tips"></a>Tips</h3><ul>
+<li><a class="link"   target="_blank" rel="noopener" href="https://www.cnblogs.com/zpy1993-09/p/14929860.html" >Navicat for mysql 破解版安装 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></li>
+</ul>
+<!-- flag of hidden posts -->
+        </div>
+
+        
+            <div class="post-copyright-info w-full my-8 px-2 sm:px-6 md:px-8">
+                <div class="article-copyright-info-container">
+    <ul>
+        <li><strong>Title:</strong> MySql</li>
+        <li><strong>Author:</strong> Forestsetyou</li>
+        <li><strong>Created at
+                :</strong> 2022-08-25 10:15:00</li>
+        
+            <li>
+                <strong>Updated at
+                    :</strong> 2023-09-25 20:26:00
+            </li>
+        
+        <li>
+            <strong>Link:</strong> https://forestsetyou.github.io/2022/08/25/Solution/Usage/MySql/
+        </li>
+        <li>
+            <strong>
+                License:
+            </strong>
+            
+
+            
+                This work is licensed under <a class="license" target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0">CC BY-NC-SA 4.0</a>.
+            
+        </li>
+    </ul>
+</div>
+
+            </div>
+        
+
+        
+
+        
+
+        
+
+
+        
+    </div>
+
+    
+        <div class="toc-content-container">
+            <div class="post-toc-wrap">
+    <div class="post-toc">
+        <div class="toc-title">On this page</div>
+        <div class="page-title">MySql</div>
+        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Mysql%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4"><span class="nav-text">Mysql常用命令</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Mysql%E5%9C%A8PHP%E4%B8%AD%E7%9A%84%E5%BA%94%E7%94%A8%E6%A8%A1%E6%9D%BF"><span class="nav-text">Mysql在PHP中的应用模板</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%97%AE%E9%A2%98%E6%B1%87%E6%80%BB"><span class="nav-text">问题汇总</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Tips"><span class="nav-text">Tips</span></a></li></ol></li></ol>
+
+    </div>
+</div>
+        </div>
+    
+</div>
+
+
+
+                
+
+            </div>
+
+            
+
+        </div>
+
+        <div class="main-content-footer">
+            <footer class="footer mt-5 py-5 h-auto text-base text-third-text-color relative border-t-2 border-t-border-color">
+    <div class="info-container py-3 text-center">
+        
+        <div class="text-center">
+            &copy;
+            
+              <span>2024</span>
+              -
+            
+            2024&nbsp;&nbsp;<i class="fa-solid fa-heart fa-beat" style="--fa-animation-duration: 0.5s; color: #f54545"></i>&nbsp;&nbsp;<a href="/">Forestsetyou</a>
+            
+        </div>
+        
+        <div class="relative text-center lg:absolute lg:left-[20px] lg:top-1/2 lg:-translate-y-1/2 lg:text-left">
+            <span class="lg:block text-sm">POWERED BY <?xml version="1.0" encoding="utf-8"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg class="relative top-[2px] inline-block align-baseline" version="1.1" id="圖層_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="1rem" height="1rem" viewBox="0 0 512 512" enable-background="new 0 0 512 512" xml:space="preserve"><path fill="#0E83CD" d="M256.4,25.8l-200,115.5L56,371.5l199.6,114.7l200-115.5l0.4-230.2L256.4,25.8z M349,354.6l-18.4,10.7l-18.6-11V275H200v79.6l-18.4,10.7l-18.6-11v-197l18.5-10.6l18.5,10.8V237h112v-79.6l18.5-10.6l18.5,10.8V354.6z"/></svg><a target="_blank" class="text-base" href="https://hexo.io">Hexo</a></span>
+            <span class="text-sm lg:block">THEME&nbsp;<a class="text-base" target="_blank" href="https://github.com/EvanNotFound/hexo-theme-redefine">Redefine v2.6.1</a></span>
+        </div>
+        
+        
+        
+        
+        
+    </div>  
+</footer>
+        </div>
+    </div>
+
+    
+        <div class="post-tools">
+            <div class="post-tools-container">
+    <ul class="article-tools-list">
+        <!-- TOC aside toggle -->
+        
+            <li class="right-bottom-tools page-aside-toggle">
+                <i class="fa-regular fa-outdent"></i>
+            </li>
+        
+
+        <!-- go comment -->
+        
+    </ul>
+</div>
+
+        </div>
+    
+
+    <div class="right-side-tools-container">
+        <div class="side-tools-container">
+    <ul class="hidden-tools-list">
+        <li class="right-bottom-tools tool-font-adjust-plus flex justify-center items-center">
+            <i class="fa-regular fa-magnifying-glass-plus"></i>
+        </li>
+
+        <li class="right-bottom-tools tool-font-adjust-minus flex justify-center items-center">
+            <i class="fa-regular fa-magnifying-glass-minus"></i>
+        </li>
+
+        <li class="right-bottom-tools tool-dark-light-toggle flex justify-center items-center">
+            <i class="fa-regular fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        
+
+        <li class="right-bottom-tools tool-scroll-to-bottom flex justify-center items-center">
+            <i class="fa-regular fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="visible-tools-list">
+        <li class="right-bottom-tools toggle-tools-list flex justify-center items-center">
+            <i class="fa-regular fa-cog fa-spin"></i>
+        </li>
+        
+            <li class="right-bottom-tools tool-scroll-to-top flex justify-center items-center">
+                <i class="arrow-up fas fa-arrow-up"></i>
+                <span class="percent"></span>
+            </li>
+        
+        
+    </ul>
+</div>
+
+    </div>
+
+    <div class="image-viewer-container">
+    <img src="">
+</div>
+
+
+    
+        <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-input-field-pre">
+            <i class="fa-solid fa-keyboard"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="Search..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="popup-btn-close">
+                <i class="fa-solid fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fa-solid fa-spinner fa-spin-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+
+</main>
+
+
+    
+<script src="/js/libs/Swup.min.js"></script>
+
+<script src="/js/libs/SwupSlideTheme.min.js"></script>
+
+<script src="/js/libs/SwupScriptsPlugin.min.js"></script>
+
+<script src="/js/libs/SwupProgressPlugin.min.js"></script>
+
+<script src="/js/libs/SwupScrollPlugin.min.js"></script>
+
+<script src="/js/libs/SwupPreloadPlugin.min.js"></script>
+
+<script>
+    const swup = new Swup({
+        plugins: [
+            new SwupScriptsPlugin({
+                optin: true,
+            }),
+            new SwupProgressPlugin(),
+            new SwupScrollPlugin({
+                offset: 80,
+            }),
+            new SwupSlideTheme({
+                mainElement: ".main-content-body",
+            }),
+            new SwupPreloadPlugin(),
+        ],
+        containers: ["#swup"],
+    });
+</script>
+
+
+
+
+
+
+
+<script src="/js/tools/imageViewer.js" type="module"></script>
+
+<script src="/js/utils.js" type="module"></script>
+
+<script src="/js/main.js" type="module"></script>
+
+<script src="/js/layouts/navbarShrink.js" type="module"></script>
+
+<script src="/js/tools/scrollTopBottom.js" type="module"></script>
+
+<script src="/js/tools/lightDarkSwitch.js" type="module"></script>
+
+<script src="/js/layouts/categoryList.js" type="module"></script>
+
+
+
+    
+<script src="/js/tools/localSearch.js" type="module"></script>
+
+
+
+
+    
+<script src="/js/tools/codeBlock.js" type="module"></script>
+
+
+
+
+    
+<script src="/js/layouts/lazyload.js" type="module"></script>
+
+
+
+
+
+
+  
+<script src="/js/libs/Typed.min.js"></script>
+
+  
+<script src="/js/plugins/typed.js" type="module"></script>
+
+
+
+
+
+
+
+
+
+<div class="post-scripts" data-swup-reload-script>
+    
+        
+<script src="/js/tools/tocToggle.js" type="module"></script>
+
+<script src="/js/layouts/toc.js" type="module"></script>
+
+<script src="/js/plugins/tabs.js" type="module"></script>
+
+    
+</div>
+
+
+</body>
+</html>

@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="keywords" content="ctf, solution, note, blog">
+    
+    <meta name="author" content="Forestsetyou">
+    <!-- preconnect -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    
+    <!--- Seo Part-->
+    
+    <link rel="canonical" href="http://forestsetyou.github.io/2023/03/11/solution/usage/docker/"/>
+    <meta name="robots" content="index,follow">
+    <meta name="googlebot" content="index,follow">
+    <meta name="revisit-after" content="1 days">
+    
+        <meta name="description" content="false">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Docker">
+<meta property="og:url" content="http://forestsetyou.github.io/2023/03/11/Solution/Usage/Docker/index.html">
+<meta property="og:site_name" content="Festu&#39;s Blog">
+<meta property="og:description" content="false">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2023-03-11T07:54:00.000Z">
+<meta property="article:modified_time" content="2023-09-28T12:43:00.000Z">
+<meta property="article:author" content="Forestsetyou">
+<meta property="article:tag" content="ctf, solution, note, blog">
+<meta name="twitter:card" content="summary">
+    
+    
+    <!--- Icon Part-->
+    <link rel="icon" type="image/png" href="/hide_imgs/smiling_face.png" sizes="192x192">
+    <link rel="apple-touch-icon" sizes="180x180" href="/hide_imgs/smiling_face.png">
+    <meta name="theme-color" content="#A31F34">
+    <link rel="shortcut icon" href="/hide_imgs/smiling_face.png">
+    <!--- Page Info-->
+    
+    <title>
+        
+            Docker -
+        
+        Festu&#39;s Blog
+    </title><meta name="robots" content="noindex">
+
+    
+<link rel="stylesheet" href="/fonts/Chillax/chillax.css">
+
+
+    <!--- Inject Part-->
+    
+
+    
+        <style>
+    :root {
+        --preloader-background-color: #fff;
+        --preloader-text-color: #000;
+    }
+
+    @media (prefers-color-scheme: dark) {
+        :root {
+            --preloader-background-color: #202124;
+            --preloader-text-color: #fff;
+        }
+    }
+
+    @media (prefers-color-scheme: light) {
+        :root {
+            --preloader-background-color: #fff;
+            --preloader-text-color: #000;
+        }
+    }
+
+    @media (max-width: 600px) {
+        .ml13 {
+            font-size: 2.6rem !important; /* Adjust this value as needed */
+        }
+    }
+
+    .preloader {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem; /* Tailwind 'gap-4' is 1rem */
+        align-items: center;
+        justify-content: center;
+        position: fixed;
+        padding: 12px;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh; /* 'h-screen' is 100% of the viewport height */
+        background-color: var(--preloader-background-color);
+        z-index: 1100; /* 'z-[1100]' sets the z-index */
+        transition: opacity 0.2s ease-in-out;
+    }
+
+    .ml13 {
+        font-size: 3.2rem;
+        /* text-transform: uppercase; */
+        color: var(--preloader-text-color);
+        letter-spacing: -1px;
+        font-weight: 500;
+        font-family: 'Chillax-Variable', sans-serif;
+        text-align: center;
+    }
+
+    .ml13 .word {
+        display: inline-flex;
+        flex-wrap: wrap;
+        white-space: nowrap;
+    }
+
+    .ml13 .letter {
+        display: inline-block;
+        line-height: 1em;
+    }
+</style>
+
+<div class="preloader">
+    
+<script src="/js/libs/anime.min.js"></script>
+
+    <h1 class="ml13">
+        Festu&#39;s Blog
+    </h1>
+    <script>
+        var textWrapper = document.querySelector('.ml13');
+        // Split text into words
+        var words = textWrapper.textContent.trim().split(' ');
+
+        // Clear the existing content
+        textWrapper.innerHTML = '';
+
+        // Wrap each word and its letters in spans
+        words.forEach(function(word) {
+            var wordSpan = document.createElement('span');
+            wordSpan.classList.add('word');
+            wordSpan.innerHTML = word.replace(/\S/g, "<span class='letter'>$&</span>");
+            textWrapper.appendChild(wordSpan);
+            textWrapper.appendChild(document.createTextNode(' ')); // Add space between words
+        });
+
+
+        anime.timeline({loop: true})
+            .add({
+                targets: '.ml13 .letter',
+                translateY: [100,0],
+                translateZ: 0,
+                opacity: [0,1],
+                easing: "easeOutExpo",
+                duration: 1400,
+                delay: (el, i) => 300 + 30 * i
+            }).add({
+            targets: '.ml13 .letter',
+            translateY: [0,-100],
+            opacity: [1,0],
+            easing: "easeInExpo",
+            duration: 1200,
+            delay: (el, i) => 100 + 30 * i
+        });
+
+        let themeStatus = JSON.parse(localStorage.getItem('REDEFINE-THEME-STATUS'))?.isDark;
+
+        // If the theme status is not found in local storage, check the preferred color scheme
+        if (themeStatus === undefined || themeStatus === null) {
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                themeStatus = 'dark';
+            } else {
+                themeStatus = 'light';
+            }
+        }
+
+        // Now you can use the themeStatus variable in your code
+        if (themeStatus) {
+            document.documentElement.style.setProperty('--preloader-background-color', '#202124');
+            document.documentElement.style.setProperty('--preloader-text-color', '#fff');
+        } else {
+            document.documentElement.style.setProperty('--preloader-background-color', '#fff');
+            document.documentElement.style.setProperty('--preloader-text-color', '#000');
+        }
+
+        window.addEventListener('load', function () {
+            hidePreloaderAfterTimeout(1000); // Hide after 1000 milliseconds once the window has loaded
+        });
+
+        // Backup failsafe: Hide preloader after a maximum of 5000 milliseconds, regardless of the window load event
+        hidePreloaderAfterTimeout(5000);
+
+        function hidePreloaderAfterTimeout(delay) {
+            setTimeout(function () {
+                var preloader = document.querySelector('.preloader');
+                preloader.style.opacity = '0';
+                setTimeout(function () {
+                    preloader.style.display = 'none';
+                }, 200);
+            }, delay);
+        }
+    </script>
+</div>
+    
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+
+    
+        
+<link rel="stylesheet" href="/assets/build/styles.css">
+
+    
+
+    
+<link rel="stylesheet" href="/fonts/fonts.css">
+
+    
+<link rel="stylesheet" href="/fonts/Satoshi/satoshi.css">
+
+    <!--- Font Part-->
+    
+    
+    
+    
+
+
+    <script id="hexo-configurations">
+    window.config = {"hostname":"forestsetyou.github.io","root":"/","language":"en","path":"search.xml"};
+    window.theme = {"articles":{"style":{"font_size":"16px","line_height":1.5,"image_border_radius":"14px","image_alignment":"center","image_caption":false,"link_icon":true,"title_alignment":"left","headings_top_spacing":{"h1":"5rem","h2":"4rem","h3":"2.8rem","h4":"2.5rem","h5":"2.2rem","h6":"2rem"}},"word_count":{"enable":false,"count":true,"min2read":true},"author_label":{"enable":false,"auto":false,"list":[]},"code_block":{"copy":true,"style":"simple","font":{"enable":false,"family":null,"url":null}},"toc":{"enable":true,"max_depth":3,"number":false,"expand":true,"init_open":true},"copyright":{"enable":true,"default":"cc_by_nc_sa"},"lazyload":true,"recommendation":{"enable":false,"title":"推荐阅读","limit":3,"mobile_limit":2,"placeholder":"/images/wallhaven-wqery6-light.webp","skip_dirs":[]}},"colors":{"primary":"#A31F34","secondary":null,"default_mode":"light"},"global":{"fonts":{"chinese":{"enable":false,"family":null,"url":null},"english":{"enable":false,"family":null,"url":null}},"content_max_width":"1000px","sidebar_width":"210px","hover":{"shadow":true,"scale":false},"scroll_progress":{"bar":false,"percentage":true},"website_counter":{"url":"https://cn.vercount.one/js","enable":false,"site_pv":true,"site_uv":true,"post_pv":true},"single_page":true,"preloader":true,"open_graph":true,"google_analytics":{"enable":false,"id":null}},"home_banner":{"enable":true,"style":"fixed","image":{"light":"/hide_imgs/light_banner-5.png","dark":"/hide_imgs/dark_banner.png"},"title":"Festu's Blog","subtitle":{"text":["Life Goes On."],"hitokoto":{"enable":false,"api":"https://v1.hitokoto.cn"},"typing_speed":100,"backing_speed":80,"starting_delay":500,"backing_delay":1500,"loop":false,"smart_backspace":false},"text_color":{"light":"#fff","dark":"#d1d1b6"},"text_style":{"title_size":"2.8rem","subtitle_size":"1.5rem","line_height":1.2},"custom_font":{"enable":false,"family":null,"url":null},"social_links":{"enable":true,"style":"default","links":{"github":"https://github.com/Forestsetyou","instagram":null,"zhihu":null,"twitter":null,"email":null},"qrs":{"weixin":null}}},"plugins":{"feed":{"enable":false},"aplayer":{"enable":false,"type":"fixed","audios":[{"name":null,"artist":null,"url":null,"cover":null,"lrc":null}]},"mermaid":{"enable":false,"version":"9.3.0"}},"version":"2.6.1","navbar":{"auto_hide":false,"color":{"left":"#f78736","right":"#367df7","transparency":35},"width":{"home":"1200px","pages":"1000px"},"links":{"Home":{"path":"/","icon":"fa-regular fa-house"},"Archives":{"path":"/archives","icon":"fa-regular fa-archive"},"categories":{"path":"/categories","icon":"fa-regular fa-folder"},"tags":{"path":"/tags","icon":"fa-regular fa-tags"}},"search":{"enable":true,"preload":true}},"page_templates":{"friends_column":2,"tags_style":"blur"},"home":{"sidebar":{"enable":true,"position":"left","first_item":"menu","announcement":null,"show_on_mobile":true,"links":null},"article_date_format":"auto","categories":{"enable":true,"limit":3},"tags":{"enable":true,"limit":3}},"footerStart":"2024/03/11 03:27:59"};
+    window.lang_ago = {"second":"%s seconds ago","minute":"%s minutes ago","hour":"%s hours ago","day":"%s days ago","week":"%s weeks ago","month":"%s months ago","year":"%s years ago"};
+    window.data = {"masonry":false};
+  </script>
+    
+    <!--- Fontawesome Part-->
+    
+<link rel="stylesheet" href="/fontawesome/fontawesome.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/brands.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/solid.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/regular.min.css">
+
+    
+    
+    
+    
+<meta name="generator" content="Hexo 7.1.1"></head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+
+    
+        <span class="pjax-progress-bar"></span>
+<!--        <span class="swup-progress-icon">-->
+<!--            <i class="fa-solid fa-circle-notch fa-spin"></i>-->
+<!--        </span>-->
+    
+</div>
+
+
+<main class="page-container" id="swup">
+
+    
+
+    <div class="main-content-container">
+
+
+        <div class="main-content-header">
+            <header class="navbar-container px-6 md:px-12">
+
+    <div class="navbar-content ">
+        <div class="left">
+            
+                <a class="logo-image" href="/">
+                    <img src="/hide_imgs/smiling_face.png">
+                </a>
+            
+            <a class="logo-title" href="/">
+                
+                Festu&#39;s Blog
+                
+            </a>
+        </div>
+
+        <div class="right">
+            <!-- PC -->
+            <div class="desktop">
+                <ul class="navbar-list">
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/"
+                                        >
+                                    <i class="fa-regular fa-house fa-fw"></i>
+                                    HOME
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/archives"
+                                        >
+                                    <i class="fa-regular fa-archive fa-fw"></i>
+                                    ARCHIVES
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/categories"
+                                        >
+                                    <i class="fa-regular fa-folder fa-fw"></i>
+                                    CATEGORIES
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/tags"
+                                        >
+                                    <i class="fa-regular fa-tags fa-fw"></i>
+                                    TAGS
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                    
+                        <li class="navbar-item search search-popup-trigger">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </li>
+                    
+                </ul>
+            </div>
+            <!-- Mobile -->
+            <div class="mobile">
+                
+                    <div class="icon-item search search-popup-trigger"><i class="fa-solid fa-magnifying-glass"></i>
+                    </div>
+                
+                <div class="icon-item navbar-bar">
+                    <div class="navbar-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile sheet -->
+    <div class="navbar-drawer h-screen w-full absolute top-0 left-0 bg-background-color flex flex-col justify-between">
+        <ul class="drawer-navbar-list flex flex-col px-4 justify-center items-start">
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/"
+                        >
+                            <span>
+                                HOME
+                            </span>
+                            
+                                <i class="fa-regular fa-house fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/archives"
+                        >
+                            <span>
+                                ARCHIVES
+                            </span>
+                            
+                                <i class="fa-regular fa-archive fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/categories"
+                        >
+                            <span>
+                                CATEGORIES
+                            </span>
+                            
+                                <i class="fa-regular fa-folder fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/tags"
+                        >
+                            <span>
+                                TAGS
+                            </span>
+                            
+                                <i class="fa-regular fa-tags fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+
+            
+            
+        </ul>
+
+        <div class="statistics flex justify-around my-2.5">
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/tags">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">1</div>
+        <div class="label text-third-text-color text-sm">Tags</div>
+    </a>
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/categories">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">10</div>
+        <div class="label text-third-text-color text-sm">Categories</div>
+    </a>
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/archives">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">14</div>
+        <div class="label text-third-text-color text-sm">Posts</div>
+    </a>
+</div>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="main-content-body">
+
+            
+
+            <div class="main-content">
+
+                
+                    <div class="post-page-container flex relative justify-between box-border w-full h-full">
+    <div class="article-content-container">
+
+        <div class="article-title relative w-full">
+            
+                
+                
+                <img src="/hide_imgs/post_thumbnail-2.jpg" alt="Docker" class="w-full h-60 sm:h-72 md:h-80 object-cover sm:rounded-t-large dark:brightness-75"/>
+                
+                <div class="w-full flex items-center absolute bottom-0 justify-start">
+                    <h1 class="article-title-cover text-center mx-6 my-6 text-second-text-color bg-background-color-transparent px-4 py-3 text-3xl sm:text-4xl md:text-5xl font-bold backdrop-blur-lg rounded-xl border border-border-color ">Docker</h1>
+                </div>
+            
+            </div>
+
+        
+            <div class="article-header flex flex-row gap-2 items-center px-2 sm:px-6 md:px-8">
+                <div class="avatar w-[46px] h-[46px] flex-shrink-0 rounded-medium border border-border-color p-[1px]">
+                    <img src="/hide_imgs/avatar.png">
+                </div>
+                <div class="info flex flex-col justify-between">
+                    <div class="author flex items-center">
+                        <span class="name text-default-text-color text-lg font-semibold">Forestsetyou</span>
+                        
+                    </div>
+                    <div class="meta-info">
+                        <div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fa-regular fa-pen-fancy"></i>&nbsp;
+        <span class="desktop">2023-03-11 15:54</span>
+        <span class="mobile">2023-03-11 15:54</span>
+        <span class="hover-info">Created</span>
+    </span>
+    
+        <span class="article-date article-meta-item">
+            <i class="fa-regular fa-wrench"></i>&nbsp;
+            <span class="desktop">2023-09-28 20:43</span>
+            <span class="mobile">2023-09-28 20:43</span>
+            <span class="hover-info">Updated</span>
+        </span>
+    
+
+    
+        <span class="article-categories article-meta-item">
+            <i class="fa-regular fa-folders"></i>&nbsp;
+            <ul>
+                
+                
+                    
+                        
+                        <li>
+                            <a href="/categories/Solution/">Solution</a>&nbsp;
+                        </li>
+                    
+                    
+                
+                    
+                        
+                            <li>></li>
+                        
+                        <li>
+                            <a href="/categories/Solution/Usage/">Usage</a>&nbsp;
+                        </li>
+                    
+                    
+                
+            </ul>
+        </span>
+    
+    
+
+    
+    
+    
+    
+</div>
+
+                    </div>
+                </div>
+            </div>
+        
+
+        
+
+
+        <div class="article-content markdown-body px-2 sm:px-6 md:px-8 pb-8">
+            <h1 id="Docker"><a href="#Docker" class="headerlink" title="Docker"></a>Docker</h1><p>看看文章：<a class="link"   target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/187505981" >什么是Docker <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+<p>docker基本命令：<a class="link"   target="_blank" rel="noopener" href="https://www.cnblogs.com/JMLiu/p/10277482.html" >https://www.cnblogs.com/JMLiu/p/10277482.html <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+<p><a class="link"   target="_blank" rel="noopener" href="https://hub.docker.com/" >DockerHub <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+<table>
+<thead>
+<tr>
+<th>命令</th>
+<th>主参数</th>
+<th>副参数</th>
+<th>作用对象</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Docker</td>
+<td>search</td>
+<td></td>
+<td>php</td>
+<td>dockerhub仓库搜索php</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody></table>
+<h2 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h2><ul>
+<li><p>入门文档中测试Dockerfile——getting-started时，<code>docker build . -t test</code> 总是出错在 <code>yarn install --production</code> ，原因是yarn默认使用国外源安装依赖，可能产生网络问题导致安装报错，build中断。<br>可以尝试添加yarn换源语句。</p>
+<p>build成功后，<code>docker run -dp 3000:3000 getting-started</code> 启动docker，<code>-p</code> 实现由本地的3000端口映射到容器的3000端口，<code>-d</code> 实现容器后台独立运行，访问网址：<code>localhost:3000</code></p>
+<p>当一个image被首次成功启动后，会自动被Docker Desktop添加</p>
+<p>使用 <code>docker ps</code> 查看容器的运行情况，使用 <code>docker stop &lt;the-container-id/name&gt;</code> 来停止容器（NAMES与ID皆可），停止后使用 <code>docker rm &lt;the-container-id/name&gt;</code> 来移除容器，<code>rm -f</code> 可以强制移除</p>
+</li>
+<li><p>为了将镜像push到远程仓库上的 <code>forestsetyou/start</code> 中，首先需要登录：<code>docker login -u forestsetyou</code> 接着为已有的镜像打上tag：<code>docker tag getting-started forestsetyou/start</code> 接着就可以push：<code>docker push forestsetyou/start</code> 镜像将被push到仓库”forestsetyou&#x2F;start”中。云端仓库中的镜像可以在 <a class="link"   target="_blank" rel="noopener" href="https://labs.play-with-docker.com/" >Play With Docker <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a> 中运行，登录后运行 <code>docker run -dp 3000:3000 forestsetyou/start</code> 即可运行start仓库中的镜像</p>
+</li>
+<li><p>先给<a class="link"   target="_blank" rel="noopener" href="https://blog.csdn.net/m0_37282062/article/details/115770314" >docker换源 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a>（<del>在Settings-&gt;Resources-&gt;Proxies中替换https的源即可</del> 这是代理，换源在”Docker Engine”中的 json 中配置”registry-mirrors”数组，见下面『Docker 换源』），使用 <code>docker pull ubuntu:latest</code> 获取最新版本的ubuntu镜像。</p>
+</li>
+<li><p>执行 <code>docker run -d ubuntu bash -c &quot;shuf -i 1-10000 -n 1 -o /data.txt &amp;&amp; tail -f /dev/null&quot;</code> 创建ubuntu容器并生成一个随机数写入”data.txt”中，使用 <code>docker exec &lt;container-id&gt; cat /data.txt</code> 读取内容，执行 <code>docker run -it ubuntu ls /</code> 查看同个镜像生成的另一个容器中的内容，会发现两个不相通。</p>
+</li>
+<li><p>为了保存容器中的数据（移除后也能重新获得），使用volume来记录关键的数据文件（如sqlite的”&#x2F;etc&#x2F;todos&#x2F;todo.db”），先创建volume <code>docker volume create todo-db</code> 并命名为”todo-db”，然后获得新容器：<code>docker run -dp 3000:3000 --mount type=volume,src=todo-db,target=/etc/todos getting-started</code> 该容器中的数据将会被保存，只要后续容器以同样的设置，从同一个镜像中启动，就可以继承volume中存储的数据。<code>docker volume inspect todo-db</code> 可以查看 <code>Mountpoint</code> 中存储着数据的位置</p>
+</li>
+<li><p><code>docker run -it --mount type=bind,src=&quot;getting-started/app&quot;,target=/src ubuntu bash</code> 将app文件夹共享至容器内部的”&#x2F;src”位置下，内部文件与主机共通，并启动一个容器中的交互shell，<code>Ctrl+D</code> 可退出。</p>
+</li>
+<li><p><code>docker image ls</code> ：查看已登记的镜像列表</p>
+</li>
+<li><p><code>docker images php</code> 查看所有php镜像的信息</p>
+</li>
+<li><p><code>docker exec -it &lt;id&gt; bash</code> 返回&lt;id&gt;容器的bash；<br><code>docker run -it &lt;id&gt; /bin/bash</code> 给&lt;id&gt;镜像创建容器并返回shell</p>
+</li>
+<li><p><code>docker run &lt;image&gt; -p 3000:3000</code> 这个写法看似等价于 <code>docker run -p 3000:3000 &lt;image&gt;</code> ，但实际上前者会报错，参数识别失败。且在执行该命令时中无论是否存在报错，都会构建出一个容器，只是失败的容器无法运行（Exited (1)）</p>
+</li>
+<li><p><code>docker run --rm &lt;containerName&gt;</code> 关闭容器后直接删除容器</p>
+</li>
+</ul>
+<h2 id="问题解决"><a href="#问题解决" class="headerlink" title="问题解决"></a>问题解决</h2><h3 id="报错："><a href="#报错：" class="headerlink" title="报错："></a>报错：</h3><ul>
+<li><pre><code class="error">docker build .
+
+-&gt; error during connect: This error may indicate that the docker daemon is not running.
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">  先使用 `docker images` 唤醒一下docker，再继续执行其他命令（？）</span><br><span class="line"></span><br><span class="line">* ```shell</span><br><span class="line">  Cannot connect to the Docker daemon at unix:///var/run/docker.sock. Is the docker daemon running?</span><br></pre></td></tr></table></figure></div>
+
+linux上需要使用 `service start docker` 启动docker进程
+</code></pre>
+</li>
+<li><pre><code>error during connect: This error may indicate that the docker daemon is not running.: Get &quot;http://%2F%2F.%2Fpipe%2Fdocker_engine/v1.24/containers/json?all=1&quot;: open //./pipe/docker_engine: The system cannot find the file specified.
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">&quot;docker daemon&quot;是docker的后台进程，一般在电脑开机时随docker进程一起启动，电脑长时间睡眠后试图调用docker功能就出现了该报错，猜测是后台进程已经停止，此时Docker Desktop也无法使用。</span><br><span class="line"></span><br><span class="line">尝试：</span><br><span class="line"></span><br><span class="line">```shell</span><br><span class="line">cd &quot;C:/Program Files/Docker/Docker&quot;</span><br><span class="line">./DockerCli.exe -SwitchDeamon</span><br></pre></td></tr></table></figure></div>
+
+无法解决问题；尝试重启，也无法解决问题。后来发现是之前用硬链接转存的虚拟盘突然就空了，docker找不到这个盘所以也寄了。重新安装Docker DeskTop后，启动Docker DeskTop并初始化，虚拟盘得到恢复，Desktop能够正常运行，但使用Docker的CLI，依然是同样的错误：`error during connect: This error may indicate that the docker daemon is not running.` 。使用管理员权限进入powershell（提权很重要），输入以下命令对Docker Deamon重启：
+
+<div class="highlight-container" data-rel="Powershell"><figure class="iseeu highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> <span class="string">&quot;C:\program files\docker\docker&quot;</span></span><br><span class="line">./dockercli.exe <span class="literal">-SwitchDaemon</span></span><br></pre></td></tr></table></figure></div>
+
+此时报错发生了变化：
+
+<div class="highlight-container" data-rel="Shell"><figure class="iseeu highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Error response from daemon: open \\.\pipe\docker_engine_linux: The system cannot find the file specified</span><br></pre></td></tr></table></figure></div>
+
+上一个报错是因为Docker Daemon未运行，该报错是因为daemon找不到 `&quot;\\.\pip\&quot;` 下名为 `&quot;docker_engine_windows&quot;` 的进程。参考：[docker社区针对该报错的讨论](https://forums.docker.com/t/error-response-from-daemon-open-pipe-docker-engine-windows-the-system-cannot-find-the-file-specified/131750) . 通过以下Windows命令查找 `&quot;\\.\pip\&quot;` 下 `&quot;docker_engine&quot;` 相关的文件：
+
+<div class="highlight-container" data-rel="Powershell"><figure class="iseeu highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[<span class="type">System.IO.Directory</span>]::GetFiles(<span class="string">&quot;\\.\pipe\&quot;</span>) | <span class="built_in">Select-String</span> docker_engine</span><br><span class="line"></span><br><span class="line">-&gt; \\.\pipe\docker_engine</span><br></pre></td></tr></table></figure></div>
+
+只有一个 `docker_engine` ，没有 `docker_engine_linux` ，再次重启Daemon，依然没有；
+在Windows的扩展功能中完全打开Hyper-V与虚拟机监控模块，也无法解决问题；
+重启无法解决问题；
+
+最后进入Docker DeskTop的设置中的&quot;General&quot;与&quot;Dcoker Engine&quot;中叭叭一通乱点保存，等待片刻后Docker CLI就突然能用了，再次查找Docker\_Engine发现多出了linux的。
+
+---
+
+中间也尝试重启了DockerDeskTop的服务，用管理员权限登录PowerShell，输入：
+
+<div class="highlight-container" data-rel="Powershell"><figure class="iseeu highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">net stop com.docker.service</span><br><span class="line">net <span class="built_in">start</span> com.docker.service</span><br></pre></td></tr></table></figure></div>
+
+可以关闭或开启DockerDesktop的服务。但是这并不能解决docker\_engine的问题
+</code></pre>
+</li>
+<li><p><del>书接上文</del> 没想到当初帮某人解决的问题现在自己也碰到了</p>
+<p>经测试，docker desktop 的最新版引擎会出问题，运行 CLI 时报错和上一条一样：</p>
+<div class="highlight-container" data-rel="Powershell"><figure class="iseeu highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">error during connect: This error may indicate that the docker daemon is not running.: Get <span class="string">&quot;http://%2F%2F.%2Fpipe%2Fdocker_engine/v1.24/containers/json?all=1&quot;</span>: open //./pipe/docker_engine: The system cannot find the file specified.</span><br></pre></td></tr></table></figure></div>
+
+<p>表现在客户端上，一个最大的特点就是：<strong>Docker Stopped</strong></p>
+<p>解决办法很简单，卸载最新版的 Docker，安装使用旧版本的（低于 <code>4.21.0(included)</code> ）Docker 就能完美解决</p>
+<p><a class="link"   target="_blank" rel="noopener" href="https://docs.docker.com/desktop/release-notes/" >Docker 各版本下载 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a> <a class="link"   target="_blank" rel="noopener" href="https://github.com/docker/for-win/issues/12545#issuecomment-1037225140" >相关的 Github-ISSUE <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+</li>
+</ul>
+<h3 id="更改Docker默认虚拟盘存储位置"><a href="#更改Docker默认虚拟盘存储位置" class="headerlink" title="更改Docker默认虚拟盘存储位置"></a><a class="link"   target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/343278599" >更改Docker默认虚拟盘存储位置 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></h3><p>Docker默认虚拟盘存储在 <code>C:\Users\Forestsetyou\AppData\Local\Docker\wsl\</code> 下的”data”与”distro”文件夹中，新版的docker可能是使用了WSL2的原因，将配置交付给了”.wslconfig”文件，但<a class="link"   target="_blank" rel="noopener" href="https://learn.microsoft.com/zh-cn/windows/wsl/wsl-config" >wslConfig文档 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a>中也没有说明”imageLocation”该如何配置。因此需要通过设置链接的方式来转移文件，通过将两个文件夹移到 <code>D:\DockerImages\</code> ，再通过CLI设置链接：</p>
+<div class="highlight-container" data-rel="Cmd"><figure class="iseeu highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mklink /J C:\Users\Forestsetyou\AppData\Local\Docker\wsl\data D:\DockerImages\data</span><br></pre></td></tr></table></figure></div>
+
+<p>该命令行是CMD的，powershell中语法有更改。设置完后原来的文件夹下会出现两个链接文件夹，虽然属性中看是C盘的，但实际存储空间占用的是D盘</p>
+<h4 id="2023-3-17更新"><a href="#2023-3-17更新" class="headerlink" title="2023&#x2F;3&#x2F;17更新"></a>2023&#x2F;3&#x2F;17更新</h4><p>D盘中的ext4文件会莫名消失不见，导致Docker出现奇怪的问题，目前原因不明。</p>
+<h3 id="Docker-本体换源"><a href="#Docker-本体换源" class="headerlink" title="Docker 本体换源"></a>Docker 本体换源</h3><p>Docker自己的源拉取仓库镜像经常会卡住，需要先换源再使用：<a class="link"   target="_blank" rel="noopener" href="https://blog.csdn.net/Lyon_Nee/article/details/124169099" >Windows Docker配置国内镜像源 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a> </p>
+<p>源信息：</p>
+<div class="highlight-container" data-rel="Json"><figure class="iseeu highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">&quot;registry-mirrors&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">  <span class="string">&quot;https://docker.mirrors.ustc.edu.cn&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="string">&quot;https://registry.docker-cn.com&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="string">&quot;http://hub-mirror.c.163.com&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="string">&quot;https://mirror.ccs.tencentyun.com&quot;</span></span><br><span class="line"><span class="punctuation">]</span></span><br></pre></td></tr></table></figure></div>
+
+<h3 id="Docker-容器换源"><a href="#Docker-容器换源" class="headerlink" title="Docker 容器换源"></a>Docker 容器换源</h3><p><strong>Ubuntu 镜像更新为清华源报错：</strong><code>Certificate verification failed: The certificate is NOT trusted</code> </p>
+<p>看来是证书出了问题。</p>
+<p>在 <a class="link"   target="_blank" rel="noopener" href="http://archive.ubuntu.com/ubuntu/pool/main/c/ca-certificates/" >Ubuntu 证书镜像站 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a> 下载对应版本的 deb 包，放进虚拟机的 &#x2F;tmp 文件夹下，使用 <code>dpkg -i *.deb</code> 安装证书，理论上即可解决该问题。</p>
+<p>但上述方法仍有问题。清华的源需要证书信任，但是 Ubuntu 镜像的原生源不需要，Docker 中的 Ubuntu 镜像需要先利用原生源 <code>apt update</code> 更新后才能安装一些基础软件包，例如 openssl。而证书的安装依赖 openssl，因此会死锁。</p>
+<p>换源可以用正则速通，例如快速更换为阿里的源（阿里的源也不需要证书 &#x3D; &#x3D;）：</p>
+<div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">sed -i s@/archive.ubuntu.com/@/mirrors.aliyun.com/@g /etc/apt/sources.list</span><br><span class="line">sed -i s@/security.ubuntu.com/@/mirrors.aliyun.com/@g /etc/apt/sources.list</span><br><span class="line">apt clean <span class="comment"># 删除缓存包</span></span><br><span class="line">apt update -y</span><br></pre></td></tr></table></figure></div>
+
+<p><strong>关于 <code>sed</code> ：</strong></p>
+<ul>
+<li>作为一个强大的文本处理器，他在最小化打包的 ubuntu 镜像中也预装了。</li>
+<li><code>-i</code> 表示修改文件内容。</li>
+</ul>
+<!-- flag of hidden posts -->
+        </div>
+
+        
+            <div class="post-copyright-info w-full my-8 px-2 sm:px-6 md:px-8">
+                <div class="article-copyright-info-container">
+    <ul>
+        <li><strong>Title:</strong> Docker</li>
+        <li><strong>Author:</strong> Forestsetyou</li>
+        <li><strong>Created at
+                :</strong> 2023-03-11 15:54:00</li>
+        
+            <li>
+                <strong>Updated at
+                    :</strong> 2023-09-28 20:43:00
+            </li>
+        
+        <li>
+            <strong>Link:</strong> https://forestsetyou.github.io/2023/03/11/Solution/Usage/Docker/
+        </li>
+        <li>
+            <strong>
+                License:
+            </strong>
+            
+
+            
+                This work is licensed under <a class="license" target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0">CC BY-NC-SA 4.0</a>.
+            
+        </li>
+    </ul>
+</div>
+
+            </div>
+        
+
+        
+
+        
+
+        
+
+
+        
+    </div>
+
+    
+        <div class="toc-content-container">
+            <div class="post-toc-wrap">
+    <div class="post-toc">
+        <div class="toc-title">On this page</div>
+        <div class="page-title">Docker</div>
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Docker"><span class="nav-text">Docker</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B5%8B%E8%AF%95"><span class="nav-text">测试</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%97%AE%E9%A2%98%E8%A7%A3%E5%86%B3"><span class="nav-text">问题解决</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8A%A5%E9%94%99%EF%BC%9A"><span class="nav-text">报错：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9B%B4%E6%94%B9Docker%E9%BB%98%E8%AE%A4%E8%99%9A%E6%8B%9F%E7%9B%98%E5%AD%98%E5%82%A8%E4%BD%8D%E7%BD%AE"><span class="nav-text">更改Docker默认虚拟盘存储位置 </span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Docker-%E6%9C%AC%E4%BD%93%E6%8D%A2%E6%BA%90"><span class="nav-text">Docker 本体换源</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Docker-%E5%AE%B9%E5%99%A8%E6%8D%A2%E6%BA%90"><span class="nav-text">Docker 容器换源</span></a></li></ol></li></ol></li></ol>
+
+    </div>
+</div>
+        </div>
+    
+</div>
+
+
+
+                
+
+            </div>
+
+            
+
+        </div>
+
+        <div class="main-content-footer">
+            <footer class="footer mt-5 py-5 h-auto text-base text-third-text-color relative border-t-2 border-t-border-color">
+    <div class="info-container py-3 text-center">
+        
+        <div class="text-center">
+            &copy;
+            
+              <span>2024</span>
+              -
+            
+            2024&nbsp;&nbsp;<i class="fa-solid fa-heart fa-beat" style="--fa-animation-duration: 0.5s; color: #f54545"></i>&nbsp;&nbsp;<a href="/">Forestsetyou</a>
+            
+        </div>
+        
+        <div class="relative text-center lg:absolute lg:left-[20px] lg:top-1/2 lg:-translate-y-1/2 lg:text-left">
+            <span class="lg:block text-sm">POWERED BY <?xml version="1.0" encoding="utf-8"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg class="relative top-[2px] inline-block align-baseline" version="1.1" id="圖層_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="1rem" height="1rem" viewBox="0 0 512 512" enable-background="new 0 0 512 512" xml:space="preserve"><path fill="#0E83CD" d="M256.4,25.8l-200,115.5L56,371.5l199.6,114.7l200-115.5l0.4-230.2L256.4,25.8z M349,354.6l-18.4,10.7l-18.6-11V275H200v79.6l-18.4,10.7l-18.6-11v-197l18.5-10.6l18.5,10.8V237h112v-79.6l18.5-10.6l18.5,10.8V354.6z"/></svg><a target="_blank" class="text-base" href="https://hexo.io">Hexo</a></span>
+            <span class="text-sm lg:block">THEME&nbsp;<a class="text-base" target="_blank" href="https://github.com/EvanNotFound/hexo-theme-redefine">Redefine v2.6.1</a></span>
+        </div>
+        
+        
+        
+        
+        
+    </div>  
+</footer>
+        </div>
+    </div>
+
+    
+        <div class="post-tools">
+            <div class="post-tools-container">
+    <ul class="article-tools-list">
+        <!-- TOC aside toggle -->
+        
+            <li class="right-bottom-tools page-aside-toggle">
+                <i class="fa-regular fa-outdent"></i>
+            </li>
+        
+
+        <!-- go comment -->
+        
+    </ul>
+</div>
+
+        </div>
+    
+
+    <div class="right-side-tools-container">
+        <div class="side-tools-container">
+    <ul class="hidden-tools-list">
+        <li class="right-bottom-tools tool-font-adjust-plus flex justify-center items-center">
+            <i class="fa-regular fa-magnifying-glass-plus"></i>
+        </li>
+
+        <li class="right-bottom-tools tool-font-adjust-minus flex justify-center items-center">
+            <i class="fa-regular fa-magnifying-glass-minus"></i>
+        </li>
+
+        <li class="right-bottom-tools tool-dark-light-toggle flex justify-center items-center">
+            <i class="fa-regular fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        
+
+        <li class="right-bottom-tools tool-scroll-to-bottom flex justify-center items-center">
+            <i class="fa-regular fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="visible-tools-list">
+        <li class="right-bottom-tools toggle-tools-list flex justify-center items-center">
+            <i class="fa-regular fa-cog fa-spin"></i>
+        </li>
+        
+            <li class="right-bottom-tools tool-scroll-to-top flex justify-center items-center">
+                <i class="arrow-up fas fa-arrow-up"></i>
+                <span class="percent"></span>
+            </li>
+        
+        
+    </ul>
+</div>
+
+    </div>
+
+    <div class="image-viewer-container">
+    <img src="">
+</div>
+
+
+    
+        <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-input-field-pre">
+            <i class="fa-solid fa-keyboard"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="Search..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="popup-btn-close">
+                <i class="fa-solid fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fa-solid fa-spinner fa-spin-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+
+</main>
+
+
+    
+<script src="/js/libs/Swup.min.js"></script>
+
+<script src="/js/libs/SwupSlideTheme.min.js"></script>
+
+<script src="/js/libs/SwupScriptsPlugin.min.js"></script>
+
+<script src="/js/libs/SwupProgressPlugin.min.js"></script>
+
+<script src="/js/libs/SwupScrollPlugin.min.js"></script>
+
+<script src="/js/libs/SwupPreloadPlugin.min.js"></script>
+
+<script>
+    const swup = new Swup({
+        plugins: [
+            new SwupScriptsPlugin({
+                optin: true,
+            }),
+            new SwupProgressPlugin(),
+            new SwupScrollPlugin({
+                offset: 80,
+            }),
+            new SwupSlideTheme({
+                mainElement: ".main-content-body",
+            }),
+            new SwupPreloadPlugin(),
+        ],
+        containers: ["#swup"],
+    });
+</script>
+
+
+
+
+
+
+
+<script src="/js/tools/imageViewer.js" type="module"></script>
+
+<script src="/js/utils.js" type="module"></script>
+
+<script src="/js/main.js" type="module"></script>
+
+<script src="/js/layouts/navbarShrink.js" type="module"></script>
+
+<script src="/js/tools/scrollTopBottom.js" type="module"></script>
+
+<script src="/js/tools/lightDarkSwitch.js" type="module"></script>
+
+<script src="/js/layouts/categoryList.js" type="module"></script>
+
+
+
+    
+<script src="/js/tools/localSearch.js" type="module"></script>
+
+
+
+
+    
+<script src="/js/tools/codeBlock.js" type="module"></script>
+
+
+
+
+    
+<script src="/js/layouts/lazyload.js" type="module"></script>
+
+
+
+
+
+
+  
+<script src="/js/libs/Typed.min.js"></script>
+
+  
+<script src="/js/plugins/typed.js" type="module"></script>
+
+
+
+
+
+
+
+
+
+<div class="post-scripts" data-swup-reload-script>
+    
+        
+<script src="/js/tools/tocToggle.js" type="module"></script>
+
+<script src="/js/layouts/toc.js" type="module"></script>
+
+<script src="/js/plugins/tabs.js" type="module"></script>
+
+    
+</div>
+
+
+</body>
+</html>

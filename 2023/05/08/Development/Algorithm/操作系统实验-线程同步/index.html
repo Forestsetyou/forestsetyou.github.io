@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="keywords" content="ctf, solution, note, blog">
+    
+    <meta name="author" content="Forestsetyou">
+    <!-- preconnect -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    
+    <!--- Seo Part-->
+    
+    <link rel="canonical" href="http://forestsetyou.github.io/2023/05/08/development/algorithm/操作系统实验-线程同步/"/>
+    <meta name="robots" content="index,follow">
+    <meta name="googlebot" content="index,follow">
+    <meta name="revisit-after" content="1 days">
+    
+        <meta name="description" content="false">
+<meta property="og:type" content="article">
+<meta property="og:title" content="操作系统实验-线程同步">
+<meta property="og:url" content="http://forestsetyou.github.io/2023/05/08/Development/Algorithm/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%AE%9E%E9%AA%8C-%E7%BA%BF%E7%A8%8B%E5%90%8C%E6%AD%A5/index.html">
+<meta property="og:site_name" content="Festu&#39;s Blog">
+<meta property="og:description" content="false">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2023-05-08T07:12:00.000Z">
+<meta property="article:modified_time" content="2023-08-03T10:05:00.000Z">
+<meta property="article:author" content="Forestsetyou">
+<meta property="article:tag" content="Schoolwork">
+<meta name="twitter:card" content="summary">
+    
+    
+    <!--- Icon Part-->
+    <link rel="icon" type="image/png" href="/hide_imgs/smiling_face.png" sizes="192x192">
+    <link rel="apple-touch-icon" sizes="180x180" href="/hide_imgs/smiling_face.png">
+    <meta name="theme-color" content="#A31F34">
+    <link rel="shortcut icon" href="/hide_imgs/smiling_face.png">
+    <!--- Page Info-->
+    
+    <title>
+        
+            操作系统实验-线程同步 -
+        
+        Festu&#39;s Blog
+    </title>
+
+    
+<link rel="stylesheet" href="/fonts/Chillax/chillax.css">
+
+
+    <!--- Inject Part-->
+    
+
+    
+        <style>
+    :root {
+        --preloader-background-color: #fff;
+        --preloader-text-color: #000;
+    }
+
+    @media (prefers-color-scheme: dark) {
+        :root {
+            --preloader-background-color: #202124;
+            --preloader-text-color: #fff;
+        }
+    }
+
+    @media (prefers-color-scheme: light) {
+        :root {
+            --preloader-background-color: #fff;
+            --preloader-text-color: #000;
+        }
+    }
+
+    @media (max-width: 600px) {
+        .ml13 {
+            font-size: 2.6rem !important; /* Adjust this value as needed */
+        }
+    }
+
+    .preloader {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem; /* Tailwind 'gap-4' is 1rem */
+        align-items: center;
+        justify-content: center;
+        position: fixed;
+        padding: 12px;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh; /* 'h-screen' is 100% of the viewport height */
+        background-color: var(--preloader-background-color);
+        z-index: 1100; /* 'z-[1100]' sets the z-index */
+        transition: opacity 0.2s ease-in-out;
+    }
+
+    .ml13 {
+        font-size: 3.2rem;
+        /* text-transform: uppercase; */
+        color: var(--preloader-text-color);
+        letter-spacing: -1px;
+        font-weight: 500;
+        font-family: 'Chillax-Variable', sans-serif;
+        text-align: center;
+    }
+
+    .ml13 .word {
+        display: inline-flex;
+        flex-wrap: wrap;
+        white-space: nowrap;
+    }
+
+    .ml13 .letter {
+        display: inline-block;
+        line-height: 1em;
+    }
+</style>
+
+<div class="preloader">
+    
+<script src="/js/libs/anime.min.js"></script>
+
+    <h1 class="ml13">
+        Festu&#39;s Blog
+    </h1>
+    <script>
+        var textWrapper = document.querySelector('.ml13');
+        // Split text into words
+        var words = textWrapper.textContent.trim().split(' ');
+
+        // Clear the existing content
+        textWrapper.innerHTML = '';
+
+        // Wrap each word and its letters in spans
+        words.forEach(function(word) {
+            var wordSpan = document.createElement('span');
+            wordSpan.classList.add('word');
+            wordSpan.innerHTML = word.replace(/\S/g, "<span class='letter'>$&</span>");
+            textWrapper.appendChild(wordSpan);
+            textWrapper.appendChild(document.createTextNode(' ')); // Add space between words
+        });
+
+
+        anime.timeline({loop: true})
+            .add({
+                targets: '.ml13 .letter',
+                translateY: [100,0],
+                translateZ: 0,
+                opacity: [0,1],
+                easing: "easeOutExpo",
+                duration: 1400,
+                delay: (el, i) => 300 + 30 * i
+            }).add({
+            targets: '.ml13 .letter',
+            translateY: [0,-100],
+            opacity: [1,0],
+            easing: "easeInExpo",
+            duration: 1200,
+            delay: (el, i) => 100 + 30 * i
+        });
+
+        let themeStatus = JSON.parse(localStorage.getItem('REDEFINE-THEME-STATUS'))?.isDark;
+
+        // If the theme status is not found in local storage, check the preferred color scheme
+        if (themeStatus === undefined || themeStatus === null) {
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                themeStatus = 'dark';
+            } else {
+                themeStatus = 'light';
+            }
+        }
+
+        // Now you can use the themeStatus variable in your code
+        if (themeStatus) {
+            document.documentElement.style.setProperty('--preloader-background-color', '#202124');
+            document.documentElement.style.setProperty('--preloader-text-color', '#fff');
+        } else {
+            document.documentElement.style.setProperty('--preloader-background-color', '#fff');
+            document.documentElement.style.setProperty('--preloader-text-color', '#000');
+        }
+
+        window.addEventListener('load', function () {
+            hidePreloaderAfterTimeout(1000); // Hide after 1000 milliseconds once the window has loaded
+        });
+
+        // Backup failsafe: Hide preloader after a maximum of 5000 milliseconds, regardless of the window load event
+        hidePreloaderAfterTimeout(5000);
+
+        function hidePreloaderAfterTimeout(delay) {
+            setTimeout(function () {
+                var preloader = document.querySelector('.preloader');
+                preloader.style.opacity = '0';
+                setTimeout(function () {
+                    preloader.style.display = 'none';
+                }, 200);
+            }, delay);
+        }
+    </script>
+</div>
+    
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+
+    
+        
+<link rel="stylesheet" href="/assets/build/styles.css">
+
+    
+
+    
+<link rel="stylesheet" href="/fonts/fonts.css">
+
+    
+<link rel="stylesheet" href="/fonts/Satoshi/satoshi.css">
+
+    <!--- Font Part-->
+    
+    
+    
+    
+
+
+    <script id="hexo-configurations">
+    window.config = {"hostname":"forestsetyou.github.io","root":"/","language":"en","path":"search.xml"};
+    window.theme = {"articles":{"style":{"font_size":"16px","line_height":1.5,"image_border_radius":"14px","image_alignment":"center","image_caption":false,"link_icon":true,"title_alignment":"left","headings_top_spacing":{"h1":"5rem","h2":"4rem","h3":"2.8rem","h4":"2.5rem","h5":"2.2rem","h6":"2rem"}},"word_count":{"enable":false,"count":true,"min2read":true},"author_label":{"enable":false,"auto":false,"list":[]},"code_block":{"copy":true,"style":"simple","font":{"enable":false,"family":null,"url":null}},"toc":{"enable":true,"max_depth":3,"number":false,"expand":true,"init_open":true},"copyright":{"enable":true,"default":"cc_by_nc_sa"},"lazyload":true,"recommendation":{"enable":false,"title":"推荐阅读","limit":3,"mobile_limit":2,"placeholder":"/images/wallhaven-wqery6-light.webp","skip_dirs":[]}},"colors":{"primary":"#A31F34","secondary":null,"default_mode":"light"},"global":{"fonts":{"chinese":{"enable":false,"family":null,"url":null},"english":{"enable":false,"family":null,"url":null}},"content_max_width":"1000px","sidebar_width":"210px","hover":{"shadow":true,"scale":false},"scroll_progress":{"bar":false,"percentage":true},"website_counter":{"url":"https://cn.vercount.one/js","enable":false,"site_pv":true,"site_uv":true,"post_pv":true},"single_page":true,"preloader":true,"open_graph":true,"google_analytics":{"enable":false,"id":null}},"home_banner":{"enable":true,"style":"fixed","image":{"light":"/hide_imgs/light_banner-5.png","dark":"/hide_imgs/dark_banner.png"},"title":"Festu's Blog","subtitle":{"text":["Life Goes On."],"hitokoto":{"enable":false,"api":"https://v1.hitokoto.cn"},"typing_speed":100,"backing_speed":80,"starting_delay":500,"backing_delay":1500,"loop":false,"smart_backspace":false},"text_color":{"light":"#fff","dark":"#d1d1b6"},"text_style":{"title_size":"2.8rem","subtitle_size":"1.5rem","line_height":1.2},"custom_font":{"enable":false,"family":null,"url":null},"social_links":{"enable":true,"style":"default","links":{"github":"https://github.com/Forestsetyou","instagram":null,"zhihu":null,"twitter":null,"email":null},"qrs":{"weixin":null}}},"plugins":{"feed":{"enable":false},"aplayer":{"enable":false,"type":"fixed","audios":[{"name":null,"artist":null,"url":null,"cover":null,"lrc":null}]},"mermaid":{"enable":false,"version":"9.3.0"}},"version":"2.6.1","navbar":{"auto_hide":false,"color":{"left":"#f78736","right":"#367df7","transparency":35},"width":{"home":"1200px","pages":"1000px"},"links":{"Home":{"path":"/","icon":"fa-regular fa-house"},"Archives":{"path":"/archives","icon":"fa-regular fa-archive"},"categories":{"path":"/categories","icon":"fa-regular fa-folder"},"tags":{"path":"/tags","icon":"fa-regular fa-tags"}},"search":{"enable":true,"preload":true}},"page_templates":{"friends_column":2,"tags_style":"blur"},"home":{"sidebar":{"enable":true,"position":"left","first_item":"menu","announcement":null,"show_on_mobile":true,"links":null},"article_date_format":"auto","categories":{"enable":true,"limit":3},"tags":{"enable":true,"limit":3}},"footerStart":"2024/03/11 03:27:59"};
+    window.lang_ago = {"second":"%s seconds ago","minute":"%s minutes ago","hour":"%s hours ago","day":"%s days ago","week":"%s weeks ago","month":"%s months ago","year":"%s years ago"};
+    window.data = {"masonry":false};
+  </script>
+    
+    <!--- Fontawesome Part-->
+    
+<link rel="stylesheet" href="/fontawesome/fontawesome.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/brands.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/solid.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/regular.min.css">
+
+    
+    
+    
+    
+<meta name="generator" content="Hexo 7.1.1"></head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+
+    
+        <span class="pjax-progress-bar"></span>
+<!--        <span class="swup-progress-icon">-->
+<!--            <i class="fa-solid fa-circle-notch fa-spin"></i>-->
+<!--        </span>-->
+    
+</div>
+
+
+<main class="page-container" id="swup">
+
+    
+
+    <div class="main-content-container">
+
+
+        <div class="main-content-header">
+            <header class="navbar-container px-6 md:px-12">
+
+    <div class="navbar-content ">
+        <div class="left">
+            
+                <a class="logo-image" href="/">
+                    <img src="/hide_imgs/smiling_face.png">
+                </a>
+            
+            <a class="logo-title" href="/">
+                
+                Festu&#39;s Blog
+                
+            </a>
+        </div>
+
+        <div class="right">
+            <!-- PC -->
+            <div class="desktop">
+                <ul class="navbar-list">
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/"
+                                        >
+                                    <i class="fa-regular fa-house fa-fw"></i>
+                                    HOME
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/archives"
+                                        >
+                                    <i class="fa-regular fa-archive fa-fw"></i>
+                                    ARCHIVES
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/categories"
+                                        >
+                                    <i class="fa-regular fa-folder fa-fw"></i>
+                                    CATEGORIES
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/tags"
+                                        >
+                                    <i class="fa-regular fa-tags fa-fw"></i>
+                                    TAGS
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                    
+                        <li class="navbar-item search search-popup-trigger">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </li>
+                    
+                </ul>
+            </div>
+            <!-- Mobile -->
+            <div class="mobile">
+                
+                    <div class="icon-item search search-popup-trigger"><i class="fa-solid fa-magnifying-glass"></i>
+                    </div>
+                
+                <div class="icon-item navbar-bar">
+                    <div class="navbar-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile sheet -->
+    <div class="navbar-drawer h-screen w-full absolute top-0 left-0 bg-background-color flex flex-col justify-between">
+        <ul class="drawer-navbar-list flex flex-col px-4 justify-center items-start">
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/"
+                        >
+                            <span>
+                                HOME
+                            </span>
+                            
+                                <i class="fa-regular fa-house fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/archives"
+                        >
+                            <span>
+                                ARCHIVES
+                            </span>
+                            
+                                <i class="fa-regular fa-archive fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/categories"
+                        >
+                            <span>
+                                CATEGORIES
+                            </span>
+                            
+                                <i class="fa-regular fa-folder fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/tags"
+                        >
+                            <span>
+                                TAGS
+                            </span>
+                            
+                                <i class="fa-regular fa-tags fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+
+            
+            
+        </ul>
+
+        <div class="statistics flex justify-around my-2.5">
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/tags">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">1</div>
+        <div class="label text-third-text-color text-sm">Tags</div>
+    </a>
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/categories">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">10</div>
+        <div class="label text-third-text-color text-sm">Categories</div>
+    </a>
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/archives">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">14</div>
+        <div class="label text-third-text-color text-sm">Posts</div>
+    </a>
+</div>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="main-content-body">
+
+            
+
+            <div class="main-content">
+
+                
+                    <div class="post-page-container flex relative justify-between box-border w-full h-full">
+    <div class="article-content-container">
+
+        <div class="article-title relative w-full">
+            
+                
+                
+                <img src="/hide_imgs/post_thumbnail-1.png" alt="操作系统实验-线程同步" class="w-full h-60 sm:h-72 md:h-80 object-cover sm:rounded-t-large dark:brightness-75"/>
+                
+                <div class="w-full flex items-center absolute bottom-0 justify-start">
+                    <h1 class="article-title-cover text-center mx-6 my-6 text-second-text-color bg-background-color-transparent px-4 py-3 text-3xl sm:text-4xl md:text-5xl font-bold backdrop-blur-lg rounded-xl border border-border-color ">操作系统实验-线程同步</h1>
+                </div>
+            
+            </div>
+
+        
+            <div class="article-header flex flex-row gap-2 items-center px-2 sm:px-6 md:px-8">
+                <div class="avatar w-[46px] h-[46px] flex-shrink-0 rounded-medium border border-border-color p-[1px]">
+                    <img src="/hide_imgs/avatar.png">
+                </div>
+                <div class="info flex flex-col justify-between">
+                    <div class="author flex items-center">
+                        <span class="name text-default-text-color text-lg font-semibold">Forestsetyou</span>
+                        
+                    </div>
+                    <div class="meta-info">
+                        <div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fa-regular fa-pen-fancy"></i>&nbsp;
+        <span class="desktop">2023-05-08 15:12</span>
+        <span class="mobile">2023-05-08 15:12</span>
+        <span class="hover-info">Created</span>
+    </span>
+    
+        <span class="article-date article-meta-item">
+            <i class="fa-regular fa-wrench"></i>&nbsp;
+            <span class="desktop">2023-08-03 18:05</span>
+            <span class="mobile">2023-08-03 18:05</span>
+            <span class="hover-info">Updated</span>
+        </span>
+    
+
+    
+        <span class="article-categories article-meta-item">
+            <i class="fa-regular fa-folders"></i>&nbsp;
+            <ul>
+                
+                
+                    
+                        
+                        <li>
+                            <a href="/categories/Development/">Development</a>&nbsp;
+                        </li>
+                    
+                    
+                
+                    
+                        
+                            <li>></li>
+                        
+                        <li>
+                            <a href="/categories/Development/Algorithm/">Algorithm</a>&nbsp;
+                        </li>
+                    
+                    
+                
+            </ul>
+        </span>
+    
+    
+        <span class="article-tags article-meta-item">
+            <i class="fa-regular fa-tags"></i>&nbsp;
+            <ul>
+                
+                    <li>
+                        <a href="/tags/Schoolwork/">Schoolwork</a>&nbsp;
+                    </li>
+                
+            </ul>
+        </span>
+    
+
+    
+    
+    
+    
+</div>
+
+                    </div>
+                </div>
+            </div>
+        
+
+        
+
+
+        <div class="article-content markdown-body px-2 sm:px-6 md:px-8 pb-8">
+            <p>使用Windows提供的API线程接口实现。</p>
+<p>参考：<a class="link"   target="_blank" rel="noopener" href="https://blog.csdn.net/qq_41924554/article/details/118335070" >C++创建线程示例 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a>，<a class="link"   target="_blank" rel="noopener" href="https://blog.csdn.net/a3192048/article/details/82152618" >C++多线程 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a>，<a class="link"   target="_blank" rel="noopener" href="https://learn.microsoft.com/zh-cn/windows/win32/procthread/multiple-threads" >微软多线程编程文档 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a>，</p>
+<h2 id="线程创建与撤销"><a href="#线程创建与撤销" class="headerlink" title="线程创建与撤销"></a>线程创建与撤销</h2><h3 id="参数说明"><a href="#参数说明" class="headerlink" title="参数说明"></a>参数说明</h3><p><code>LPVOID</code> 是无类型指针，做形参可接收任意类型的指针</p>
+<p><code>Void ExitThread(DWORD dwExitCode)</code> 在线程函数内执行该线程的撤销，等价于内部的return。</p>
+<p><code>Bool TerminateThread( HANDLE hThread, DWORD dwExitCode)</code> 在线程函数外部强行终止指定线程，并赋予指定结束码。</p>
+<p><code>Sleep(DWORD dwMilliseconds)</code> 挂起当前线程，dwMilliseconds为挂起传入时间，单位为ms；取值为INFINITE则无限延迟，设为0ms则立即交出时间片。</p>
+<p><code>Bool CloseHandle(HANDLE hObject)</code> 关闭句柄</p>
+<p><code>CreateThread()</code> 参数1为安全策略，参数2为初始栈规模，参数3为回调函数（有指定格式），参数4为回调函数的参数（一个结构体），参数5为线程何时开始运行，参数6为获取线程id的指针。<br>示例：<code>CreateThread(NULL, 0, test, NULL, 0, NULL)</code> 表示安全策略默认；初始栈规模默认；函数使用形如：</p>
+<div class="highlight-container" data-rel="Cpp"><figure class="iseeu highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">DWORD WINAPI <span class="title">test</span><span class="params">(LPVOID)</span></span>;</span><br></pre></td></tr></table></figure></div>
+
+<p>的test函数；无传入参数；线程创建后立即执行；不读取线程id。</p>
+<h3 id="源码"><a href="#源码" class="headerlink" title="源码"></a>源码</h3><div class="highlight-container" data-rel="Cpp"><figure class="iseeu highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;thread&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;windows.h&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"></span><br><span class="line"><span class="function">DWORD WINAPI <span class="title">hello</span><span class="params">(LPVOID)</span></span>&#123;</span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;hello world!\n&quot;</span>;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function">DWORD WINAPI <span class="title">name</span><span class="params">(LPVOID)</span></span>&#123;</span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;My name is ZYX.\n&quot;</span>;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function">DWORD WINAPI <span class="title">timely</span><span class="params">(LPVOID)</span></span>&#123;</span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;Please wait for 5s.\n&quot;</span>;</span><br><span class="line">    <span class="built_in">Sleep</span>(<span class="number">5000</span>);</span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;I wake up!&quot;</span>&lt;&lt;endl;</span><br><span class="line">    <span class="built_in">ExitThread</span>(<span class="number">0</span>);  <span class="comment">// 等价于 return 0;</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    HANDLE threada, threadb, threadc;</span><br><span class="line">    threada = <span class="built_in">CreateThread</span>(<span class="literal">NULL</span>, <span class="number">0</span>, hello, <span class="literal">NULL</span>, <span class="number">0</span>, <span class="literal">NULL</span>);</span><br><span class="line">    threadb = <span class="built_in">CreateThread</span>(<span class="literal">NULL</span>, <span class="number">0</span>, name, <span class="literal">NULL</span>, <span class="number">0</span>, <span class="literal">NULL</span>);</span><br><span class="line">    threadc = <span class="built_in">CreateThread</span>(<span class="literal">NULL</span>, <span class="number">0</span>, timely, <span class="literal">NULL</span>, <span class="number">0</span>, <span class="literal">NULL</span>);</span><br><span class="line">    <span class="built_in">Sleep</span>(<span class="number">6000</span>);</span><br><span class="line">    <span class="built_in">CloseHandle</span>(threada);</span><br><span class="line">    <span class="built_in">CloseHandle</span>(threadb);</span><br><span class="line">    <span class="built_in">CloseHandle</span>(threadc);</span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;Main thread ends.&quot;</span>;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+
+
+
+<h2 id="线程同步"><a href="#线程同步" class="headerlink" title="线程同步"></a>线程同步</h2><p>参考：<a class="link"   target="_blank" rel="noopener" href="https://www.cnblogs.com/priarieNew/p/9753419.html" >C++信号量用法 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+<h3 id="参数说明-1"><a href="#参数说明-1" class="headerlink" title="参数说明"></a>参数说明</h3><p><code>CreateSemaphore()</code> 创建信号量并返回一个句柄，该句柄用于表示特定的信号量对象。<br>参数1表示安全策略，参数2表示基础资源数量，参数3表示最大资源数量，参数4为信号量命名。<br><strong>同一命名创建的信号量是共享实时资源数量的</strong>。</p>
+<p><code>OpenSemaphore()</code> 表示打开一类已有的信号量，赋予一个新的句柄一个新的信号量对象。</p>
+<p><code>WaitForSingleObject(Semaphore, INFINITE)</code> 会等待信号量处于信号态（资源数量&gt;0）再继续执行，同时会使目标信号量减一，即再次占用资源。</p>
+<h3 id="源码-1"><a href="#源码-1" class="headerlink" title="源码"></a>源码</h3><div class="highlight-container" data-rel="Cpp"><figure class="iseeu highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;Windows.h&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"></span><br><span class="line"><span class="function">DWORD WINAPI <span class="title">test</span><span class="params">(LPVOID)</span></span>;</span><br><span class="line">HANDLE myThread, mySemaphore;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="built_in">CreateSemaphore</span>(<span class="literal">NULL</span>, <span class="number">0</span>, <span class="number">1</span>, <span class="string">&quot;A&quot;</span>);</span><br><span class="line">    mySemaphore = <span class="built_in">OpenSemaphore</span>(SYNCHRONIZE | SEMAPHORE_MODIFY_STATE, <span class="literal">NULL</span>, <span class="string">&quot;A&quot;</span>);</span><br><span class="line">    myThread = <span class="built_in">CreateThread</span>(<span class="literal">NULL</span>, <span class="number">0</span>, test, <span class="literal">NULL</span>, <span class="number">0</span>, <span class="literal">NULL</span>);</span><br><span class="line">    <span class="built_in">WaitForSingleObject</span>(mySemaphore, INFINITE);</span><br><span class="line">    <span class="built_in">CloseHandle</span>(mySemaphore);</span><br><span class="line">    <span class="built_in">CloseHandle</span>(myThread);</span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;Main thread ends.&quot;</span>;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function">DWORD WINAPI <span class="title">test</span><span class="params">(LPVOID par)</span></span>&#123;</span><br><span class="line">    <span class="built_in">Sleep</span>(<span class="number">5000</span>);</span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;I am over.\n&quot;</span>;</span><br><span class="line">    <span class="built_in">ReleaseSemaphore</span>(mySemaphore, <span class="number">1</span>, <span class="literal">NULL</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+
+
+
+<h2 id="线程互斥"><a href="#线程互斥" class="headerlink" title="线程互斥"></a>线程互斥</h2><p>参考：<a class="link"   target="_blank" rel="noopener" href="https://blog.csdn.net/Usuitakumi/article/details/121754679" >C++互斥量-信号量-临界区 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a>，<a class="link"   target="_blank" rel="noopener" href="https://blog.csdn.net/Sakuya__/article/details/108416132" >Windows临界区使用 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a>，<a class="link"   target="_blank" rel="noopener" href="https://blog.csdn.net/self_mind/article/details/49820381" >C++临界区-互斥对象-事件对象区别 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+<h3 id="源码-2"><a href="#源码-2" class="headerlink" title="源码"></a>源码</h3><div class="highlight-container" data-rel="Cpp"><figure class="iseeu highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;Windows.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"></span><br><span class="line">CRITICAL_SECTION cs;    <span class="comment">// 临界区</span></span><br><span class="line"></span><br><span class="line"><span class="function">DWORD WINAPI <span class="title">cFunc1</span><span class="params">(LPVOID)</span></span>;</span><br><span class="line"><span class="function">DWORD WINAPI <span class="title">cFunc2</span><span class="params">(LPVOID)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> cCnt = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">bool</span> <span class="title">CriticalTest</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="comment">// 初始化临界区</span></span><br><span class="line">    <span class="built_in">InitializeCriticalSection</span>(&amp;cs);</span><br><span class="line">    HANDLE h1, h2;</span><br><span class="line">    h1 = <span class="built_in">CreateThread</span>(<span class="literal">NULL</span>, <span class="number">0</span>, cFunc1, <span class="literal">NULL</span>, <span class="number">0</span>, <span class="literal">NULL</span>);</span><br><span class="line">    h2 = <span class="built_in">CreateThread</span>(<span class="literal">NULL</span>, <span class="number">0</span>, cFunc2, <span class="literal">NULL</span>, <span class="number">0</span>, <span class="literal">NULL</span>);</span><br><span class="line">    <span class="built_in">WaitForSingleObject</span>(h1, INFINITE);</span><br><span class="line">    <span class="built_in">WaitForSingleObject</span>(h2, INFINITE);</span><br><span class="line">    <span class="built_in">DeleteCriticalSection</span>(&amp;cs);</span><br><span class="line">    <span class="built_in">CloseHandle</span>(h1);</span><br><span class="line">    <span class="built_in">CloseHandle</span>(h2);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function">DWORD WINAPI <span class="title">cFunc1</span><span class="params">(LPVOID)</span></span>&#123;</span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;func1调用并等待进入临界区\n&quot;</span>;</span><br><span class="line">    <span class="built_in">EnterCriticalSection</span>(&amp;cs);</span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;func1进入临界区\n&quot;</span>;</span><br><span class="line">    cCnt += <span class="number">1</span>;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;count = %d\n&quot;</span>, cCnt);</span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;func1退出临界区\n&quot;</span>;</span><br><span class="line">    <span class="built_in">LeaveCriticalSection</span>(&amp;cs);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function">DWORD WINAPI <span class="title">cFunc2</span><span class="params">(LPVOID)</span></span>&#123;</span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;func2调用并等待进入临界区\n&quot;</span>;</span><br><span class="line">    <span class="built_in">EnterCriticalSection</span>(&amp;cs);</span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;func2进入临界区\n&quot;</span>;</span><br><span class="line">    cCnt += <span class="number">1</span>;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;count = %d\n&quot;</span>, cCnt);</span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;func2退出临界区\n&quot;</span>;</span><br><span class="line">    <span class="built_in">LeaveCriticalSection</span>(&amp;cs);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">HANDLE Mutex;</span><br><span class="line"></span><br><span class="line"><span class="function">DWORD WINAPI <span class="title">mFunc1</span><span class="params">(LPVOID)</span></span>;</span><br><span class="line"><span class="function">DWORD WINAPI <span class="title">mFunc2</span><span class="params">(LPVOID)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> mCnt = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">bool</span> <span class="title">MutexTest</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="comment">// 初始化临界区</span></span><br><span class="line">    Mutex = <span class="built_in">CreateMutex</span>(<span class="literal">NULL</span>, <span class="number">0</span>, <span class="string">&quot;A&quot;</span>);</span><br><span class="line"></span><br><span class="line">    HANDLE h1, h2;</span><br><span class="line">    h1 = <span class="built_in">CreateThread</span>(<span class="literal">NULL</span>, <span class="number">0</span>, mFunc1, <span class="literal">NULL</span>, <span class="number">0</span>, <span class="literal">NULL</span>);</span><br><span class="line">    h2 = <span class="built_in">CreateThread</span>(<span class="literal">NULL</span>, <span class="number">0</span>, mFunc2, <span class="literal">NULL</span>, <span class="number">0</span>, <span class="literal">NULL</span>);</span><br><span class="line">    </span><br><span class="line">    <span class="built_in">WaitForSingleObject</span>(h1, INFINITE);</span><br><span class="line">    <span class="built_in">WaitForSingleObject</span>(h2, INFINITE);</span><br><span class="line">    </span><br><span class="line">    <span class="built_in">CloseHandle</span>(Mutex);</span><br><span class="line">    <span class="built_in">CloseHandle</span>(h1);</span><br><span class="line">    <span class="built_in">CloseHandle</span>(h2);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function">DWORD WINAPI <span class="title">mFunc1</span><span class="params">(LPVOID)</span></span>&#123;</span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;func1调用并等待互斥信号\n&quot;</span>;</span><br><span class="line">    <span class="built_in">WaitForSingleObject</span>(Mutex, INFINITE);</span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;func1通过互斥信号\n&quot;</span>;</span><br><span class="line">    mCnt += <span class="number">1</span>;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;count = %d\n&quot;</span>, mCnt);</span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;func1释放互斥信号\n&quot;</span>;</span><br><span class="line">    <span class="built_in">ReleaseMutex</span>(Mutex);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function">DWORD WINAPI <span class="title">mFunc2</span><span class="params">(LPVOID)</span></span>&#123;</span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;func2调用并等待互斥信号\n&quot;</span>;</span><br><span class="line">    <span class="built_in">WaitForSingleObject</span>(Mutex, INFINITE);</span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;func2通过互斥信号\n&quot;</span>;</span><br><span class="line">    mCnt += <span class="number">1</span>;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;count = %d\n&quot;</span>, mCnt);</span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;func2释放互斥信号\n&quot;</span>;</span><br><span class="line">    <span class="built_in">ReleaseMutex</span>(Mutex);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;---------临界区实现线程同步---------&quot;</span>&lt;&lt;endl;</span><br><span class="line">    <span class="built_in">CriticalTest</span>();</span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;----------互斥实现线程同步----------&quot;</span>&lt;&lt;endl;</span><br><span class="line">    <span class="built_in">MutexTest</span>();</span><br><span class="line">    <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+
+
+
+<h2 id="管道通信"><a href="#管道通信" class="headerlink" title="管道通信"></a>管道通信</h2><p>参考：<a class="link"   target="_blank" rel="noopener" href="https://blog.csdn.net/sinat_31608641/article/details/106868309" >C++的创建命名管道 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a>，<a class="link"   target="_blank" rel="noopener" href="https://www.cnblogs.com/shuzhongke/p/15261643.html" >C++进程通信之命名管道 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a>，<a class="link"   target="_blank" rel="noopener" href="https://blog.csdn.net/qq_15029743/article/details/79508568" >C++命名管道详解 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+<h3 id="参数说明-2"><a href="#参数说明-2" class="headerlink" title="参数说明"></a>参数说明</h3><p><code>PeekNamedPipe</code> 函数将数据从命名管道或匿名管道复制到缓冲区中，而不将其从管道中删除。 它还返回有关管道中的数据的信息。</p>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">BOOL PeekNamedPipe(</span><br><span class="line">  [in]            HANDLE  hNamedPipe,</span><br><span class="line">  [out, optional] LPVOID  lpBuffer,</span><br><span class="line">  [in]            DWORD   nBufferSize,</span><br><span class="line">  [out, optional] LPDWORD lpBytesRead,</span><br><span class="line">  [out, optional] LPDWORD lpTotalBytesAvail,</span><br><span class="line">  [out, optional] LPDWORD lpBytesLeftThisMessage</span><br><span class="line">);</span><br></pre></td></tr></table></figure></div>
+
+<p>该函数有特性：</p>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">函数始终在单线程应用程序中立即返回，即使管道中没有数据也是如此。 命名管道句柄 (阻塞或非阻塞) 的等待模式对函数没有影响。</span><br></pre></td></tr></table></figure></div>
+
+<p>这使得它不受等待模式限制，不会被阻塞。</p>
+<p>对于 <code>ReadFile()</code> ，其是否等待受命名管道句柄的等待模式影响，但 <code>PIPE_NOWAIT</code> 同时对 <code>ReadFile, WriteFile, ConnectNamedPipe</code> 生效，这会导致连接管道时就不等待，管道的建立提升难度。</p>
+<h3 id="源码-3"><a href="#源码-3" class="headerlink" title="源码"></a>源码</h3><p>服务端：</p>
+<div class="highlight-container" data-rel="Cpp"><figure class="iseeu highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;Windows.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"><span class="meta">#<span class="keyword">define</span> MAX_BUF 255</span></span><br><span class="line"></span><br><span class="line">HANDLE pipe;</span><br><span class="line">HANDLE rec;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">readFile</span><span class="params">(HANDLE pipe, <span class="type">char</span> * str, string&amp; fstr)</span></span>&#123;</span><br><span class="line">    <span class="type">bool</span> suc = <span class="literal">false</span>;</span><br><span class="line">    DWORD len = <span class="number">0</span>;</span><br><span class="line">    <span class="type">int</span> cnt = <span class="number">0</span>;</span><br><span class="line">    <span class="built_in">PeekNamedPipe</span>(pipe, str, MAX_BUF * <span class="built_in">sizeof</span>(<span class="type">char</span>), &amp;len, <span class="literal">NULL</span>, <span class="literal">NULL</span>);</span><br><span class="line">    <span class="keyword">if</span>(len &lt;= <span class="number">0</span>)&#123;   <span class="comment">// 无消息可读</span></span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">while</span>(<span class="number">1</span>)&#123;</span><br><span class="line">        suc = <span class="built_in">ReadFile</span>(pipe, str, MAX_BUF * <span class="built_in">sizeof</span>(<span class="type">char</span>), &amp;len, <span class="literal">NULL</span>);    <span class="comment">// 每次读取到最多255个字符</span></span><br><span class="line">        fstr.<span class="built_in">append</span>(str);   <span class="comment">// 接入到字符串</span></span><br><span class="line">        <span class="keyword">if</span>(len&gt;<span class="number">0</span>) cnt++;</span><br><span class="line">        <span class="keyword">if</span>(!suc || len&lt;MAX_BUF)&#123;    <span class="comment">// 读取失败或者读取完毕（个数小于最大数）</span></span><br><span class="line">            <span class="keyword">return</span> cnt;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function">DWORD WINAPI <span class="title">recvCheck</span><span class="params">(LPVOID)</span></span>&#123;</span><br><span class="line">    <span class="keyword">while</span>(<span class="number">1</span>)&#123;</span><br><span class="line">        <span class="built_in">Sleep</span>(<span class="number">1000</span>);    <span class="comment">// 每隔一秒检测是否有接收到信息</span></span><br><span class="line">        <span class="type">char</span> buf[MAX_BUF] = <span class="string">&quot;&quot;</span>;</span><br><span class="line">        string finalStr = <span class="string">&quot;&quot;</span>;</span><br><span class="line">        <span class="type">int</span> flag;</span><br><span class="line">        flag = <span class="built_in">readFile</span>(pipe, buf, finalStr);</span><br><span class="line">        <span class="keyword">switch</span>(flag)&#123;</span><br><span class="line">            <span class="keyword">case</span> <span class="number">0</span>:&#123;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">default</span>:&#123;</span><br><span class="line">                cout&lt;&lt;<span class="string">&quot;From Client: &quot;</span>&lt;&lt;finalStr&lt;&lt;endl;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;服务端上线\n&quot;</span>&lt;&lt;<span class="string">&quot;创建命名管道并等待连接...\n&quot;</span>;</span><br><span class="line">    pipe = <span class="built_in">CreateNamedPipe</span>(<span class="built_in">TEXT</span>(<span class="string">&quot;\\\\.\\Pipe\\zyx&quot;</span>),  <span class="comment">// 管道名称</span></span><br><span class="line">        PIPE_ACCESS_DUPLEX,     <span class="comment">// 双向管道</span></span><br><span class="line">        PIPE_TYPE_MESSAGE | PIPE_READMODE_MESSAGE | PIPE_WAIT,  <span class="comment">// 信息流且等待</span></span><br><span class="line">        PIPE_UNLIMITED_INSTANCES,   <span class="comment">// 示例数量无上限（255）</span></span><br><span class="line">        <span class="number">0</span>,      <span class="comment">// 输出缓冲区保留0</span></span><br><span class="line">        <span class="number">0</span>,      <span class="comment">// 输入缓冲区保留0</span></span><br><span class="line">        <span class="number">1000</span>,   <span class="comment">// 等待时长无限</span></span><br><span class="line">        <span class="number">0</span>); <span class="comment">// 安全策略默认</span></span><br><span class="line">    <span class="keyword">if</span>(pipe == INVALID_HANDLE_VALUE || pipe == <span class="literal">NULL</span>)&#123;</span><br><span class="line">        cout&lt;&lt;<span class="string">&quot;管道创建失败!\n&quot;</span>&lt;&lt;<span class="built_in">GetLastError</span>();</span><br><span class="line">        <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 等待连接</span></span><br><span class="line">    <span class="keyword">if</span>(<span class="built_in">ConnectNamedPipe</span>(pipe, <span class="literal">NULL</span>) != <span class="literal">NULL</span>)&#123;</span><br><span class="line">        cout&lt;&lt;<span class="string">&quot;连接成功，开始通信!\n&quot;</span>;</span><br><span class="line">        rec = <span class="built_in">CreateThread</span>(<span class="literal">NULL</span>, <span class="number">0</span>, recvCheck, <span class="literal">NULL</span>, <span class="number">0</span>, <span class="literal">NULL</span>);</span><br><span class="line">        string inC;</span><br><span class="line">        DWORD dwWrite;</span><br><span class="line">        <span class="type">bool</span> flag;</span><br><span class="line">        <span class="keyword">while</span>(<span class="number">1</span>)&#123;</span><br><span class="line">            <span class="built_in">getline</span>(cin, inC);  <span class="comment">// cin忽略空白字符，因此它实际上接收不到为空的内容，换成getline就可以</span></span><br><span class="line">            <span class="keyword">if</span>(inC.<span class="built_in">length</span>()==<span class="number">0</span>)&#123;    <span class="comment">// 输入为空</span></span><br><span class="line">                <span class="comment">// 啥也不做</span></span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="keyword">if</span>(inC==<span class="string">&quot;end&quot;</span>) <span class="keyword">break</span>;   <span class="comment">// 退出</span></span><br><span class="line">                <span class="keyword">else</span>&#123;   <span class="comment">// 写入数据并传送</span></span><br><span class="line">                    flag = <span class="built_in">WriteFile</span>(pipe, inC.<span class="built_in">c_str</span>(), inC.<span class="built_in">length</span>(), <span class="literal">NULL</span>, <span class="literal">NULL</span>);</span><br><span class="line">                    <span class="keyword">if</span>(!flag)&#123;</span><br><span class="line">                        cout&lt;&lt;<span class="string">&quot;Failed to sent data!\n&quot;</span>;</span><br><span class="line">                        <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">                    &#125;</span><br><span class="line">                    cout&lt;&lt;<span class="string">&quot;To Client: &quot;</span>&lt;&lt;inC&lt;&lt;endl;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        cout&lt;&lt;<span class="string">&quot;管道连接失败!&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;已经关闭管道\n&quot;</span>;</span><br><span class="line">    <span class="built_in">DisconnectNamedPipe</span>(pipe);  <span class="comment">// 关闭管道连接</span></span><br><span class="line">    <span class="built_in">TerminateThread</span>(rec, <span class="number">0</span>);   <span class="comment">// 终止接收检测</span></span><br><span class="line">    <span class="built_in">CloseHandle</span>(rec);</span><br><span class="line">    <span class="built_in">CloseHandle</span>(pipe);</span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;服务端下线\n&quot;</span>;</span><br><span class="line">    <span class="built_in">system</span>(<span class="string">&quot;pause&quot;</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+
+<p>客户端：</p>
+<div class="highlight-container" data-rel="Cpp"><figure class="iseeu highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 客户端</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;Windows.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;conio.h&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"><span class="meta">#<span class="keyword">define</span> MAX_BUF 255</span></span><br><span class="line">    </span><br><span class="line">HANDLE pipe, rec;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">readFile</span><span class="params">(HANDLE pipe, <span class="type">char</span> * str, string&amp; fstr)</span></span>&#123;</span><br><span class="line">    <span class="type">bool</span> suc = <span class="literal">false</span>;</span><br><span class="line">    DWORD len = <span class="number">0</span>;</span><br><span class="line">    <span class="type">int</span> cnt = <span class="number">0</span>;</span><br><span class="line">    <span class="built_in">PeekNamedPipe</span>(pipe, str, MAX_BUF * <span class="built_in">sizeof</span>(<span class="type">char</span>), &amp;len, <span class="literal">NULL</span>, <span class="literal">NULL</span>);</span><br><span class="line">    <span class="keyword">if</span>(len &lt;= <span class="number">0</span>)&#123;   <span class="comment">// 无消息可读</span></span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">while</span>(<span class="number">1</span>)&#123;</span><br><span class="line">        suc = <span class="built_in">ReadFile</span>(pipe, str, MAX_BUF * <span class="built_in">sizeof</span>(<span class="type">char</span>), &amp;len, <span class="literal">NULL</span>);    <span class="comment">// 每次读取到最多255个字符</span></span><br><span class="line">        fstr.<span class="built_in">append</span>(str);   <span class="comment">// 接入到字符串</span></span><br><span class="line">        <span class="keyword">if</span>(len&gt;<span class="number">0</span>) cnt++;</span><br><span class="line">        <span class="keyword">if</span>(!suc || len&lt;MAX_BUF)&#123;    <span class="comment">// 读取失败或者读取完毕（个数小于最大数）</span></span><br><span class="line">            <span class="keyword">return</span> cnt;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function">DWORD WINAPI <span class="title">recvCheck</span><span class="params">(LPVOID)</span></span>&#123;</span><br><span class="line">    <span class="keyword">while</span>(<span class="number">1</span>)&#123;</span><br><span class="line">        <span class="built_in">Sleep</span>(<span class="number">1000</span>);    <span class="comment">// 每隔一秒检测是否有接收到信息</span></span><br><span class="line">        <span class="type">char</span> buf[MAX_BUF] = <span class="string">&quot;&quot;</span>;</span><br><span class="line">        string finalStr = <span class="string">&quot;&quot;</span>;</span><br><span class="line">        <span class="type">int</span> flag;</span><br><span class="line">        flag = <span class="built_in">readFile</span>(pipe, buf, finalStr);</span><br><span class="line">        <span class="keyword">switch</span>(flag)&#123;</span><br><span class="line">            <span class="keyword">case</span> <span class="number">0</span>:&#123;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">default</span>:&#123;</span><br><span class="line">                cout&lt;&lt;<span class="string">&quot;From Server: &quot;</span>&lt;&lt;finalStr&lt;&lt;endl;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;客户端上线\n&quot;</span>&lt;&lt;<span class="string">&quot;按任意键开始连接命名管道...\n&quot;</span>;</span><br><span class="line">    _getch();</span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;等待命名管道...\n&quot;</span>;</span><br><span class="line">    <span class="keyword">if</span>(<span class="built_in">WaitNamedPipe</span>(<span class="built_in">TEXT</span>(<span class="string">&quot;\\\\.\\Pipe\\zyx&quot;</span>), NMPWAIT_WAIT_FOREVER) == FALSE)&#123; <span class="comment">// 若命名管道没有打开则直接退出</span></span><br><span class="line">        cout&lt;&lt;<span class="string">&quot;命名管道未上线&quot;</span>;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;成功打开命名管道\n&quot;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 开始连接命名管道</span></span><br><span class="line">    pipe = <span class="built_in">CreateFile</span>(<span class="built_in">TEXT</span>(<span class="string">&quot;\\\\.\\Pipe\\zyx&quot;</span>), GENERIC_READ | GENERIC_WRITE, <span class="number">0</span>, <span class="literal">NULL</span>, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, <span class="literal">NULL</span>);</span><br><span class="line">    <span class="keyword">if</span>(pipe == <span class="literal">NULL</span> || pipe == INVALID_HANDLE_VALUE)&#123;</span><br><span class="line">        cout&lt;&lt;<span class="string">&quot;管道连接失败!\n&quot;</span>&lt;&lt;<span class="built_in">GetLastError</span>();</span><br><span class="line">        <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;连接成功,开始通信!\n&quot;</span>;</span><br><span class="line">    rec = <span class="built_in">CreateThread</span>(<span class="literal">NULL</span>, <span class="number">0</span>, recvCheck, <span class="literal">NULL</span>, <span class="number">0</span>, <span class="literal">NULL</span>);</span><br><span class="line">    string inC;</span><br><span class="line">    DWORD dwWrite;</span><br><span class="line">    <span class="keyword">while</span>(<span class="number">1</span>)&#123;</span><br><span class="line">        <span class="type">char</span> buf[MAX_BUF] = <span class="string">&quot;&quot;</span>;</span><br><span class="line">        string finalStr = <span class="string">&quot;&quot;</span>;</span><br><span class="line">        <span class="type">int</span> flag;</span><br><span class="line">        <span class="built_in">getline</span>(cin, inC);</span><br><span class="line">        <span class="keyword">if</span>(inC.<span class="built_in">length</span>()==<span class="number">0</span>)&#123;    <span class="comment">// 尝试接收管道信息</span></span><br><span class="line">            <span class="comment">// 啥也不做</span></span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">if</span>(inC==<span class="string">&quot;end&quot;</span>) <span class="keyword">break</span>;   <span class="comment">// 退出</span></span><br><span class="line">            <span class="keyword">else</span>&#123;   <span class="comment">// 写入数据并传送</span></span><br><span class="line">                flag = <span class="built_in">WriteFile</span>(pipe, inC.<span class="built_in">c_str</span>(), inC.<span class="built_in">length</span>(), <span class="literal">NULL</span>, <span class="literal">NULL</span>);</span><br><span class="line">                <span class="keyword">if</span>(!flag)&#123;</span><br><span class="line">                    cout&lt;&lt;<span class="string">&quot;Failed to sent data!&quot;</span>;</span><br><span class="line">                    <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                cout&lt;&lt;<span class="string">&quot;To Server: &quot;</span>&lt;&lt;inC&lt;&lt;endl;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;已经关闭管道\n&quot;</span>;</span><br><span class="line">    <span class="built_in">DisconnectNamedPipe</span>(pipe);</span><br><span class="line">    <span class="built_in">TerminateThread</span>(rec, <span class="number">0</span>);   <span class="comment">// 终止接收检测</span></span><br><span class="line">    <span class="built_in">CloseHandle</span>(rec);</span><br><span class="line">    <span class="built_in">CloseHandle</span>(pipe);</span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;客户端下线\n&quot;</span>;</span><br><span class="line">    <span class="built_in">system</span>(<span class="string">&quot;pause&quot;</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+
+<p>通过创建子线程，定时检测有无收到管道另一端发送的数据，来实现伪实时交互，但实际上退出还是需要两端都输入end，因为一端并不能实时检测管道是否关闭并同步结束另外几个线程（把发送数据写成子线程<strong>也许</strong>可以）。</p>
+<p>实际上管道的关闭体现在发送数据出错。</p>
+<h2 id="读者-写者问题"><a href="#读者-写者问题" class="headerlink" title="读者-写者问题"></a>读者-写者问题</h2><p>参考：<a class="link"   target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/189993251" >读者0写者问题 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+<h3 id="概念理解："><a href="#概念理解：" class="headerlink" title="概念理解："></a>概念理解：</h3><ol>
+<li><p>关于读者优先，实验说明书中有如下描述：</p>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">读者优先的附加限制：若一个读者申请进行读操作时已有另一个读者正在进行读操作，则该读者可直接开始读操作。</span><br><span class="line"></span><br><span class="line">读者优先指的是除非有写者在写文件，否则读者不需要等待。</span><br></pre></td></tr></table></figure></div>
+
+<p>后半句附加了一个条件：有读者在等待队列时写者不做写操作，这与前半段的描述实际上是不完全一样的，但后半段概念上与”写者优先”相似，我称之为”绝对优先”思想；个人偏向于前半段的描述是对”读者优先”的准确理解，实际上读写者都在队列中时依然是按照队列顺序进行操作的。</p>
+</li>
+<li><p>有一个细节是读者可以多个读者同时读，因此它在”写者优先”下判定优先锁的时候是在启动时间立刻判定，若是有一个读者与写者同时启动，由于计算机内部”同时”可能意味着微小的相差，因此实际上”同时”启动的读者可能抢在写者的前面判定了优先锁，它就打破了”写者优先”的垄断，但这是不可控力导致的不绝对优先，代码逻辑上仍然是锁死了”写者优先”的。</p>
+<p>而写者必须等待上个写者写完才能继续执行写操作，因此在”读者绝对优先”思想中，他判定优先锁理论上是在上一个写者写完（或上一群读者全部读完），而不是在启动时；换言之，<strong>重要的是轮到它获取资源时有没有读者在等待，而不是它申请资源时有没有读者在等待</strong>，因此判定优先锁的位置和方式不同于读者。</p>
+<p>但是要实现这样的优先就必须要让得到资源的写者在检测到读者时让出资源，导致出现多余的线程切换，因此实现的代码中并没有采用”写者绝对优先思想”。</p>
+</li>
+<li><p>最终实现的”读者优先”代码参考的是：申请资源时有无读者在等候。</p>
+</li>
+<li><p>因此有同时启动的读者和写者出现的测试案例，实际上是没有意义的。</p>
+</li>
+</ol>
+<h3 id="源码-4"><a href="#源码-4" class="headerlink" title="源码"></a>源码</h3><p>写者优先：</p>
+<div class="highlight-container" data-rel="Cpp"><figure class="iseeu highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;Windows.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;fstream&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> MAX_TRD 255</span></span><br><span class="line"><span class="type">int</span> trd_count = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">info</span>&#123;</span><br><span class="line">    <span class="type">int</span> ord;    <span class="comment">// 线程号</span></span><br><span class="line">    <span class="type">int</span> beg;    <span class="comment">// 开始时间</span></span><br><span class="line">    <span class="type">int</span> pause;  <span class="comment">// 持续时间</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> read_count = <span class="number">0</span>;</span><br><span class="line"><span class="type">int</span> write_count = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">HANDLE rec, red, wfr, wte;</span><br><span class="line"></span><br><span class="line"><span class="function">DWORD WINAPI <span class="title">write</span><span class="params">(LPVOID param)</span></span>&#123;   <span class="comment">// 写者</span></span><br><span class="line">    info *pam = (info*)param;</span><br><span class="line">    <span class="type">int</span> beg = pam-&gt;beg, pause = pam-&gt;pause, ord = pam-&gt;ord;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;Writer thread %d is created.\n&quot;</span>, ord, beg);</span><br><span class="line">    <span class="built_in">Sleep</span>(beg); <span class="comment">// beg秒后启动</span></span><br><span class="line">    <span class="built_in">WaitForSingleObject</span>(wte, INFINITE);</span><br><span class="line">    write_count += <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">if</span>(write_count == <span class="number">1</span>)&#123;   <span class="comment">// 第一位(等待/执行)的写者占用优先锁</span></span><br><span class="line">        <span class="built_in">WaitForSingleObject</span>(wfr, INFINITE);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">ReleaseSemaphore</span>(wte, <span class="number">1</span>, <span class="literal">NULL</span>);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;Writer thread %d applys for the resource.\n&quot;</span>, ord);</span><br><span class="line">    <span class="built_in">WaitForSingleObject</span>(rec, INFINITE); <span class="comment">// 申请资源</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;Writer thread %d is writing.\n&quot;</span>, ord);</span><br><span class="line">    <span class="built_in">Sleep</span>(pause);   <span class="comment">// 操作持续时间</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;Writer thread %d ends.\n&quot;</span>, ord);</span><br><span class="line">    <span class="built_in">WaitForSingleObject</span>(wte, INFINITE);</span><br><span class="line">    write_count -= <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">if</span>(write_count == <span class="number">0</span>)&#123;   <span class="comment">// 最后一位执行的写者释放优先锁</span></span><br><span class="line">        <span class="built_in">ReleaseSemaphore</span>(wfr, <span class="number">1</span>, <span class="literal">NULL</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">ReleaseSemaphore</span>(wte, <span class="number">1</span>, <span class="literal">NULL</span>);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;Writer thread %d releases the resource.\n&quot;</span>, ord);   </span><br><span class="line">    <span class="built_in">ReleaseSemaphore</span>(rec, <span class="number">1</span>, <span class="literal">NULL</span>); <span class="comment">// 释放资源</span></span><br><span class="line">    <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function">DWORD WINAPI <span class="title">read</span><span class="params">(LPVOID param)</span></span>&#123;   <span class="comment">// 读者</span></span><br><span class="line">    info *pam = (info*)param;</span><br><span class="line">    <span class="type">int</span> beg = pam-&gt;beg, pause = pam-&gt;pause, ord = pam-&gt;ord;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;Reader thread %d is created.\n&quot;</span>, ord);</span><br><span class="line">    <span class="built_in">Sleep</span>(beg); <span class="comment">// beg秒后启动</span></span><br><span class="line">    <span class="built_in">WaitForSingleObject</span>(wfr, INFINITE);   <span class="comment">// 有无加入申请资源队列的资格</span></span><br><span class="line">    <span class="built_in">WaitForSingleObject</span>(red, INFINITE); <span class="comment">// 申请资源</span></span><br><span class="line">    read_count += <span class="number">1</span>;    <span class="comment">// 写者数量</span></span><br><span class="line">    <span class="keyword">if</span>(read_count == <span class="number">1</span>)&#123;    <span class="comment">// 第一位读者申请资源</span></span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;Reader thread %d applys for the resource.\n&quot;</span>, ord);</span><br><span class="line">        <span class="built_in">WaitForSingleObject</span>(rec, INFINITE); <span class="comment">// 申请资源</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">ReleaseSemaphore</span>(red, <span class="number">1</span>, <span class="literal">NULL</span>); <span class="comment">// 释放读者数量</span></span><br><span class="line">    <span class="built_in">ReleaseSemaphore</span>(wfr, <span class="number">1</span>, <span class="literal">NULL</span>); <span class="comment">// 不抢占优先锁，只检测是否被占用，若不被占用则有申请资源的资格，因而能算作&quot;队列中的读者&quot;，可以计数</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;Reader thread %d is reading.\n&quot;</span>, ord);</span><br><span class="line">    <span class="built_in">Sleep</span>(pause);   <span class="comment">// 操作持续时间</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;Reader thread %d ends.\n&quot;</span>, ord);  </span><br><span class="line">    <span class="built_in">WaitForSingleObject</span>(red, INFINITE); <span class="comment">// 申请资源</span></span><br><span class="line">    read_count -= <span class="number">1</span>;  </span><br><span class="line">    <span class="keyword">if</span>(read_count == <span class="number">0</span>)&#123;    <span class="comment">// 最后一位读者释放资源</span></span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;Reader thread %d releases the resource.\n&quot;</span>, ord);</span><br><span class="line">        <span class="built_in">ReleaseSemaphore</span>(rec, <span class="number">1</span>, <span class="literal">NULL</span>); <span class="comment">// 释放资源</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">ReleaseSemaphore</span>(red, <span class="number">1</span>, <span class="literal">NULL</span>); <span class="comment">// 释放读者数量</span></span><br><span class="line">    <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    rec = <span class="built_in">CreateSemaphore</span>(<span class="literal">NULL</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="built_in">TEXT</span>(<span class="string">&quot;resource&quot;</span>));</span><br><span class="line">    red = <span class="built_in">CreateSemaphore</span>(<span class="literal">NULL</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="built_in">TEXT</span>(<span class="string">&quot;reader&quot;</span>));</span><br><span class="line">    wfr = <span class="built_in">CreateSemaphore</span>(<span class="literal">NULL</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="built_in">TEXT</span>(<span class="string">&quot;writerFirst&quot;</span>));</span><br><span class="line">    wte = <span class="built_in">CreateSemaphore</span>(<span class="literal">NULL</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="built_in">TEXT</span>(<span class="string">&quot;writer&quot;</span>));</span><br><span class="line">    info *tmp;</span><br><span class="line">    HANDLE trd[MAX_TRD]; </span><br><span class="line">    </span><br><span class="line">    fstream input;</span><br><span class="line">    input.<span class="built_in">open</span>(<span class="string">&quot;./input.txt&quot;</span>, ios::in);</span><br><span class="line">    string str;</span><br><span class="line">    <span class="keyword">while</span>(!input.<span class="built_in">eof</span>())&#123;</span><br><span class="line">        string met;</span><br><span class="line">        <span class="type">int</span> ord, beg, pause;</span><br><span class="line">        input&gt;&gt;ord;</span><br><span class="line">        <span class="keyword">if</span>(input.<span class="built_in">eof</span>())&#123;</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        input&gt;&gt;met;</span><br><span class="line">        input&gt;&gt;beg;</span><br><span class="line">        input&gt;&gt;pause;</span><br><span class="line">        tmp = <span class="keyword">new</span> <span class="built_in">info</span>();</span><br><span class="line">        tmp-&gt;ord = ord;</span><br><span class="line">        tmp-&gt;beg = beg*<span class="number">1000</span>;</span><br><span class="line">        tmp-&gt;pause = pause*<span class="number">1000</span>;</span><br><span class="line">        <span class="keyword">if</span>(met == <span class="string">&quot;W&quot;</span>)&#123;</span><br><span class="line">            trd[trd_count] = <span class="built_in">CreateThread</span>(<span class="literal">NULL</span>, <span class="number">0</span>, write, tmp, <span class="number">0</span>, <span class="literal">NULL</span>);</span><br><span class="line">            trd_count += <span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span>(met == <span class="string">&quot;R&quot;</span>)&#123;</span><br><span class="line">            trd[trd_count] = <span class="built_in">CreateThread</span>(<span class="literal">NULL</span>, <span class="number">0</span>, read, tmp, <span class="number">0</span>, <span class="literal">NULL</span>);</span><br><span class="line">            trd_count += <span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">0</span>; i &lt; trd_count; i++)&#123;</span><br><span class="line">        <span class="built_in">WaitForSingleObject</span>(trd[i], INFINITE);</span><br><span class="line">        <span class="built_in">CloseHandle</span>(trd[i]);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">CloseHandle</span>(rec);</span><br><span class="line">    <span class="built_in">CloseHandle</span>(red);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure></div>
+
+<p>读者优先：</p>
+<div class="highlight-container" data-rel="Cpp"><figure class="iseeu highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;Windows.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;fstream&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> MAX_TRD 255</span></span><br><span class="line"><span class="type">int</span> trd_count = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">info</span>&#123;</span><br><span class="line">    <span class="type">int</span> ord;    <span class="comment">// 线程号</span></span><br><span class="line">    <span class="type">int</span> beg;    <span class="comment">// 开始时间</span></span><br><span class="line">    <span class="type">int</span> pause;  <span class="comment">// 持续时间</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> read_count = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">HANDLE rec, red;</span><br><span class="line"></span><br><span class="line"><span class="function">DWORD WINAPI <span class="title">write</span><span class="params">(LPVOID param)</span></span>&#123;   <span class="comment">// 写者</span></span><br><span class="line">    info *pam = (info*)param;</span><br><span class="line">    <span class="type">int</span> beg = pam-&gt;beg, pause = pam-&gt;pause, ord = pam-&gt;ord;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;Writer %d is created.\n&quot;</span>, ord, beg);</span><br><span class="line">    <span class="built_in">Sleep</span>(beg); <span class="comment">// beg秒后启动</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;Writer %d applys for the resource.\n&quot;</span>, ord);</span><br><span class="line">    <span class="built_in">WaitForSingleObject</span>(rec, INFINITE); <span class="comment">// 申请资源</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;Writer %d is writing.\n&quot;</span>, ord);</span><br><span class="line">    <span class="built_in">Sleep</span>(pause);   <span class="comment">// 操作持续时间</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;Writer %d ends and releases the resource.\n&quot;</span>, ord);</span><br><span class="line">    <span class="built_in">ReleaseSemaphore</span>(rec, <span class="number">1</span>, <span class="literal">NULL</span>); <span class="comment">// 释放资源</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function">DWORD WINAPI <span class="title">read</span><span class="params">(LPVOID param)</span></span>&#123;   <span class="comment">// 读者</span></span><br><span class="line">    info *pam = (info*)param;</span><br><span class="line">    <span class="type">int</span> beg = pam-&gt;beg, pause = pam-&gt;pause, ord = pam-&gt;ord;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;Reader %d is created.\n&quot;</span>, ord);</span><br><span class="line">    <span class="built_in">Sleep</span>(beg); <span class="comment">// beg秒后启动</span></span><br><span class="line">    <span class="built_in">WaitForSingleObject</span>(red, INFINITE); <span class="comment">// 申请资源</span></span><br><span class="line">    read_count += <span class="number">1</span>;    <span class="comment">// 写者数量</span></span><br><span class="line">    <span class="keyword">if</span>(read_count == <span class="number">1</span>)&#123;    <span class="comment">// 第一位读者申请资源</span></span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;Reader %d applys for the resource.\n&quot;</span>, ord);</span><br><span class="line">        <span class="built_in">WaitForSingleObject</span>(rec, INFINITE); <span class="comment">// 申请资源</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">ReleaseSemaphore</span>(red, <span class="number">1</span>, <span class="literal">NULL</span>); <span class="comment">// 释放读者数量</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;Reader %d is reading.\n&quot;</span>, ord);</span><br><span class="line">    <span class="built_in">Sleep</span>(pause);   <span class="comment">// 操作持续时间</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;Reader %d ends.\n&quot;</span>, ord);  </span><br><span class="line">    <span class="built_in">WaitForSingleObject</span>(red, INFINITE); <span class="comment">// 申请资源</span></span><br><span class="line">    read_count -= <span class="number">1</span>;  </span><br><span class="line">    <span class="keyword">if</span>(read_count == <span class="number">0</span>)&#123;    <span class="comment">// 最后一位读者释放资源</span></span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;Reader %d releases the resource.\n&quot;</span>, ord);</span><br><span class="line">        <span class="built_in">ReleaseSemaphore</span>(rec, <span class="number">1</span>, <span class="literal">NULL</span>); <span class="comment">// 释放资源</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">ReleaseSemaphore</span>(red, <span class="number">1</span>, <span class="literal">NULL</span>); <span class="comment">// 释放读者数量</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    rec = <span class="built_in">CreateSemaphore</span>(<span class="literal">NULL</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="built_in">TEXT</span>(<span class="string">&quot;resource&quot;</span>));</span><br><span class="line">    red = <span class="built_in">CreateSemaphore</span>(<span class="literal">NULL</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="built_in">TEXT</span>(<span class="string">&quot;reader&quot;</span>));</span><br><span class="line">    info *tmp;</span><br><span class="line">    HANDLE trd[MAX_TRD]; </span><br><span class="line">    </span><br><span class="line">    fstream input;</span><br><span class="line">    input.<span class="built_in">open</span>(<span class="string">&quot;./input.txt&quot;</span>, ios::in);</span><br><span class="line">    string str;</span><br><span class="line">    <span class="keyword">while</span>(!input.<span class="built_in">eof</span>())&#123;</span><br><span class="line">        string met;</span><br><span class="line">        <span class="type">int</span> ord, beg, pause;</span><br><span class="line">        input&gt;&gt;ord;</span><br><span class="line">        <span class="keyword">if</span>(input.<span class="built_in">eof</span>())&#123;</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        input&gt;&gt;met;</span><br><span class="line">        input&gt;&gt;beg;</span><br><span class="line">        input&gt;&gt;pause;</span><br><span class="line">        tmp = <span class="keyword">new</span> <span class="built_in">info</span>();</span><br><span class="line">        tmp-&gt;ord = ord;</span><br><span class="line">        tmp-&gt;beg = beg*<span class="number">1000</span>;</span><br><span class="line">        tmp-&gt;pause = pause*<span class="number">1000</span>;</span><br><span class="line">        <span class="keyword">if</span>(met == <span class="string">&quot;W&quot;</span>)&#123;</span><br><span class="line">            trd[trd_count] = <span class="built_in">CreateThread</span>(<span class="literal">NULL</span>, <span class="number">0</span>, write, tmp, <span class="number">0</span>, <span class="literal">NULL</span>);</span><br><span class="line">            trd_count += <span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span>(met == <span class="string">&quot;R&quot;</span>)&#123;</span><br><span class="line">            trd[trd_count] = <span class="built_in">CreateThread</span>(<span class="literal">NULL</span>, <span class="number">0</span>, read, tmp, <span class="number">0</span>, <span class="literal">NULL</span>);</span><br><span class="line">            trd_count += <span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">0</span>; i &lt; trd_count; i++)&#123;</span><br><span class="line">        <span class="built_in">WaitForSingleObject</span>(trd[i], INFINITE);</span><br><span class="line">        <span class="built_in">CloseHandle</span>(trd[i]);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">CloseHandle</span>(rec);</span><br><span class="line">    <span class="built_in">CloseHandle</span>(red);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure></div>
+
+        </div>
+
+        
+            <div class="post-copyright-info w-full my-8 px-2 sm:px-6 md:px-8">
+                <div class="article-copyright-info-container">
+    <ul>
+        <li><strong>Title:</strong> 操作系统实验-线程同步</li>
+        <li><strong>Author:</strong> Forestsetyou</li>
+        <li><strong>Created at
+                :</strong> 2023-05-08 15:12:00</li>
+        
+            <li>
+                <strong>Updated at
+                    :</strong> 2023-08-03 18:05:00
+            </li>
+        
+        <li>
+            <strong>Link:</strong> https://forestsetyou.github.io/2023/05/08/Development/Algorithm/操作系统实验-线程同步/
+        </li>
+        <li>
+            <strong>
+                License:
+            </strong>
+            
+
+            
+                This work is licensed under <a class="license" target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0">CC BY-NC-SA 4.0</a>.
+            
+        </li>
+    </ul>
+</div>
+
+            </div>
+        
+
+        
+            <ul class="post-tags-box text-lg mt-1.5 flex-wrap justify-center flex md:hidden">
+                
+                    <li class="tag-item mx-0.5">
+                        <a href="/tags/Schoolwork/">#Schoolwork</a>&nbsp;
+                    </li>
+                
+            </ul>
+        
+
+        
+
+        
+            <div class="article-nav my-8 flex justify-between items-center px-2 sm:px-6 md:px-8">
+                
+                    <div class="article-prev border-border-color shadow-redefine-flat shadow-shadow-color-2 rounded-medium px-4 py-2 hover:shadow-redefine-flat-hover hover:shadow-shadow-color-2">
+                        <a class="prev"
+                        rel="prev"
+                        href="/2023/05/29/Development/Algorithm/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%AE%9E%E9%AA%8C%E4%B8%89-%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D%E4%B8%8E%E6%8D%A2%E9%A1%B5%E7%AE%97%E6%B3%95%E6%A8%A1%E6%8B%9F/"
+                        >
+                            <span class="left arrow-icon flex justify-center items-center">
+                                <i class="fa-solid fa-chevron-left"></i>
+                            </span>
+                            <span class="title flex justify-center items-center">
+                                <span class="post-nav-title-item">操作系统实验三-内存分配与换页算法模拟</span>
+                                <span class="post-nav-item">Prev posts</span>
+                            </span>
+                        </a>
+                    </div>
+                
+                
+                    <div class="article-next border-border-color shadow-redefine-flat shadow-shadow-color-2 rounded-medium px-4 py-2 hover:shadow-redefine-flat-hover hover:shadow-shadow-color-2">
+                        <a class="next"
+                        rel="next"
+                        href="/2023/04/28/Security/CTF/BUUOJ%E2%80%94%E2%80%94WEB%EF%BC%88%E4%BA%8C%EF%BC%89/"
+                        >
+                            <span class="title flex justify-center items-center">
+                                <span class="post-nav-title-item">BUUOJ——WEB（二）</span>
+                                <span class="post-nav-item">Next posts</span>
+                            </span>
+                            <span class="right arrow-icon flex justify-center items-center">
+                                <i class="fa-solid fa-chevron-right"></i>
+                            </span>
+                        </a>
+                    </div>
+                
+            </div>
+        
+
+
+        
+    </div>
+
+    
+        <div class="toc-content-container">
+            <div class="post-toc-wrap">
+    <div class="post-toc">
+        <div class="toc-title">On this page</div>
+        <div class="page-title">操作系统实验-线程同步</div>
+        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BA%BF%E7%A8%8B%E5%88%9B%E5%BB%BA%E4%B8%8E%E6%92%A4%E9%94%80"><span class="nav-text">线程创建与撤销</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%82%E6%95%B0%E8%AF%B4%E6%98%8E"><span class="nav-text">参数说明</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%BA%90%E7%A0%81"><span class="nav-text">源码</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BA%BF%E7%A8%8B%E5%90%8C%E6%AD%A5"><span class="nav-text">线程同步</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%82%E6%95%B0%E8%AF%B4%E6%98%8E-1"><span class="nav-text">参数说明</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%BA%90%E7%A0%81-1"><span class="nav-text">源码</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BA%BF%E7%A8%8B%E4%BA%92%E6%96%A5"><span class="nav-text">线程互斥</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%BA%90%E7%A0%81-2"><span class="nav-text">源码</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%A1%E9%81%93%E9%80%9A%E4%BF%A1"><span class="nav-text">管道通信</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%82%E6%95%B0%E8%AF%B4%E6%98%8E-2"><span class="nav-text">参数说明</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%BA%90%E7%A0%81-3"><span class="nav-text">源码</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AF%BB%E8%80%85-%E5%86%99%E8%80%85%E9%97%AE%E9%A2%98"><span class="nav-text">读者-写者问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5%E7%90%86%E8%A7%A3%EF%BC%9A"><span class="nav-text">概念理解：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%BA%90%E7%A0%81-4"><span class="nav-text">源码</span></a></li></ol></li></ol>
+
+    </div>
+</div>
+        </div>
+    
+</div>
+
+
+
+                
+
+            </div>
+
+            
+
+        </div>
+
+        <div class="main-content-footer">
+            <footer class="footer mt-5 py-5 h-auto text-base text-third-text-color relative border-t-2 border-t-border-color">
+    <div class="info-container py-3 text-center">
+        
+        <div class="text-center">
+            &copy;
+            
+              <span>2024</span>
+              -
+            
+            2024&nbsp;&nbsp;<i class="fa-solid fa-heart fa-beat" style="--fa-animation-duration: 0.5s; color: #f54545"></i>&nbsp;&nbsp;<a href="/">Forestsetyou</a>
+            
+        </div>
+        
+        <div class="relative text-center lg:absolute lg:left-[20px] lg:top-1/2 lg:-translate-y-1/2 lg:text-left">
+            <span class="lg:block text-sm">POWERED BY <?xml version="1.0" encoding="utf-8"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg class="relative top-[2px] inline-block align-baseline" version="1.1" id="圖層_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="1rem" height="1rem" viewBox="0 0 512 512" enable-background="new 0 0 512 512" xml:space="preserve"><path fill="#0E83CD" d="M256.4,25.8l-200,115.5L56,371.5l199.6,114.7l200-115.5l0.4-230.2L256.4,25.8z M349,354.6l-18.4,10.7l-18.6-11V275H200v79.6l-18.4,10.7l-18.6-11v-197l18.5-10.6l18.5,10.8V237h112v-79.6l18.5-10.6l18.5,10.8V354.6z"/></svg><a target="_blank" class="text-base" href="https://hexo.io">Hexo</a></span>
+            <span class="text-sm lg:block">THEME&nbsp;<a class="text-base" target="_blank" href="https://github.com/EvanNotFound/hexo-theme-redefine">Redefine v2.6.1</a></span>
+        </div>
+        
+        
+        
+        
+        
+    </div>  
+</footer>
+        </div>
+    </div>
+
+    
+        <div class="post-tools">
+            <div class="post-tools-container">
+    <ul class="article-tools-list">
+        <!-- TOC aside toggle -->
+        
+            <li class="right-bottom-tools page-aside-toggle">
+                <i class="fa-regular fa-outdent"></i>
+            </li>
+        
+
+        <!-- go comment -->
+        
+    </ul>
+</div>
+
+        </div>
+    
+
+    <div class="right-side-tools-container">
+        <div class="side-tools-container">
+    <ul class="hidden-tools-list">
+        <li class="right-bottom-tools tool-font-adjust-plus flex justify-center items-center">
+            <i class="fa-regular fa-magnifying-glass-plus"></i>
+        </li>
+
+        <li class="right-bottom-tools tool-font-adjust-minus flex justify-center items-center">
+            <i class="fa-regular fa-magnifying-glass-minus"></i>
+        </li>
+
+        <li class="right-bottom-tools tool-dark-light-toggle flex justify-center items-center">
+            <i class="fa-regular fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        
+
+        <li class="right-bottom-tools tool-scroll-to-bottom flex justify-center items-center">
+            <i class="fa-regular fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="visible-tools-list">
+        <li class="right-bottom-tools toggle-tools-list flex justify-center items-center">
+            <i class="fa-regular fa-cog fa-spin"></i>
+        </li>
+        
+            <li class="right-bottom-tools tool-scroll-to-top flex justify-center items-center">
+                <i class="arrow-up fas fa-arrow-up"></i>
+                <span class="percent"></span>
+            </li>
+        
+        
+    </ul>
+</div>
+
+    </div>
+
+    <div class="image-viewer-container">
+    <img src="">
+</div>
+
+
+    
+        <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-input-field-pre">
+            <i class="fa-solid fa-keyboard"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="Search..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="popup-btn-close">
+                <i class="fa-solid fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fa-solid fa-spinner fa-spin-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+
+</main>
+
+
+    
+<script src="/js/libs/Swup.min.js"></script>
+
+<script src="/js/libs/SwupSlideTheme.min.js"></script>
+
+<script src="/js/libs/SwupScriptsPlugin.min.js"></script>
+
+<script src="/js/libs/SwupProgressPlugin.min.js"></script>
+
+<script src="/js/libs/SwupScrollPlugin.min.js"></script>
+
+<script src="/js/libs/SwupPreloadPlugin.min.js"></script>
+
+<script>
+    const swup = new Swup({
+        plugins: [
+            new SwupScriptsPlugin({
+                optin: true,
+            }),
+            new SwupProgressPlugin(),
+            new SwupScrollPlugin({
+                offset: 80,
+            }),
+            new SwupSlideTheme({
+                mainElement: ".main-content-body",
+            }),
+            new SwupPreloadPlugin(),
+        ],
+        containers: ["#swup"],
+    });
+</script>
+
+
+
+
+
+
+
+<script src="/js/tools/imageViewer.js" type="module"></script>
+
+<script src="/js/utils.js" type="module"></script>
+
+<script src="/js/main.js" type="module"></script>
+
+<script src="/js/layouts/navbarShrink.js" type="module"></script>
+
+<script src="/js/tools/scrollTopBottom.js" type="module"></script>
+
+<script src="/js/tools/lightDarkSwitch.js" type="module"></script>
+
+<script src="/js/layouts/categoryList.js" type="module"></script>
+
+
+
+    
+<script src="/js/tools/localSearch.js" type="module"></script>
+
+
+
+
+    
+<script src="/js/tools/codeBlock.js" type="module"></script>
+
+
+
+
+    
+<script src="/js/layouts/lazyload.js" type="module"></script>
+
+
+
+
+
+
+  
+<script src="/js/libs/Typed.min.js"></script>
+
+  
+<script src="/js/plugins/typed.js" type="module"></script>
+
+
+
+
+
+
+
+
+
+<div class="post-scripts" data-swup-reload-script>
+    
+        
+<script src="/js/tools/tocToggle.js" type="module"></script>
+
+<script src="/js/layouts/toc.js" type="module"></script>
+
+<script src="/js/plugins/tabs.js" type="module"></script>
+
+    
+</div>
+
+
+</body>
+</html>

@@ -1,0 +1,979 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="keywords" content="ctf, solution, note, blog">
+    
+    <meta name="author" content="Forestsetyou">
+    <!-- preconnect -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    
+    <!--- Seo Part-->
+    
+    <link rel="canonical" href="http://forestsetyou.github.io/2022/04/19/development/algorithm/c++等价与偏序关系的矩阵处理/"/>
+    <meta name="robots" content="index,follow">
+    <meta name="googlebot" content="index,follow">
+    <meta name="revisit-after" content="1 days">
+    
+        <meta name="description" content="false">
+<meta property="og:type" content="article">
+<meta property="og:title" content="C++等价与偏序关系的矩阵处理">
+<meta property="og:url" content="http://forestsetyou.github.io/2022/04/19/Development/Algorithm/C++%E7%AD%89%E4%BB%B7%E4%B8%8E%E5%81%8F%E5%BA%8F%E5%85%B3%E7%B3%BB%E7%9A%84%E7%9F%A9%E9%98%B5%E5%A4%84%E7%90%86/index.html">
+<meta property="og:site_name" content="Festu&#39;s Blog">
+<meta property="og:description" content="false">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="e:\PictureBed\image-20220418165641363.png">
+<meta property="og:image" content="e:\PictureBed\image-20220418165716665.png">
+<meta property="og:image" content="e:\PictureBed\image-20220418165720919.png">
+<meta property="article:published_time" content="2022-04-18T16:51:00.000Z">
+<meta property="article:modified_time" content="2023-08-03T10:07:00.000Z">
+<meta property="article:author" content="Forestsetyou">
+<meta property="article:tag" content="Schoolwork">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="e:\PictureBed\image-20220418165641363.png">
+    
+    
+    <!--- Icon Part-->
+    <link rel="icon" type="image/png" href="/hide_imgs/smiling_face.png" sizes="192x192">
+    <link rel="apple-touch-icon" sizes="180x180" href="/hide_imgs/smiling_face.png">
+    <meta name="theme-color" content="#A31F34">
+    <link rel="shortcut icon" href="/hide_imgs/smiling_face.png">
+    <!--- Page Info-->
+    
+    <title>
+        
+            C++等价与偏序关系的矩阵处理 -
+        
+        Festu&#39;s Blog
+    </title><meta name="robots" content="noindex">
+
+    
+<link rel="stylesheet" href="/fonts/Chillax/chillax.css">
+
+
+    <!--- Inject Part-->
+    
+
+    
+        <style>
+    :root {
+        --preloader-background-color: #fff;
+        --preloader-text-color: #000;
+    }
+
+    @media (prefers-color-scheme: dark) {
+        :root {
+            --preloader-background-color: #202124;
+            --preloader-text-color: #fff;
+        }
+    }
+
+    @media (prefers-color-scheme: light) {
+        :root {
+            --preloader-background-color: #fff;
+            --preloader-text-color: #000;
+        }
+    }
+
+    @media (max-width: 600px) {
+        .ml13 {
+            font-size: 2.6rem !important; /* Adjust this value as needed */
+        }
+    }
+
+    .preloader {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem; /* Tailwind 'gap-4' is 1rem */
+        align-items: center;
+        justify-content: center;
+        position: fixed;
+        padding: 12px;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh; /* 'h-screen' is 100% of the viewport height */
+        background-color: var(--preloader-background-color);
+        z-index: 1100; /* 'z-[1100]' sets the z-index */
+        transition: opacity 0.2s ease-in-out;
+    }
+
+    .ml13 {
+        font-size: 3.2rem;
+        /* text-transform: uppercase; */
+        color: var(--preloader-text-color);
+        letter-spacing: -1px;
+        font-weight: 500;
+        font-family: 'Chillax-Variable', sans-serif;
+        text-align: center;
+    }
+
+    .ml13 .word {
+        display: inline-flex;
+        flex-wrap: wrap;
+        white-space: nowrap;
+    }
+
+    .ml13 .letter {
+        display: inline-block;
+        line-height: 1em;
+    }
+</style>
+
+<div class="preloader">
+    
+<script src="/js/libs/anime.min.js"></script>
+
+    <h1 class="ml13">
+        Festu&#39;s Blog
+    </h1>
+    <script>
+        var textWrapper = document.querySelector('.ml13');
+        // Split text into words
+        var words = textWrapper.textContent.trim().split(' ');
+
+        // Clear the existing content
+        textWrapper.innerHTML = '';
+
+        // Wrap each word and its letters in spans
+        words.forEach(function(word) {
+            var wordSpan = document.createElement('span');
+            wordSpan.classList.add('word');
+            wordSpan.innerHTML = word.replace(/\S/g, "<span class='letter'>$&</span>");
+            textWrapper.appendChild(wordSpan);
+            textWrapper.appendChild(document.createTextNode(' ')); // Add space between words
+        });
+
+
+        anime.timeline({loop: true})
+            .add({
+                targets: '.ml13 .letter',
+                translateY: [100,0],
+                translateZ: 0,
+                opacity: [0,1],
+                easing: "easeOutExpo",
+                duration: 1400,
+                delay: (el, i) => 300 + 30 * i
+            }).add({
+            targets: '.ml13 .letter',
+            translateY: [0,-100],
+            opacity: [1,0],
+            easing: "easeInExpo",
+            duration: 1200,
+            delay: (el, i) => 100 + 30 * i
+        });
+
+        let themeStatus = JSON.parse(localStorage.getItem('REDEFINE-THEME-STATUS'))?.isDark;
+
+        // If the theme status is not found in local storage, check the preferred color scheme
+        if (themeStatus === undefined || themeStatus === null) {
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                themeStatus = 'dark';
+            } else {
+                themeStatus = 'light';
+            }
+        }
+
+        // Now you can use the themeStatus variable in your code
+        if (themeStatus) {
+            document.documentElement.style.setProperty('--preloader-background-color', '#202124');
+            document.documentElement.style.setProperty('--preloader-text-color', '#fff');
+        } else {
+            document.documentElement.style.setProperty('--preloader-background-color', '#fff');
+            document.documentElement.style.setProperty('--preloader-text-color', '#000');
+        }
+
+        window.addEventListener('load', function () {
+            hidePreloaderAfterTimeout(1000); // Hide after 1000 milliseconds once the window has loaded
+        });
+
+        // Backup failsafe: Hide preloader after a maximum of 5000 milliseconds, regardless of the window load event
+        hidePreloaderAfterTimeout(5000);
+
+        function hidePreloaderAfterTimeout(delay) {
+            setTimeout(function () {
+                var preloader = document.querySelector('.preloader');
+                preloader.style.opacity = '0';
+                setTimeout(function () {
+                    preloader.style.display = 'none';
+                }, 200);
+            }, delay);
+        }
+    </script>
+</div>
+    
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+
+    
+        
+<link rel="stylesheet" href="/assets/build/styles.css">
+
+    
+
+    
+<link rel="stylesheet" href="/fonts/fonts.css">
+
+    
+<link rel="stylesheet" href="/fonts/Satoshi/satoshi.css">
+
+    <!--- Font Part-->
+    
+    
+    
+    
+
+
+    <script id="hexo-configurations">
+    window.config = {"hostname":"forestsetyou.github.io","root":"/","language":"en","path":"search.xml"};
+    window.theme = {"articles":{"style":{"font_size":"16px","line_height":1.5,"image_border_radius":"14px","image_alignment":"center","image_caption":false,"link_icon":true,"title_alignment":"left","headings_top_spacing":{"h1":"5rem","h2":"4rem","h3":"2.8rem","h4":"2.5rem","h5":"2.2rem","h6":"2rem"}},"word_count":{"enable":false,"count":true,"min2read":true},"author_label":{"enable":false,"auto":false,"list":[]},"code_block":{"copy":true,"style":"simple","font":{"enable":false,"family":null,"url":null}},"toc":{"enable":true,"max_depth":3,"number":false,"expand":true,"init_open":true},"copyright":{"enable":true,"default":"cc_by_nc_sa"},"lazyload":true,"recommendation":{"enable":false,"title":"推荐阅读","limit":3,"mobile_limit":2,"placeholder":"/images/wallhaven-wqery6-light.webp","skip_dirs":[]}},"colors":{"primary":"#A31F34","secondary":null,"default_mode":"light"},"global":{"fonts":{"chinese":{"enable":false,"family":null,"url":null},"english":{"enable":false,"family":null,"url":null}},"content_max_width":"1000px","sidebar_width":"210px","hover":{"shadow":true,"scale":false},"scroll_progress":{"bar":false,"percentage":true},"website_counter":{"url":"https://cn.vercount.one/js","enable":false,"site_pv":true,"site_uv":true,"post_pv":true},"single_page":true,"preloader":true,"open_graph":true,"google_analytics":{"enable":false,"id":null}},"home_banner":{"enable":true,"style":"fixed","image":{"light":"/hide_imgs/light_banner-5.png","dark":"/hide_imgs/dark_banner.png"},"title":"Festu's Blog","subtitle":{"text":["Life Goes On."],"hitokoto":{"enable":false,"api":"https://v1.hitokoto.cn"},"typing_speed":100,"backing_speed":80,"starting_delay":500,"backing_delay":1500,"loop":false,"smart_backspace":false},"text_color":{"light":"#fff","dark":"#d1d1b6"},"text_style":{"title_size":"2.8rem","subtitle_size":"1.5rem","line_height":1.2},"custom_font":{"enable":false,"family":null,"url":null},"social_links":{"enable":true,"style":"default","links":{"github":"https://github.com/Forestsetyou","instagram":null,"zhihu":null,"twitter":null,"email":null},"qrs":{"weixin":null}}},"plugins":{"feed":{"enable":false},"aplayer":{"enable":false,"type":"fixed","audios":[{"name":null,"artist":null,"url":null,"cover":null,"lrc":null}]},"mermaid":{"enable":false,"version":"9.3.0"}},"version":"2.6.1","navbar":{"auto_hide":false,"color":{"left":"#f78736","right":"#367df7","transparency":35},"width":{"home":"1200px","pages":"1000px"},"links":{"Home":{"path":"/","icon":"fa-regular fa-house"},"Archives":{"path":"/archives","icon":"fa-regular fa-archive"},"categories":{"path":"/categories","icon":"fa-regular fa-folder"},"tags":{"path":"/tags","icon":"fa-regular fa-tags"}},"search":{"enable":true,"preload":true}},"page_templates":{"friends_column":2,"tags_style":"blur"},"home":{"sidebar":{"enable":true,"position":"left","first_item":"menu","announcement":null,"show_on_mobile":true,"links":null},"article_date_format":"auto","categories":{"enable":true,"limit":3},"tags":{"enable":true,"limit":3}},"footerStart":"2024/03/11 03:27:59"};
+    window.lang_ago = {"second":"%s seconds ago","minute":"%s minutes ago","hour":"%s hours ago","day":"%s days ago","week":"%s weeks ago","month":"%s months ago","year":"%s years ago"};
+    window.data = {"masonry":false};
+  </script>
+    
+    <!--- Fontawesome Part-->
+    
+<link rel="stylesheet" href="/fontawesome/fontawesome.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/brands.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/solid.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/regular.min.css">
+
+    
+    
+    
+    
+<meta name="generator" content="Hexo 7.1.1"></head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+
+    
+        <span class="pjax-progress-bar"></span>
+<!--        <span class="swup-progress-icon">-->
+<!--            <i class="fa-solid fa-circle-notch fa-spin"></i>-->
+<!--        </span>-->
+    
+</div>
+
+
+<main class="page-container" id="swup">
+
+    
+
+    <div class="main-content-container">
+
+
+        <div class="main-content-header">
+            <header class="navbar-container px-6 md:px-12">
+
+    <div class="navbar-content ">
+        <div class="left">
+            
+                <a class="logo-image" href="/">
+                    <img src="/hide_imgs/smiling_face.png">
+                </a>
+            
+            <a class="logo-title" href="/">
+                
+                Festu&#39;s Blog
+                
+            </a>
+        </div>
+
+        <div class="right">
+            <!-- PC -->
+            <div class="desktop">
+                <ul class="navbar-list">
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/"
+                                        >
+                                    <i class="fa-regular fa-house fa-fw"></i>
+                                    HOME
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/archives"
+                                        >
+                                    <i class="fa-regular fa-archive fa-fw"></i>
+                                    ARCHIVES
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/categories"
+                                        >
+                                    <i class="fa-regular fa-folder fa-fw"></i>
+                                    CATEGORIES
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/tags"
+                                        >
+                                    <i class="fa-regular fa-tags fa-fw"></i>
+                                    TAGS
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                    
+                        <li class="navbar-item search search-popup-trigger">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </li>
+                    
+                </ul>
+            </div>
+            <!-- Mobile -->
+            <div class="mobile">
+                
+                    <div class="icon-item search search-popup-trigger"><i class="fa-solid fa-magnifying-glass"></i>
+                    </div>
+                
+                <div class="icon-item navbar-bar">
+                    <div class="navbar-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile sheet -->
+    <div class="navbar-drawer h-screen w-full absolute top-0 left-0 bg-background-color flex flex-col justify-between">
+        <ul class="drawer-navbar-list flex flex-col px-4 justify-center items-start">
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/"
+                        >
+                            <span>
+                                HOME
+                            </span>
+                            
+                                <i class="fa-regular fa-house fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/archives"
+                        >
+                            <span>
+                                ARCHIVES
+                            </span>
+                            
+                                <i class="fa-regular fa-archive fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/categories"
+                        >
+                            <span>
+                                CATEGORIES
+                            </span>
+                            
+                                <i class="fa-regular fa-folder fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/tags"
+                        >
+                            <span>
+                                TAGS
+                            </span>
+                            
+                                <i class="fa-regular fa-tags fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+
+            
+            
+        </ul>
+
+        <div class="statistics flex justify-around my-2.5">
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/tags">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">1</div>
+        <div class="label text-third-text-color text-sm">Tags</div>
+    </a>
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/categories">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">10</div>
+        <div class="label text-third-text-color text-sm">Categories</div>
+    </a>
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/archives">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">14</div>
+        <div class="label text-third-text-color text-sm">Posts</div>
+    </a>
+</div>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="main-content-body">
+
+            
+
+            <div class="main-content">
+
+                
+                    <div class="post-page-container flex relative justify-between box-border w-full h-full">
+    <div class="article-content-container">
+
+        <div class="article-title relative w-full">
+            
+                
+                
+                <img src="/hide_imgs/post_thumbnail-3.jpg" alt="C++等价与偏序关系的矩阵处理" class="w-full h-60 sm:h-72 md:h-80 object-cover sm:rounded-t-large dark:brightness-75"/>
+                
+                <div class="w-full flex items-center absolute bottom-0 justify-start">
+                    <h1 class="article-title-cover text-center mx-6 my-6 text-second-text-color bg-background-color-transparent px-4 py-3 text-3xl sm:text-4xl md:text-5xl font-bold backdrop-blur-lg rounded-xl border border-border-color ">C++等价与偏序关系的矩阵处理</h1>
+                </div>
+            
+            </div>
+
+        
+            <div class="article-header flex flex-row gap-2 items-center px-2 sm:px-6 md:px-8">
+                <div class="avatar w-[46px] h-[46px] flex-shrink-0 rounded-medium border border-border-color p-[1px]">
+                    <img src="/hide_imgs/avatar.png">
+                </div>
+                <div class="info flex flex-col justify-between">
+                    <div class="author flex items-center">
+                        <span class="name text-default-text-color text-lg font-semibold">Forestsetyou</span>
+                        
+                    </div>
+                    <div class="meta-info">
+                        <div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fa-regular fa-pen-fancy"></i>&nbsp;
+        <span class="desktop">2022-04-19 00:51</span>
+        <span class="mobile">2022-04-19 00:51</span>
+        <span class="hover-info">Created</span>
+    </span>
+    
+        <span class="article-date article-meta-item">
+            <i class="fa-regular fa-wrench"></i>&nbsp;
+            <span class="desktop">2023-08-03 18:07</span>
+            <span class="mobile">2023-08-03 18:07</span>
+            <span class="hover-info">Updated</span>
+        </span>
+    
+
+    
+        <span class="article-categories article-meta-item">
+            <i class="fa-regular fa-folders"></i>&nbsp;
+            <ul>
+                
+                
+                    
+                        
+                        <li>
+                            <a href="/categories/Development/">Development</a>&nbsp;
+                        </li>
+                    
+                    
+                
+                    
+                        
+                            <li>></li>
+                        
+                        <li>
+                            <a href="/categories/Development/Algorithm/">Algorithm</a>&nbsp;
+                        </li>
+                    
+                    
+                
+            </ul>
+        </span>
+    
+    
+        <span class="article-tags article-meta-item">
+            <i class="fa-regular fa-tags"></i>&nbsp;
+            <ul>
+                
+                    <li>
+                        <a href="/tags/Schoolwork/">Schoolwork</a>&nbsp;
+                    </li>
+                
+            </ul>
+        </span>
+    
+
+    
+    
+    
+    
+</div>
+
+                    </div>
+                </div>
+            </div>
+        
+
+        
+
+
+        <div class="article-content markdown-body px-2 sm:px-6 md:px-8 pb-8">
+            <h1 id="C-等价与偏序关系的矩阵处理"><a href="#C-等价与偏序关系的矩阵处理" class="headerlink" title="C++等价与偏序关系的矩阵处理"></a>C++等价与偏序关系的矩阵处理</h1><p><strong>Set模板的使用说明：</strong><a class="link"   target="_blank" rel="noopener" href="https://blog.csdn.net/sevenjoin/article/details/81908754" >sevencheng798-C++ Set用法总结整理 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+<p>草稿本：</p>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">编写一段代码，接收键盘的输入，输入集合X。</span><br><span class="line">   例如 ：   1,2,…,10</span><br><span class="line">   两种情况：偏序关系R分别为 (1)“小于等于”&lt;=；(2)“大于等于”&gt;=</span><br><span class="line">2  建立关系R的关系矩阵，并在屏幕打印输出对应关系的哈塞图。</span><br><span class="line">3．利用关系矩阵求解</span><br><span class="line">4. 当集合X=&#123;1, 2, 3, 4, 5, 6, 7, 8, 9, 10&#125;时，R为定义在X的偏序关系&#123;(a, b)| a小于等于b&#125;，打印输出&#123;2,3,4&#125;的上界，下界，最小上界和最大下界。</span><br></pre></td></tr></table></figure></div>
+
+<h2 id="等价关系的划分"><a href="#等价关系的划分" class="headerlink" title="等价关系的划分"></a>等价关系的划分</h2><p>代码如下：</p>
+<div class="highlight-container" data-rel="C++"><figure class="iseeu highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;set&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;string&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;vector&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sstream&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">getSetElm</span><span class="params">(set&lt;<span class="type">int</span>&gt; &amp;S,vector&lt;<span class="type">int</span>&gt; &amp;v)</span></span>&#123;   <span class="comment">//将集合元素数组化，无需提前设置数组大小</span></span><br><span class="line">    <span class="type">int</span> c=<span class="number">0</span>;</span><br><span class="line">    v.<span class="built_in">resize</span>(S.<span class="built_in">size</span>());</span><br><span class="line">    <span class="keyword">for</span>(set&lt;<span class="type">int</span>&gt;::iterator it=S.<span class="built_in">begin</span>();it!=S.<span class="built_in">end</span>();++it)&#123;  <span class="comment">//将集合元素有序装入数组方便顺序访问</span></span><br><span class="line">        v[c]=*it;</span><br><span class="line">        c++;    <span class="comment">//计数器</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> ;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">findEle</span><span class="params">(vector&lt;<span class="type">int</span>&gt; v,<span class="type">int</span> n)</span></span>&#123;  <span class="comment">//根据元素寻找对应下标</span></span><br><span class="line">    <span class="type">int</span> k=v.<span class="built_in">size</span>();</span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;k;i++)&#123;</span><br><span class="line">        <span class="keyword">if</span>(v[i]==n) <span class="keyword">return</span> i;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">outputRelationMatrix</span><span class="params">(vector&lt; vector&lt;<span class="type">int</span>&gt; &gt; M,set&lt;<span class="type">int</span>&gt; S)</span></span>&#123;    <span class="comment">//输出关系矩阵</span></span><br><span class="line">    <span class="type">int</span> k=S.<span class="built_in">size</span>();</span><br><span class="line">    <span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">v1</span><span class="params">(k)</span></span>;</span><br><span class="line">    <span class="built_in">getSetElm</span>(S,v1);</span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;=k;i++)&#123;</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> j=<span class="number">0</span>;j&lt;=k;j++)&#123;</span><br><span class="line">            <span class="keyword">if</span>(!i)&#123;</span><br><span class="line">                <span class="keyword">if</span>(!j) cout&lt;&lt;<span class="string">&quot;  &quot;</span>;</span><br><span class="line">                <span class="keyword">else</span> cout&lt;&lt;v1[j<span class="number">-1</span>]&lt;&lt;<span class="string">&quot; &quot;</span>;</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="keyword">if</span>(!j)&#123;</span><br><span class="line">                    cout&lt;&lt;v1[i<span class="number">-1</span>]&lt;&lt;<span class="string">&quot; &quot;</span>;</span><br><span class="line">                &#125; <span class="keyword">else</span>&#123;</span><br><span class="line">                    cout&lt;&lt;M[i<span class="number">-1</span>][j<span class="number">-1</span>]&lt;&lt;<span class="string">&quot; &quot;</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        cout&lt;&lt;endl;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> ;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">outputRelation</span><span class="params">(vector&lt;set&lt;<span class="type">int</span>&gt;&gt; E)</span></span>&#123;    <span class="comment">//输出集合的等价类划分</span></span><br><span class="line">    <span class="type">int</span> k=E.<span class="built_in">size</span>();</span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;k;i++)&#123;</span><br><span class="line">        cout&lt;&lt;<span class="string">&quot;集合：&quot;</span>;</span><br><span class="line">        vector&lt;<span class="type">int</span>&gt; tmp;</span><br><span class="line">        <span class="built_in">getSetElm</span>(E[i],tmp);</span><br><span class="line">        <span class="type">int</span> k1=tmp.<span class="built_in">size</span>();</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> j=<span class="number">0</span>;j&lt;k1;j++)&#123;</span><br><span class="line">            cout&lt;&lt;tmp[j]&lt;&lt;<span class="string">&quot; &quot;</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        cout&lt;&lt;endl;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> ;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">getEquivalenceClass</span><span class="params">(set&lt;<span class="type">int</span>&gt; &amp;S,vector&lt; vector&lt;<span class="type">int</span>&gt; &gt; &amp;M)</span></span>&#123; <span class="comment">//根据等价关系对集合进行划分</span></span><br><span class="line">    vector&lt;set&lt;<span class="type">int</span>&gt;&gt; equalClass;</span><br><span class="line">    vector&lt;<span class="type">int</span>&gt; v;</span><br><span class="line">    <span class="built_in">getSetElm</span>(S,v);</span><br><span class="line">    <span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">v1</span><span class="params">(v)</span></span>;  <span class="comment">//v1用于查询元素原有下标</span></span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;v.<span class="built_in">size</span>();i++)&#123;</span><br><span class="line">        set&lt;<span class="type">int</span>&gt; tmp;</span><br><span class="line">        tmp.<span class="built_in">insert</span>(v[i]);</span><br><span class="line">        <span class="type">int</span> a=<span class="built_in">findEle</span>(v1,v[i]); <span class="comment">//确定元素的原有下标</span></span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> j=i+<span class="number">1</span>;j&lt;v.<span class="built_in">size</span>();j++)&#123;</span><br><span class="line">            <span class="type">int</span> b=<span class="built_in">findEle</span>(v1,v[j]);</span><br><span class="line">            <span class="keyword">if</span>(M[a][b])&#123;</span><br><span class="line">                tmp.<span class="built_in">insert</span>(v[j]);</span><br><span class="line">                v.<span class="built_in">erase</span>(v.<span class="built_in">begin</span>()+j);   <span class="comment">//删除已归类的元素</span></span><br><span class="line">                j--;    <span class="comment">//少了一个元素</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        equalClass.<span class="built_in">push_back</span>(tmp);  <span class="comment">//推入一个等价类</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">outputRelation</span>(equalClass);</span><br><span class="line">    <span class="keyword">return</span> ;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">inputSet</span><span class="params">(set&lt;<span class="type">int</span>&gt; &amp;S,string str=<span class="string">&quot;X&quot;</span>)</span></span>&#123;  <span class="comment">//输入关系</span></span><br><span class="line">    str=<span class="string">&quot;Input Set &quot;</span>+str+<span class="string">&quot;:\n&quot;</span>;</span><br><span class="line">    cout&lt;&lt;str;</span><br><span class="line">    string s;</span><br><span class="line">    <span class="built_in">getline</span>(cin,s);</span><br><span class="line">    <span class="function">stringstream <span class="title">ss</span><span class="params">(s)</span></span>;</span><br><span class="line">    <span class="type">int</span> tmp;</span><br><span class="line">    <span class="keyword">while</span>(ss&gt;&gt;tmp)&#123;</span><br><span class="line">        S.<span class="built_in">insert</span>(tmp);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// for(set&lt;int&gt;::iterator it=S.begin();it!=S.end();it++)&#123;</span></span><br><span class="line">    <span class="comment">//     cout&lt;&lt;*it&lt;&lt;&quot; &quot;;</span></span><br><span class="line">    <span class="comment">// &#125;</span></span><br><span class="line">    <span class="keyword">return</span> ;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">getMod3</span><span class="params">(set&lt;<span class="type">int</span>&gt; &amp;S,vector&lt;set&lt;<span class="type">int</span>&gt;&gt; &amp;thr)</span></span>&#123;    <span class="comment">//获得对3取模的等价类</span></span><br><span class="line">    <span class="keyword">for</span>(set&lt;<span class="type">int</span>&gt;::iterator it=S.<span class="built_in">begin</span>();it!=S.<span class="built_in">end</span>();it++)&#123;</span><br><span class="line">        <span class="type">int</span> k=*it;</span><br><span class="line">        thr[k%<span class="number">3</span>].<span class="built_in">insert</span>(k);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> ;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">getMod5</span><span class="params">(set&lt;<span class="type">int</span>&gt; &amp;S,vector&lt;set&lt;<span class="type">int</span>&gt;&gt; &amp;fiv)</span></span>&#123;    <span class="comment">//获得对5取模的等价类</span></span><br><span class="line">    <span class="keyword">for</span>(set&lt;<span class="type">int</span>&gt;::iterator it=S.<span class="built_in">begin</span>();it!=S.<span class="built_in">end</span>();it++)&#123;</span><br><span class="line">        <span class="type">int</span> k=*it;</span><br><span class="line">        fiv[k%<span class="number">5</span>].<span class="built_in">insert</span>(k);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> ;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">getRelationMatrix</span><span class="params">(set&lt;<span class="type">int</span>&gt; &amp;S,vector&lt;set&lt;<span class="type">int</span>&gt;&gt; &amp;mod,vector&lt; vector&lt;<span class="type">int</span>&gt; &gt; &amp;M)</span></span>&#123;   <span class="comment">//由等价类创建关系</span></span><br><span class="line">    <span class="type">int</span> k=mod.<span class="built_in">size</span>(),n=S.<span class="built_in">size</span>();</span><br><span class="line">    M.<span class="built_in">resize</span>(n);</span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;n;i++)&#123;   <span class="comment">//创建一个n*n的矩阵</span></span><br><span class="line">        M[i].<span class="built_in">resize</span>(n);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">elm</span><span class="params">(n)</span></span>;</span><br><span class="line">    <span class="built_in">getSetElm</span>(S,elm);</span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;k;i++)&#123;   <span class="comment">//遍历等价类</span></span><br><span class="line">        <span class="type">int</span> k1=mod[i].<span class="built_in">size</span>();</span><br><span class="line">        <span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">e</span><span class="params">(k1)</span></span>;</span><br><span class="line">        <span class="built_in">getSetElm</span>(mod[i],e);</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> j=<span class="number">0</span>;j&lt;k1<span class="number">-1</span>;j++)&#123;      <span class="comment">//将等价类转化为关系矩阵</span></span><br><span class="line">            <span class="type">int</span> a=<span class="built_in">findEle</span>(elm,e[j]);    <span class="comment">//找出对应元素在矩阵中的位置</span></span><br><span class="line">            <span class="keyword">for</span>(<span class="type">int</span> p=j+<span class="number">1</span>;p&lt;k1;p++)&#123;</span><br><span class="line">                <span class="type">int</span> b=<span class="built_in">findEle</span>(elm,e[p]);</span><br><span class="line">                M[a][b]=M[b][a]=<span class="number">1</span>;  <span class="comment">//标记关系矩阵</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span>(k==<span class="number">3</span>)</span><br><span class="line">        cout&lt;&lt;<span class="string">&quot;模3关系矩阵R3：\n&quot;</span>;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        cout&lt;&lt;<span class="string">&quot;模5关系矩阵R5：\n&quot;</span>;</span><br><span class="line">    <span class="built_in">outputRelationMatrix</span>(M,S);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    set&lt;<span class="type">int</span>&gt; rel;</span><br><span class="line">    <span class="built_in">inputSet</span>(rel);</span><br><span class="line">    vector&lt;set&lt;<span class="type">int</span>&gt;&gt; <span class="built_in">five</span>(<span class="number">5</span>),<span class="built_in">three</span>(<span class="number">3</span>);</span><br><span class="line">    <span class="built_in">getMod3</span>(rel,three);</span><br><span class="line">    <span class="built_in">getMod5</span>(rel,five);</span><br><span class="line">    vector&lt; vector&lt;<span class="type">int</span>&gt; &gt; M3,M5;</span><br><span class="line">    <span class="built_in">getRelationMatrix</span>(rel,three,M3);    <span class="comment">//先处理模3</span></span><br><span class="line">    <span class="built_in">getRelationMatrix</span>(rel,five,M5);    <span class="comment">//再处理模5</span></span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;按模3划分出的等价类如下：\n&quot;</span>;</span><br><span class="line">    <span class="built_in">getEquivalenceClass</span>(rel,M3);    <span class="comment">//根据M3矩阵划分等价类</span></span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;按模5划分出的等价类如下：\n&quot;</span>;</span><br><span class="line">    <span class="built_in">getEquivalenceClass</span>(rel,M5);    <span class="comment">//根据M5矩阵划分等价类</span></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+
+<p>先说结论：STL中的set模板用来写关系矩阵是真的反人类，非顺序容器的特性注定它就不适合转化成矩阵这种顺序容器的形式（二维数组），所以还是自己设计ADT效果更好。<br><strong>实现功能：</strong>输入一位正数作为集合元素（一位是为了输出矩阵的格式规整，正数是因为负数会有问题但懒得解决），分别输出它<strong>按3取模</strong>所得的关系矩阵和等价类划分、<strong>按5取模</strong>所得的关系矩阵和等价类划分。</p>
+<p><strong>参考:[</strong></p>
+<p><a class="link"   target="_blank" rel="noopener" href="https://blog.csdn.net/lym940928/article/details/88905175" >WhiteJunior-迭代器的加减法 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+<p><strong>]</strong></p>
+<h2 id="偏序关系的重要元素求解"><a href="#偏序关系的重要元素求解" class="headerlink" title="偏序关系的重要元素求解"></a>偏序关系的重要元素求解</h2><div class="highlight-container" data-rel="C++"><figure class="iseeu highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;set&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;string&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;vector&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sstream&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">getSetElm</span><span class="params">(set&lt;<span class="type">int</span>&gt; &amp;S,vector&lt;<span class="type">int</span>&gt; &amp;v)</span></span>&#123;   <span class="comment">//将集合元素数组化，无需提前设置数组大小</span></span><br><span class="line">    <span class="type">int</span> c=<span class="number">0</span>;</span><br><span class="line">    v.<span class="built_in">resize</span>(S.<span class="built_in">size</span>());</span><br><span class="line">    <span class="keyword">for</span>(set&lt;<span class="type">int</span>&gt;::iterator it=S.<span class="built_in">begin</span>();it!=S.<span class="built_in">end</span>();++it)&#123;  <span class="comment">//将集合元素有序装入数组方便顺序访问</span></span><br><span class="line">        v[c]=*it;</span><br><span class="line">        c++;    <span class="comment">//计数器</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> ;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">findEle</span><span class="params">(vector&lt;<span class="type">int</span>&gt; v,<span class="type">int</span> n)</span></span>&#123;  <span class="comment">//根据元素寻找对应下标</span></span><br><span class="line">    <span class="type">int</span> k=v.<span class="built_in">size</span>();</span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;k;i++)&#123;</span><br><span class="line">        <span class="keyword">if</span>(v[i]==n) <span class="keyword">return</span> i;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">outputRelationMatrix</span><span class="params">(vector&lt; vector&lt;<span class="type">int</span>&gt; &gt; M,set&lt;<span class="type">int</span>&gt; S)</span></span>&#123;    <span class="comment">//输出关系矩阵</span></span><br><span class="line">    <span class="type">int</span> k=S.<span class="built_in">size</span>();</span><br><span class="line">    <span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">v1</span><span class="params">(k)</span></span>;</span><br><span class="line">    <span class="built_in">getSetElm</span>(S,v1);</span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;=k;i++)&#123;</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> j=<span class="number">0</span>;j&lt;=k;j++)&#123;</span><br><span class="line">            <span class="keyword">if</span>(!i)&#123;</span><br><span class="line">                <span class="keyword">if</span>(!j) cout&lt;&lt;<span class="string">&quot;  &quot;</span>;</span><br><span class="line">                <span class="keyword">else</span> cout&lt;&lt;v1[j<span class="number">-1</span>]&lt;&lt;<span class="string">&quot; &quot;</span>;</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="keyword">if</span>(!j)&#123;</span><br><span class="line">                    cout&lt;&lt;v1[i<span class="number">-1</span>]&lt;&lt;<span class="string">&quot; &quot;</span>;</span><br><span class="line">                &#125; <span class="keyword">else</span>&#123;</span><br><span class="line">                    cout&lt;&lt;M[i<span class="number">-1</span>][j<span class="number">-1</span>]&lt;&lt;<span class="string">&quot; &quot;</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        cout&lt;&lt;endl;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> ;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">findImpElm</span><span class="params">(set&lt;<span class="type">int</span>&gt; &amp;S,set&lt;<span class="type">int</span>&gt; &amp;sonS,vector&lt; vector&lt;<span class="type">int</span>&gt; &gt; &amp;M)</span></span>&#123;    <span class="comment">//全序的偏序关系求解四元与四界，不具有一般性</span></span><br><span class="line">    vector&lt;<span class="type">int</span>&gt; s,son;</span><br><span class="line">    set&lt;<span class="type">int</span>&gt; low,up;</span><br><span class="line">    <span class="built_in">getSetElm</span>(sonS,son);</span><br><span class="line">    <span class="built_in">getSetElm</span>(S,s);</span><br><span class="line">    <span class="type">int</span> k=s.<span class="built_in">size</span>(),k1=son.<span class="built_in">size</span>();</span><br><span class="line">    <span class="type">int</span> max1,max2,min1,min2;    <span class="comment">//极大元，最大元，极小元，最小元</span></span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;k;i++)&#123;   <span class="comment">//全序情况下的求解法，属于特殊情况</span></span><br><span class="line">        <span class="type">int</span> a=i,f1=<span class="number">1</span>,f2=<span class="number">1</span>;</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> j=<span class="number">0</span>;j&lt;k1;j++)&#123;</span><br><span class="line">            <span class="type">int</span> b=<span class="built_in">findEle</span>(s,son[j]);</span><br><span class="line">            <span class="keyword">if</span>(!M[a][b]) f1=<span class="number">0</span>;</span><br><span class="line">            <span class="keyword">if</span>(!M[b][a]) f2=<span class="number">0</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span>(f1)&#123;     <span class="comment">//下界</span></span><br><span class="line">            low.<span class="built_in">insert</span>(s[i]);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span>(f2)&#123;     <span class="comment">//上界</span></span><br><span class="line">            up.<span class="built_in">insert</span>(s[i]);</span><br><span class="line">        &#125;</span><br><span class="line">        f1=<span class="number">1</span>;   <span class="comment">//极大元</span></span><br><span class="line">        f2=<span class="number">1</span>;   <span class="comment">//极小元</span></span><br><span class="line">        <span class="type">int</span> f3=<span class="number">1</span>,f4=<span class="number">1</span>;  <span class="comment">//最大元和最小元</span></span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> j=<span class="number">0</span>;j&lt;k;j++)&#123;   <span class="comment">//四元</span></span><br><span class="line">            <span class="keyword">if</span>(j==i) <span class="keyword">continue</span>;  <span class="comment">//避开矩阵的对角线</span></span><br><span class="line">            <span class="type">int</span> b=j,tmp=M[i][j],rtmp=M[j][i];</span><br><span class="line">            <span class="keyword">if</span>(tmp)&#123;    <span class="comment">//存在元素e使得s[i]&lt;e</span></span><br><span class="line">                f1=<span class="number">0</span>;   <span class="comment">//非极大元</span></span><br><span class="line">                f3=<span class="number">0</span>;   <span class="comment">//非最大元</span></span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span>(!tmp)&#123;   <span class="comment">//存在元素e使得s[i]&lt;e不成立</span></span><br><span class="line">                f4=<span class="number">0</span>;   <span class="comment">//非最小元</span></span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span>(rtmp)&#123;   <span class="comment">//存在元素e&lt;s[i]</span></span><br><span class="line">                f2=<span class="number">0</span>;   <span class="comment">//非极小元</span></span><br><span class="line">                f4=<span class="number">0</span>;   <span class="comment">//非最小元</span></span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span>(!rtmp)&#123;  <span class="comment">//存在元素e使得e&lt;s[i]不成立</span></span><br><span class="line">                f3=<span class="number">0</span>;   <span class="comment">//非最大元</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span>(f1) &#123;max1=s[i];&#125;   <span class="comment">//极大元</span></span><br><span class="line">        <span class="keyword">if</span>(f2) &#123;min1=s[i];&#125;  <span class="comment">//极小元</span></span><br><span class="line">        <span class="keyword">if</span>(f3) &#123;max2=s[i];&#125;   <span class="comment">//最大元</span></span><br><span class="line">        <span class="keyword">if</span>(f4) &#123;min2=s[i];&#125;   <span class="comment">//最小元</span></span><br><span class="line">    &#125;</span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;集合X在该关系下的重要元素：\n&quot;</span>;</span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;极大元：&quot;</span>&lt;&lt;max1&lt;&lt;endl;</span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;极小元：&quot;</span>&lt;&lt;min1&lt;&lt;endl;</span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;最大元：&quot;</span>&lt;&lt;max2&lt;&lt;endl;</span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;最小元：&quot;</span>&lt;&lt;min2&lt;&lt;endl;</span><br><span class="line">    vector&lt;<span class="type">int</span>&gt; v1,v2;</span><br><span class="line">    <span class="built_in">getSetElm</span>(up,v1);   <span class="comment">//v1上界</span></span><br><span class="line">    <span class="built_in">getSetElm</span>(low,v2);  <span class="comment">//v2下界</span></span><br><span class="line">    <span class="type">int</span> len1=v1.<span class="built_in">size</span>(),len2=v2.<span class="built_in">size</span>(),maxLow,minUp; <span class="comment">//上下确界</span></span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;子集sonX关于集合X在该关系下的重要元素：\n&quot;</span>;</span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;上界：&quot;</span>;</span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;len1;i++)&#123;</span><br><span class="line">        cout&lt;&lt;v1[i]&lt;&lt;<span class="string">&quot; &quot;</span>;</span><br><span class="line">        <span class="type">int</span> f=<span class="number">1</span>,a=<span class="built_in">findEle</span>(s,v1[i]);</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> j=<span class="number">0</span>;j&lt;len1;j++)&#123;</span><br><span class="line">            <span class="type">int</span> b=<span class="built_in">findEle</span>(s,v1[j]);     <span class="comment">//确认在原矩阵中的下标</span></span><br><span class="line">            <span class="keyword">if</span>(!M[a][b])&#123;   <span class="comment">//最小上界</span></span><br><span class="line">                f=<span class="number">0</span>;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span>(f) minUp=v1[i];  <span class="comment">//上确界</span></span><br><span class="line">    &#125;</span><br><span class="line">    cout&lt;&lt;endl&lt;&lt;<span class="string">&quot;上确界：&quot;</span>&lt;&lt;minUp&lt;&lt;endl;</span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;下界：&quot;</span>;</span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;len2;i++)&#123;</span><br><span class="line">        cout&lt;&lt;v2[i]&lt;&lt;<span class="string">&quot; &quot;</span>;</span><br><span class="line">        <span class="type">int</span> f=<span class="number">1</span>,a=<span class="built_in">findEle</span>(s,v2[i]);</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> j=<span class="number">0</span>;j&lt;len2;j++)&#123;</span><br><span class="line">            <span class="type">int</span> b=<span class="built_in">findEle</span>(s,v2[j]);     <span class="comment">//确认在原矩阵中的下标</span></span><br><span class="line">            <span class="keyword">if</span>(!M[b][a])&#123;   <span class="comment">//最大下界</span></span><br><span class="line">                f=<span class="number">0</span>;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span>(f) maxLow=v2[i];  <span class="comment">//下确界</span></span><br><span class="line">    &#125;</span><br><span class="line">    cout&lt;&lt;endl&lt;&lt;<span class="string">&quot;下确界：&quot;</span>&lt;&lt;maxLow&lt;&lt;endl;</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">inputSet</span><span class="params">(set&lt;<span class="type">int</span>&gt; &amp;S,string str=<span class="string">&quot;X&quot;</span>)</span></span>&#123;  <span class="comment">//输入关系</span></span><br><span class="line">    str=<span class="string">&quot;Input Set &quot;</span>+str+<span class="string">&quot;:\n&quot;</span>;</span><br><span class="line">    cout&lt;&lt;str;</span><br><span class="line">    string s;</span><br><span class="line">    <span class="built_in">getline</span>(cin,s);</span><br><span class="line">    <span class="function">stringstream <span class="title">ss</span><span class="params">(s)</span></span>;</span><br><span class="line">    <span class="type">int</span> tmp;</span><br><span class="line">    <span class="keyword">while</span>(ss&gt;&gt;tmp)&#123;</span><br><span class="line">        S.<span class="built_in">insert</span>(tmp);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// for(set&lt;int&gt;::iterator it=S.begin();it!=S.end();it++)&#123;</span></span><br><span class="line">    <span class="comment">//     cout&lt;&lt;*it&lt;&lt;&quot; &quot;;</span></span><br><span class="line">    <span class="comment">// &#125;</span></span><br><span class="line">    <span class="keyword">return</span> ;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">getSmall</span><span class="params">(set&lt;<span class="type">int</span>&gt; &amp;S,vector&lt; vector&lt;<span class="type">int</span>&gt; &gt; &amp;sml)</span></span>&#123;    <span class="comment">//获得&lt;=的偏序关系矩阵</span></span><br><span class="line">    <span class="type">int</span> k=S.<span class="built_in">size</span>();</span><br><span class="line">    sml.<span class="built_in">resize</span>(k);</span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;k;i++)&#123;</span><br><span class="line">        sml[i].<span class="built_in">resize</span>(k,<span class="number">0</span>);</span><br><span class="line">        sml[i][i]=<span class="number">1</span>;    <span class="comment">//自反性</span></span><br><span class="line">    &#125;</span><br><span class="line">    vector&lt;<span class="type">int</span>&gt; v;</span><br><span class="line">    <span class="built_in">getSetElm</span>(S,v);</span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;k<span class="number">-1</span>;i++)&#123;   <span class="comment">//传递性</span></span><br><span class="line">        <span class="type">int</span> a=i;    <span class="comment">//确认下标位置</span></span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> j=i+<span class="number">1</span>;j&lt;k;j++)&#123;</span><br><span class="line">            <span class="type">int</span> b=j;</span><br><span class="line">            sml[a][b]=<span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;小于等于的偏序关系矩阵：\n&quot;</span>;</span><br><span class="line">    <span class="built_in">outputRelationMatrix</span>(sml,S);</span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;哈塞图：\n&quot;</span>;</span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> i=k<span class="number">-1</span>;i&gt;=<span class="number">0</span>;i--)&#123;</span><br><span class="line">        <span class="keyword">if</span>(i!=k<span class="number">-1</span>) cout&lt;&lt;<span class="string">&quot;|&quot;</span>&lt;&lt;endl;</span><br><span class="line">        cout&lt;&lt;v[i]&lt;&lt;endl;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> ;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">getBig</span><span class="params">(set&lt;<span class="type">int</span>&gt; &amp;S,vector&lt; vector&lt;<span class="type">int</span>&gt; &gt; &amp;big)</span></span>&#123;    <span class="comment">//获得&gt;=的偏序关系矩阵</span></span><br><span class="line">    <span class="type">int</span> k=S.<span class="built_in">size</span>();</span><br><span class="line">    big.<span class="built_in">resize</span>(k);</span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;k;i++)&#123;</span><br><span class="line">        big[i].<span class="built_in">resize</span>(k,<span class="number">0</span>);</span><br><span class="line">        big[i][i]=<span class="number">1</span>;    <span class="comment">//自反性</span></span><br><span class="line">    &#125;</span><br><span class="line">    vector&lt;<span class="type">int</span>&gt; v;</span><br><span class="line">    <span class="built_in">getSetElm</span>(S,v);</span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">1</span>;i&lt;k;i++)&#123;   <span class="comment">//传递性</span></span><br><span class="line">        <span class="type">int</span> a=i;    <span class="comment">//确认下标位置</span></span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> j=<span class="number">0</span>;j&lt;i;j++)&#123;</span><br><span class="line">            <span class="type">int</span> b=j;</span><br><span class="line">            big[a][b]=<span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;大于等于的偏序关系矩阵：\n&quot;</span>;</span><br><span class="line">    <span class="built_in">outputRelationMatrix</span>(big,S);</span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;哈塞图：\n&quot;</span>;</span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;k;i++)&#123;</span><br><span class="line">        <span class="keyword">if</span>(i) cout&lt;&lt;<span class="string">&quot;|&quot;</span>&lt;&lt;endl;</span><br><span class="line">        cout&lt;&lt;v[i]&lt;&lt;endl;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> ;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    set&lt;<span class="type">int</span>&gt; rel,sonRel;</span><br><span class="line">    <span class="built_in">inputSet</span>(rel);</span><br><span class="line">    vector&lt; vector&lt;<span class="type">int</span>&gt; &gt; M1,M2;</span><br><span class="line">    <span class="built_in">getSmall</span>(rel,M1);   <span class="comment">//M1为小于等于  </span></span><br><span class="line">    <span class="built_in">getBig</span>(rel,M2);     <span class="comment">//M2为大于等于</span></span><br><span class="line">    <span class="built_in">inputSet</span>(sonRel,<span class="string">&quot;sonX&quot;</span>);</span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;\n小于等于关系下的重要元素：\n&quot;</span>;</span><br><span class="line">    <span class="built_in">findImpElm</span>(rel,sonRel,M1); <span class="comment">//求解小于等于关系下的重要元素</span></span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;\n大于等于关系下的重要元素：\n&quot;</span>;</span><br><span class="line">    <span class="built_in">findImpElm</span>(rel,sonRel,M2); <span class="comment">//求解大于等于关系下的重要元素</span></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+
+<p>偏序关系的处理比想象中难不少，好在实验只要求写”小于等于”与”大于等于”，可以只考虑全序状况，做特殊的关系处理求解，若是追求一般性则难度不小。</p>
+<p>实现功能：输入集合X，输出两种偏序关系的关系矩阵，再输入子集sonX，输出两种偏序关系下X的四元与sonX的四界。</p>
+<h2 id="KMP算法"><a href="#KMP算法" class="headerlink" title="KMP算法"></a>KMP算法</h2><p>待实现目标：在长度为n的文本串中查找一个长度为m的模式串。</p>
+<p><strong>暴力匹配：</strong></p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="E:\PictureBed\image-20220418165641363.png"
+                      alt="image-20220418165641363"
+                ></p>
+<p><strong>KMP匹配：</strong></p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="E:\PictureBed\image-20220418165716665.png"
+                      alt="image-20220418165716665"
+                ></p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="E:\PictureBed\image-20220418165720919.png"
+                      alt="image-20220418165720919"
+                ></p>
+<p><strong>分析：</strong>其重要思想在于 <code>i</code> 不做回退，而是选择处理 <code>j</code> ，根据其退出位置找到最近且有共同前缀的位置。</p>
+<p>算法步骤如下：</p>
+<ol>
+<li>若 <code>S[i]==P[j]</code> ，则 <code>i++ &amp;&amp; j++</code></li>
+<li>若 <code>s[i]!=P[j] &amp;&amp; j!=0</code> ，则 <code>j=Next[j]</code> </li>
+<li>若 <code>s[i]!=P[j] &amp;&amp; j==0</code> ，则 <code>i++</code></li>
+</ol>
+<p>确定 <code>Next[]</code> 数组是KMP算法的核心思想：</p>
+<div class="highlight-container" data-rel="C++"><figure class="iseeu highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> Next[MAXN];</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">getFail</span><span class="params">(<span class="type">char</span> *p, <span class="type">int</span> plen)</span></span>&#123; </span><br><span class="line"><span class="comment">//预计算Next[]。用于失配的情况下，得到j回溯的位置</span></span><br><span class="line">    Next[<span class="number">0</span>]=<span class="number">0</span>; Next[<span class="number">1</span>]=<span class="number">0</span>;	</span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">1</span>; i &lt; plen; i++)&#123;</span><br><span class="line">        <span class="type">int</span> j = Next[i];	<span class="comment">//在i位置退出后可能匹配的位置</span></span><br><span class="line">        <span class="keyword">while</span>(j &amp;&amp; p[i] != p[j])   j = Next[j];		<span class="comment">//寻找前缀相同的可能前缀子串</span></span><br><span class="line">        Next[i+<span class="number">1</span>] = (p[i]==p[j]) ? j+<span class="number">1</span> : <span class="number">0</span>;		<span class="comment">//匹配相同前缀的子串</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+
+<p>想要理解透彻会比较费时间，也比较绕，可以参考：<a class="link"   target="_blank" rel="noopener" href="https://blog.csdn.net/v_july_v/article/details/7041827" >v_JULY_v-从头到尾理解KMP <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+<p>简单补充一下自己的理解：</p>
+<p>首先要明确，通过分析模式串的结构寻找 <code>j</code> 的可替代位置是KMP的核心，在确定 <code>Next[i]</code> 时，比较的是 <code>i-1</code> 位置的匹配结果，换言之一定要弄清楚，位置 <code>i</code> 的匹配结果决定的是 <code>Next[i]</code> 的值，也就是 <code>i</code> 位置前缀匹配则不论 <code>P[i+1]</code> 是什么，都已经规定了 <code>i+1</code> 的退出位置，这一点在圈圈绕绕理解KMP时是很重要的。</p>
+<p>注意到评论区有如下提问：</p>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">非常感谢作者！！！初学者有一个地方还不太明白，想请教一下各位大佬：按照这个未优化的next数组求法，模式串p = “ababaa”得到的结果是 -1 0 0 1 2 3 。但是按照匹配原则来说，如果末尾的a匹配失败了以后应该跳转到p[0]而不是p[3]。这个未优化的求法是不是应该再增加对于末尾的字符的一次判断比较好呀？~</span><br></pre></td></tr></table></figure></div>
+
+<p>他的问题本身很好解决，但他让我想到了另一个问题，这个问题正与前面规定退出位置的优先级有关。举个例子，给出模式串P1：</p>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">a b a b a b</span><br><span class="line">0 0 0 1 2 3</span><br></pre></td></tr></table></figure></div>
+
+<p>注意 <code>P[5]=b</code> 的退出值 <code>Next[5]=3</code> ，但实际上若是在 <code>P[5]</code> 退出，这个退出值必然是0，这是因为 <code>P[5]=P[3]=P[1]=b</code> ，显然退出时不过是将这个比较过程重复了一遍，但是整合时会发现如果跳出位置的值与待跳出位置的值相等，也就是 <code>P[Next[j]]=P[j]</code> ，那这里是可以再向前跳一步的，就像我们计算 <code>Next[]</code> 碰到前缀不一致时那样：</p>
+<div class="highlight-container" data-rel="C++"><figure class="iseeu highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span>(P[Next[j]]==P[j] &amp;&amp; j!=<span class="number">0</span>)&#123;</span><br><span class="line">	j=Next[j];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+
+<p>但是这里说的都是废话，理由有以下三点：</p>
+<ol>
+<li>我们知道 <code>Next[i]</code> 的值是在 <code>i-1</code> 位置确定的，因此要做这种比较需要额外的运算，不方便也破坏了原来的算法结构，也就是一种类似DP的前置状态的无后效性转移。</li>
+<li>这个迭代过程的退出值是无法存储的，如果将它存储至 <code>Next[i]</code> 中，试问在 <code>i</code> 位置前缀匹配的情况下，<code>Next[i]+1</code> 的值已经无法作为标记，<code>Next[i+1]</code> 的值怎么办？</li>
+<li>在实际计算中，这种优化其实一点时间都没有节省。</li>
+</ol>
+<p>提出来只是为了方便更好的理解KMP算法。</p>
+<!-- flag of hidden posts -->
+        </div>
+
+        
+            <div class="post-copyright-info w-full my-8 px-2 sm:px-6 md:px-8">
+                <div class="article-copyright-info-container">
+    <ul>
+        <li><strong>Title:</strong> C++等价与偏序关系的矩阵处理</li>
+        <li><strong>Author:</strong> Forestsetyou</li>
+        <li><strong>Created at
+                :</strong> 2022-04-19 00:51:00</li>
+        
+            <li>
+                <strong>Updated at
+                    :</strong> 2023-08-03 18:07:00
+            </li>
+        
+        <li>
+            <strong>Link:</strong> https://forestsetyou.github.io/2022/04/19/Development/Algorithm/C++等价与偏序关系的矩阵处理/
+        </li>
+        <li>
+            <strong>
+                License:
+            </strong>
+            
+
+            
+                This work is licensed under <a class="license" target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0">CC BY-NC-SA 4.0</a>.
+            
+        </li>
+    </ul>
+</div>
+
+            </div>
+        
+
+        
+            <ul class="post-tags-box text-lg mt-1.5 flex-wrap justify-center flex md:hidden">
+                
+                    <li class="tag-item mx-0.5">
+                        <a href="/tags/Schoolwork/">#Schoolwork</a>&nbsp;
+                    </li>
+                
+            </ul>
+        
+
+        
+
+        
+
+
+        
+    </div>
+
+    
+        <div class="toc-content-container">
+            <div class="post-toc-wrap">
+    <div class="post-toc">
+        <div class="toc-title">On this page</div>
+        <div class="page-title">C++等价与偏序关系的矩阵处理</div>
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#C-%E7%AD%89%E4%BB%B7%E4%B8%8E%E5%81%8F%E5%BA%8F%E5%85%B3%E7%B3%BB%E7%9A%84%E7%9F%A9%E9%98%B5%E5%A4%84%E7%90%86"><span class="nav-text">C++等价与偏序关系的矩阵处理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AD%89%E4%BB%B7%E5%85%B3%E7%B3%BB%E7%9A%84%E5%88%92%E5%88%86"><span class="nav-text">等价关系的划分</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%81%8F%E5%BA%8F%E5%85%B3%E7%B3%BB%E7%9A%84%E9%87%8D%E8%A6%81%E5%85%83%E7%B4%A0%E6%B1%82%E8%A7%A3"><span class="nav-text">偏序关系的重要元素求解</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#KMP%E7%AE%97%E6%B3%95"><span class="nav-text">KMP算法</span></a></li></ol></li></ol>
+
+    </div>
+</div>
+        </div>
+    
+</div>
+
+
+
+                
+
+            </div>
+
+            
+
+        </div>
+
+        <div class="main-content-footer">
+            <footer class="footer mt-5 py-5 h-auto text-base text-third-text-color relative border-t-2 border-t-border-color">
+    <div class="info-container py-3 text-center">
+        
+        <div class="text-center">
+            &copy;
+            
+              <span>2024</span>
+              -
+            
+            2024&nbsp;&nbsp;<i class="fa-solid fa-heart fa-beat" style="--fa-animation-duration: 0.5s; color: #f54545"></i>&nbsp;&nbsp;<a href="/">Forestsetyou</a>
+            
+        </div>
+        
+        <div class="relative text-center lg:absolute lg:left-[20px] lg:top-1/2 lg:-translate-y-1/2 lg:text-left">
+            <span class="lg:block text-sm">POWERED BY <?xml version="1.0" encoding="utf-8"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg class="relative top-[2px] inline-block align-baseline" version="1.1" id="圖層_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="1rem" height="1rem" viewBox="0 0 512 512" enable-background="new 0 0 512 512" xml:space="preserve"><path fill="#0E83CD" d="M256.4,25.8l-200,115.5L56,371.5l199.6,114.7l200-115.5l0.4-230.2L256.4,25.8z M349,354.6l-18.4,10.7l-18.6-11V275H200v79.6l-18.4,10.7l-18.6-11v-197l18.5-10.6l18.5,10.8V237h112v-79.6l18.5-10.6l18.5,10.8V354.6z"/></svg><a target="_blank" class="text-base" href="https://hexo.io">Hexo</a></span>
+            <span class="text-sm lg:block">THEME&nbsp;<a class="text-base" target="_blank" href="https://github.com/EvanNotFound/hexo-theme-redefine">Redefine v2.6.1</a></span>
+        </div>
+        
+        
+        
+        
+        
+    </div>  
+</footer>
+        </div>
+    </div>
+
+    
+        <div class="post-tools">
+            <div class="post-tools-container">
+    <ul class="article-tools-list">
+        <!-- TOC aside toggle -->
+        
+            <li class="right-bottom-tools page-aside-toggle">
+                <i class="fa-regular fa-outdent"></i>
+            </li>
+        
+
+        <!-- go comment -->
+        
+    </ul>
+</div>
+
+        </div>
+    
+
+    <div class="right-side-tools-container">
+        <div class="side-tools-container">
+    <ul class="hidden-tools-list">
+        <li class="right-bottom-tools tool-font-adjust-plus flex justify-center items-center">
+            <i class="fa-regular fa-magnifying-glass-plus"></i>
+        </li>
+
+        <li class="right-bottom-tools tool-font-adjust-minus flex justify-center items-center">
+            <i class="fa-regular fa-magnifying-glass-minus"></i>
+        </li>
+
+        <li class="right-bottom-tools tool-dark-light-toggle flex justify-center items-center">
+            <i class="fa-regular fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        
+
+        <li class="right-bottom-tools tool-scroll-to-bottom flex justify-center items-center">
+            <i class="fa-regular fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="visible-tools-list">
+        <li class="right-bottom-tools toggle-tools-list flex justify-center items-center">
+            <i class="fa-regular fa-cog fa-spin"></i>
+        </li>
+        
+            <li class="right-bottom-tools tool-scroll-to-top flex justify-center items-center">
+                <i class="arrow-up fas fa-arrow-up"></i>
+                <span class="percent"></span>
+            </li>
+        
+        
+    </ul>
+</div>
+
+    </div>
+
+    <div class="image-viewer-container">
+    <img src="">
+</div>
+
+
+    
+        <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-input-field-pre">
+            <i class="fa-solid fa-keyboard"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="Search..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="popup-btn-close">
+                <i class="fa-solid fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fa-solid fa-spinner fa-spin-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+
+</main>
+
+
+    
+<script src="/js/libs/Swup.min.js"></script>
+
+<script src="/js/libs/SwupSlideTheme.min.js"></script>
+
+<script src="/js/libs/SwupScriptsPlugin.min.js"></script>
+
+<script src="/js/libs/SwupProgressPlugin.min.js"></script>
+
+<script src="/js/libs/SwupScrollPlugin.min.js"></script>
+
+<script src="/js/libs/SwupPreloadPlugin.min.js"></script>
+
+<script>
+    const swup = new Swup({
+        plugins: [
+            new SwupScriptsPlugin({
+                optin: true,
+            }),
+            new SwupProgressPlugin(),
+            new SwupScrollPlugin({
+                offset: 80,
+            }),
+            new SwupSlideTheme({
+                mainElement: ".main-content-body",
+            }),
+            new SwupPreloadPlugin(),
+        ],
+        containers: ["#swup"],
+    });
+</script>
+
+
+
+
+
+
+
+<script src="/js/tools/imageViewer.js" type="module"></script>
+
+<script src="/js/utils.js" type="module"></script>
+
+<script src="/js/main.js" type="module"></script>
+
+<script src="/js/layouts/navbarShrink.js" type="module"></script>
+
+<script src="/js/tools/scrollTopBottom.js" type="module"></script>
+
+<script src="/js/tools/lightDarkSwitch.js" type="module"></script>
+
+<script src="/js/layouts/categoryList.js" type="module"></script>
+
+
+
+    
+<script src="/js/tools/localSearch.js" type="module"></script>
+
+
+
+
+    
+<script src="/js/tools/codeBlock.js" type="module"></script>
+
+
+
+
+    
+<script src="/js/layouts/lazyload.js" type="module"></script>
+
+
+
+
+
+
+  
+<script src="/js/libs/Typed.min.js"></script>
+
+  
+<script src="/js/plugins/typed.js" type="module"></script>
+
+
+
+
+
+
+
+
+
+<div class="post-scripts" data-swup-reload-script>
+    
+        
+<script src="/js/tools/tocToggle.js" type="module"></script>
+
+<script src="/js/layouts/toc.js" type="module"></script>
+
+<script src="/js/plugins/tabs.js" type="module"></script>
+
+    
+</div>
+
+
+</body>
+</html>

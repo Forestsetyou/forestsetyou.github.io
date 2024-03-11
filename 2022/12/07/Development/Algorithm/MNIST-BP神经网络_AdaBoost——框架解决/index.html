@@ -1,0 +1,979 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="keywords" content="ctf, solution, note, blog">
+    
+    <meta name="author" content="Forestsetyou">
+    <!-- preconnect -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    
+    <!--- Seo Part-->
+    
+    <link rel="canonical" href="http://forestsetyou.github.io/2022/12/07/development/algorithm/mnist-bp神经网络_adaboost——框架解决/"/>
+    <meta name="robots" content="index,follow">
+    <meta name="googlebot" content="index,follow">
+    <meta name="revisit-after" content="1 days">
+    
+        <meta name="description" content="false">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MNIST-BP神经网络_AdaBoost——框架解决">
+<meta property="og:url" content="http://forestsetyou.github.io/2022/12/07/Development/Algorithm/MNIST-BP%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C_AdaBoost%E2%80%94%E2%80%94%E6%A1%86%E6%9E%B6%E8%A7%A3%E5%86%B3/index.html">
+<meta property="og:site_name" content="Festu&#39;s Blog">
+<meta property="og:description" content="false">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2022-12-07T11:06:00.000Z">
+<meta property="article:modified_time" content="2023-08-03T10:08:00.000Z">
+<meta property="article:author" content="Forestsetyou">
+<meta property="article:tag" content="Schoolwork">
+<meta name="twitter:card" content="summary">
+    
+    
+    <!--- Icon Part-->
+    <link rel="icon" type="image/png" href="/hide_imgs/smiling_face.png" sizes="192x192">
+    <link rel="apple-touch-icon" sizes="180x180" href="/hide_imgs/smiling_face.png">
+    <meta name="theme-color" content="#A31F34">
+    <link rel="shortcut icon" href="/hide_imgs/smiling_face.png">
+    <!--- Page Info-->
+    
+    <title>
+        
+            MNIST-BP神经网络_AdaBoost——框架解决 -
+        
+        Festu&#39;s Blog
+    </title><meta name="robots" content="noindex">
+
+    
+<link rel="stylesheet" href="/fonts/Chillax/chillax.css">
+
+
+    <!--- Inject Part-->
+    
+
+    
+        <style>
+    :root {
+        --preloader-background-color: #fff;
+        --preloader-text-color: #000;
+    }
+
+    @media (prefers-color-scheme: dark) {
+        :root {
+            --preloader-background-color: #202124;
+            --preloader-text-color: #fff;
+        }
+    }
+
+    @media (prefers-color-scheme: light) {
+        :root {
+            --preloader-background-color: #fff;
+            --preloader-text-color: #000;
+        }
+    }
+
+    @media (max-width: 600px) {
+        .ml13 {
+            font-size: 2.6rem !important; /* Adjust this value as needed */
+        }
+    }
+
+    .preloader {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem; /* Tailwind 'gap-4' is 1rem */
+        align-items: center;
+        justify-content: center;
+        position: fixed;
+        padding: 12px;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh; /* 'h-screen' is 100% of the viewport height */
+        background-color: var(--preloader-background-color);
+        z-index: 1100; /* 'z-[1100]' sets the z-index */
+        transition: opacity 0.2s ease-in-out;
+    }
+
+    .ml13 {
+        font-size: 3.2rem;
+        /* text-transform: uppercase; */
+        color: var(--preloader-text-color);
+        letter-spacing: -1px;
+        font-weight: 500;
+        font-family: 'Chillax-Variable', sans-serif;
+        text-align: center;
+    }
+
+    .ml13 .word {
+        display: inline-flex;
+        flex-wrap: wrap;
+        white-space: nowrap;
+    }
+
+    .ml13 .letter {
+        display: inline-block;
+        line-height: 1em;
+    }
+</style>
+
+<div class="preloader">
+    
+<script src="/js/libs/anime.min.js"></script>
+
+    <h1 class="ml13">
+        Festu&#39;s Blog
+    </h1>
+    <script>
+        var textWrapper = document.querySelector('.ml13');
+        // Split text into words
+        var words = textWrapper.textContent.trim().split(' ');
+
+        // Clear the existing content
+        textWrapper.innerHTML = '';
+
+        // Wrap each word and its letters in spans
+        words.forEach(function(word) {
+            var wordSpan = document.createElement('span');
+            wordSpan.classList.add('word');
+            wordSpan.innerHTML = word.replace(/\S/g, "<span class='letter'>$&</span>");
+            textWrapper.appendChild(wordSpan);
+            textWrapper.appendChild(document.createTextNode(' ')); // Add space between words
+        });
+
+
+        anime.timeline({loop: true})
+            .add({
+                targets: '.ml13 .letter',
+                translateY: [100,0],
+                translateZ: 0,
+                opacity: [0,1],
+                easing: "easeOutExpo",
+                duration: 1400,
+                delay: (el, i) => 300 + 30 * i
+            }).add({
+            targets: '.ml13 .letter',
+            translateY: [0,-100],
+            opacity: [1,0],
+            easing: "easeInExpo",
+            duration: 1200,
+            delay: (el, i) => 100 + 30 * i
+        });
+
+        let themeStatus = JSON.parse(localStorage.getItem('REDEFINE-THEME-STATUS'))?.isDark;
+
+        // If the theme status is not found in local storage, check the preferred color scheme
+        if (themeStatus === undefined || themeStatus === null) {
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                themeStatus = 'dark';
+            } else {
+                themeStatus = 'light';
+            }
+        }
+
+        // Now you can use the themeStatus variable in your code
+        if (themeStatus) {
+            document.documentElement.style.setProperty('--preloader-background-color', '#202124');
+            document.documentElement.style.setProperty('--preloader-text-color', '#fff');
+        } else {
+            document.documentElement.style.setProperty('--preloader-background-color', '#fff');
+            document.documentElement.style.setProperty('--preloader-text-color', '#000');
+        }
+
+        window.addEventListener('load', function () {
+            hidePreloaderAfterTimeout(1000); // Hide after 1000 milliseconds once the window has loaded
+        });
+
+        // Backup failsafe: Hide preloader after a maximum of 5000 milliseconds, regardless of the window load event
+        hidePreloaderAfterTimeout(5000);
+
+        function hidePreloaderAfterTimeout(delay) {
+            setTimeout(function () {
+                var preloader = document.querySelector('.preloader');
+                preloader.style.opacity = '0';
+                setTimeout(function () {
+                    preloader.style.display = 'none';
+                }, 200);
+            }, delay);
+        }
+    </script>
+</div>
+    
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+
+    
+        
+<link rel="stylesheet" href="/assets/build/styles.css">
+
+    
+
+    
+<link rel="stylesheet" href="/fonts/fonts.css">
+
+    
+<link rel="stylesheet" href="/fonts/Satoshi/satoshi.css">
+
+    <!--- Font Part-->
+    
+    
+    
+    
+
+
+    <script id="hexo-configurations">
+    window.config = {"hostname":"forestsetyou.github.io","root":"/","language":"en","path":"search.xml"};
+    window.theme = {"articles":{"style":{"font_size":"16px","line_height":1.5,"image_border_radius":"14px","image_alignment":"center","image_caption":false,"link_icon":true,"title_alignment":"left","headings_top_spacing":{"h1":"5rem","h2":"4rem","h3":"2.8rem","h4":"2.5rem","h5":"2.2rem","h6":"2rem"}},"word_count":{"enable":false,"count":true,"min2read":true},"author_label":{"enable":false,"auto":false,"list":[]},"code_block":{"copy":true,"style":"simple","font":{"enable":false,"family":null,"url":null}},"toc":{"enable":true,"max_depth":3,"number":false,"expand":true,"init_open":true},"copyright":{"enable":true,"default":"cc_by_nc_sa"},"lazyload":true,"recommendation":{"enable":false,"title":"推荐阅读","limit":3,"mobile_limit":2,"placeholder":"/images/wallhaven-wqery6-light.webp","skip_dirs":[]}},"colors":{"primary":"#A31F34","secondary":null,"default_mode":"light"},"global":{"fonts":{"chinese":{"enable":false,"family":null,"url":null},"english":{"enable":false,"family":null,"url":null}},"content_max_width":"1000px","sidebar_width":"210px","hover":{"shadow":true,"scale":false},"scroll_progress":{"bar":false,"percentage":true},"website_counter":{"url":"https://cn.vercount.one/js","enable":false,"site_pv":true,"site_uv":true,"post_pv":true},"single_page":true,"preloader":true,"open_graph":true,"google_analytics":{"enable":false,"id":null}},"home_banner":{"enable":true,"style":"fixed","image":{"light":"/hide_imgs/light_banner-5.png","dark":"/hide_imgs/dark_banner.png"},"title":"Festu's Blog","subtitle":{"text":["Life Goes On."],"hitokoto":{"enable":false,"api":"https://v1.hitokoto.cn"},"typing_speed":100,"backing_speed":80,"starting_delay":500,"backing_delay":1500,"loop":false,"smart_backspace":false},"text_color":{"light":"#fff","dark":"#d1d1b6"},"text_style":{"title_size":"2.8rem","subtitle_size":"1.5rem","line_height":1.2},"custom_font":{"enable":false,"family":null,"url":null},"social_links":{"enable":true,"style":"default","links":{"github":"https://github.com/Forestsetyou","instagram":null,"zhihu":null,"twitter":null,"email":null},"qrs":{"weixin":null}}},"plugins":{"feed":{"enable":false},"aplayer":{"enable":false,"type":"fixed","audios":[{"name":null,"artist":null,"url":null,"cover":null,"lrc":null}]},"mermaid":{"enable":false,"version":"9.3.0"}},"version":"2.6.1","navbar":{"auto_hide":false,"color":{"left":"#f78736","right":"#367df7","transparency":35},"width":{"home":"1200px","pages":"1000px"},"links":{"Home":{"path":"/","icon":"fa-regular fa-house"},"Archives":{"path":"/archives","icon":"fa-regular fa-archive"},"categories":{"path":"/categories","icon":"fa-regular fa-folder"},"tags":{"path":"/tags","icon":"fa-regular fa-tags"}},"search":{"enable":true,"preload":true}},"page_templates":{"friends_column":2,"tags_style":"blur"},"home":{"sidebar":{"enable":true,"position":"left","first_item":"menu","announcement":null,"show_on_mobile":true,"links":null},"article_date_format":"auto","categories":{"enable":true,"limit":3},"tags":{"enable":true,"limit":3}},"footerStart":"2024/03/11 03:27:59"};
+    window.lang_ago = {"second":"%s seconds ago","minute":"%s minutes ago","hour":"%s hours ago","day":"%s days ago","week":"%s weeks ago","month":"%s months ago","year":"%s years ago"};
+    window.data = {"masonry":false};
+  </script>
+    
+    <!--- Fontawesome Part-->
+    
+<link rel="stylesheet" href="/fontawesome/fontawesome.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/brands.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/solid.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/regular.min.css">
+
+    
+    
+    
+    
+<meta name="generator" content="Hexo 7.1.1"></head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+
+    
+        <span class="pjax-progress-bar"></span>
+<!--        <span class="swup-progress-icon">-->
+<!--            <i class="fa-solid fa-circle-notch fa-spin"></i>-->
+<!--        </span>-->
+    
+</div>
+
+
+<main class="page-container" id="swup">
+
+    
+
+    <div class="main-content-container">
+
+
+        <div class="main-content-header">
+            <header class="navbar-container px-6 md:px-12">
+
+    <div class="navbar-content ">
+        <div class="left">
+            
+                <a class="logo-image" href="/">
+                    <img src="/hide_imgs/smiling_face.png">
+                </a>
+            
+            <a class="logo-title" href="/">
+                
+                Festu&#39;s Blog
+                
+            </a>
+        </div>
+
+        <div class="right">
+            <!-- PC -->
+            <div class="desktop">
+                <ul class="navbar-list">
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/"
+                                        >
+                                    <i class="fa-regular fa-house fa-fw"></i>
+                                    HOME
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/archives"
+                                        >
+                                    <i class="fa-regular fa-archive fa-fw"></i>
+                                    ARCHIVES
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/categories"
+                                        >
+                                    <i class="fa-regular fa-folder fa-fw"></i>
+                                    CATEGORIES
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/tags"
+                                        >
+                                    <i class="fa-regular fa-tags fa-fw"></i>
+                                    TAGS
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                    
+                        <li class="navbar-item search search-popup-trigger">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </li>
+                    
+                </ul>
+            </div>
+            <!-- Mobile -->
+            <div class="mobile">
+                
+                    <div class="icon-item search search-popup-trigger"><i class="fa-solid fa-magnifying-glass"></i>
+                    </div>
+                
+                <div class="icon-item navbar-bar">
+                    <div class="navbar-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile sheet -->
+    <div class="navbar-drawer h-screen w-full absolute top-0 left-0 bg-background-color flex flex-col justify-between">
+        <ul class="drawer-navbar-list flex flex-col px-4 justify-center items-start">
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/"
+                        >
+                            <span>
+                                HOME
+                            </span>
+                            
+                                <i class="fa-regular fa-house fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/archives"
+                        >
+                            <span>
+                                ARCHIVES
+                            </span>
+                            
+                                <i class="fa-regular fa-archive fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/categories"
+                        >
+                            <span>
+                                CATEGORIES
+                            </span>
+                            
+                                <i class="fa-regular fa-folder fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/tags"
+                        >
+                            <span>
+                                TAGS
+                            </span>
+                            
+                                <i class="fa-regular fa-tags fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+
+            
+            
+        </ul>
+
+        <div class="statistics flex justify-around my-2.5">
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/tags">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">1</div>
+        <div class="label text-third-text-color text-sm">Tags</div>
+    </a>
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/categories">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">10</div>
+        <div class="label text-third-text-color text-sm">Categories</div>
+    </a>
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/archives">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">14</div>
+        <div class="label text-third-text-color text-sm">Posts</div>
+    </a>
+</div>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="main-content-body">
+
+            
+
+            <div class="main-content">
+
+                
+                    <div class="post-page-container flex relative justify-between box-border w-full h-full">
+    <div class="article-content-container">
+
+        <div class="article-title relative w-full">
+            
+                
+                
+                <img src="/hide_imgs/post_thumbnail.png" alt="MNIST-BP神经网络_AdaBoost——框架解决" class="w-full h-60 sm:h-72 md:h-80 object-cover sm:rounded-t-large dark:brightness-75"/>
+                
+                <div class="w-full flex items-center absolute bottom-0 justify-start">
+                    <h1 class="article-title-cover text-center mx-6 my-6 text-second-text-color bg-background-color-transparent px-4 py-3 text-3xl sm:text-4xl md:text-5xl font-bold backdrop-blur-lg rounded-xl border border-border-color ">MNIST-BP神经网络_AdaBoost——框架解决</h1>
+                </div>
+            
+            </div>
+
+        
+            <div class="article-header flex flex-row gap-2 items-center px-2 sm:px-6 md:px-8">
+                <div class="avatar w-[46px] h-[46px] flex-shrink-0 rounded-medium border border-border-color p-[1px]">
+                    <img src="/hide_imgs/avatar.png">
+                </div>
+                <div class="info flex flex-col justify-between">
+                    <div class="author flex items-center">
+                        <span class="name text-default-text-color text-lg font-semibold">Forestsetyou</span>
+                        
+                    </div>
+                    <div class="meta-info">
+                        <div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fa-regular fa-pen-fancy"></i>&nbsp;
+        <span class="desktop">2022-12-07 19:06</span>
+        <span class="mobile">2022-12-07 19:06</span>
+        <span class="hover-info">Created</span>
+    </span>
+    
+        <span class="article-date article-meta-item">
+            <i class="fa-regular fa-wrench"></i>&nbsp;
+            <span class="desktop">2023-08-03 18:08</span>
+            <span class="mobile">2023-08-03 18:08</span>
+            <span class="hover-info">Updated</span>
+        </span>
+    
+
+    
+        <span class="article-categories article-meta-item">
+            <i class="fa-regular fa-folders"></i>&nbsp;
+            <ul>
+                
+                
+                    
+                        
+                        <li>
+                            <a href="/categories/Development/">Development</a>&nbsp;
+                        </li>
+                    
+                    
+                
+                    
+                        
+                            <li>></li>
+                        
+                        <li>
+                            <a href="/categories/Development/Algorithm/">Algorithm</a>&nbsp;
+                        </li>
+                    
+                    
+                
+            </ul>
+        </span>
+    
+    
+        <span class="article-tags article-meta-item">
+            <i class="fa-regular fa-tags"></i>&nbsp;
+            <ul>
+                
+                    <li>
+                        <a href="/tags/Schoolwork/">Schoolwork</a>&nbsp;
+                    </li>
+                
+            </ul>
+        </span>
+    
+
+    
+    
+    
+    
+</div>
+
+                    </div>
+                </div>
+            </div>
+        
+
+        
+
+
+        <div class="article-content markdown-body px-2 sm:px-6 md:px-8 pb-8">
+            <h1 id="MNIST"><a href="#MNIST" class="headerlink" title="MNIST"></a>MNIST</h1><p><em>THE MNIST DATABASE of handwritten digits</em></p>
+<h2 id="BP-神经网络"><a href="#BP-神经网络" class="headerlink" title="BP 神经网络"></a>BP 神经网络</h2><h3 id="模型训练"><a href="#模型训练" class="headerlink" title="模型训练"></a>模型训练</h3><div class="highlight-container" data-rel="Python"><figure class="iseeu highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="keyword">import</span> torch.utils.data <span class="comment"># 数据读取包</span></span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"><span class="keyword">from</span> time <span class="keyword">import</span> time</span><br><span class="line"><span class="keyword">from</span> torchvision <span class="keyword">import</span> datasets, transforms</span><br><span class="line"><span class="keyword">from</span> torch <span class="keyword">import</span> nn, optim</span><br><span class="line"></span><br><span class="line">cd=os.path.dirname(__file__)    <span class="comment"># 定义当前工作目录为代码所在目录</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 定义图片的处理方式</span></span><br><span class="line">transf=transforms.Compose([transforms.ToTensor(),transforms.Normalize((<span class="number">0.5</span>,), (<span class="number">0.5</span>,)),])</span><br><span class="line"></span><br><span class="line"><span class="comment"># 下载并加载训练数据集</span></span><br><span class="line">train_set = datasets.MNIST(cd+<span class="string">&#x27;/train_set&#x27;</span>, <span class="comment"># 下载至代码文件夹中</span></span><br><span class="line">download=<span class="keyword">not</span> os.path.exists(cd+<span class="string">&#x27;/train_set&#x27;</span>),   <span class="comment"># 不重复下载</span></span><br><span class="line">train=<span class="literal">True</span>, <span class="comment"># 定义为训练集</span></span><br><span class="line">transform=transf    <span class="comment"># 图片的处理</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 构建数据集的DataLoader对象</span></span><br><span class="line">train_loader = torch.utils.data.DataLoader(train_set, batch_size=<span class="number">64</span>, shuffle=<span class="literal">True</span>)  <span class="comment"># 定义训练集，64张图片一组，打乱次序</span></span><br><span class="line"></span><br><span class="line">dataiter = <span class="built_in">iter</span>(train_loader)   <span class="comment"># 获取一个训练集的迭代器</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># print(images.shape) # torch.Size([64, 1, 28, 28]) 64张图片一组，每张图片一个颜色通道，尺寸为28x28</span></span><br><span class="line"><span class="comment"># print(labels.shape) # torch.Size([64])</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># plt.imshow(images[0].numpy().squeeze(), cmap=&#x27;gray_r&#x27;)</span></span><br><span class="line"><span class="comment"># 以灰度图格式展示第一张图片,使用squeeze()函数将images[0]转换为二维矩阵(去掉多余的维度)</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">NeuralNetwork</span>(nn.Module):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="built_in">super</span>().__init__()</span><br><span class="line">        <span class="comment"># 使用nn.Sequential创建前向传播的序列</span></span><br><span class="line">        self.model=nn.Sequential(nn.Linear(<span class="number">28</span>*<span class="number">28</span>, <span class="number">128</span>), <span class="comment"># 输入层有128个神经元，接受所有像素的输入</span></span><br><span class="line">        nn.ReLU(),  <span class="comment"># 使用ReLU函数做激活函数</span></span><br><span class="line">        nn.Linear(<span class="number">128</span>,<span class="number">64</span>),  <span class="comment"># 隐藏层有64个神经元</span></span><br><span class="line">        nn.ReLU(),  </span><br><span class="line">        nn.Linear(<span class="number">64</span>,<span class="number">10</span>),   <span class="comment"># 输出层有10个神经元</span></span><br><span class="line">        nn.LogSoftmax(dim=<span class="number">1</span>)</span><br><span class="line">        )</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">forward</span>(<span class="params">self,x</span>):</span><br><span class="line">        <span class="comment"># 定义前向传播,x:图片数据(硬性规定)</span></span><br><span class="line">        <span class="comment"># x-shape为(64, 1, 28, 28),将其转化为(64,784)</span></span><br><span class="line">        x=x.view(x.shape[<span class="number">0</span>], -<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">        <span class="comment">#前向传播</span></span><br><span class="line">        x=self.model(x)</span><br><span class="line">        <span class="keyword">return</span> x</span><br><span class="line"></span><br><span class="line">model=NeuralNetwork()</span><br><span class="line"><span class="comment"># 使用负对数似然损失函数定义神经网络的损失函数</span></span><br><span class="line">C=nn.NLLLoss()</span><br><span class="line"><span class="comment"># 定义优化器，使用随机梯度下降法，学习率手动设置，momentum默认为0.9(用于防止过拟合)</span></span><br><span class="line">r=<span class="built_in">float</span>(<span class="built_in">input</span>(<span class="string">&quot;请输入学习率:&quot;</span>))</span><br><span class="line">Optimizer=optim.SGD(model.parameters(), lr=r, momentum=<span class="number">0.9</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">time0=time()    <span class="comment"># 记录当前时间</span></span><br><span class="line">epochs=<span class="number">15</span>   <span class="comment"># 训练15轮</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">93</span>):</span><br><span class="line">    images, labels = <span class="built_in">next</span>(dataiter) <span class="comment"># 迭代训练集元素</span></span><br><span class="line">    <span class="keyword">for</span> e <span class="keyword">in</span> <span class="built_in">range</span>(epochs):</span><br><span class="line">        running_loss=<span class="number">0</span>  <span class="comment"># 本轮损失</span></span><br><span class="line">        <span class="keyword">for</span> images, labels <span class="keyword">in</span> train_loader:</span><br><span class="line">            <span class="comment"># 前向传播</span></span><br><span class="line">            output = model(images)</span><br><span class="line">            <span class="comment"># 计算损失</span></span><br><span class="line">            loss = C(output,labels)</span><br><span class="line">        <span class="comment">#    print(output)</span></span><br><span class="line">        <span class="comment">#    print(labels)</span></span><br><span class="line">        <span class="comment">#    k=input()</span></span><br><span class="line">            <span class="comment"># 反向传播</span></span><br><span class="line">            loss.backward()</span><br><span class="line"></span><br><span class="line">            <span class="comment"># 更新权重</span></span><br><span class="line">            Optimizer.step()</span><br><span class="line"></span><br><span class="line">            <span class="comment"># 清空梯度</span></span><br><span class="line">            Optimizer.zero_grad()</span><br><span class="line"></span><br><span class="line">            <span class="comment"># 累加损失</span></span><br><span class="line">            running_loss += loss.item()</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="comment"># 一轮结束后打印本轮的损失函数</span></span><br><span class="line">            <span class="built_in">print</span>(<span class="string">&quot;Set &#123;&#125; with Epoch &#123;&#125; - Training loss: &#123;&#125;&quot;</span>.<span class="built_in">format</span>(i+<span class="number">1</span>,e+<span class="number">1</span>, running_loss/<span class="built_in">len</span>(train_loader)))</span><br><span class="line"></span><br><span class="line"><span class="comment"># 打印总训练时间</span></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;\nTraining Time (in minutes) =&quot;</span>,(time()-time0)/<span class="number">60</span>)</span><br><span class="line">torch.save(model, cd+<span class="string">&quot;/BPM&quot;</span>) <span class="comment"># 存储模型文件至当前文件夹下的&quot;BPM&quot;文件</span></span><br></pre></td></tr></table></figure></div>
+
+<h3 id="模型测试"><a href="#模型测试" class="headerlink" title="模型测试"></a>模型测试</h3><div class="highlight-container" data-rel="Python"><figure class="iseeu highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="keyword">import</span> torchvision</span><br><span class="line"><span class="keyword">import</span> torch.utils.data <span class="comment"># 数据读取包</span></span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"><span class="keyword">from</span> time <span class="keyword">import</span> time</span><br><span class="line"><span class="keyword">from</span> torchvision <span class="keyword">import</span> datasets, transforms</span><br><span class="line"><span class="keyword">from</span> torch <span class="keyword">import</span> nn, optim</span><br><span class="line"><span class="keyword">from</span> sklearn <span class="keyword">import</span> metrics <span class="comment"># sklearn的包名是scikit-learn,装sklearn是没用的</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 定义神经网络</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">NeuralNetwork</span>(nn.Module):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="built_in">super</span>().__init__()</span><br><span class="line">        <span class="comment"># 使用nn.Sequential创建前向传播的序列</span></span><br><span class="line">        self.model=nn.Sequential(nn.Linear(<span class="number">28</span>*<span class="number">28</span>, <span class="number">128</span>), <span class="comment"># 输入层有128个神经元，接受所有像素的输入</span></span><br><span class="line">        nn.ReLU(),  <span class="comment"># 使用ReLU函数做激活函数</span></span><br><span class="line">        nn.Linear(<span class="number">128</span>,<span class="number">64</span>),  <span class="comment"># 隐藏层有64个神经元</span></span><br><span class="line">        nn.ReLU(),  </span><br><span class="line">        nn.Linear(<span class="number">64</span>,<span class="number">10</span>),   <span class="comment"># 输出层有10个神经元</span></span><br><span class="line">        nn.LogSoftmax(dim=<span class="number">1</span>)</span><br><span class="line">        )   </span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">forward</span>(<span class="params">self,x</span>):</span><br><span class="line">        <span class="comment"># 定义前向传播,x:图片数据(硬性规定)</span></span><br><span class="line">        <span class="comment"># x-shape为(64, 1, 28, 28),将其转化为(64,784)</span></span><br><span class="line">        x=x.view(x.shape[<span class="number">0</span>], -<span class="number">1</span>)</span><br><span class="line">        <span class="comment">#前向传播</span></span><br><span class="line">        x=self.model(x)</span><br><span class="line">        <span class="keyword">return</span> x</span><br><span class="line"></span><br><span class="line"><span class="comment"># 定义图片的处理方式</span></span><br><span class="line">transf=transforms.Compose([transforms.ToTensor(),transforms.Normalize((<span class="number">0.5</span>,), (<span class="number">0.5</span>,)),])</span><br><span class="line"></span><br><span class="line"><span class="comment"># 下载并加载测试数据集</span></span><br><span class="line">test_set = datasets.MNIST(<span class="string">&#x27;test_set&#x27;</span>,   <span class="comment"># 下载</span></span><br><span class="line">download=<span class="keyword">not</span> os.path.exists(<span class="string">&#x27;test_set&#x27;</span>),    <span class="comment"># 不重复</span></span><br><span class="line">train=<span class="literal">False</span>,    <span class="comment"># 测试集</span></span><br><span class="line">transform=transf    <span class="comment"># 图片处理</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;Information for test_set.&quot;</span>)</span><br><span class="line"><span class="built_in">print</span>(test_set)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 构建数据集的DataLoader对象</span></span><br><span class="line">test_loader = torch.utils.data.DataLoader(test_set, shuffle=<span class="literal">True</span>)    <span class="comment"># 定义测试集</span></span><br><span class="line">checkiter = <span class="built_in">iter</span>(test_loader)   <span class="comment"># 获取一个测试集的迭代器</span></span><br><span class="line"></span><br><span class="line">model=torch.load(os.path.dirname(__file__)+<span class="string">&quot;/BPM&quot;</span>)  <span class="comment"># 载入已经训练好的模型</span></span><br><span class="line"></span><br><span class="line">torch.no_grad() <span class="comment"># 测试无梯度</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># F1指标分析</span></span><br><span class="line">data=[] <span class="comment"># 输出</span></span><br><span class="line">lab=[] <span class="comment"># 真实值</span></span><br><span class="line">pred=[]</span><br><span class="line"><span class="keyword">for</span> img_, lab_ <span class="keyword">in</span> test_loader:</span><br><span class="line">    tmp=model(img_)</span><br><span class="line">    data.append(tmp.detach().numpy())</span><br><span class="line">    lab.append(lab_.detach().numpy())</span><br><span class="line">    _, pre=torch.<span class="built_in">max</span>(tmp.data, <span class="number">1</span>)</span><br><span class="line">    pred.append(pre.detach().numpy()[<span class="number">0</span>])</span><br><span class="line">data=np.array(data)</span><br><span class="line">d_shape=data.shape</span><br><span class="line">data=data.reshape(d_shape[<span class="number">0</span>],d_shape[<span class="number">2</span>])</span><br><span class="line">lab=np.array(lab).reshape(d_shape[<span class="number">0</span>])</span><br><span class="line">pred=np.array(pred)</span><br><span class="line">rep=metrics.classification_report(lab,pred)</span><br><span class="line"><span class="built_in">print</span>(rep)</span><br><span class="line"></span><br><span class="line"><span class="comment"># ROC曲线</span></span><br><span class="line">sizeS=d_shape[<span class="number">0</span>]</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">10</span>):</span><br><span class="line">    score_=[]</span><br><span class="line">    <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(sizeS):</span><br><span class="line">        score_.append(data[j][i])</span><br><span class="line">    fpr, tpr, thresholds=metrics.roc_curve(lab, np.array(score_), pos_label=i)</span><br><span class="line">    auc=metrics.auc(fpr, tpr)</span><br><span class="line">    plt.plot(fpr, tpr,  lw=<span class="number">1</span>, label=<span class="string">&quot;Number &quot;</span>+<span class="built_in">str</span>(i)+<span class="string">&quot;, Auc=&#123;:.3f&#125;&quot;</span>.<span class="built_in">format</span>(auc))</span><br><span class="line">plt.plot([<span class="number">0</span>, <span class="number">1</span>], [<span class="number">0</span>, <span class="number">1</span>], color=<span class="string">&quot;navy&quot;</span>, lw=<span class="number">1</span>, linestyle=<span class="string">&quot;--&quot;</span>)</span><br><span class="line">plt.xlim([<span class="number">0.0</span>, <span class="number">1.0</span>])</span><br><span class="line">plt.ylim([<span class="number">0.0</span>, <span class="number">1.05</span>])</span><br><span class="line">plt.xlabel(<span class="string">&quot;False Positive Rate&quot;</span>)</span><br><span class="line">plt.ylabel(<span class="string">&quot;True Positive Rate&quot;</span>)</span><br><span class="line">plt.title(<span class="string">&quot;ROC for each type of number&quot;</span>)</span><br><span class="line">plt.legend()</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure></div>
+
+
+
+<h3 id="F1-Score的"><a href="#F1-Score的" class="headerlink" title="F1-Score的"></a>F1-Score的</h3><h3 id="手动分析"><a href="#手动分析" class="headerlink" title="手动分析"></a>手动分析</h3><div class="highlight-container" data-rel="Python"><figure class="iseeu highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><span class="line">TP_=np.zeros(<span class="number">10</span>)   <span class="comment"># 真阳性，预测数字为n且实际数字也为n的个数</span></span><br><span class="line">FP_=np.zeros(<span class="number">10</span>)   <span class="comment"># 假阳性，预测数字为n但实际数字不为n的个数(存在FPn中)</span></span><br><span class="line">FN_=np.zeros(<span class="number">10</span>)   <span class="comment"># 假阴性，预测数字不为n但实际数字为n的个数</span></span><br><span class="line">TN_=np.zeros(<span class="number">10</span>)   <span class="comment"># 真阴性，预测数字不为n且实际数字也不为n的个数</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 记录以目标数字为真实值的测试样例标签以及对应的输出值，用于绘制ROC</span></span><br><span class="line">Roc_Label=[[],[],[],[],[],[],[],[],[],[]]   <span class="comment"># 标签</span></span><br><span class="line">Roc_Output=[[],[],[],[],[],[],[],[],[],[]]  <span class="comment"># 输出值</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> (imgs, labels) <span class="keyword">in</span> test_loader:</span><br><span class="line">    pred=model(imgs)</span><br><span class="line">    shape=pred.shape</span><br><span class="line">    <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(shape[<span class="number">0</span>]):</span><br><span class="line">        cnt+=<span class="number">1</span>  <span class="comment"># 统计总的测试次数</span></span><br><span class="line">        ans=labels[j]   <span class="comment"># 实际数字</span></span><br><span class="line">        flag=pred[j][<span class="number">0</span>] </span><br><span class="line">        res=<span class="number">0</span>   <span class="comment"># 预测数字</span></span><br><span class="line">        <span class="keyword">for</span> k <span class="keyword">in</span> <span class="built_in">range</span>(shape[<span class="number">1</span>]):</span><br><span class="line">            <span class="keyword">if</span>(pred[j][k]&gt;flag):    <span class="comment"># 搜索概率最大的</span></span><br><span class="line">                flag=pred[j][k]</span><br><span class="line">                res=k</span><br><span class="line">        <span class="keyword">if</span>(res!=ans):   <span class="comment"># 将一次测试拆成十份分别判断各类别的四性质，但总的比例不改变</span></span><br><span class="line">            <span class="keyword">for</span> ii <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">10</span>):</span><br><span class="line">                <span class="keyword">if</span>(ii==res):</span><br><span class="line">                    FP_[res]+=<span class="number">1</span>  <span class="comment"># 预测数字的假阳</span></span><br><span class="line">                <span class="keyword">elif</span>(ii==ans):</span><br><span class="line">                    FN_[ans]+=<span class="number">1</span>  <span class="comment"># 实际数字的假阴</span></span><br><span class="line">                <span class="keyword">else</span>:   <span class="comment"># 其他数字的真阴</span></span><br><span class="line">                    TN_[ii]+=<span class="number">1</span></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="keyword">for</span> ii <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">10</span>):</span><br><span class="line">                <span class="keyword">if</span>(ii!=res):    <span class="comment"># 真阴</span></span><br><span class="line">                    TN_[ii]+=<span class="number">1</span></span><br><span class="line">                <span class="keyword">else</span>:   <span class="comment">#真阳</span></span><br><span class="line">                    TP_[ii]+=<span class="number">1</span></span><br><span class="line">        Roc_Label[ans].append(res)</span><br><span class="line">        Roc_Output[ans].append(pred[j][ans].item())    <span class="comment"># 真实值的对应概率,pred提取出dim=0的tensor类型的变量，用item()将其转化为数值</span></span><br><span class="line">        </span><br><span class="line"><span class="comment"># 四性质</span></span><br><span class="line">TP=TP_.<span class="built_in">sum</span>()    <span class="comment"># 真阳</span></span><br><span class="line">FP=FP_.<span class="built_in">sum</span>()    <span class="comment"># 假阳</span></span><br><span class="line">FN=FN_.<span class="built_in">sum</span>()    <span class="comment"># 假阴</span></span><br><span class="line">TN=TN_.<span class="built_in">sum</span>()    <span class="comment"># 真阴    </span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 三指标+F1-Score</span></span><br><span class="line">pec=<span class="number">100</span> <span class="comment"># 百分</span></span><br><span class="line">acu=((TP+TN)/(TP+TN+FP+FN)) <span class="comment"># 准确率</span></span><br><span class="line">pre=TP/(TP+FP)  <span class="comment"># 精确率</span></span><br><span class="line">rec=TP/(TP+FN)  <span class="comment"># 召回率</span></span><br><span class="line">F1=(<span class="number">2</span>*pre*rec)/(pre+rec)    <span class="comment"># F1</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># ROC处理</span></span><br><span class="line">tpr=[[]]*<span class="number">10</span> <span class="comment"># 获取10*1的列表</span></span><br><span class="line">fpr=[[]]*<span class="number">10</span></span><br><span class="line">auc=[[]]*<span class="number">10</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">10</span>):     <span class="comment"># 按十个类别分别绘制ROC曲线并叠加</span></span><br><span class="line">    labels=np.array(Roc_Label[i])   <span class="comment"># 取出标签</span></span><br><span class="line">    op=np.array(Roc_Output[i])  <span class="comment"># 取出输出值</span></span><br><span class="line">    fpr_tmp, tpr_tmp, theresholds = metrics.roc_curve(labels, op, pos_label=i)</span><br><span class="line">    tpr[i]=tpr_tmp  <span class="comment"># 真阳率</span></span><br><span class="line">    fpr[i]=fpr_tmp  <span class="comment"># 真阴率</span></span><br><span class="line">    auc[i]=metrics.auc(fpr_tmp, tpr_tmp)    <span class="comment"># 计算auc</span></span><br></pre></td></tr></table></figure></div>
+
+<p>F1-Score可以综合类别统计，也可以做二元统计。这里采取了宏平均，即各类别评分权值，也可根据支持率做宏加权处理。</p>
+<p>同时ROC做了错误处理，只取了各类别只有TP而没有TN的情况，这会使得绘制的ROC曲线的FPR（即横坐标）的数量急剧减少</p>
+<p>参考：<a class="link"   target="_blank" rel="noopener" href="https://blog.csdn.net/qq_14997473/article/details/82684300" >机器学习中的F1-Score <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+<h3 id="train-images-idx3-ubyte-文件格式"><a href="#train-images-idx3-ubyte-文件格式" class="headerlink" title="train-images.idx3-ubyte 文件格式"></a>train-images.idx3-ubyte 文件格式</h3><p><code>00 00 08 03</code> 03表示数据维度为3维（60000x28x28）</p>
+<p><code>00 00 EA 60</code> EA60 H为60000 D，表明有6w组图片数据</p>
+<p><code>00 00 00 1C</code> x2 表示图片尺寸为28x28&#x3D;784 Bytes，每个像素值在0-255之间，用一个字节表示<br>(784*60000+16&#x3D;47040016 D&#x3D;2CDC610 H，恰好对应文件的字节数)</p>
+<p>随后就是第一组图片数据。</p>
+<h3 id="输出层设计-Softmax"><a href="#输出层设计-Softmax" class="headerlink" title="输出层设计-Softmax"></a>输出层设计-Softmax</h3><p>使用神经网络进行分类任务时，分类的类别数目即为输出层的神经元个数。输出函数使用softmax函数：约束各个输出点的值在(0,1)之间且和为1。输出结果表示该类别的概率，取概率最大的结点所代表的类别为预测类别</p>
+<p>对于手写数字识别，输出层将有10个神经元，分别代表数字0-9，如某个案例的标签为9，则训练目标就是使得0-8号神经元的输出尽可能接近0，而9号神经元的输出尽可能接近1。</p>
+<p>softmax函数会放大数值间的差距，但也存在溢出的风险，因此计算指数时可以先将输出值减去最大值，来规避溢出的风险。</p>
+<p>参考：[</p>
+<p><a class="link"   target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/104318223" >深度学习常用激活函数 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a>,</p>
+<p><a class="link"   target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/105722023" >Softmax解析 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a>,</p>
+<p>]</p>
+<h3 id="Pytorch"><a href="#Pytorch" class="headerlink" title="Pytorch"></a>Pytorch</h3><h3 id="指标"><a href="#指标" class="headerlink" title="指标"></a>指标</h3><p>F1指标：<a class="link"   target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/62180318" >https://zhuanlan.zhihu.com/p/62180318 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+<p>ROC曲线<strong>必须</strong>按类别单独绘制，它只服务于二分类器。（顺便学学matplotlib.pyplot的可视化)。使用sklearn提取TPR与FPR时需要的两组数据为预测序列与（真实输出数字的概率，而非预测结果的概率）输出值，将其视为二值分类器，则序列的范围要取在全体序列上。最开始我取了只有TP而没有TN的情况，也就是只取了真实值为该类别的序列。</p>
+<p>参考：[</p>
+<p><a class="link"   target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/142846867" >ROC1 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a>，</p>
+<p><a class="link"   target="_blank" rel="noopener" href="https://www.jianshu.com/p/2ca96fce7e81" >ROC2 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a>，</p>
+<p>]</p>
+<h3 id="Numpy小技巧"><a href="#Numpy小技巧" class="headerlink" title="Numpy小技巧"></a>Numpy小技巧</h3><ul>
+<li><p><code>tp_num=(labels==1).sum()</code> ：统计labels中1出现的次数。<code>labels==1</code> 返回一个逻辑数组，求和即可。</p>
+</li>
+<li><pre><code class="python">output_sort=np.flipud(np.argsort(outPut))	# argsort获取从小到大排序的索引数组，flipud将其逆序，即变为从大到小的索引序列。
+
+labels=labels[output_sort]  # 利用数组索引按输出值从大到小同时排序标签与输出值
+outPut=outPut[output_sort]
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">  参考：[numpy排序](https://zhuanlan.zhihu.com/p/136342642 )</span><br><span class="line"></span><br><span class="line"># AdaBoost</span><br><span class="line"></span><br><span class="line">[matplotlib-RC自定义配置](https://my.oschina.net/swuly302/blog/94805)</span><br><span class="line"></span><br><span class="line">[iris数据集](https://blog.csdn.net/Little_Fire/article/details/81062447)</span><br><span class="line"></span><br><span class="line">[imshow-cmap参数](https://www.cnblogs.com/zizz/p/15964240.html)</span><br><span class="line"></span><br><span class="line">[sklearn 模型的保存与读取](https://cloud.tencent.com/developer/article/1692491)</span><br><span class="line"></span><br><span class="line">[sklearn.metrics详解（指标分析）](https://blog.csdn.net/Huang_Fj/article/details/124100598)</span><br><span class="line"></span><br><span class="line">### 模型训练</span><br><span class="line"></span><br><span class="line">```python</span><br><span class="line">import numpy as np</span><br><span class="line">import os</span><br><span class="line"></span><br><span class="line">from sklearn.datasets import fetch_openml,load_iris</span><br><span class="line">from sklearn.ensemble import AdaBoostClassifier</span><br><span class="line">import joblib   # joblib在高版本的sklearn中已经被移除</span><br><span class="line"></span><br><span class="line">import time</span><br><span class="line"></span><br><span class="line"># 获取mnist数据集</span><br><span class="line">mnist=fetch_openml(&#x27;mnist_784&#x27;, version=1, cache=True)  #默认需要已安装pandas包</span><br><span class="line">mnist.target=mnist.target.astype(np.int8)   # 标签类型转换为int8</span><br><span class="line">mnist_train_data=np.array(mnist.data[:60000]) # 从pandas数据集转化为数组</span><br><span class="line">mnist_train_target=np.array(mnist.target[:60000])   # 前6万个设置为训练数据集</span><br><span class="line"></span><br><span class="line">mnist_test_data=np.array(mnist.data[60000:])    # 后1万个为测试数据集</span><br><span class="line">mnist_test_target=np.array(mnist.target[60000:])</span><br><span class="line"></span><br><span class="line"># Adaboost</span><br><span class="line"># 定义分类器</span><br><span class="line">model=AdaBoostClassifier(</span><br><span class="line">    base_estimator=None,    # 基分类器的种类默认为决策树模型</span><br><span class="line">    n_estimators=500,    # 基分类器个数</span><br><span class="line">    learning_rate=0.1,  # 学习率</span><br><span class="line">    algorithm=&#x27;SAMME.R&#x27;,    # boosting算法默认选用SAMME.R，对样本按错分率划分</span><br><span class="line">    random_state=None   # 随机数种子</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">time0=time.time()   </span><br><span class="line"># 训练模型</span><br><span class="line">model=model.fit(mnist_train_data,mnist_train_target)  # 输入为数据与标签的ndarray,返回仍是同类分类器</span><br><span class="line"></span><br><span class="line"># 计时模型训练时间</span><br><span class="line">time1=time.time()   </span><br><span class="line">timed=(time1-time0)/60</span><br><span class="line">print(&quot;It costs time:&quot;+&quot;%0.2f&quot;%timed+&quot; Minutes&quot;) # 类c++的printf写法</span><br><span class="line"></span><br><span class="line"># 保存模型</span><br><span class="line">cd=os.path.dirname(__file__)</span><br><span class="line">modelName=&quot;AdaB&quot;</span><br><span class="line">joblib.dump(model, cd+&quot;/&quot;+modelName)</span><br><span class="line"></span><br><span class="line">print(&quot;模型准确率：&#123;:2.1f&#125;&quot;.format(model.score(mnist_test_data,mnist_test_target)*100))</span><br><span class="line"></span><br></pre></td></tr></table></figure></div>
+</code></pre>
+</li>
+</ul>
+<h3 id="模型测试-1"><a href="#模型测试-1" class="headerlink" title="模型测试"></a>模型测试</h3><div class="highlight-container" data-rel="Python"><figure class="iseeu highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> os</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> matplotlib <span class="keyword">as</span> mpl</span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> sklearn.datasets <span class="keyword">import</span> fetch_openml</span><br><span class="line"><span class="keyword">from</span> sklearn.ensemble <span class="keyword">import</span> AdaBoostClassifier</span><br><span class="line"><span class="keyword">import</span> sklearn.metrics <span class="keyword">as</span> mtr</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> joblib</span><br><span class="line"></span><br><span class="line">cd=os.path.dirname(__file__)+<span class="string">&quot;/&quot;</span></span><br><span class="line"><span class="comment"># 读取模型</span></span><br><span class="line">modelName=<span class="string">&quot;AdaB&quot;</span></span><br><span class="line">model=joblib.load(cd+modelName)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 读取数据</span></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;Reading datas...&quot;</span>)</span><br><span class="line">mnist=fetch_openml(</span><br><span class="line">    <span class="string">&quot;mnist_784&quot;</span>,</span><br><span class="line">    version=<span class="number">1</span>,</span><br><span class="line">    cache=<span class="literal">True</span></span><br><span class="line">)</span><br><span class="line">mnist_data=np.array(mnist.data)</span><br><span class="line">mnist_tar=np.array(mnist.target).astype(np.int8)   <span class="comment"># 一定要转换类型，默认为字符，影响预测</span></span><br><span class="line">test_data=mnist_data[<span class="number">60000</span>:]</span><br><span class="line">test_tar=mnist_tar[<span class="number">60000</span>:]</span><br><span class="line"></span><br><span class="line"><span class="comment"># 图表预设</span></span><br><span class="line"><span class="comment"># https://my.oschina.net/swuly302/blog/94805 matplotlib RC自定义配置，美化plot图表</span></span><br><span class="line">mpl.rc(<span class="string">&quot;axes&quot;</span>, labelsize=<span class="number">14</span>)    <span class="comment"># x轴y轴字体大小</span></span><br><span class="line">mpl.rc(<span class="string">&quot;xtick&quot;</span>, labelsize=<span class="number">12</span>)   <span class="comment"># x轴刻度标签字体大小</span></span><br><span class="line">mpl.rc(<span class="string">&quot;ytick&quot;</span>, labelsize=<span class="number">12</span>)   </span><br><span class="line">mpl.rcParams[<span class="string">&#x27;font.sans-serif&#x27;</span>]=[<span class="string">u&#x27;SimHei&#x27;</span>] <span class="comment"># 衬线</span></span><br><span class="line">mpl.rcParams[<span class="string">&#x27;axes.unicode_minus&#x27;</span>]=<span class="literal">False</span>    <span class="comment"># 减号使用连字符号</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 展示图片</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">plot_digit</span>(<span class="params">data</span>):</span><br><span class="line">    image=data.reshape(<span class="number">28</span>, <span class="number">28</span>)</span><br><span class="line">    plt.imshow(image, cmap=mpl.cm.binary, <span class="comment"># 黑底白字</span></span><br><span class="line">                interpolation=<span class="string">&quot;nearest&quot;</span>) <span class="comment"># 处理图片</span></span><br><span class="line">    plt.axis(<span class="string">&quot;off&quot;</span>) <span class="comment"># 无轴线</span></span><br><span class="line">    plt.show()  <span class="comment"># 展示图片</span></span><br><span class="line"><span class="comment"># some_digit=mnist_train_data[36000]</span></span><br><span class="line"><span class="comment"># plot_digit(some_digit)</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看已经训练的模型信息</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">someInformation</span>(<span class="params">mdl</span>):</span><br><span class="line">    <span class="built_in">print</span>(<span class="built_in">len</span>(mdl.estimators_)) <span class="comment"># 查看分类器的个数</span></span><br><span class="line">    <span class="built_in">print</span>(mdl.estimator_weights_)   <span class="comment"># 查看分类器权重</span></span><br><span class="line">    <span class="built_in">print</span>(mdl.estimator_errors_) <span class="comment"># 查看分类器错分率</span></span><br><span class="line">    <span class="built_in">print</span>(mdl.feature_importances_) <span class="comment"># 特征重要性</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;Predicting...&quot;</span>)</span><br><span class="line"><span class="comment"># 模型评估</span></span><br><span class="line">pec=<span class="number">100</span></span><br><span class="line">acu=model.score(test_data,test_tar)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;模型准确率:&#123;:.2f&#125;%&quot;</span>.<span class="built_in">format</span>(acu*pec))</span><br><span class="line"></span><br><span class="line"><span class="comment"># F1</span></span><br><span class="line">pred=model.predict(test_data)</span><br><span class="line">rep=mtr.classification_report(test_tar, pred)   <span class="comment"># 获取数据分析报告</span></span><br><span class="line"><span class="built_in">print</span>(rep)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 按类别绘制ROC曲线</span></span><br><span class="line">score=model.predict_proba(test_data)</span><br><span class="line">sizeS=<span class="number">10000</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">10</span>):</span><br><span class="line">    score_=[]</span><br><span class="line">    <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(sizeS):</span><br><span class="line">        score_.append(score[j][i])  <span class="comment"># 提取目标输出</span></span><br><span class="line">    fpr_, tpr_, thresholds=mtr.roc_curve(pred, np.array(score_), pos_label=i)</span><br><span class="line">    auc=mtr.auc(fpr_, tpr_)</span><br><span class="line">    plt.plot(fpr_, tpr_, lw=<span class="number">1</span>, label=<span class="string">&quot;Number &quot;</span>+<span class="built_in">str</span>(i)+<span class="string">&quot;, Auc=&#123;:.3f&#125;&quot;</span>.<span class="built_in">format</span>(auc))</span><br><span class="line">plt.plot([<span class="number">0</span>, <span class="number">1</span>], [<span class="number">0</span>, <span class="number">1</span>], color=<span class="string">&quot;navy&quot;</span>, lw=<span class="number">1</span>, linestyle=<span class="string">&quot;--&quot;</span>)</span><br><span class="line">plt.xlim([<span class="number">0.0</span>, <span class="number">1.0</span>])</span><br><span class="line">plt.ylim([<span class="number">0.0</span>, <span class="number">1.05</span>])</span><br><span class="line">plt.xlabel(<span class="string">&quot;False Positive Rate&quot;</span>)</span><br><span class="line">plt.ylabel(<span class="string">&quot;True Positive Rate&quot;</span>)</span><br><span class="line">plt.title(<span class="string">&quot;ROC for each type of number&quot;</span>)</span><br><span class="line">plt.legend()</span><br><span class="line">plt.show()</span><br><span class="line"></span><br></pre></td></tr></table></figure></div>
+
+
+
+<h3 id="sklearn"><a href="#sklearn" class="headerlink" title="sklearn"></a>sklearn</h3><p>所读取的Mnist集中的标签数据 <code>.target</code> 默认为字符串类型，需要将其转换为数值类型后再用作模型预测，否则会出现预测准确率始终为0的情况。</p>
+<p>转化类型：</p>
+<div class="highlight-container" data-rel="Python"><figure class="iseeu highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mnist.target=mnist.target.astype(np.int8)</span><br></pre></td></tr></table></figure></div>
+
+<p>参考：[</p>
+<p><a class="link"   target="_blank" rel="noopener" href="https://blog.csdn.net/junhongzhang/article/details/103686756" >sklearn参数详解 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a>，</p>
+<p><a class="link"   target="_blank" rel="noopener" href="https://blog.csdn.net/qq_41133375/article/details/105798898" >sklearn处理Mnist集 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+<p>]</p>
+<h3 id="Python编码"><a href="#Python编码" class="headerlink" title="Python编码"></a>Python编码</h3><p>编码总是让人头疼的问题，各种解码编码存储格式真分不清。</p>
+<p><code>u&#39;abc&#39;</code> 将字符串abc用unicode的形式存储，unicode是”统一码</p>
+<p>“，它包括了ASCII码，一般使用UTF-8(16,32)进行编码。</p>
+<p>不同的编码方式对字符串的处理准则不同，最后编码出的结果就不同。解码 <code>encode</code> 会将字符串转换为unicode对象，编码 <code>decode</code> 会将unicode对象转换为普通字符串。</p>
+<p>在使用 <code>u&#39;abc&#39;</code> 时，python会预先用utf-8编码识别该字符并将其转换成unicode对象，相当于提前做了编码标记，哪怕代码文件的编码格式发生了变化，解析该对象时所用的编码仍是固定的。</p>
+<h3 id="神奇的Python语法"><a href="#神奇的Python语法" class="headerlink" title="神奇的Python语法"></a>神奇的Python语法</h3><ul>
+<li><pre><code class="python">k=sorted([(a, c) for a, c in enumerate(b)])
+# -&gt; [(0, [1, 2]), (1, [3, 4]), (2, [5, 6])]
+k1=np.array(k)
+# -&gt; array([[0, list([1, 2])],
+#       [1, list([3, 4])],
+#       [2, list([5, 6])]], dtype=object)
+</code></pre>
+</li>
+<li><p><code>time.time()</code> 获取程序运行至当前位置所花费的时间</p>
+</li>
+</ul>
+<!-- flag of hidden posts -->
+        </div>
+
+        
+            <div class="post-copyright-info w-full my-8 px-2 sm:px-6 md:px-8">
+                <div class="article-copyright-info-container">
+    <ul>
+        <li><strong>Title:</strong> MNIST-BP神经网络_AdaBoost——框架解决</li>
+        <li><strong>Author:</strong> Forestsetyou</li>
+        <li><strong>Created at
+                :</strong> 2022-12-07 19:06:00</li>
+        
+            <li>
+                <strong>Updated at
+                    :</strong> 2023-08-03 18:08:00
+            </li>
+        
+        <li>
+            <strong>Link:</strong> https://forestsetyou.github.io/2022/12/07/Development/Algorithm/MNIST-BP神经网络_AdaBoost——框架解决/
+        </li>
+        <li>
+            <strong>
+                License:
+            </strong>
+            
+
+            
+                This work is licensed under <a class="license" target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0">CC BY-NC-SA 4.0</a>.
+            
+        </li>
+    </ul>
+</div>
+
+            </div>
+        
+
+        
+            <ul class="post-tags-box text-lg mt-1.5 flex-wrap justify-center flex md:hidden">
+                
+                    <li class="tag-item mx-0.5">
+                        <a href="/tags/Schoolwork/">#Schoolwork</a>&nbsp;
+                    </li>
+                
+            </ul>
+        
+
+        
+
+        
+
+
+        
+    </div>
+
+    
+        <div class="toc-content-container">
+            <div class="post-toc-wrap">
+    <div class="post-toc">
+        <div class="toc-title">On this page</div>
+        <div class="page-title">MNIST-BP神经网络_AdaBoost——框架解决</div>
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#MNIST"><span class="nav-text">MNIST</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#BP-%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C"><span class="nav-text">BP 神经网络</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83"><span class="nav-text">模型训练</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A8%A1%E5%9E%8B%E6%B5%8B%E8%AF%95"><span class="nav-text">模型测试</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#F1-Score%E7%9A%84"><span class="nav-text">F1-Score的</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%89%8B%E5%8A%A8%E5%88%86%E6%9E%90"><span class="nav-text">手动分析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#train-images-idx3-ubyte-%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F"><span class="nav-text">train-images.idx3-ubyte 文件格式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BE%93%E5%87%BA%E5%B1%82%E8%AE%BE%E8%AE%A1-Softmax"><span class="nav-text">输出层设计-Softmax</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Pytorch"><span class="nav-text">Pytorch</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8C%87%E6%A0%87"><span class="nav-text">指标</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Numpy%E5%B0%8F%E6%8A%80%E5%B7%A7"><span class="nav-text">Numpy小技巧</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A8%A1%E5%9E%8B%E6%B5%8B%E8%AF%95-1"><span class="nav-text">模型测试</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#sklearn"><span class="nav-text">sklearn</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Python%E7%BC%96%E7%A0%81"><span class="nav-text">Python编码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A5%9E%E5%A5%87%E7%9A%84Python%E8%AF%AD%E6%B3%95"><span class="nav-text">神奇的Python语法</span></a></li></ol></li></ol></li></ol>
+
+    </div>
+</div>
+        </div>
+    
+</div>
+
+
+
+                
+
+            </div>
+
+            
+
+        </div>
+
+        <div class="main-content-footer">
+            <footer class="footer mt-5 py-5 h-auto text-base text-third-text-color relative border-t-2 border-t-border-color">
+    <div class="info-container py-3 text-center">
+        
+        <div class="text-center">
+            &copy;
+            
+              <span>2024</span>
+              -
+            
+            2024&nbsp;&nbsp;<i class="fa-solid fa-heart fa-beat" style="--fa-animation-duration: 0.5s; color: #f54545"></i>&nbsp;&nbsp;<a href="/">Forestsetyou</a>
+            
+        </div>
+        
+        <div class="relative text-center lg:absolute lg:left-[20px] lg:top-1/2 lg:-translate-y-1/2 lg:text-left">
+            <span class="lg:block text-sm">POWERED BY <?xml version="1.0" encoding="utf-8"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg class="relative top-[2px] inline-block align-baseline" version="1.1" id="圖層_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="1rem" height="1rem" viewBox="0 0 512 512" enable-background="new 0 0 512 512" xml:space="preserve"><path fill="#0E83CD" d="M256.4,25.8l-200,115.5L56,371.5l199.6,114.7l200-115.5l0.4-230.2L256.4,25.8z M349,354.6l-18.4,10.7l-18.6-11V275H200v79.6l-18.4,10.7l-18.6-11v-197l18.5-10.6l18.5,10.8V237h112v-79.6l18.5-10.6l18.5,10.8V354.6z"/></svg><a target="_blank" class="text-base" href="https://hexo.io">Hexo</a></span>
+            <span class="text-sm lg:block">THEME&nbsp;<a class="text-base" target="_blank" href="https://github.com/EvanNotFound/hexo-theme-redefine">Redefine v2.6.1</a></span>
+        </div>
+        
+        
+        
+        
+        
+    </div>  
+</footer>
+        </div>
+    </div>
+
+    
+        <div class="post-tools">
+            <div class="post-tools-container">
+    <ul class="article-tools-list">
+        <!-- TOC aside toggle -->
+        
+            <li class="right-bottom-tools page-aside-toggle">
+                <i class="fa-regular fa-outdent"></i>
+            </li>
+        
+
+        <!-- go comment -->
+        
+    </ul>
+</div>
+
+        </div>
+    
+
+    <div class="right-side-tools-container">
+        <div class="side-tools-container">
+    <ul class="hidden-tools-list">
+        <li class="right-bottom-tools tool-font-adjust-plus flex justify-center items-center">
+            <i class="fa-regular fa-magnifying-glass-plus"></i>
+        </li>
+
+        <li class="right-bottom-tools tool-font-adjust-minus flex justify-center items-center">
+            <i class="fa-regular fa-magnifying-glass-minus"></i>
+        </li>
+
+        <li class="right-bottom-tools tool-dark-light-toggle flex justify-center items-center">
+            <i class="fa-regular fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        
+
+        <li class="right-bottom-tools tool-scroll-to-bottom flex justify-center items-center">
+            <i class="fa-regular fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="visible-tools-list">
+        <li class="right-bottom-tools toggle-tools-list flex justify-center items-center">
+            <i class="fa-regular fa-cog fa-spin"></i>
+        </li>
+        
+            <li class="right-bottom-tools tool-scroll-to-top flex justify-center items-center">
+                <i class="arrow-up fas fa-arrow-up"></i>
+                <span class="percent"></span>
+            </li>
+        
+        
+    </ul>
+</div>
+
+    </div>
+
+    <div class="image-viewer-container">
+    <img src="">
+</div>
+
+
+    
+        <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-input-field-pre">
+            <i class="fa-solid fa-keyboard"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="Search..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="popup-btn-close">
+                <i class="fa-solid fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fa-solid fa-spinner fa-spin-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+
+</main>
+
+
+    
+<script src="/js/libs/Swup.min.js"></script>
+
+<script src="/js/libs/SwupSlideTheme.min.js"></script>
+
+<script src="/js/libs/SwupScriptsPlugin.min.js"></script>
+
+<script src="/js/libs/SwupProgressPlugin.min.js"></script>
+
+<script src="/js/libs/SwupScrollPlugin.min.js"></script>
+
+<script src="/js/libs/SwupPreloadPlugin.min.js"></script>
+
+<script>
+    const swup = new Swup({
+        plugins: [
+            new SwupScriptsPlugin({
+                optin: true,
+            }),
+            new SwupProgressPlugin(),
+            new SwupScrollPlugin({
+                offset: 80,
+            }),
+            new SwupSlideTheme({
+                mainElement: ".main-content-body",
+            }),
+            new SwupPreloadPlugin(),
+        ],
+        containers: ["#swup"],
+    });
+</script>
+
+
+
+
+
+
+
+<script src="/js/tools/imageViewer.js" type="module"></script>
+
+<script src="/js/utils.js" type="module"></script>
+
+<script src="/js/main.js" type="module"></script>
+
+<script src="/js/layouts/navbarShrink.js" type="module"></script>
+
+<script src="/js/tools/scrollTopBottom.js" type="module"></script>
+
+<script src="/js/tools/lightDarkSwitch.js" type="module"></script>
+
+<script src="/js/layouts/categoryList.js" type="module"></script>
+
+
+
+    
+<script src="/js/tools/localSearch.js" type="module"></script>
+
+
+
+
+    
+<script src="/js/tools/codeBlock.js" type="module"></script>
+
+
+
+
+    
+<script src="/js/layouts/lazyload.js" type="module"></script>
+
+
+
+
+
+
+  
+<script src="/js/libs/Typed.min.js"></script>
+
+  
+<script src="/js/plugins/typed.js" type="module"></script>
+
+
+
+
+
+
+
+
+
+<div class="post-scripts" data-swup-reload-script>
+    
+        
+<script src="/js/tools/tocToggle.js" type="module"></script>
+
+<script src="/js/layouts/toc.js" type="module"></script>
+
+<script src="/js/plugins/tabs.js" type="module"></script>
+
+    
+</div>
+
+
+</body>
+</html>

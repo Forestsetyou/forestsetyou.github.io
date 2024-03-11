@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="keywords" content="ctf, solution, note, blog">
+    
+    <meta name="author" content="Forestsetyou">
+    <!-- preconnect -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    
+    <!--- Seo Part-->
+    
+    <link rel="canonical" href="http://forestsetyou.github.io/2022/01/16/security/ctf/ctfhub入门（一）web前置技能-http协议/"/>
+    <meta name="robots" content="index,follow">
+    <meta name="googlebot" content="index,follow">
+    <meta name="revisit-after" content="1 days">
+    
+        <meta name="description" content="false">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CTFhub入门（一）web前置技能-http协议">
+<meta property="og:url" content="http://forestsetyou.github.io/2022/01/16/Security/CTF/CTFhub%E5%85%A5%E9%97%A8%EF%BC%88%E4%B8%80%EF%BC%89web%E5%89%8D%E7%BD%AE%E6%8A%80%E8%83%BD-http%E5%8D%8F%E8%AE%AE/index.html">
+<meta property="og:site_name" content="Festu&#39;s Blog">
+<meta property="og:description" content="false">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://img2020.cnblogs.com/blog/2724756/202201/2724756-20220116111444056-2080744036.png">
+<meta property="og:image" content="https://img2020.cnblogs.com/blog/2724756/202201/2724756-20220116111804128-871812963.png">
+<meta property="og:image" content="https://img2022.cnblogs.com/blog/2724756/202203/2724756-20220325181038513-1227255109.png">
+<meta property="og:image" content="https://img2022.cnblogs.com/blog/2724756/202203/2724756-20220325181056010-558100691.png">
+<meta property="og:image" content="https://img2022.cnblogs.com/blog/2724756/202201/2724756-20220129142009231-1460227338.png">
+<meta property="article:published_time" content="2022-01-16T03:19:00.000Z">
+<meta property="article:modified_time" content="2022-03-25T10:11:00.000Z">
+<meta property="article:author" content="Forestsetyou">
+<meta property="article:tag" content="ctf, solution, note, blog">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://img2020.cnblogs.com/blog/2724756/202201/2724756-20220116111444056-2080744036.png">
+    
+    
+    <!--- Icon Part-->
+    <link rel="icon" type="image/png" href="/hide_imgs/smiling_face.png" sizes="192x192">
+    <link rel="apple-touch-icon" sizes="180x180" href="/hide_imgs/smiling_face.png">
+    <meta name="theme-color" content="#A31F34">
+    <link rel="shortcut icon" href="/hide_imgs/smiling_face.png">
+    <!--- Page Info-->
+    
+    <title>
+        
+            CTFhub入门（一）web前置技能-http协议 -
+        
+        Festu&#39;s Blog
+    </title><meta name="robots" content="noindex">
+
+    
+<link rel="stylesheet" href="/fonts/Chillax/chillax.css">
+
+
+    <!--- Inject Part-->
+    
+
+    
+        <style>
+    :root {
+        --preloader-background-color: #fff;
+        --preloader-text-color: #000;
+    }
+
+    @media (prefers-color-scheme: dark) {
+        :root {
+            --preloader-background-color: #202124;
+            --preloader-text-color: #fff;
+        }
+    }
+
+    @media (prefers-color-scheme: light) {
+        :root {
+            --preloader-background-color: #fff;
+            --preloader-text-color: #000;
+        }
+    }
+
+    @media (max-width: 600px) {
+        .ml13 {
+            font-size: 2.6rem !important; /* Adjust this value as needed */
+        }
+    }
+
+    .preloader {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem; /* Tailwind 'gap-4' is 1rem */
+        align-items: center;
+        justify-content: center;
+        position: fixed;
+        padding: 12px;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh; /* 'h-screen' is 100% of the viewport height */
+        background-color: var(--preloader-background-color);
+        z-index: 1100; /* 'z-[1100]' sets the z-index */
+        transition: opacity 0.2s ease-in-out;
+    }
+
+    .ml13 {
+        font-size: 3.2rem;
+        /* text-transform: uppercase; */
+        color: var(--preloader-text-color);
+        letter-spacing: -1px;
+        font-weight: 500;
+        font-family: 'Chillax-Variable', sans-serif;
+        text-align: center;
+    }
+
+    .ml13 .word {
+        display: inline-flex;
+        flex-wrap: wrap;
+        white-space: nowrap;
+    }
+
+    .ml13 .letter {
+        display: inline-block;
+        line-height: 1em;
+    }
+</style>
+
+<div class="preloader">
+    
+<script src="/js/libs/anime.min.js"></script>
+
+    <h1 class="ml13">
+        Festu&#39;s Blog
+    </h1>
+    <script>
+        var textWrapper = document.querySelector('.ml13');
+        // Split text into words
+        var words = textWrapper.textContent.trim().split(' ');
+
+        // Clear the existing content
+        textWrapper.innerHTML = '';
+
+        // Wrap each word and its letters in spans
+        words.forEach(function(word) {
+            var wordSpan = document.createElement('span');
+            wordSpan.classList.add('word');
+            wordSpan.innerHTML = word.replace(/\S/g, "<span class='letter'>$&</span>");
+            textWrapper.appendChild(wordSpan);
+            textWrapper.appendChild(document.createTextNode(' ')); // Add space between words
+        });
+
+
+        anime.timeline({loop: true})
+            .add({
+                targets: '.ml13 .letter',
+                translateY: [100,0],
+                translateZ: 0,
+                opacity: [0,1],
+                easing: "easeOutExpo",
+                duration: 1400,
+                delay: (el, i) => 300 + 30 * i
+            }).add({
+            targets: '.ml13 .letter',
+            translateY: [0,-100],
+            opacity: [1,0],
+            easing: "easeInExpo",
+            duration: 1200,
+            delay: (el, i) => 100 + 30 * i
+        });
+
+        let themeStatus = JSON.parse(localStorage.getItem('REDEFINE-THEME-STATUS'))?.isDark;
+
+        // If the theme status is not found in local storage, check the preferred color scheme
+        if (themeStatus === undefined || themeStatus === null) {
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                themeStatus = 'dark';
+            } else {
+                themeStatus = 'light';
+            }
+        }
+
+        // Now you can use the themeStatus variable in your code
+        if (themeStatus) {
+            document.documentElement.style.setProperty('--preloader-background-color', '#202124');
+            document.documentElement.style.setProperty('--preloader-text-color', '#fff');
+        } else {
+            document.documentElement.style.setProperty('--preloader-background-color', '#fff');
+            document.documentElement.style.setProperty('--preloader-text-color', '#000');
+        }
+
+        window.addEventListener('load', function () {
+            hidePreloaderAfterTimeout(1000); // Hide after 1000 milliseconds once the window has loaded
+        });
+
+        // Backup failsafe: Hide preloader after a maximum of 5000 milliseconds, regardless of the window load event
+        hidePreloaderAfterTimeout(5000);
+
+        function hidePreloaderAfterTimeout(delay) {
+            setTimeout(function () {
+                var preloader = document.querySelector('.preloader');
+                preloader.style.opacity = '0';
+                setTimeout(function () {
+                    preloader.style.display = 'none';
+                }, 200);
+            }, delay);
+        }
+    </script>
+</div>
+    
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+
+    
+        
+<link rel="stylesheet" href="/assets/build/styles.css">
+
+    
+
+    
+<link rel="stylesheet" href="/fonts/fonts.css">
+
+    
+<link rel="stylesheet" href="/fonts/Satoshi/satoshi.css">
+
+    <!--- Font Part-->
+    
+    
+    
+    
+
+
+    <script id="hexo-configurations">
+    window.config = {"hostname":"forestsetyou.github.io","root":"/","language":"en","path":"search.xml"};
+    window.theme = {"articles":{"style":{"font_size":"16px","line_height":1.5,"image_border_radius":"14px","image_alignment":"center","image_caption":false,"link_icon":true,"title_alignment":"left","headings_top_spacing":{"h1":"5rem","h2":"4rem","h3":"2.8rem","h4":"2.5rem","h5":"2.2rem","h6":"2rem"}},"word_count":{"enable":false,"count":true,"min2read":true},"author_label":{"enable":false,"auto":false,"list":[]},"code_block":{"copy":true,"style":"simple","font":{"enable":false,"family":null,"url":null}},"toc":{"enable":true,"max_depth":3,"number":false,"expand":true,"init_open":true},"copyright":{"enable":true,"default":"cc_by_nc_sa"},"lazyload":true,"recommendation":{"enable":false,"title":"推荐阅读","limit":3,"mobile_limit":2,"placeholder":"/images/wallhaven-wqery6-light.webp","skip_dirs":[]}},"colors":{"primary":"#A31F34","secondary":null,"default_mode":"light"},"global":{"fonts":{"chinese":{"enable":false,"family":null,"url":null},"english":{"enable":false,"family":null,"url":null}},"content_max_width":"1000px","sidebar_width":"210px","hover":{"shadow":true,"scale":false},"scroll_progress":{"bar":false,"percentage":true},"website_counter":{"url":"https://cn.vercount.one/js","enable":false,"site_pv":true,"site_uv":true,"post_pv":true},"single_page":true,"preloader":true,"open_graph":true,"google_analytics":{"enable":false,"id":null}},"home_banner":{"enable":true,"style":"fixed","image":{"light":"/hide_imgs/light_banner-5.png","dark":"/hide_imgs/dark_banner.png"},"title":"Festu's Blog","subtitle":{"text":["Life Goes On."],"hitokoto":{"enable":false,"api":"https://v1.hitokoto.cn"},"typing_speed":100,"backing_speed":80,"starting_delay":500,"backing_delay":1500,"loop":false,"smart_backspace":false},"text_color":{"light":"#fff","dark":"#d1d1b6"},"text_style":{"title_size":"2.8rem","subtitle_size":"1.5rem","line_height":1.2},"custom_font":{"enable":false,"family":null,"url":null},"social_links":{"enable":true,"style":"default","links":{"github":"https://github.com/Forestsetyou","instagram":null,"zhihu":null,"twitter":null,"email":null},"qrs":{"weixin":null}}},"plugins":{"feed":{"enable":false},"aplayer":{"enable":false,"type":"fixed","audios":[{"name":null,"artist":null,"url":null,"cover":null,"lrc":null}]},"mermaid":{"enable":false,"version":"9.3.0"}},"version":"2.6.1","navbar":{"auto_hide":false,"color":{"left":"#f78736","right":"#367df7","transparency":35},"width":{"home":"1200px","pages":"1000px"},"links":{"Home":{"path":"/","icon":"fa-regular fa-house"},"Archives":{"path":"/archives","icon":"fa-regular fa-archive"},"categories":{"path":"/categories","icon":"fa-regular fa-folder"},"tags":{"path":"/tags","icon":"fa-regular fa-tags"}},"search":{"enable":true,"preload":true}},"page_templates":{"friends_column":2,"tags_style":"blur"},"home":{"sidebar":{"enable":true,"position":"left","first_item":"menu","announcement":null,"show_on_mobile":true,"links":null},"article_date_format":"auto","categories":{"enable":true,"limit":3},"tags":{"enable":true,"limit":3}},"footerStart":"2024/03/11 03:27:59"};
+    window.lang_ago = {"second":"%s seconds ago","minute":"%s minutes ago","hour":"%s hours ago","day":"%s days ago","week":"%s weeks ago","month":"%s months ago","year":"%s years ago"};
+    window.data = {"masonry":false};
+  </script>
+    
+    <!--- Fontawesome Part-->
+    
+<link rel="stylesheet" href="/fontawesome/fontawesome.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/brands.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/solid.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/regular.min.css">
+
+    
+    
+    
+    
+<meta name="generator" content="Hexo 7.1.1"></head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+
+    
+        <span class="pjax-progress-bar"></span>
+<!--        <span class="swup-progress-icon">-->
+<!--            <i class="fa-solid fa-circle-notch fa-spin"></i>-->
+<!--        </span>-->
+    
+</div>
+
+
+<main class="page-container" id="swup">
+
+    
+
+    <div class="main-content-container">
+
+
+        <div class="main-content-header">
+            <header class="navbar-container px-6 md:px-12">
+
+    <div class="navbar-content ">
+        <div class="left">
+            
+                <a class="logo-image" href="/">
+                    <img src="/hide_imgs/smiling_face.png">
+                </a>
+            
+            <a class="logo-title" href="/">
+                
+                Festu&#39;s Blog
+                
+            </a>
+        </div>
+
+        <div class="right">
+            <!-- PC -->
+            <div class="desktop">
+                <ul class="navbar-list">
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/"
+                                        >
+                                    <i class="fa-regular fa-house fa-fw"></i>
+                                    HOME
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/archives"
+                                        >
+                                    <i class="fa-regular fa-archive fa-fw"></i>
+                                    ARCHIVES
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/categories"
+                                        >
+                                    <i class="fa-regular fa-folder fa-fw"></i>
+                                    CATEGORIES
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/tags"
+                                        >
+                                    <i class="fa-regular fa-tags fa-fw"></i>
+                                    TAGS
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                    
+                        <li class="navbar-item search search-popup-trigger">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </li>
+                    
+                </ul>
+            </div>
+            <!-- Mobile -->
+            <div class="mobile">
+                
+                    <div class="icon-item search search-popup-trigger"><i class="fa-solid fa-magnifying-glass"></i>
+                    </div>
+                
+                <div class="icon-item navbar-bar">
+                    <div class="navbar-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile sheet -->
+    <div class="navbar-drawer h-screen w-full absolute top-0 left-0 bg-background-color flex flex-col justify-between">
+        <ul class="drawer-navbar-list flex flex-col px-4 justify-center items-start">
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/"
+                        >
+                            <span>
+                                HOME
+                            </span>
+                            
+                                <i class="fa-regular fa-house fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/archives"
+                        >
+                            <span>
+                                ARCHIVES
+                            </span>
+                            
+                                <i class="fa-regular fa-archive fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/categories"
+                        >
+                            <span>
+                                CATEGORIES
+                            </span>
+                            
+                                <i class="fa-regular fa-folder fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/tags"
+                        >
+                            <span>
+                                TAGS
+                            </span>
+                            
+                                <i class="fa-regular fa-tags fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+
+            
+            
+        </ul>
+
+        <div class="statistics flex justify-around my-2.5">
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/tags">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">1</div>
+        <div class="label text-third-text-color text-sm">Tags</div>
+    </a>
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/categories">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">10</div>
+        <div class="label text-third-text-color text-sm">Categories</div>
+    </a>
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/archives">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">14</div>
+        <div class="label text-third-text-color text-sm">Posts</div>
+    </a>
+</div>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="main-content-body">
+
+            
+
+            <div class="main-content">
+
+                
+                    <div class="post-page-container flex relative justify-between box-border w-full h-full">
+    <div class="article-content-container">
+
+        <div class="article-title relative w-full">
+            
+                
+                
+                <img src="/hide_imgs/post_thumbnail-1.png" alt="CTFhub入门（一）web前置技能-http协议" class="w-full h-60 sm:h-72 md:h-80 object-cover sm:rounded-t-large dark:brightness-75"/>
+                
+                <div class="w-full flex items-center absolute bottom-0 justify-start">
+                    <h1 class="article-title-cover text-center mx-6 my-6 text-second-text-color bg-background-color-transparent px-4 py-3 text-3xl sm:text-4xl md:text-5xl font-bold backdrop-blur-lg rounded-xl border border-border-color ">CTFhub入门（一）web前置技能-http协议</h1>
+                </div>
+            
+            </div>
+
+        
+            <div class="article-header flex flex-row gap-2 items-center px-2 sm:px-6 md:px-8">
+                <div class="avatar w-[46px] h-[46px] flex-shrink-0 rounded-medium border border-border-color p-[1px]">
+                    <img src="/hide_imgs/avatar.png">
+                </div>
+                <div class="info flex flex-col justify-between">
+                    <div class="author flex items-center">
+                        <span class="name text-default-text-color text-lg font-semibold">Forestsetyou</span>
+                        
+                    </div>
+                    <div class="meta-info">
+                        <div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fa-regular fa-pen-fancy"></i>&nbsp;
+        <span class="desktop">2022-01-16 11:19</span>
+        <span class="mobile">2022-01-16 11:19</span>
+        <span class="hover-info">Created</span>
+    </span>
+    
+        <span class="article-date article-meta-item">
+            <i class="fa-regular fa-wrench"></i>&nbsp;
+            <span class="desktop">2022-03-25 18:11</span>
+            <span class="mobile">2022-03-25 18:11</span>
+            <span class="hover-info">Updated</span>
+        </span>
+    
+
+    
+        <span class="article-categories article-meta-item">
+            <i class="fa-regular fa-folders"></i>&nbsp;
+            <ul>
+                
+                
+                    
+                        
+                        <li>
+                            <a href="/categories/Security/">Security</a>&nbsp;
+                        </li>
+                    
+                    
+                
+                    
+                        
+                            <li>></li>
+                        
+                        <li>
+                            <a href="/categories/Security/CTF/">CTF</a>&nbsp;
+                        </li>
+                    
+                    
+                
+            </ul>
+        </span>
+    
+    
+
+    
+    
+    
+    
+</div>
+
+                    </div>
+                </div>
+            </div>
+        
+
+        
+
+
+        <div class="article-content markdown-body px-2 sm:px-6 md:px-8 pb-8">
+            <p>首先是web入门。</p>
+<h1 id="web前置技能-http协议"><a href="#web前置技能-http协议" class="headerlink" title="web前置技能-http协议"></a>web前置技能-http协议</h1><p>##1.”请求方式”</p>
+<p><strong>题目信息</strong>：</p>
+<p><em>HTTP 请求方法, HTTP&#x2F;1.1协议中共定义了八种方法（也叫动作）来以不同方式操作指定的资源。</em></p>
+<p>HTTP Method is GET<br>Use CTF**B Method, I will give you flag.<br>Hint: If you got 「HTTP Method Not Allowed」 Error, you should request index.php.<br><strong>分析</strong>：<br>本题中提示使用http中的CTF**B方法访问该环境即可获得flag。http方法可以自定义名称，且区分大小写，所以CTF**B需要尝试确认”hu”的大小写，同时如何用特定http方法访问某个url呢？WP采用了curl工具。<br>已知环境地址：<br><code>http://challenge-beb8bdebb0d332be.sandbox.ctfhub.com:10800/index.php</code><br>则采用如下语法：<br><code>curl -v -X CTFHUB http://challenge-beb8bdebb0d332be.sandbox.ctfhub.com:10800/index.php</code><br>即可得到flag：ctfhub{6c76e2d89428d193f341ac6c}<br>以下是响应内容：</p>
+<details>
+<summary>点击查看代码</summary>
+
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">* Trying 47.98.148.7...</span><br><span class="line">* TCP_NODELAY set</span><br><span class="line">* Connected to challenge-beb8bdebb0d332be.sandbox.ctfhub.com (47.98.148.7) port 10800 (#0)</span><br><span class="line">&gt; CTFHUB /index.php HTTP/1.1</span><br><span class="line">&gt; Host: challenge-beb8bdebb0d332be.sandbox.ctfhub.com:10800</span><br><span class="line">&gt; User-Agent: curl/7.55.1</span><br><span class="line">&gt; Accept: /</span><br><span class="line">&gt;</span><br><span class="line">&lt; HTTP/1.1 200 OK</span><br><span class="line">&lt; Server: openresty/1.19.3.2</span><br><span class="line">&lt; Date: Fri, 14 Jan 2022 04:56:39 GMT</span><br><span class="line">&lt; Content-Type: text/html; charset=UTF-8</span><br><span class="line">&lt; Transfer-Encoding: chunked</span><br><span class="line">&lt; Connection: keep-alive</span><br><span class="line">&lt; X-Powered-By: PHP/5.6.40</span><br><span class="line">&lt; Access-Control-Allow-Origin: *</span><br><span class="line">&lt; Access-Control-Allow-Headers: X-Requested-With</span><br><span class="line">&lt; Access-Control-Allow-Methods: *</span><br><span class="line">&lt;</span><br><span class="line">&lt;!DOCTYPE html&gt;</span><br><span class="line">&lt;html&gt;</span><br><span class="line">&lt;head&gt;</span><br><span class="line">&lt;meta charset=&quot;UTF-8&quot;/&gt;</span><br><span class="line">&lt;title&gt;CTFHub HTTP Method</span><br><span class="line">&lt;/head&gt;</span><br><span class="line">&lt;body&gt;</span><br><span class="line">good job! ctfhub&#123;6c76e2d89428d193f341ac6c&#125;</span><br><span class="line">&lt;/body&gt;</span><br><span class="line">&lt;/html&gt;</span><br><span class="line">* Connection #0 to host challenge-beb8bdebb0d332be.sandbox.ctfhub.com left intact</span><br></pre></td></tr></table></figure></div>
+</details>
+
+<p>Curl:”clients for URL”<br>以下为摘自”Wayne ZHU”大佬博客的curl命令说明：<br><a class="link"   target="_blank" rel="noopener" href="https://www.cnblogs.com/zhuzhenwei918/p/6781314.html" >Curl命令 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br></pre></td><td class="code"><pre><span class="line">-a/--append 上传文件时，附加到目标文件  </span><br><span class="line"> -A/--user-agent &lt;string&gt;  设置用户代理发送给服务器  </span><br><span class="line"> --anyauth   可以使用“任何”身份验证方法  </span><br><span class="line"> -b/--cookie &lt;name=string/file&gt; cookie字符串或文件读取位置  </span><br><span class="line"> --basic 使用HTTP基本验证  </span><br><span class="line"> -B/--use-ascii 使用ASCII /文本传输  </span><br><span class="line"> -c/--cookie-jar &lt;file&gt; 操作结束后把cookie写入到这个文件中  </span><br><span class="line"> -C/--continue-at &lt;offset&gt;  断点续转  </span><br><span class="line"> -d/--data &lt;data&gt;   HTTP POST方式传送数据  </span><br><span class="line"> --data-ascii &lt;data&gt;  以ascii的方式post数据  </span><br><span class="line"> --data-binary &lt;data&gt; 以二进制的方式post数据  </span><br><span class="line"> --negotiate     使用HTTP身份验证  </span><br><span class="line"> --digest        使用数字身份验证  </span><br><span class="line"> --disable-eprt  禁止使用EPRT或LPRT  </span><br><span class="line"> --disable-epsv  禁止使用EPSV  </span><br><span class="line"> -D/--dump-header &lt;file&gt; 把header信息写入到该文件中  </span><br><span class="line"> --egd-file &lt;file&gt; 为随机数据(SSL)设置EGD socket路径  </span><br><span class="line"> --tcp-nodelay   使用TCP_NODELAY选项  </span><br><span class="line"> -e/--referer 来源网址  </span><br><span class="line"> -E/--cert &lt;cert[:passwd]&gt; 客户端证书文件和密码 (SSL)  </span><br><span class="line"> --cert-type &lt;type&gt; 证书文件类型 (DER/PEM/ENG) (SSL)  </span><br><span class="line"> --key &lt;key&gt;     私钥文件名 (SSL)  </span><br><span class="line"> --key-type &lt;type&gt; 私钥文件类型 (DER/PEM/ENG) (SSL)  </span><br><span class="line"> --pass  &lt;pass&gt;  私钥密码 (SSL)  </span><br><span class="line"> --engine &lt;eng&gt;  加密引擎使用 (SSL). &quot;--engine list&quot; for list  </span><br><span class="line"> --cacert &lt;file&gt; CA证书 (SSL)  </span><br><span class="line"> --capath &lt;directory&gt; CA目录 (made using c_rehash) to verify peer against (SSL)  </span><br><span class="line"> --ciphers &lt;list&gt;  SSL密码  </span><br><span class="line"> --compressed    要求返回是压缩的形势 (using deflate or gzip)  </span><br><span class="line"> --connect-timeout &lt;seconds&gt; 设置最大请求时间  </span><br><span class="line"> --create-dirs   建立本地目录的目录层次结构  </span><br><span class="line"> --crlf          上传是把LF转变成CRLF  </span><br><span class="line"> -f/--fail          连接失败时不显示http错误  </span><br><span class="line"> --ftp-create-dirs 如果远程目录不存在，创建远程目录  </span><br><span class="line"> --ftp-method [multicwd/nocwd/singlecwd] 控制CWD的使用  </span><br><span class="line"> --ftp-pasv      使用 PASV/EPSV 代替端口  </span><br><span class="line"> --ftp-skip-pasv-ip 使用PASV的时候,忽略该IP地址  </span><br><span class="line"> --ftp-ssl       尝试用 SSL/TLS 来进行ftp数据传输  </span><br><span class="line"> --ftp-ssl-reqd  要求用 SSL/TLS 来进行ftp数据传输  </span><br><span class="line"> -F/--form &lt;name=content&gt; 模拟http表单提交数据  </span><br><span class="line"> -form-string &lt;name=string&gt; 模拟http表单提交数据  </span><br><span class="line"> -g/--globoff 禁用网址序列和范围使用&#123;&#125;和[]  </span><br><span class="line"> -G/--get 以get的方式来发送数据  </span><br><span class="line"> -h/--help 帮助  </span><br><span class="line"> -H/--header &lt;line&gt;自定义头信息传递给服务器  </span><br><span class="line"> --ignore-content-length  忽略的HTTP头信息的长度  </span><br><span class="line"> -i/--include 输出时包括protocol头信息  </span><br><span class="line"> -I/--head  只显示文档信息</span><br><span class="line"> -j/--junk-session-cookies 读取文件进忽略session cookie  </span><br><span class="line"> --interface &lt;interface&gt; 使用指定网络接口/地址  </span><br><span class="line"> --krb4 &lt;level&gt;  使用指定安全级别的krb4  </span><br><span class="line"> -k/--insecure 允许不使用证书到SSL站点  </span><br><span class="line"> -K/--config  指定的配置文件读取  </span><br><span class="line"> -l/--list-only 列出ftp目录下的文件名称  </span><br><span class="line"> --limit-rate &lt;rate&gt; 设置传输速度  </span><br><span class="line"> --local-port&lt;NUM&gt; 强制使用本地端口号  </span><br><span class="line"> -m/--max-time &lt;seconds&gt; 设置最大传输时间  </span><br><span class="line"> --max-redirs &lt;num&gt; 设置最大读取的目录数  </span><br><span class="line"> --max-filesize &lt;bytes&gt; 设置最大下载的文件总量  </span><br><span class="line"> -M/--manual  显示全手动  </span><br><span class="line"> -n/--netrc 从netrc文件中读取用户名和密码  </span><br><span class="line"> --netrc-optional 使用 .netrc 或者 URL来覆盖-n  </span><br><span class="line"> --ntlm          使用 HTTP NTLM 身份验证  </span><br><span class="line"> -N/--no-buffer 禁用缓冲输出  </span><br><span class="line"> -o/--output 把输出写到该文件中  </span><br><span class="line"> -O/--remote-name 把输出写到该文件中，保留远程文件的文件名  </span><br><span class="line"> -p/--proxytunnel   使用HTTP代理  </span><br><span class="line"> --proxy-anyauth 选择任一代理身份验证方法  </span><br><span class="line"> --proxy-basic   在代理上使用基本身份验证  </span><br><span class="line"> --proxy-digest  在代理上使用数字身份验证  </span><br><span class="line"> --proxy-ntlm    在代理上使用ntlm身份验证  </span><br><span class="line"> -P/--ftp-port &lt;address&gt; 使用端口地址，而不是使用PASV  </span><br><span class="line"> -Q/--quote &lt;cmd&gt;文件传输前，发送命令到服务器  </span><br><span class="line"> -r/--range &lt;range&gt;检索来自HTTP/1.1或FTP服务器字节范围  </span><br><span class="line"> --range-file 读取（SSL）的随机文件  </span><br><span class="line"> -R/--remote-time   在本地生成文件时，保留远程文件时间  </span><br><span class="line"> --retry &lt;num&gt;   传输出现问题时，重试的次数  </span><br><span class="line"> --retry-delay &lt;seconds&gt;  传输出现问题时，设置重试间隔时间  </span><br><span class="line"> --retry-max-time &lt;seconds&gt; 传输出现问题时，设置最大重试时间  </span><br><span class="line"> -s/--silent静音模式。不输出任何东西  </span><br><span class="line"> -S/--show-error   显示错误  </span><br><span class="line"> --socks4 &lt;host[:port]&gt; 用socks4代理给定主机和端口  </span><br><span class="line"> --socks5 &lt;host[:port]&gt; 用socks5代理给定主机和端口  </span><br><span class="line"> --stderr &lt;file&gt;  </span><br><span class="line"> -t/--telnet-option &lt;OPT=val&gt; Telnet选项设置  </span><br><span class="line"> --trace &lt;file&gt;  对指定文件进行debug  </span><br><span class="line"> --trace-ascii &lt;file&gt; Like --跟踪但没有hex输出  </span><br><span class="line"> --trace-time    跟踪/详细输出时，添加时间戳  </span><br><span class="line"> -T/--upload-file &lt;file&gt; 上传文件  </span><br><span class="line"> --url &lt;URL&gt;     Spet URL to work with  </span><br><span class="line"> -u/--user &lt;user[:password]&gt;设置服务器的用户和密码  </span><br><span class="line"> -U/--proxy-user &lt;user[:password]&gt;设置代理用户名和密码  </span><br><span class="line"> -v/--verbose  </span><br><span class="line"> -V/--version 显示版本信息  </span><br><span class="line"> -w/--write-out [format]什么输出完成后  </span><br><span class="line"> -x/--proxy &lt;host[:port]&gt;在给定的端口上使用HTTP代理  </span><br><span class="line"> -X/--request &lt;command&gt;指定什么命令  </span><br><span class="line"> -y/--speed-time 放弃限速所要的时间。默认为30  </span><br><span class="line"> -Y/--speed-limit 停止传输速度的限制，速度时间&#x27;秒  </span><br><span class="line"> -z/--time-cond  传送时间设置  </span><br><span class="line"> -0/--http1.0  使用HTTP 1.0  </span><br><span class="line"> -1/--tlsv1  使用TLSv1（SSL）  </span><br><span class="line"> -2/--sslv2 使用SSLv2的（SSL）  </span><br><span class="line"> -3/--sslv3         使用的SSLv3（SSL）  </span><br><span class="line"> --3p-quote      like -Q for the source URL for 3rd party transfer  </span><br><span class="line"> --3p-url        使用url，进行第三方传送  </span><br><span class="line"> --3p-user       使用用户名和密码，进行第三方传送  </span><br><span class="line"> -4/--ipv4   使用IP4  </span><br><span class="line"> -6/--ipv6   使用IP6  </span><br><span class="line"> -#/--progress-bar 用进度条显示当前的传送状态</span><br><span class="line">————</span><br><span class="line">后置：</span><br><span class="line">-v  显示详细信息（verbose缩写），包括IP解析过程</span><br><span class="line">-i  显示头信息</span><br><span class="line">-I  只显示头信息</span><br></pre></td></tr></table></figure></div>
+
+<p>还有来自另一位大佬的curl命令分析：<a href="">https://cloud.tencent.com/developer/article/1718259</a></p>
+<p>Hint：部分命令效果（如进度条）只在Linux下有用<br>————<br>除了curl工具，尝试使用burp suite解出这题。<br>来自大佬”Waffle666”提供的burp suite教程:<a href="">https://blog.csdn.net/Waffle666/article/details/111083913</a><br>简单设置完本地服务器后，刷新环境页面，抓到经过本地代理的包后得到如下内容<br><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://img2020.cnblogs.com/blog/2724756/202201/2724756-20220116111444056-2080744036.png"
+                     
+                ><br>将左上的GET方法改为CTFHUB后将包放过去。<br><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://img2020.cnblogs.com/blog/2724756/202201/2724756-20220116111804128-871812963.png"
+                     
+                ><br>得到flag！<br>Hint：每次打开代理服务器后都需要保存才能生效。</p>
+<p>##2.”302跳转”</p>
+<p><strong>题目信息</strong></p>
+<p><em>HTTP临时重定向</em></p>
+<p><strong>分析</strong><br>单击”Give Me Flag”留意上方网址跳转到&#x2F;index.html，推测存在flag.txt文件，发现仍在&#x2F;index.html，用burp抓包后发至Repeater，查看反应<br><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://img2022.cnblogs.com/blog/2724756/202203/2724756-20220325181038513-1227255109.png"
+                     
+                ></p>
+<p><strong>发现存在302跳转，得到flag</strong><br><strong>尝试用curl访问，发现直接读取到flag</strong><br><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://img2022.cnblogs.com/blog/2724756/202203/2724756-20220325181056010-558100691.png"
+                     
+                ></p>
+<p><strong>也许是因为302为浏览器自身的功能设置，而curl并无此功能</strong><br><strong>附状态码对应状态：</strong><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://img2022.cnblogs.com/blog/2724756/202201/2724756-20220129142009231-1460227338.png"
+                     
+                ></p>
+<p>##3.”Cookie”<br><strong>题目信息</strong><br><em>Cookie欺骗、认证、伪造</em></p>
+<p>hello guest. only admin can get flag.<br><strong>分析</strong><br>抓包后观察HTTP请求发现请求头部中cookie字段存在”admin&#x3D;0”,将其修改为”admin&#x3D;1”后发送,得到flag。</p>
+<p>##4.”基础认证”<br><strong>题目信息</strong><br><em>在HTTP中，基本认证（英语：Basic access authentication）是允许http用户代理（如：网页浏览器）在请求时，提供 用户名 和 密码 的一种方式。详情请查看 <a class="link"   target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/HTTP%E5%9F%BA%E6%9C%AC%E8%AE%A4%E8%AF%81" >https://zh.wikipedia.org/wiki/HTTP基本认证 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></em></p>
+<p><strong>分析</strong><br>下载附件后发现是psw字典，推测需要字典爆破用户认证，发送登录信息并抓包。<br>在基础认证中，Basic内容为：”用户名:密码”的base64形式，但用户名未知，先尝试用”123””321”登录并抓包，查看响应后发现提示:”do u know admin?”。推测admin为用户名，利用burp suite的intruder进行爆破，这里需要我们添加”admin:”的前缀并爆破密码部分，由于base64的编码特性”admin:”为6位，恰好可完整编码，直接编码后作为前缀是理论可行的;使用”payloadprogressing”中的prefix添加前缀更为严谨，再添加base64的编码，就能起到先加前缀再整体编码的效果，对于一些编码结果同时受前后影响的编码形式真正有效。此处需取消勾选url编码，因为base64中存在”&#x3D;”。爆破结果中发现状态为200的响应，解码basic后的内容得到密码，登录后得到flag。<br>(虽然但是，我前几次爆破都不出结果，后几次不知道为什么又能出结果，中间爆破设置是一样的…)</p>
+<p>##5.”相应包源代码”<br><strong>题目信息</strong><br><em>HTTP响应包源代码查看</em></p>
+<p><strong>分析</strong><br>进行一个贪吃蛇的玩，居然不是上下左右控制而是wasd控制，奇怪的刷新速度让人控制不好转向的节奏，最后105分死于贪心。题目提示HTTP相应包源码查看，但是用repeater查看相应发现只是表示页面未更新的304状态码，无其他有用信息，在页面中直接F12查看网页源码，发现注释中有flag。(顺便偷一个源码看看贪吃蛇怎么写的&#x3D;9&#x3D;)</p>
+<!-- flag of hidden posts -->
+        </div>
+
+        
+            <div class="post-copyright-info w-full my-8 px-2 sm:px-6 md:px-8">
+                <div class="article-copyright-info-container">
+    <ul>
+        <li><strong>Title:</strong> CTFhub入门（一）web前置技能-http协议</li>
+        <li><strong>Author:</strong> Forestsetyou</li>
+        <li><strong>Created at
+                :</strong> 2022-01-16 11:19:00</li>
+        
+            <li>
+                <strong>Updated at
+                    :</strong> 2022-03-25 18:11:00
+            </li>
+        
+        <li>
+            <strong>Link:</strong> https://forestsetyou.github.io/2022/01/16/Security/CTF/CTFhub入门（一）web前置技能-http协议/
+        </li>
+        <li>
+            <strong>
+                License:
+            </strong>
+            
+
+            
+                This work is licensed under <a class="license" target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0">CC BY-NC-SA 4.0</a>.
+            
+        </li>
+    </ul>
+</div>
+
+            </div>
+        
+
+        
+
+        
+
+        
+
+
+        
+    </div>
+
+    
+        <div class="toc-content-container">
+            <div class="post-toc-wrap">
+    <div class="post-toc">
+        <div class="toc-title">On this page</div>
+        <div class="page-title">CTFhub入门（一）web前置技能-http协议</div>
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#web%E5%89%8D%E7%BD%AE%E6%8A%80%E8%83%BD-http%E5%8D%8F%E8%AE%AE"><span class="nav-text">web前置技能-http协议</span></a></li></ol>
+
+    </div>
+</div>
+        </div>
+    
+</div>
+
+
+
+                
+
+            </div>
+
+            
+
+        </div>
+
+        <div class="main-content-footer">
+            <footer class="footer mt-5 py-5 h-auto text-base text-third-text-color relative border-t-2 border-t-border-color">
+    <div class="info-container py-3 text-center">
+        
+        <div class="text-center">
+            &copy;
+            
+              <span>2024</span>
+              -
+            
+            2024&nbsp;&nbsp;<i class="fa-solid fa-heart fa-beat" style="--fa-animation-duration: 0.5s; color: #f54545"></i>&nbsp;&nbsp;<a href="/">Forestsetyou</a>
+            
+        </div>
+        
+        <div class="relative text-center lg:absolute lg:left-[20px] lg:top-1/2 lg:-translate-y-1/2 lg:text-left">
+            <span class="lg:block text-sm">POWERED BY <?xml version="1.0" encoding="utf-8"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg class="relative top-[2px] inline-block align-baseline" version="1.1" id="圖層_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="1rem" height="1rem" viewBox="0 0 512 512" enable-background="new 0 0 512 512" xml:space="preserve"><path fill="#0E83CD" d="M256.4,25.8l-200,115.5L56,371.5l199.6,114.7l200-115.5l0.4-230.2L256.4,25.8z M349,354.6l-18.4,10.7l-18.6-11V275H200v79.6l-18.4,10.7l-18.6-11v-197l18.5-10.6l18.5,10.8V237h112v-79.6l18.5-10.6l18.5,10.8V354.6z"/></svg><a target="_blank" class="text-base" href="https://hexo.io">Hexo</a></span>
+            <span class="text-sm lg:block">THEME&nbsp;<a class="text-base" target="_blank" href="https://github.com/EvanNotFound/hexo-theme-redefine">Redefine v2.6.1</a></span>
+        </div>
+        
+        
+        
+        
+        
+    </div>  
+</footer>
+        </div>
+    </div>
+
+    
+        <div class="post-tools">
+            <div class="post-tools-container">
+    <ul class="article-tools-list">
+        <!-- TOC aside toggle -->
+        
+            <li class="right-bottom-tools page-aside-toggle">
+                <i class="fa-regular fa-outdent"></i>
+            </li>
+        
+
+        <!-- go comment -->
+        
+    </ul>
+</div>
+
+        </div>
+    
+
+    <div class="right-side-tools-container">
+        <div class="side-tools-container">
+    <ul class="hidden-tools-list">
+        <li class="right-bottom-tools tool-font-adjust-plus flex justify-center items-center">
+            <i class="fa-regular fa-magnifying-glass-plus"></i>
+        </li>
+
+        <li class="right-bottom-tools tool-font-adjust-minus flex justify-center items-center">
+            <i class="fa-regular fa-magnifying-glass-minus"></i>
+        </li>
+
+        <li class="right-bottom-tools tool-dark-light-toggle flex justify-center items-center">
+            <i class="fa-regular fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        
+
+        <li class="right-bottom-tools tool-scroll-to-bottom flex justify-center items-center">
+            <i class="fa-regular fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="visible-tools-list">
+        <li class="right-bottom-tools toggle-tools-list flex justify-center items-center">
+            <i class="fa-regular fa-cog fa-spin"></i>
+        </li>
+        
+            <li class="right-bottom-tools tool-scroll-to-top flex justify-center items-center">
+                <i class="arrow-up fas fa-arrow-up"></i>
+                <span class="percent"></span>
+            </li>
+        
+        
+    </ul>
+</div>
+
+    </div>
+
+    <div class="image-viewer-container">
+    <img src="">
+</div>
+
+
+    
+        <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-input-field-pre">
+            <i class="fa-solid fa-keyboard"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="Search..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="popup-btn-close">
+                <i class="fa-solid fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fa-solid fa-spinner fa-spin-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+
+</main>
+
+
+    
+<script src="/js/libs/Swup.min.js"></script>
+
+<script src="/js/libs/SwupSlideTheme.min.js"></script>
+
+<script src="/js/libs/SwupScriptsPlugin.min.js"></script>
+
+<script src="/js/libs/SwupProgressPlugin.min.js"></script>
+
+<script src="/js/libs/SwupScrollPlugin.min.js"></script>
+
+<script src="/js/libs/SwupPreloadPlugin.min.js"></script>
+
+<script>
+    const swup = new Swup({
+        plugins: [
+            new SwupScriptsPlugin({
+                optin: true,
+            }),
+            new SwupProgressPlugin(),
+            new SwupScrollPlugin({
+                offset: 80,
+            }),
+            new SwupSlideTheme({
+                mainElement: ".main-content-body",
+            }),
+            new SwupPreloadPlugin(),
+        ],
+        containers: ["#swup"],
+    });
+</script>
+
+
+
+
+
+
+
+<script src="/js/tools/imageViewer.js" type="module"></script>
+
+<script src="/js/utils.js" type="module"></script>
+
+<script src="/js/main.js" type="module"></script>
+
+<script src="/js/layouts/navbarShrink.js" type="module"></script>
+
+<script src="/js/tools/scrollTopBottom.js" type="module"></script>
+
+<script src="/js/tools/lightDarkSwitch.js" type="module"></script>
+
+<script src="/js/layouts/categoryList.js" type="module"></script>
+
+
+
+    
+<script src="/js/tools/localSearch.js" type="module"></script>
+
+
+
+
+    
+<script src="/js/tools/codeBlock.js" type="module"></script>
+
+
+
+
+    
+<script src="/js/layouts/lazyload.js" type="module"></script>
+
+
+
+
+
+
+  
+<script src="/js/libs/Typed.min.js"></script>
+
+  
+<script src="/js/plugins/typed.js" type="module"></script>
+
+
+
+
+
+
+
+
+
+<div class="post-scripts" data-swup-reload-script>
+    
+        
+<script src="/js/tools/tocToggle.js" type="module"></script>
+
+<script src="/js/layouts/toc.js" type="module"></script>
+
+<script src="/js/plugins/tabs.js" type="module"></script>
+
+    
+</div>
+
+
+</body>
+</html>

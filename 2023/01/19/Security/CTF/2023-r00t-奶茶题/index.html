@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="keywords" content="ctf, solution, note, blog">
+    
+    <meta name="author" content="Forestsetyou">
+    <!-- preconnect -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    
+    <!--- Seo Part-->
+    
+    <link rel="canonical" href="http://forestsetyou.github.io/2023/01/19/security/ctf/2023-r00t-奶茶题/"/>
+    <meta name="robots" content="index,follow">
+    <meta name="googlebot" content="index,follow">
+    <meta name="revisit-after" content="1 days">
+    
+        <meta name="description" content="false">
+<meta property="og:type" content="article">
+<meta property="og:title" content="2023-r00t-奶茶题">
+<meta property="og:url" content="http://forestsetyou.github.io/2023/01/19/Security/CTF/2023-r00t-%E5%A5%B6%E8%8C%B6%E9%A2%98/index.html">
+<meta property="og:site_name" content="Festu&#39;s Blog">
+<meta property="og:description" content="false">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2023-01-19T15:13:00.000Z">
+<meta property="article:modified_time" content="2023-05-04T20:16:00.000Z">
+<meta property="article:author" content="Forestsetyou">
+<meta property="article:tag" content="ctf, solution, note, blog">
+<meta name="twitter:card" content="summary">
+    
+    
+    <!--- Icon Part-->
+    <link rel="icon" type="image/png" href="/hide_imgs/smiling_face.png" sizes="192x192">
+    <link rel="apple-touch-icon" sizes="180x180" href="/hide_imgs/smiling_face.png">
+    <meta name="theme-color" content="#A31F34">
+    <link rel="shortcut icon" href="/hide_imgs/smiling_face.png">
+    <!--- Page Info-->
+    
+    <title>
+        
+            2023-r00t-奶茶题 -
+        
+        Festu&#39;s Blog
+    </title><meta name="robots" content="noindex">
+
+    
+<link rel="stylesheet" href="/fonts/Chillax/chillax.css">
+
+
+    <!--- Inject Part-->
+    
+
+    
+        <style>
+    :root {
+        --preloader-background-color: #fff;
+        --preloader-text-color: #000;
+    }
+
+    @media (prefers-color-scheme: dark) {
+        :root {
+            --preloader-background-color: #202124;
+            --preloader-text-color: #fff;
+        }
+    }
+
+    @media (prefers-color-scheme: light) {
+        :root {
+            --preloader-background-color: #fff;
+            --preloader-text-color: #000;
+        }
+    }
+
+    @media (max-width: 600px) {
+        .ml13 {
+            font-size: 2.6rem !important; /* Adjust this value as needed */
+        }
+    }
+
+    .preloader {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem; /* Tailwind 'gap-4' is 1rem */
+        align-items: center;
+        justify-content: center;
+        position: fixed;
+        padding: 12px;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh; /* 'h-screen' is 100% of the viewport height */
+        background-color: var(--preloader-background-color);
+        z-index: 1100; /* 'z-[1100]' sets the z-index */
+        transition: opacity 0.2s ease-in-out;
+    }
+
+    .ml13 {
+        font-size: 3.2rem;
+        /* text-transform: uppercase; */
+        color: var(--preloader-text-color);
+        letter-spacing: -1px;
+        font-weight: 500;
+        font-family: 'Chillax-Variable', sans-serif;
+        text-align: center;
+    }
+
+    .ml13 .word {
+        display: inline-flex;
+        flex-wrap: wrap;
+        white-space: nowrap;
+    }
+
+    .ml13 .letter {
+        display: inline-block;
+        line-height: 1em;
+    }
+</style>
+
+<div class="preloader">
+    
+<script src="/js/libs/anime.min.js"></script>
+
+    <h1 class="ml13">
+        Festu&#39;s Blog
+    </h1>
+    <script>
+        var textWrapper = document.querySelector('.ml13');
+        // Split text into words
+        var words = textWrapper.textContent.trim().split(' ');
+
+        // Clear the existing content
+        textWrapper.innerHTML = '';
+
+        // Wrap each word and its letters in spans
+        words.forEach(function(word) {
+            var wordSpan = document.createElement('span');
+            wordSpan.classList.add('word');
+            wordSpan.innerHTML = word.replace(/\S/g, "<span class='letter'>$&</span>");
+            textWrapper.appendChild(wordSpan);
+            textWrapper.appendChild(document.createTextNode(' ')); // Add space between words
+        });
+
+
+        anime.timeline({loop: true})
+            .add({
+                targets: '.ml13 .letter',
+                translateY: [100,0],
+                translateZ: 0,
+                opacity: [0,1],
+                easing: "easeOutExpo",
+                duration: 1400,
+                delay: (el, i) => 300 + 30 * i
+            }).add({
+            targets: '.ml13 .letter',
+            translateY: [0,-100],
+            opacity: [1,0],
+            easing: "easeInExpo",
+            duration: 1200,
+            delay: (el, i) => 100 + 30 * i
+        });
+
+        let themeStatus = JSON.parse(localStorage.getItem('REDEFINE-THEME-STATUS'))?.isDark;
+
+        // If the theme status is not found in local storage, check the preferred color scheme
+        if (themeStatus === undefined || themeStatus === null) {
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                themeStatus = 'dark';
+            } else {
+                themeStatus = 'light';
+            }
+        }
+
+        // Now you can use the themeStatus variable in your code
+        if (themeStatus) {
+            document.documentElement.style.setProperty('--preloader-background-color', '#202124');
+            document.documentElement.style.setProperty('--preloader-text-color', '#fff');
+        } else {
+            document.documentElement.style.setProperty('--preloader-background-color', '#fff');
+            document.documentElement.style.setProperty('--preloader-text-color', '#000');
+        }
+
+        window.addEventListener('load', function () {
+            hidePreloaderAfterTimeout(1000); // Hide after 1000 milliseconds once the window has loaded
+        });
+
+        // Backup failsafe: Hide preloader after a maximum of 5000 milliseconds, regardless of the window load event
+        hidePreloaderAfterTimeout(5000);
+
+        function hidePreloaderAfterTimeout(delay) {
+            setTimeout(function () {
+                var preloader = document.querySelector('.preloader');
+                preloader.style.opacity = '0';
+                setTimeout(function () {
+                    preloader.style.display = 'none';
+                }, 200);
+            }, delay);
+        }
+    </script>
+</div>
+    
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+
+    
+        
+<link rel="stylesheet" href="/assets/build/styles.css">
+
+    
+
+    
+<link rel="stylesheet" href="/fonts/fonts.css">
+
+    
+<link rel="stylesheet" href="/fonts/Satoshi/satoshi.css">
+
+    <!--- Font Part-->
+    
+    
+    
+    
+
+
+    <script id="hexo-configurations">
+    window.config = {"hostname":"forestsetyou.github.io","root":"/","language":"en","path":"search.xml"};
+    window.theme = {"articles":{"style":{"font_size":"16px","line_height":1.5,"image_border_radius":"14px","image_alignment":"center","image_caption":false,"link_icon":true,"title_alignment":"left","headings_top_spacing":{"h1":"5rem","h2":"4rem","h3":"2.8rem","h4":"2.5rem","h5":"2.2rem","h6":"2rem"}},"word_count":{"enable":false,"count":true,"min2read":true},"author_label":{"enable":false,"auto":false,"list":[]},"code_block":{"copy":true,"style":"simple","font":{"enable":false,"family":null,"url":null}},"toc":{"enable":true,"max_depth":3,"number":false,"expand":true,"init_open":true},"copyright":{"enable":true,"default":"cc_by_nc_sa"},"lazyload":true,"recommendation":{"enable":false,"title":"推荐阅读","limit":3,"mobile_limit":2,"placeholder":"/images/wallhaven-wqery6-light.webp","skip_dirs":[]}},"colors":{"primary":"#A31F34","secondary":null,"default_mode":"light"},"global":{"fonts":{"chinese":{"enable":false,"family":null,"url":null},"english":{"enable":false,"family":null,"url":null}},"content_max_width":"1000px","sidebar_width":"210px","hover":{"shadow":true,"scale":false},"scroll_progress":{"bar":false,"percentage":true},"website_counter":{"url":"https://cn.vercount.one/js","enable":false,"site_pv":true,"site_uv":true,"post_pv":true},"single_page":true,"preloader":true,"open_graph":true,"google_analytics":{"enable":false,"id":null}},"home_banner":{"enable":true,"style":"fixed","image":{"light":"/hide_imgs/light_banner-5.png","dark":"/hide_imgs/dark_banner.png"},"title":"Festu's Blog","subtitle":{"text":["Life Goes On."],"hitokoto":{"enable":false,"api":"https://v1.hitokoto.cn"},"typing_speed":100,"backing_speed":80,"starting_delay":500,"backing_delay":1500,"loop":false,"smart_backspace":false},"text_color":{"light":"#fff","dark":"#d1d1b6"},"text_style":{"title_size":"2.8rem","subtitle_size":"1.5rem","line_height":1.2},"custom_font":{"enable":false,"family":null,"url":null},"social_links":{"enable":true,"style":"default","links":{"github":"https://github.com/Forestsetyou","instagram":null,"zhihu":null,"twitter":null,"email":null},"qrs":{"weixin":null}}},"plugins":{"feed":{"enable":false},"aplayer":{"enable":false,"type":"fixed","audios":[{"name":null,"artist":null,"url":null,"cover":null,"lrc":null}]},"mermaid":{"enable":false,"version":"9.3.0"}},"version":"2.6.1","navbar":{"auto_hide":false,"color":{"left":"#f78736","right":"#367df7","transparency":35},"width":{"home":"1200px","pages":"1000px"},"links":{"Home":{"path":"/","icon":"fa-regular fa-house"},"Archives":{"path":"/archives","icon":"fa-regular fa-archive"},"categories":{"path":"/categories","icon":"fa-regular fa-folder"},"tags":{"path":"/tags","icon":"fa-regular fa-tags"}},"search":{"enable":true,"preload":true}},"page_templates":{"friends_column":2,"tags_style":"blur"},"home":{"sidebar":{"enable":true,"position":"left","first_item":"menu","announcement":null,"show_on_mobile":true,"links":null},"article_date_format":"auto","categories":{"enable":true,"limit":3},"tags":{"enable":true,"limit":3}},"footerStart":"2024/03/11 03:27:59"};
+    window.lang_ago = {"second":"%s seconds ago","minute":"%s minutes ago","hour":"%s hours ago","day":"%s days ago","week":"%s weeks ago","month":"%s months ago","year":"%s years ago"};
+    window.data = {"masonry":false};
+  </script>
+    
+    <!--- Fontawesome Part-->
+    
+<link rel="stylesheet" href="/fontawesome/fontawesome.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/brands.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/solid.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/regular.min.css">
+
+    
+    
+    
+    
+<meta name="generator" content="Hexo 7.1.1"></head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+
+    
+        <span class="pjax-progress-bar"></span>
+<!--        <span class="swup-progress-icon">-->
+<!--            <i class="fa-solid fa-circle-notch fa-spin"></i>-->
+<!--        </span>-->
+    
+</div>
+
+
+<main class="page-container" id="swup">
+
+    
+
+    <div class="main-content-container">
+
+
+        <div class="main-content-header">
+            <header class="navbar-container px-6 md:px-12">
+
+    <div class="navbar-content ">
+        <div class="left">
+            
+                <a class="logo-image" href="/">
+                    <img src="/hide_imgs/smiling_face.png">
+                </a>
+            
+            <a class="logo-title" href="/">
+                
+                Festu&#39;s Blog
+                
+            </a>
+        </div>
+
+        <div class="right">
+            <!-- PC -->
+            <div class="desktop">
+                <ul class="navbar-list">
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/"
+                                        >
+                                    <i class="fa-regular fa-house fa-fw"></i>
+                                    HOME
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/archives"
+                                        >
+                                    <i class="fa-regular fa-archive fa-fw"></i>
+                                    ARCHIVES
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/categories"
+                                        >
+                                    <i class="fa-regular fa-folder fa-fw"></i>
+                                    CATEGORIES
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/tags"
+                                        >
+                                    <i class="fa-regular fa-tags fa-fw"></i>
+                                    TAGS
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                    
+                        <li class="navbar-item search search-popup-trigger">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </li>
+                    
+                </ul>
+            </div>
+            <!-- Mobile -->
+            <div class="mobile">
+                
+                    <div class="icon-item search search-popup-trigger"><i class="fa-solid fa-magnifying-glass"></i>
+                    </div>
+                
+                <div class="icon-item navbar-bar">
+                    <div class="navbar-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile sheet -->
+    <div class="navbar-drawer h-screen w-full absolute top-0 left-0 bg-background-color flex flex-col justify-between">
+        <ul class="drawer-navbar-list flex flex-col px-4 justify-center items-start">
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/"
+                        >
+                            <span>
+                                HOME
+                            </span>
+                            
+                                <i class="fa-regular fa-house fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/archives"
+                        >
+                            <span>
+                                ARCHIVES
+                            </span>
+                            
+                                <i class="fa-regular fa-archive fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/categories"
+                        >
+                            <span>
+                                CATEGORIES
+                            </span>
+                            
+                                <i class="fa-regular fa-folder fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/tags"
+                        >
+                            <span>
+                                TAGS
+                            </span>
+                            
+                                <i class="fa-regular fa-tags fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+
+            
+            
+        </ul>
+
+        <div class="statistics flex justify-around my-2.5">
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/tags">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">1</div>
+        <div class="label text-third-text-color text-sm">Tags</div>
+    </a>
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/categories">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">10</div>
+        <div class="label text-third-text-color text-sm">Categories</div>
+    </a>
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/archives">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">14</div>
+        <div class="label text-third-text-color text-sm">Posts</div>
+    </a>
+</div>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="main-content-body">
+
+            
+
+            <div class="main-content">
+
+                
+                    <div class="post-page-container flex relative justify-between box-border w-full h-full">
+    <div class="article-content-container">
+
+        <div class="article-title relative w-full">
+            
+                
+                
+                <img src="/hide_imgs/post_thumbnail-2.jpg" alt="2023-r00t-奶茶题" class="w-full h-60 sm:h-72 md:h-80 object-cover sm:rounded-t-large dark:brightness-75"/>
+                
+                <div class="w-full flex items-center absolute bottom-0 justify-start">
+                    <h1 class="article-title-cover text-center mx-6 my-6 text-second-text-color bg-background-color-transparent px-4 py-3 text-3xl sm:text-4xl md:text-5xl font-bold backdrop-blur-lg rounded-xl border border-border-color ">2023-r00t-奶茶题</h1>
+                </div>
+            
+            </div>
+
+        
+            <div class="article-header flex flex-row gap-2 items-center px-2 sm:px-6 md:px-8">
+                <div class="avatar w-[46px] h-[46px] flex-shrink-0 rounded-medium border border-border-color p-[1px]">
+                    <img src="/hide_imgs/avatar.png">
+                </div>
+                <div class="info flex flex-col justify-between">
+                    <div class="author flex items-center">
+                        <span class="name text-default-text-color text-lg font-semibold">Forestsetyou</span>
+                        
+                    </div>
+                    <div class="meta-info">
+                        <div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fa-regular fa-pen-fancy"></i>&nbsp;
+        <span class="desktop">2023-01-19 23:13</span>
+        <span class="mobile">2023-01-19 23:13</span>
+        <span class="hover-info">Created</span>
+    </span>
+    
+        <span class="article-date article-meta-item">
+            <i class="fa-regular fa-wrench"></i>&nbsp;
+            <span class="desktop">2023-05-05 04:16</span>
+            <span class="mobile">2023-05-05 04:16</span>
+            <span class="hover-info">Updated</span>
+        </span>
+    
+
+    
+        <span class="article-categories article-meta-item">
+            <i class="fa-regular fa-folders"></i>&nbsp;
+            <ul>
+                
+                
+                    
+                        
+                        <li>
+                            <a href="/categories/Security/">Security</a>&nbsp;
+                        </li>
+                    
+                    
+                
+                    
+                        
+                            <li>></li>
+                        
+                        <li>
+                            <a href="/categories/Security/CTF/">CTF</a>&nbsp;
+                        </li>
+                    
+                    
+                
+            </ul>
+        </span>
+    
+    
+
+    
+    
+    
+    
+</div>
+
+                    </div>
+                </div>
+            </div>
+        
+
+        
+
+
+        <div class="article-content markdown-body px-2 sm:px-6 md:px-8 pb-8">
+            <h1 id="2023-r00t-奶茶题"><a href="#2023-r00t-奶茶题" class="headerlink" title="2023 r00t 奶茶题"></a>2023 r00t 奶茶题</h1><p><a class="link"   target="_blank" rel="noopener" href="http://8.130.38.218:8080/amis/pages/1a2b" >URL <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+<h3 id="python"><a href="#python" class="headerlink" title="python"></a>python</h3><ul>
+<li><p>cls代表类本身，self代表类实例；</p>
+<div class="highlight-container" data-rel="Python"><figure class="iseeu highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@classmethod</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">func</span>(<span class="params">cls, ...</span>):</span><br><span class="line">	...</span><br><span class="line">	ret</span><br></pre></td></tr></table></figure></div>
+
+<p>前要带着 <code>@classmethod</code> 指定下一个函数为类方法，首参数为 <code>cls</code> 而非 <code>self</code> ，其目的就是为了调用当前的类（例如用于新建和初始化）而非调用一个已经初始化完毕的实例（只能获得参数）</p>
+</li>
+<li><p><code>a==None</code> 表示a被定义了，但为空</p>
+</li>
+<li><p><a class="link"   target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_42557907/article/details/81589691" >__setitem__ <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a> ：<code>__setitem__(self, key:int, value:bool)</code> 函数在更改键值时自动先调用，key与value表示键、值，冒号标记参数类型，在常规python中只做标记，不严格遵守，在fastapi中做数据类型校验，不同时会报错</p>
+</li>
+<li><p><code>instance(a, b)</code> ：判断A是否继承自B</p>
+</li>
+<li><p><code>assert expression, &quot;errText&quot;:</code> 在表达式”expression”为false时会抛出错误AssertionError(errText)，为True时则正常运行</p>
+</li>
+<li><p><code>str.rjust(width[, fillchar])</code> 字符串右对齐处理</p>
+</li>
+<li><p><code>def funcs() -&gt; int:</code> 箭头表示Type Hint，用于表示函数期待的输入与输出类型</p>
+</li>
+</ul>
+<h2 id="解题"><a href="#解题" class="headerlink" title="解题"></a>解题</h2><h3 id="思路1"><a href="#思路1" class="headerlink" title="思路1"></a>思路1</h3><p>Cookie中的game可以反复使用，它标记了剩余的尝试次数与对应答案，但通过爆破发现，hard难度无解（多线程测试时测试数量总和5040差了几个，不知道为什么）。</p>
+<p>扫一扫会发现host&#x2F;docs可以访问，这是FastApi的自述文档，可以查看该网站的路由配置（貌似使用了路由可以防止一些敏感文件泄露，除了设定好的docs）</p>
+<p>根据提示，项目基于”amis_helper”，结构相似，”amis_helper&#x2F;src&#x2F;app&#x2F;amis_router.py”展示了项目的路由设置，其中部分路由需要amis_admin权限，该权限需要在Cookie中设置一个”amis_pass”密码，密码存放在”amis_helper&#x2F;src&#x2F;conf&#x2F;amis.json5”中，若没有该权限，访问部分页面会404。出题人提示flag存放在”1a2b&#x2F;flag”下，访问时出现404，推测需要获取正确的”amis_pass”才能访问，因此目标是：<strong>获取”src&#x2F;conf&#x2F;amis.json5”的内容</strong></p>
+<p>“src&#x2F;conf&#x2F;funcs.py”内提供了读取conf文件的函数”read_conf”，寻找调用该函数的方法进而获得amis_pass</p>
+<p>废话了这么多，这条思路8行（233）</p>
+<h3 id="思路2"><a href="#思路2" class="headerlink" title="思路2"></a>思路2</h3><p>经过出题人不厌其烦的主动被社工，又摸又菜的内鬼终于找到了题目的入口（？）</p>
+<p>题目首页的图片提示有一个”&#x2F;photo&#x2F;file”入口可以访问file文件，在基项目中路径的传入与获取通常有path与str两者，前者可以直接写URI，可以写 <code>http://xxx/xxx</code> ，也可以直接传 <code>/etc/passwd</code> （获取源码后会发现基项目中的pages&#x2F;path写法和题目源码其实不一样，因此尽管基项目的path传入看起来没洞，但题目的photo入口是有洞的），尝试传入 <code>/photo//etc/passwd</code> 能成功访问（传入的路径不对会回显500，后台服务器在执行时抛出了错误），尝试相对路径，在基项目的最顶层目录中有一个”run.py”，尝试目录穿越获取该文件：<code>pages/../../run.py</code> ，成功获取该文件后按照基项目结构下载源文件，已知文件夹，可以通过python中的相对引用来获得文件夹下的源码名称。</p>
+<p>在python中文件夹要想被识别为包（可相对引用并导入）需要包含文件”__init__.py”，该文件用于导入该包内各模块的函数，上级目录导入该模块时可以直接通过包访问到这些函数（跳过了模块）。除此之外包内模块也会引用一些没导入识别文件（__init__.py）的模块，不断从已知的模块获取新模块就能得到完整的模块列表（如果一个模块是被上层间接调用的，一定要包含在这条链中；直接调用也能在上层模块中直接找到；若是单独运行的脚本就没办法了）。</p>
+<h4 id="模块分析"><a href="#模块分析" class="headerlink" title="模块分析"></a>模块分析</h4><p>“app&#x2F;game_router.py”是1a2b游戏的路由源码，”conf&#x2F;amis.json5”存放着之前想要得到的amis_pass，但该密码只能用于修改前端页面，无法用于获取flag（path&#x2F;all_pages无效，flag惨遭过滤也不能访问）</p>
+<p>“app&#x2F;photo_router.py”是photo路由的源码，里面可以看到函数 <code>os.path.join(&quot;./static/photo/&quot;, path)</code> 直接将路径进行拼接用于搜索文件，因此可以目录穿越（但不知道为什么可以直接从”&#x2F;“目录开始传递路径，可能是path类型识别参数时考虑到了这种情况）</p>
+<p>“utils&#x2F;classes.py”中创建了一个Bitmap类，以bit位来存储特定的数据。<br>“model”包中，”XAXB”模块中的Choices类基于Bitmap，用于获取游戏结果，同时也给baby模式提供了baby的逻辑；”xAxB”类是游戏主类，提供了a,b的计算方式；”cookie”模块中的”GameCookie”是所有cookie类的基类，它提供了cookie状态与cookie编码相互转换的函数；三个难度各有其cookie类，继承自基类。</p>
+<h4 id="漏洞分析"><a href="#漏洞分析" class="headerlink" title="漏洞分析"></a>漏洞分析</h4><p>一般模式下，Bitmap会将正确数字标记为True，只有正标记的位置会与玩家上传的guess进行比较得出”xAxB”的结果，不同的xAxB在一个字典中以键的形式，对应一个Choices，该Choices有一个True_num参数标记正确的数字位的个数，最后选取True_num最多的”xAxB”对象作为结果返回；baby模式下所有数字位都被正标记，上传的guess将与10000个数字全部比较一遍，统计出来True_num最大即情况数量最多的一个”xAxB”将被作为结果，也是guess与这10000个数字中的某一个最有可能的情况，由于”4A0B”最多就一个，因此这是不可能出现的。</p>
+<p>漏洞主要出现在cookie的解析上，cookie是将cookie类用pickle.dumps取下来再用base64加解密来转换的，只要类型一致上传的cookie类内容怎样都行，因此我们修改cookie类下的choices的正标记为 <code>[0]</code> 对应”0000”，上传cookie后传入guess&#x3D;”0000”就能通过。这里会遇到以下问题：</p>
+<ol>
+<li>修改cookie类下choices的size不行，该size决定统计时遍历的数量，若只遍历1次也能取到4A，但该参数用于比较变量长度，上传给服务器后能解析，但在运行时会出错，因此会回显500状态码：”Internet Server Error”</li>
+<li>为了伪造cookie，我们需要获取完全一致类结构，通过直接运行来获取cookie；<code>pickle</code> 在序列化对象时会加入其路径信息，包括调用模块的导入情况，因此必须遵守源文件的源码结构直接调用才能获得完全一致的cookie信息；为了逐层调用到”model&#x2F;cookie.py”文件，可以在”amis_pyy”下写一个”getCookie.py”直接调用cookie中的相关函数来获得，也必须在这一层编写该函数，理由见后文关于python相对引用的分析</li>
+<li><code>pickle</code> 在序列化时不考虑类的函数，而是考虑对象的参数与继承关系所带来的附加参数，同时也会把类对象的路径也打包进去，记录下它是根据那个目录下的哪个类进行封装的，同样解析时也要找到对应目录下的对应类进行解析还原（不清楚绝对引用与相对引用是否有影响），因此需要保证文件结构的一致</li>
+</ol>
+<p>参考：[</p>
+<p><a class="link"   target="_blank" rel="noopener" href="https://blog.csdn.net/qq_43271194/article/details/109312519" >Web信息搜集 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+<p>]</p>
+<h3 id="Python相对引用"><a href="#Python相对引用" class="headerlink" title="Python相对引用"></a>Python相对引用</h3><p>为了逐层调用到”cookie.py”，我被python的相对引用折磨了好久。这不是个复杂的问题，但研究起来让人很不解：这么聪明的python怎么引用的时候像个笨蛋。</p>
+<p>例如”test_parent”有如下文件结构：</p>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">test_parent</span><br><span class="line">│  main.py</span><br><span class="line">│</span><br><span class="line">└─test</span><br><span class="line">    │  src.py</span><br><span class="line">    │  __init__.py</span><br><span class="line">    │</span><br><span class="line">    ├─subPac</span><br><span class="line">    │  │  src1.py</span><br><span class="line">    │  │  src2.py</span><br><span class="line">    │  │  src4.py</span><br><span class="line">    │  │  __init__.py</span><br><span class="line">    │  │</span><br><span class="line">    │  └─__pycache__</span><br><span class="line">    │          src1.cpython-310.pyc</span><br><span class="line">    │          src2.cpython-310.pyc</span><br><span class="line">    │          src4.cpython-310.pyc</span><br><span class="line">    │          __init__.cpython-310.pyc</span><br><span class="line">    │</span><br><span class="line">    ├─subPac1</span><br><span class="line">    │  │  src3.py</span><br><span class="line">    │  │  __init__.py</span><br><span class="line">    │  │</span><br><span class="line">    │  └─__pycache__</span><br><span class="line">    │          src3.cpython-310.pyc</span><br><span class="line">    │          __init__.cpython-310.pyc</span><br><span class="line">    │</span><br><span class="line">    └─__pycache__</span><br><span class="line">            __init__.cpython-310.pyc</span><br></pre></td></tr></table></figure></div>
+
+<p>绝对引用：</p>
+<div class="highlight-container" data-rel="Python"><figure class="iseeu highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># src.py</span></span><br><span class="line"><span class="keyword">import</span>  subPac</span><br><span class="line"><span class="keyword">from</span> subPac1 <span class="keyword">import</span> src3.py</span><br></pre></td></tr></table></figure></div>
+
+<p>相对引用：</p>
+<div class="highlight-container" data-rel="Python"><figure class="iseeu highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># src1.py</span></span><br><span class="line"><span class="keyword">import</span> .src2</span><br><span class="line"><span class="comment"># from . import src2</span></span><br><span class="line"><span class="keyword">from</span> .src4 <span class="keyword">import</span> fun4</span><br><span class="line"><span class="keyword">from</span> ..subPac1 <span class="keyword">import</span> src3	<span class="comment"># &lt;?-1</span></span><br></pre></td></tr></table></figure></div>
+
+<p>用”.”来表示导入位置的成为相对引用，表示相对于源码文件其他包和模块所在位置；绝对引用则是引入包时不用”.”，直接导入称为绝对引用，绝对引用后被引用的包下会出现 <code>__pycache__</code> 文件夹。</p>
+<p>当python源码被直接运行时，我们称之为脚本，此时在该文件中有 <code>__name__=__main__</code> 表示它是程序运行的入口文件；当python文件被导入到其他源码中调用时，它称为模块，自然有 <code>__name__!=__main__</code> 。</p>
+<p>相对引用必须放在模块中使用，若在脚本中使用会出现报错：**”ImportError: attempted relative import with no known parent package”**；所有模块的起点都是一个脚本，这个脚本调用了这些模块，因此这个脚本必须使用绝对引用作为导入包的起始路径；绝对引用在模块中使用也是可行的，但过于僵硬。</p>
+<h4 id="上级目录引用"><a href="#上级目录引用" class="headerlink" title="上级目录引用"></a>上级目录引用</h4><p>上述文件中 <code>&lt;?-1</code> 是一处对上级目录的另一个包内模块的导入，要想正确运行该文件（src1.py），需要在该文件所在位置的上级至少两层创建调用脚本，例如”test&#x2F;main.py”。若使用”src.py”去调用该文件，则会出现报错：**”attempted relative import beyond top-level package”** 。这是因此此时”src.py”脚本被视为最高级的包，它是树的根节点，不允许出现同级的”subPac1”。</p>
+<hr>
+<p>当文件夹下有”__init__.py”时，该文件才会被视为包，文件夹下的源码文件才会被视为模块，能被包直接访问的函数需要导入到”__init__.py”文件中，例如：</p>
+<div class="highlight-container" data-rel="Python"><figure class="iseeu highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># subPac/__init__.py</span></span><br><span class="line"><span class="keyword">from</span> .src1 <span class="keyword">import</span> func1</span><br></pre></td></tr></table></figure></div>
+
+<p>在”main.py”中就能直接导入”subPac.func1”：</p>
+<div class="highlight-container" data-rel="Python"><figure class="iseeu highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># main.py</span></span><br><span class="line"><span class="keyword">from</span> subPac <span class="keyword">import</span> func1</span><br></pre></td></tr></table></figure></div>
+
+<p>访问了subPac包就会访问”subPac&#x2F;__init__.py”文件，由于其中的导入又会访问”src1.py，src2.py，src4.py”和”subPac1&#x2F;src3.py”等文件</p>
+<p>参考：[</p>
+<p><a class="link"   target="_blank" rel="noopener" href="https://blog.csdn.net/MakerCloud/article/details/82696857" >Windows命令行 查看文件树结构 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a>，</p>
+<p><a class="link"   target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/64893308" >Python-import导入上级目录文件 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a>，</p>
+<p><a class="link"   target="_blank" rel="noopener" href="https://www.cnblogs.com/jiaxin359/p/7580375.html" >Relative imports for the bilionth time <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a>，</p>
+<p><a class="link"   target="_blank" rel="noopener" href="https://www.cnblogs.com/Rosaany/p/15024170.html" >解决导包报错：ModuleNotFoundError，ImportError  <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a>，</p>
+<p>]</p>
+<h2 id="Json-fastApi的前端json上传"><a href="#Json-fastApi的前端json上传" class="headerlink" title="Json-fastApi的前端json上传"></a>Json-fastApi的前端json上传</h2><p>拿到了amis_pass就想加个彩蛋，没想到fastApi的json给我带来了如此大的震撼</p>
+<p>用POST上传json时类型为：”application&#x2F;json”<br>上传的内容：</p>
+<div class="highlight-container" data-rel="Json"><figure class="iseeu highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line"> <span class="attr">&quot;path&quot;</span><span class="punctuation">:</span><span class="string">&quot;string&quot;</span><span class="punctuation">,</span></span><br><span class="line"> <span class="attr">&quot;title&quot;</span><span class="punctuation">:</span><span class="string">&quot;string&quot;</span><span class="punctuation">,</span></span><br><span class="line"> <span class="attr">&quot;json&quot;</span><span class="punctuation">:</span><span class="string">&quot;string&quot;</span><span class="punctuation">,</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure></div>
+
+<p>json的主体内容<strong>必须使用双引号！这是硬性格式要求！</strong></p>
+<p>打包json的代码：</p>
+<div class="highlight-container" data-rel="Python"><figure class="iseeu highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> json</span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line">obj=&#123;...&#125;</span><br><span class="line"><span class="keyword">with</span> <span class="built_in">open</span>(os.path.dirname(__file__)+<span class="string">&quot;/newJson.txt&quot;</span>, <span class="string">&quot;w&quot;</span>, encoding=<span class="string">&quot;utf-8&quot;</span>) <span class="keyword">as</span> f:</span><br><span class="line">    f.write(json.dumps(obj, sort_keys=<span class="literal">True</span>, indent=<span class="number">1</span>, separators=(<span class="string">&#x27;,&#x27;</span>, <span class="string">&#x27;: &#x27;</span>), ensure_ascii=<span class="literal">False</span>))</span><br><span class="line">    f.close()</span><br><span class="line"></span><br></pre></td></tr></table></figure></div>
+
+<p>indent控制输出的缩进空格个数，得到的文件”newJson.txt”需要按如下步骤操作：</p>
+<ol>
+<li>每次<strong>替换前在目标字符前加一个额外的字符做分隔符</strong>，替换完再删除分隔符；我用VSC的搜索替换，当两个被搜索目标相邻并被删除后再替换，则会出现光标合并，最后就会少一个字符</li>
+<li>搜索所有 <code>\</code> 字符并替换为 <code>\\</code> </li>
+<li>搜索所有 <code>“</code> 替换为 <code>\&quot;</code> </li>
+<li>搜索所有换行替换为 <code>\n</code> </li>
+<li>将其用双引号包裹作为json的值传入</li>
+</ol>
+<p>解释：json上传后被解析一次（处理一次所有的 <code>\x</code> 转义，并去掉最外层的引号），得到的内容<strong>直接</strong>作为json的内容（hackbar会检查双引号是否匹配，但除此之外的奇怪语法错误会被直接搬到JavaScript中，很神奇）。json作为被解析目标，其中的字符串又会被解析一次，因此对于原来就有的 <code>\n</code> ，替换为 <code>\\n</code> 是为了第二次解析，原来就有的 <code>\&quot;</code> 替换为 <code>\\\&quot;</code> 也是为了二次解析，它们第二次被解析后才有用。而对于原来的 <code>&quot;</code> 和 <code>换行符</code> 分别被替换为 <code>\&quot;</code> 和 <code>\n</code> 是为了通过前端的检查（引号匹配的基本逻辑要有，解析后直接做json因此还得是双引号而不能是单引号）并保持可读性（换行与缩进将会在第一次解析就显示出来）</p>
+<p>例如：</p>
+<div class="highlight-container" data-rel="Json"><figure class="iseeu highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line"> <span class="attr">&quot;json&quot;</span><span class="punctuation">:</span><span class="string">&quot;&#123;\&quot;par1\&quot;:\&quot;,\&quot; \&quot;par2\&quot;:\&quot;123\&quot;&#125;&quot;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure></div>
+
+<p>解析后得到：</p>
+<div class="highlight-container" data-rel="Javascript"><figure class="iseeu highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">json_=&#123;<span class="string">&quot;par1&quot;</span>:<span class="string">&quot;,&quot;</span> <span class="string">&quot;par2&quot;</span>:<span class="string">&quot;123&quot;</span>&#125;</span><br></pre></td></tr></table></figure></div>
+
+<p>显然这里是有语法错误的，但解析后的内容直接作为json赋值给了”json_”</p>
+<!-- flag of hidden posts -->
+        </div>
+
+        
+            <div class="post-copyright-info w-full my-8 px-2 sm:px-6 md:px-8">
+                <div class="article-copyright-info-container">
+    <ul>
+        <li><strong>Title:</strong> 2023-r00t-奶茶题</li>
+        <li><strong>Author:</strong> Forestsetyou</li>
+        <li><strong>Created at
+                :</strong> 2023-01-19 23:13:00</li>
+        
+            <li>
+                <strong>Updated at
+                    :</strong> 2023-05-05 04:16:00
+            </li>
+        
+        <li>
+            <strong>Link:</strong> https://forestsetyou.github.io/2023/01/19/Security/CTF/2023-r00t-奶茶题/
+        </li>
+        <li>
+            <strong>
+                License:
+            </strong>
+            
+
+            
+                This work is licensed under <a class="license" target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0">CC BY-NC-SA 4.0</a>.
+            
+        </li>
+    </ul>
+</div>
+
+            </div>
+        
+
+        
+
+        
+
+        
+
+
+        
+    </div>
+
+    
+        <div class="toc-content-container">
+            <div class="post-toc-wrap">
+    <div class="post-toc">
+        <div class="toc-title">On this page</div>
+        <div class="page-title">2023-r00t-奶茶题</div>
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#2023-r00t-%E5%A5%B6%E8%8C%B6%E9%A2%98"><span class="nav-text">2023 r00t 奶茶题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#python"><span class="nav-text">python</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A7%A3%E9%A2%98"><span class="nav-text">解题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%9D%E8%B7%AF1"><span class="nav-text">思路1</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%9D%E8%B7%AF2"><span class="nav-text">思路2</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Python%E7%9B%B8%E5%AF%B9%E5%BC%95%E7%94%A8"><span class="nav-text">Python相对引用</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Json-fastApi%E7%9A%84%E5%89%8D%E7%AB%AFjson%E4%B8%8A%E4%BC%A0"><span class="nav-text">Json-fastApi的前端json上传</span></a></li></ol></li></ol>
+
+    </div>
+</div>
+        </div>
+    
+</div>
+
+
+
+                
+
+            </div>
+
+            
+
+        </div>
+
+        <div class="main-content-footer">
+            <footer class="footer mt-5 py-5 h-auto text-base text-third-text-color relative border-t-2 border-t-border-color">
+    <div class="info-container py-3 text-center">
+        
+        <div class="text-center">
+            &copy;
+            
+              <span>2024</span>
+              -
+            
+            2024&nbsp;&nbsp;<i class="fa-solid fa-heart fa-beat" style="--fa-animation-duration: 0.5s; color: #f54545"></i>&nbsp;&nbsp;<a href="/">Forestsetyou</a>
+            
+        </div>
+        
+        <div class="relative text-center lg:absolute lg:left-[20px] lg:top-1/2 lg:-translate-y-1/2 lg:text-left">
+            <span class="lg:block text-sm">POWERED BY <?xml version="1.0" encoding="utf-8"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg class="relative top-[2px] inline-block align-baseline" version="1.1" id="圖層_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="1rem" height="1rem" viewBox="0 0 512 512" enable-background="new 0 0 512 512" xml:space="preserve"><path fill="#0E83CD" d="M256.4,25.8l-200,115.5L56,371.5l199.6,114.7l200-115.5l0.4-230.2L256.4,25.8z M349,354.6l-18.4,10.7l-18.6-11V275H200v79.6l-18.4,10.7l-18.6-11v-197l18.5-10.6l18.5,10.8V237h112v-79.6l18.5-10.6l18.5,10.8V354.6z"/></svg><a target="_blank" class="text-base" href="https://hexo.io">Hexo</a></span>
+            <span class="text-sm lg:block">THEME&nbsp;<a class="text-base" target="_blank" href="https://github.com/EvanNotFound/hexo-theme-redefine">Redefine v2.6.1</a></span>
+        </div>
+        
+        
+        
+        
+        
+    </div>  
+</footer>
+        </div>
+    </div>
+
+    
+        <div class="post-tools">
+            <div class="post-tools-container">
+    <ul class="article-tools-list">
+        <!-- TOC aside toggle -->
+        
+            <li class="right-bottom-tools page-aside-toggle">
+                <i class="fa-regular fa-outdent"></i>
+            </li>
+        
+
+        <!-- go comment -->
+        
+    </ul>
+</div>
+
+        </div>
+    
+
+    <div class="right-side-tools-container">
+        <div class="side-tools-container">
+    <ul class="hidden-tools-list">
+        <li class="right-bottom-tools tool-font-adjust-plus flex justify-center items-center">
+            <i class="fa-regular fa-magnifying-glass-plus"></i>
+        </li>
+
+        <li class="right-bottom-tools tool-font-adjust-minus flex justify-center items-center">
+            <i class="fa-regular fa-magnifying-glass-minus"></i>
+        </li>
+
+        <li class="right-bottom-tools tool-dark-light-toggle flex justify-center items-center">
+            <i class="fa-regular fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        
+
+        <li class="right-bottom-tools tool-scroll-to-bottom flex justify-center items-center">
+            <i class="fa-regular fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="visible-tools-list">
+        <li class="right-bottom-tools toggle-tools-list flex justify-center items-center">
+            <i class="fa-regular fa-cog fa-spin"></i>
+        </li>
+        
+            <li class="right-bottom-tools tool-scroll-to-top flex justify-center items-center">
+                <i class="arrow-up fas fa-arrow-up"></i>
+                <span class="percent"></span>
+            </li>
+        
+        
+    </ul>
+</div>
+
+    </div>
+
+    <div class="image-viewer-container">
+    <img src="">
+</div>
+
+
+    
+        <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-input-field-pre">
+            <i class="fa-solid fa-keyboard"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="Search..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="popup-btn-close">
+                <i class="fa-solid fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fa-solid fa-spinner fa-spin-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+
+</main>
+
+
+    
+<script src="/js/libs/Swup.min.js"></script>
+
+<script src="/js/libs/SwupSlideTheme.min.js"></script>
+
+<script src="/js/libs/SwupScriptsPlugin.min.js"></script>
+
+<script src="/js/libs/SwupProgressPlugin.min.js"></script>
+
+<script src="/js/libs/SwupScrollPlugin.min.js"></script>
+
+<script src="/js/libs/SwupPreloadPlugin.min.js"></script>
+
+<script>
+    const swup = new Swup({
+        plugins: [
+            new SwupScriptsPlugin({
+                optin: true,
+            }),
+            new SwupProgressPlugin(),
+            new SwupScrollPlugin({
+                offset: 80,
+            }),
+            new SwupSlideTheme({
+                mainElement: ".main-content-body",
+            }),
+            new SwupPreloadPlugin(),
+        ],
+        containers: ["#swup"],
+    });
+</script>
+
+
+
+
+
+
+
+<script src="/js/tools/imageViewer.js" type="module"></script>
+
+<script src="/js/utils.js" type="module"></script>
+
+<script src="/js/main.js" type="module"></script>
+
+<script src="/js/layouts/navbarShrink.js" type="module"></script>
+
+<script src="/js/tools/scrollTopBottom.js" type="module"></script>
+
+<script src="/js/tools/lightDarkSwitch.js" type="module"></script>
+
+<script src="/js/layouts/categoryList.js" type="module"></script>
+
+
+
+    
+<script src="/js/tools/localSearch.js" type="module"></script>
+
+
+
+
+    
+<script src="/js/tools/codeBlock.js" type="module"></script>
+
+
+
+
+    
+<script src="/js/layouts/lazyload.js" type="module"></script>
+
+
+
+
+
+
+  
+<script src="/js/libs/Typed.min.js"></script>
+
+  
+<script src="/js/plugins/typed.js" type="module"></script>
+
+
+
+
+
+
+
+
+
+<div class="post-scripts" data-swup-reload-script>
+    
+        
+<script src="/js/tools/tocToggle.js" type="module"></script>
+
+<script src="/js/layouts/toc.js" type="module"></script>
+
+<script src="/js/plugins/tabs.js" type="module"></script>
+
+    
+</div>
+
+
+</body>
+</html>

